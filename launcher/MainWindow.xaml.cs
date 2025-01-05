@@ -22,16 +22,11 @@ namespace launcher
         {
             Helper.SetupApp(this);
             UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
-
+            btnPlay.Content = Helper.isInstalled ? "PLAY" : "INSTALL";
             if (Helper.isInstalled)
             {
-                btnPlay.Content = "Play";
                 cmbBranch.SelectedItem = Helper.serverConfig.branches.FirstOrDefault(b => b.branch == Helper.launcherConfig.currentUpdateBranch);
                 Task.Run(() => updateChecker.Start());
-            }
-            else
-            {
-                btnPlay.Content = "Install";
             }
         }
 
@@ -58,12 +53,9 @@ namespace launcher
                     Helper.LaunchGame();
                 }
             }
-            else
+            else if (!Helper.isInstalling)
             {
-                if (!Helper.isInstalling)
-                {
-                    Task.Run(() => Helper.gameInstall.Start());
-                }
+                Task.Run(() => Helper.gameInstall.Start());
             }
         }
 
@@ -75,22 +67,19 @@ namespace launcher
 
         private void Rectangle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                DragMove();
             }
         }
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox? comboBox = sender as ComboBox;
-
-            if (comboBox == null)
-                return;
+            if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            if (Helper.serverConfig.branches[selectedBranch].enabled == false)
+            if (!Helper.serverConfig.branches[selectedBranch].enabled)
             {
                 comboBox.SelectedIndex = lastSelectedIndex;
                 return;
@@ -98,15 +87,18 @@ namespace launcher
 
             lastSelectedIndex = selectedBranch;
 
-            if (Helper.isInstalled && Helper.serverConfig.branches[0].branch == Helper.launcherConfig.currentUpdateBranch)
+            if (Helper.isInstalled)
             {
-                Helper.updateRequired = false;
-                btnPlay.Content = "Play";
-            }
-            else if (Helper.isInstalled && Helper.serverConfig.branches[0].branch != Helper.launcherConfig.currentUpdateBranch)
-            {
-                btnPlay.Content = "Update";
-                Helper.updateRequired = true;
+                if (Helper.serverConfig.branches[0].branch == Helper.launcherConfig.currentUpdateBranch)
+                {
+                    Helper.updateRequired = false;
+                    btnPlay.Content = "Play";
+                }
+                else
+                {
+                    btnPlay.Content = "Update";
+                    Helper.updateRequired = true;
+                }
             }
         }
 
@@ -162,127 +154,68 @@ namespace launcher
 
         public void ShowSettingsControl()
         {
-            var transistionInStoryboardHalf = new Storyboard();
-            var doubleAnimation = new DoubleAnimation
+            var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
+            transitionInStoryboard.Completed += (s, e) =>
             {
-                From = -2400,
-                To = 0,
-                Duration = new Duration(TimeSpan.FromSeconds(0.25))
-            };
-
-            // Animate the Canvas.Left property
-            Storyboard.SetTarget(doubleAnimation, TransitionRect);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
-
-            // Add to storyboard and begin animation
-            transistionInStoryboardHalf.Children.Add(doubleAnimation);
-
-            transistionInStoryboardHalf.Completed += (s, e) =>
-            {
-                // Ensure the control is visible before starting the fade-in animation
                 SettingsControl.Visibility = Visibility.Visible;
-
-                // Retrieve the global fade-in storyboard or define it here
-                var fadeInStoryboard = new Storyboard();
-                fadeInStoryboard.Children.Add(new DoubleAnimation
-                {
-                    From = 0,
-                    To = 1,
-                    Duration = new Duration(TimeSpan.FromSeconds(0.2))
-                });
-
-                // Set the target of the animation to the SettingsControl
-                Storyboard.SetTarget(fadeInStoryboard, SettingsControl);
-                Storyboard.SetTargetProperty(fadeInStoryboard, new PropertyPath("Opacity"));
-
+                var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
                 fadeInStoryboard.Completed += (s, e) =>
                 {
-                    var transistionInStoryboardHalf2 = new Storyboard();
-                    var doubleAnimation2 = new DoubleAnimation
-                    {
-                        From = 0,
-                        To = 2400,
-                        Duration = new Duration(TimeSpan.FromSeconds(0.25))
-                    };
-
-                    // Animate the Canvas.Left property
-                    Storyboard.SetTarget(doubleAnimation2, TransitionRect);
-                    Storyboard.SetTargetProperty(doubleAnimation2, new PropertyPath("RenderTransform.Children[0].X"));
-
-                    // Add to storyboard and begin animation
-                    transistionInStoryboardHalf2.Children.Add(doubleAnimation2);
-                    transistionInStoryboardHalf2.Begin();
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
+                    transitionOutStoryboard.Begin();
                 };
-
                 fadeInStoryboard.Begin();
             };
-
-            transistionInStoryboardHalf.Begin();
-
+            transitionInStoryboard.Begin();
             subMenuControl.Settings.IsEnabled = false;
         }
 
         public void HideSettingsControl()
         {
-            var transistionInStoryboardHalf = new Storyboard();
-            var doubleAnimation = new DoubleAnimation
+            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.5);
+            transitionInStoryboard.Completed += (s, e) =>
             {
-                From = 2400,
-                To = 0,
-                Duration = new Duration(TimeSpan.FromSeconds(0.5))
-            };
-
-            // Animate the Canvas.Left property
-            Storyboard.SetTarget(doubleAnimation, TransitionRect);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
-
-            // Add to storyboard and begin animation
-            transistionInStoryboardHalf.Children.Add(doubleAnimation);
-
-            transistionInStoryboardHalf.Completed += (s, e) =>
-            {
-                var fadeOutStoryboard = new Storyboard();
-                fadeOutStoryboard.Children.Add(new DoubleAnimation
-                {
-                    From = 1,
-                    To = 0,
-                    Duration = new Duration(TimeSpan.FromSeconds(0.2))
-                });
-
-                // Clone the storyboard to make it modifiable
+                var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
                 fadeOutStoryboard.Completed += (s, e) =>
                 {
-                    // After the animation completes, set the control to Hidden
                     SettingsControl.Visibility = Visibility.Hidden;
-
-                    var transistionInStoryboardHalf2 = new Storyboard();
-                    var doubleAnimation2 = new DoubleAnimation
-                    {
-                        From = 0,
-                        To = -2400,
-                        Duration = new Duration(TimeSpan.FromSeconds(0.25))
-                    };
-
-                    // Animate the Canvas.Left property
-                    Storyboard.SetTarget(doubleAnimation2, TransitionRect);
-                    Storyboard.SetTargetProperty(doubleAnimation2, new PropertyPath("RenderTransform.Children[0].X"));
-
-                    // Add to storyboard and begin animation
-                    transistionInStoryboardHalf2.Children.Add(doubleAnimation2);
-                    transistionInStoryboardHalf2.Begin();
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
+                    transitionOutStoryboard.Begin();
                 };
-
-                // Set the target of the animation to the SettingsControl
-                Storyboard.SetTarget(fadeOutStoryboard, SettingsControl);
-                Storyboard.SetTargetProperty(fadeOutStoryboard, new PropertyPath("Opacity"));
-
-                // Start the fade-out animation
                 fadeOutStoryboard.Begin();
             };
-
-            transistionInStoryboardHalf.Begin();
-
+            transitionInStoryboard.Begin();
             subMenuControl.Settings.IsEnabled = true;
+        }
+
+        private Storyboard CreateTransitionStoryboard(double from, double to, double duration)
+        {
+            var storyboard = new Storyboard();
+            var doubleAnimation = new DoubleAnimation
+            {
+                From = from,
+                To = to,
+                Duration = new Duration(TimeSpan.FromSeconds(duration))
+            };
+            Storyboard.SetTarget(doubleAnimation, TransitionRect);
+            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
+            storyboard.Children.Add(doubleAnimation);
+            return storyboard;
+        }
+
+        private Storyboard CreateFadeStoryboard(double from, double to, double duration)
+        {
+            var storyboard = new Storyboard();
+            var doubleAnimation = new DoubleAnimation
+            {
+                From = from,
+                To = to,
+                Duration = new Duration(TimeSpan.FromSeconds(duration))
+            };
+            Storyboard.SetTarget(doubleAnimation, SettingsControl);
+            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
+            storyboard.Children.Add(doubleAnimation);
+            return storyboard;
         }
     }
 }

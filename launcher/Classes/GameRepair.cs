@@ -7,7 +7,7 @@
             bool repairSuccess = true;
 
             //Install started
-            Helper.InstallStarted("Repairing");
+            Helper.SetInstallState(true, "REPAIRING");
 
             //Create temp directory to store downloaded files
             string tempDirectory = Helper.CreateTempDirectory();
@@ -51,7 +51,7 @@
             Helper.UpdateOrCreateLauncherConfig();
 
             //Install finished
-            Helper.InstalledFinished();
+            Helper.SetInstallState(false);
 
             //Delete temp directory
             await Task.Run(() => Helper.CleanUpTempDirectory(tempDirectory));

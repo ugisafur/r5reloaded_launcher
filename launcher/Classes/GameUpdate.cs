@@ -13,7 +13,7 @@
                 await Helper.gameRepair.Start();
 
             // Install started
-            Helper.InstallStarted("Updating");
+            Helper.SetInstallState(true, "UPDATING");
 
             // Create temp directory to store downloaded files
             string tempDirectory = Helper.CreateTempDirectory();
@@ -37,7 +37,7 @@
             Helper.UpdateOrCreateLauncherConfig();
 
             // Install finished
-            Helper.InstalledFinished();
+            Helper.SetInstallState(false);
 
             // Set update required to false
             Helper.updateRequired = false;

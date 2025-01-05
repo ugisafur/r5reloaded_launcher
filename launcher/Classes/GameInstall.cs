@@ -7,7 +7,7 @@ namespace launcher
         public async void Start()
         {
             //Install started
-            Helper.InstallStarted("Installing");
+            Helper.SetInstallState(true, "INSTALLING");
 
             //Create temp directory to store downloaded files
             string tempDirectory = Helper.CreateTempDirectory();
@@ -43,7 +43,7 @@ namespace launcher
             Helper.UpdateOrCreateLauncherConfig();
 
             //Install finished
-            Helper.InstalledFinished();
+            Helper.SetInstallState(false);
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))

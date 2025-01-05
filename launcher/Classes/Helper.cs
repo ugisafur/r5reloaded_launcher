@@ -13,7 +13,7 @@ namespace launcher
 {
     public static class Helper
     {
-        public const string launcherVersion = "0.2.0";
+        public const string launcherVersion = "0.2.1";
 
         public static ProgressBar progressBar = new ProgressBar();
         public static TextBlock lblStatus = new TextBlock();
@@ -38,6 +38,8 @@ namespace launcher
         public static bool updateCheckLoop = false;
         public static List<string> badFiles = new List<string>();
         public static bool badFilesDetected = false;
+
+        private static SemaphoreSlim downloadSemaphore = new SemaphoreSlim(50);
 
         public static void SetupApp(MainWindow mainWindow)
         {
@@ -65,17 +67,13 @@ namespace launcher
 
         public static List<ComboBranch> SetupGameBranches()
         {
-            List<ComboBranch> comboBranches = new List<ComboBranch>();
-
-            foreach (var branch in serverConfig.branches)
-            {
-                if (branch.enabled)
-                    comboBranches.Add(new ComboBranch { title = branch.branch, subtext = branch.currentVersion });
-                else
-                    comboBranches.Add(new ComboBranch { title = branch.branch, subtext = "branch disabled" });
-            }
-
-            return comboBranches;
+            return serverConfig.branches
+                .Select(branch => new ComboBranch
+                {
+                    title = branch.branch,
+                    subtext = branch.enabled ? branch.currentVersion : "branch disabled"
+                })
+                .ToList();
         }
 
         public static void LaunchGame()
@@ -109,36 +107,20 @@ namespace launcher
             return false; // Versions are the same
         }
 
-        public static void InstallStarted(string buttonText)
+        public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
             App.Dispatcher.Invoke(() =>
             {
-                isInstalling = true;
+                isInstalling = installing;
 
                 App.btnPlay.Content = buttonText;
-                App.cmbBranch.IsEnabled = false;
-                App.btnPlay.IsEnabled = false;
+                App.cmbBranch.IsEnabled = !installing;
+                App.btnPlay.IsEnabled = !installing;
                 lblStatus.Text = "";
                 lblFilesLeft.Text = "";
             });
 
-            ShowProgressBar(true);
-        }
-
-        public static void InstalledFinished()
-        {
-            App.Dispatcher.Invoke(() =>
-            {
-                isInstalling = false;
-
-                App.btnPlay.Content = "Play";
-                App.cmbBranch.IsEnabled = true;
-                App.btnPlay.IsEnabled = true;
-                lblStatus.Text = "";
-                lblFilesLeft.Text = "";
-            });
-
-            ShowProgressBar(false);
+            ShowProgressBar(installing);
         }
 
         public static void UpdateStatusLabel(string statusText)
@@ -170,20 +152,20 @@ namespace launcher
 
         public static string CreateTempDirectory()
         {
-            string tempDirectory = System.IO.Path.Combine(launcherPath, "temp");
+            string tempDirectory = Path.Combine(launcherPath, "temp");
             Directory.CreateDirectory(tempDirectory);
             return tempDirectory;
         }
 
         public static void DeleteTempDirectory()
         {
-            string tempDirectory = System.IO.Path.Combine(launcherPath, "temp");
+            string tempDirectory = Path.Combine(launcherPath, "temp");
             Directory.Delete(tempDirectory, true);
         }
 
         public static bool ShouldSkipFileDownload(string destinationPath, string expectedChecksum)
         {
-            if (System.IO.File.Exists(destinationPath))
+            if (File.Exists(destinationPath))
             {
                 Console.WriteLine($"Checking existing file: {destinationPath}");
                 string checksum = CalculateChecksum(destinationPath);
@@ -211,11 +193,11 @@ namespace launcher
             foreach (var file in baseGameFiles.files)
             {
                 string fileUrl = $"{serverConfig.base_game_url}/{file.name}";
-                string destinationPath = System.IO.Path.Combine(tempDirectory, file.name);
+                string destinationPath = Path.Combine(tempDirectory, file.name);
 
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destinationPath));
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file.checksum, true));
+                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file.name, file.checksum, true));
             }
 
             return downloadTasks;
@@ -238,20 +220,29 @@ namespace launcher
             foreach (var file in badFiles)
             {
                 string fileUrl = $"{serverConfig.base_game_url}/{file}";
-                string destinationPath = System.IO.Path.Combine(tempDirectory, file);
+                string destinationPath = Path.Combine(tempDirectory, file);
 
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destinationPath));
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath));
+                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file));
             }
 
             return downloadTasks;
         }
 
-        public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string checksum = "", bool checkForExistingFiles = false)
+        public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
         {
+            DownloadItem downloadItem = null;
+            long downloadedBytes = 0;
+            long totalBytes = -1;
+            DateTime lastUpdate = DateTime.Now;
+
+            // Wait for an available semaphore slot
+            await downloadSemaphore.WaitAsync();
+
             try
             {
+                // Check if file exists and checksum matches
                 if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFileDownload(destinationPath, checksum))
                 {
                     App.Dispatcher.Invoke(() =>
@@ -263,16 +254,49 @@ namespace launcher
                     return destinationPath;
                 }
 
+                // Add download item to the popup
+                App.Dispatcher.Invoke(() =>
+                {
+                    downloadItem = App.DownloadsPopupControl.AddDownloadItem(fileName);
+                });
+
                 using var response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
+
+                totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                downloadedBytes = 0L;
 
                 using var stream = await response.Content.ReadAsStreamAsync();
                 using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-                await stream.CopyToAsync(fileStream);
+                var buffer = new byte[8192];
+                int bytesRead;
+
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    downloadedBytes += bytesRead;
+
+                    if ((DateTime.Now - lastUpdate).TotalMilliseconds > 100)
+                    {
+                        lastUpdate = DateTime.Now;
+
+                        // Update progress in the popup
+                        if (downloadItem != null && totalBytes > 0)
+                        {
+                            var progress = (double)downloadedBytes / totalBytes * 100;
+                            App.Dispatcher.Invoke(() =>
+                            {
+                                downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                                downloadItem.downloadFileProgress.Value = progress;
+                            });
+                        }
+                    }
+                }
 
                 Console.WriteLine($"Downloaded: {destinationPath}");
 
+                // Update global progress
                 App.Dispatcher.Invoke(() =>
                 {
                     progressBar.Value++;
@@ -286,6 +310,20 @@ namespace launcher
                 Console.WriteLine($"Failed to download {fileUrl}: {ex.Message}");
                 badFilesDetected = true;
                 return string.Empty;
+            }
+            finally
+            {
+                // Remove the download item from the popup
+                if (downloadItem != null)
+                {
+                    App.Dispatcher.Invoke(() =>
+                    {
+                        App.DownloadsPopupControl.RemoveDownloadItem(downloadItem);
+                    });
+                }
+
+                // Release the semaphore slot
+                downloadSemaphore.Release();
             }
         }
 
@@ -320,8 +358,9 @@ namespace launcher
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
-            var allFilesUnfiltered = Directory.GetFiles(launcherPath, "*", SearchOption.AllDirectories);
-            var allFiles = allFilesUnfiltered.Where(f => !f.Contains("\\temp\\")).ToArray();
+            var allFiles = Directory.GetFiles(launcherPath, "*", SearchOption.AllDirectories)
+                                    .Where(f => !f.Contains("\\temp\\"))
+                                    .ToArray();
 
             App.Dispatcher.Invoke(() =>
             {
@@ -343,17 +382,14 @@ namespace launcher
         {
             return Task.Run(() =>
             {
-                FileChecksum fileChecksum = new FileChecksum();
+                var fileChecksum = new FileChecksum
+                {
+                    name = file.Replace(launcherPath + "\\", ""),
+                    checksum = CalculateChecksum(file)
+                };
 
-                // Perform checksum calculation
-                string checksum = CalculateChecksum(file);
+                Console.WriteLine($"Calculated checksum for {file}: {fileChecksum.checksum}");
 
-                fileChecksum.name = file.Replace(launcherPath + "\\", "");
-                fileChecksum.checksum = checksum;
-
-                Console.WriteLine($"Calculated checksum for {file}: {checksum}");
-
-                // Update progress bar on the UI thread
                 App.Dispatcher.Invoke(() =>
                 {
                     progressBar.Value++;
@@ -368,15 +404,12 @@ namespace launcher
         {
             var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
-
-            string responseString = await response.Content.ReadAsStringAsync();
-
-            return responseString;
+            return await response.Content.ReadAsStringAsync();
         }
 
         public static string CalculateChecksum(string filePath)
         {
-            using (var stream = System.IO.File.OpenRead(filePath))
+            using (var stream = File.OpenRead(filePath))
             using (var sha256 = SHA256.Create())
             {
                 var hash = sha256.ComputeHash(stream);
@@ -388,11 +421,11 @@ namespace launcher
         {
             try
             {
-                if (!Directory.Exists(System.IO.Path.GetDirectoryName(decompressedFilePath)))
-                    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(decompressedFilePath));
+                if (!Directory.Exists(Path.GetDirectoryName(decompressedFilePath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
 
-                using var input = System.IO.File.OpenRead(compressedFilePath);
-                using var output = System.IO.File.OpenWrite(decompressedFilePath);
+                using var input = File.OpenRead(compressedFilePath);
+                using var output = File.OpenWrite(decompressedFilePath);
                 using var decompressionStream = new DecompressionStream(input);
 
                 await decompressionStream.CopyToAsync(output);
@@ -413,7 +446,7 @@ namespace launcher
 
         public static bool GetLauncherConfig()
         {
-            string configPath = System.IO.Path.Combine(launcherPath, "platform\\cfg\\user\\launcherConfig.json");
+            string configPath = Path.Combine(launcherPath, "platform\\cfg\\user\\launcherConfig.json");
 
             if (!File.Exists(configPath))
                 return false;
@@ -429,10 +462,7 @@ namespace launcher
 
             launcherConfig = JsonConvert.DeserializeObject<LauncherConfig>(config_json);
 
-            if (launcherConfig == null)
-                return false;
-
-            return true;
+            return launcherConfig != null;
         }
 
         public static void GetServerConfig()
@@ -468,7 +498,7 @@ namespace launcher
 
         public static void SaveLauncherConfig()
         {
-            string configPath = System.IO.Path.Combine(launcherPath, "platform\\cfg\\user\\launcherConfig.json");
+            string configPath = Path.Combine(launcherPath, "platform\\cfg\\user\\launcherConfig.json");
             string config_json = JsonConvert.SerializeObject(launcherConfig);
             File.WriteAllText(configPath, config_json);
 
@@ -528,30 +558,30 @@ namespace launcher
 
         public static void Delete(string file)
         {
-            string fullPath = System.IO.Path.Combine(launcherPath, file);
+            string fullPath = Path.Combine(launcherPath, file);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
 
         public static void Update(string file, string tempDirectory)
         {
-            string sourceCompressedFile = System.IO.Path.Combine(tempDirectory, file);
-            string destinationFile = System.IO.Path.Combine(launcherPath, file.Replace(".zst", ""));
+            string sourceCompressedFile = Path.Combine(tempDirectory, file);
+            string destinationFile = Path.Combine(launcherPath, file.Replace(".zst", ""));
             DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
         public static void Patch(string file, string tempDirectory)
         {
-            string sourceCompressedDeltaFile = System.IO.Path.Combine(tempDirectory, file);
-            string sourceDecompressedDeltaFile = System.IO.Path.Combine(tempDirectory, file.Replace(".zst", ""));
-            string destinationFile = System.IO.Path.Combine(launcherPath, file.Replace(".delta.zst", ""));
+            string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
+            string sourceDecompressedDeltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
+            string destinationFile = Path.Combine(launcherPath, file.Replace(".delta.zst", ""));
             DecompressFileAsync(sourceCompressedDeltaFile, sourceDecompressedDeltaFile);
             PatchFile(destinationFile, sourceDecompressedDeltaFile);
         }
 
         public static void PatchFile(string originalFile, string deltaFile)
         {
-            var signatureFile = System.IO.Path.GetTempFileName();
+            var signatureFile = Path.GetTempFileName();
 
             var signatureBuilder = new SignatureBuilder();
             using (var basisStream = new FileStream(originalFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -560,8 +590,8 @@ namespace launcher
                 signatureBuilder.Build(basisStream, new SignatureWriter(signatureStream));
             }
 
-            if (System.IO.File.Exists(originalFile))
-                System.IO.File.Delete(originalFile);
+            if (File.Exists(originalFile))
+                File.Delete(originalFile);
 
             var deltaApplier = new DeltaApplier { SkipHashCheck = false };
             using (var basisStream = new FileStream(signatureFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -592,11 +622,11 @@ namespace launcher
                     continue;
 
                 string fileUrl = $"{serverConfig.branches[selectedBranchIndex].patch_url}/{file.Name}";
-                string destinationPath = System.IO.Path.Combine(tempDirectory, file.Name);
+                string destinationPath = Path.Combine(tempDirectory, file.Name);
 
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destinationPath));
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath));
+                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file.Name));
             }
 
             return downloadTasks;
@@ -605,24 +635,25 @@ namespace launcher
         public static List<Task> PrepareFilePatchTasks(GamePatch patchFiles, string tempDirectory)
         {
             var tasks = new List<Task>();
-
             filesLeft = patchFiles.files.Count;
 
             foreach (var file in patchFiles.files)
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    if (file.Action.ToLower() == "delete")
+                    switch (file.Action.ToLower())
                     {
-                        Delete(file.Name);
-                    }
-                    else if (file.Action.ToLower() == "update")
-                    {
-                        Update(file.Name, tempDirectory);
-                    }
-                    else if (file.Action.ToLower() == "patch")
-                    {
-                        Patch(file.Name, tempDirectory);
+                        case "delete":
+                            Delete(file.Name);
+                            break;
+
+                        case "update":
+                            Update(file.Name, tempDirectory);
+                            break;
+
+                        case "patch":
+                            Patch(file.Name, tempDirectory);
+                            break;
                     }
 
                     // Update UI thread-safe
@@ -687,30 +718,25 @@ namespace launcher
             {
                 try
                 {
-                    // Attempt to open the file with exclusive access
                     using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                     {
                         // If we get here, the file is not in use and can be safely deleted
                     }
 
-                    // Delete the file
                     File.Delete(filePath);
                     Console.WriteLine($"Deleted: {filePath}");
-                    return; // Exit the method after successful deletion
+                    return;
                 }
                 catch (IOException)
                 {
-                    // File is in use, retry after a short delay
                     Console.WriteLine($"File in use, retrying: {filePath}");
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // Handle cases where we lack permission to access or delete the file
                     Console.WriteLine($"Access denied, skipping: {filePath}");
                     return;
                 }
 
-                // Wait before retrying
                 Thread.Sleep(retryInterval);
             }
 
