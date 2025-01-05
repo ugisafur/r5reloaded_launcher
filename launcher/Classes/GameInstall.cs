@@ -45,6 +45,9 @@ namespace launcher
             //Install finished
             Helper.SetInstallState(false);
 
+            //Set game as installed
+            Helper.isInstalled = true;
+
             //Delete temp directory
             if (Directory.Exists(tempDirectory))
                 await Task.Run(() => Helper.CleanUpTempDirectory(tempDirectory));

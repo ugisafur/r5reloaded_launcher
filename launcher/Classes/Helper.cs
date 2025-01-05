@@ -13,7 +13,7 @@ namespace launcher
 {
     public static class Helper
     {
-        public const string launcherVersion = "0.2.1";
+        public const string launcherVersion = "0.2.4";
 
         public static ProgressBar progressBar = new ProgressBar();
         public static TextBlock lblStatus = new TextBlock();

@@ -487,8 +487,8 @@
                                         <local:SettingsPopup x:Name="SettingsPopupControl" />
                                     </Popup>
                                 </StackPanel>
-                                <Button Style="{DynamicResource PlatButtonStyle}" x:Name="btnPlay" Content="PLAY" FontSize="16" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,98,0,98" RenderTransformOrigin="0.044,0.488" FontFamily="Arial Black" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
-                                <ProgressBar Style="{DynamicResource installProgress}" x:Name="progressBar" Margin="0,167,76,81" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
+                                <Button Style="{DynamicResource PlatButtonStyle}" x:Name="btnPlay" Content="PLAY" FontSize="16" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Arial Black" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
+                                <ProgressBar Style="{DynamicResource installProgress}" x:Name="progressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
                                     <ProgressBar.RenderTransform>
                                         <TransformGroup>
                                             <ScaleTransform ScaleY="-1" />
@@ -498,8 +498,8 @@
                                         </TransformGroup>
                                     </ProgressBar.RenderTransform>
                                 </ProgressBar>
-                                <TextBlock x:Name="lblStatus" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,180,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                <TextBlock x:Name="lblFilesLeft" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,180,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                <TextBlock x:Name="lblStatus" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
+                                <TextBlock x:Name="lblFilesLeft" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="2">
