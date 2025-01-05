@@ -1,16 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Octodiff.Core;
 using Octodiff.Diagnostics;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ZstdSharp;
@@ -82,18 +76,6 @@ namespace launcher
             }
 
             return comboBranches;
-        }
-
-        public static void CheckForGameUpdates()
-        {
-            if (isInstalled && serverConfig.allowUpdates)
-            {
-                if (serverConfig.branches.FirstOrDefault(b => b.branch == launcherConfig.currentUpdateBranch).currentVersion != launcherConfig.currentUpdateVersion)
-                {
-                    updateRequired = true;
-                    App.btnPlay.Content = "Update";
-                }
-            }
         }
 
         public static void LaunchGame()

@@ -1,29 +1,8 @@
-﻿using Newtonsoft.Json;
-using Octodiff.Core;
-using Octodiff.Diagnostics;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.IO.Compression;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ZstdSharp;
-using static System.Net.WebRequestMethods;
-using File = System.IO.File;
 
 namespace launcher
 {
@@ -32,6 +11,8 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        private int lastSelectedIndex = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -40,14 +21,13 @@ namespace launcher
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Helper.SetupApp(this);
+            UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
 
             if (Helper.isInstalled)
             {
                 btnPlay.Content = "Play";
                 cmbBranch.SelectedItem = Helper.serverConfig.branches.FirstOrDefault(b => b.branch == Helper.launcherConfig.currentUpdateBranch);
-                Helper.CheckForGameUpdates();
-                Helper.updateCheckLoop = true;
-                Task.Run(() => LoopCheckForUpdates());
+                Task.Run(() => updateChecker.Start());
             }
             else
             {
@@ -100,8 +80,6 @@ namespace launcher
                 this.DragMove();
             }
         }
-
-        private int lastSelectedIndex = 0;
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -305,44 +283,6 @@ namespace launcher
             transistionInStoryboardHalf.Begin();
 
             subMenuControl.Settings.IsEnabled = true;
-        }
-
-        private async Task LoopCheckForUpdates()
-        {
-            while (Helper.updateCheckLoop)
-            {
-                Console.WriteLine("Checking for updates...");
-
-                var response = Helper.client.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
-                var responseString = response.Content.ReadAsStringAsync().Result;
-                var newserverConfig = JsonConvert.DeserializeObject<ServerConfig>(responseString);
-
-                if (!Helper.isInstalling && newserverConfig != null && Helper.IsNewVersion(Helper.launcherVersion, newserverConfig.launcherVersion))
-                {
-                    MessageBoxResult result = MessageBox.Show("A new version of the launcher is available, do you want to update now?", "Launcher Update Required", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        Helper.UpdateLauncher();
-                    }
-
-                    Helper.updateCheckLoop = false;
-                }
-
-                if (!Helper.isInstalling && newserverConfig.allowUpdates && newserverConfig != null && Helper.launcherConfig != null && newserverConfig.branches[0].currentVersion != Helper.launcherConfig.currentUpdateVersion)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        cmbBranch.ItemsSource = newserverConfig.branches.Where(b => b.enabled).ToList();
-                        cmbBranch.SelectedIndex = 0;
-                        btnPlay.Content = "Update";
-                        Helper.serverConfig = newserverConfig;
-                        Helper.updateRequired = true;
-                        Helper.updateCheckLoop = false;
-                    });
-                }
-
-                await Task.Delay(10000);
-            }
         }
     }
 }
