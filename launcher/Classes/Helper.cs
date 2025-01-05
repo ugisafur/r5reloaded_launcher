@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Octodiff.Core;
 using Octodiff.Diagnostics;
+using Polly;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Windows;
@@ -13,7 +15,7 @@ namespace launcher
 {
     public static class Helper
     {
-        public const string launcherVersion = "0.2.4";
+        public const string launcherVersion = "0.3.0";
 
         public static ProgressBar progressBar = new ProgressBar();
         public static TextBlock lblStatus = new TextBlock();
@@ -27,7 +29,7 @@ namespace launcher
         public static ServerConfig? serverConfig;
         public static LauncherConfig? launcherConfig;
 
-        public static HttpClient client = new HttpClient();
+        public static HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(30) };
 
         public static string launcherPath = "";
         public const int MAX_REPAIR_ATTEMPTS = 5;
@@ -39,7 +41,7 @@ namespace launcher
         public static List<string> badFiles = new List<string>();
         public static bool badFilesDetected = false;
 
-        private static SemaphoreSlim downloadSemaphore = new SemaphoreSlim(50);
+        private static SemaphoreSlim downloadSemaphore = new SemaphoreSlim(100);
 
         public static void SetupApp(MainWindow mainWindow)
         {
@@ -230,8 +232,13 @@ namespace launcher
             return downloadTasks;
         }
 
-        public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
+        public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
         {
+            long maxDownloadSpeedBytesPerSecond = ThrottledStream.Infinite; //Todo: Set appropriate download speed limit
+
+            var cancellationSource = new CancellationTokenSource();
+            var cancellationToken = cancellationSource.Token;
+
             DownloadItem downloadItem = null;
             long downloadedBytes = 0;
             long totalBytes = -1;
@@ -260,39 +267,59 @@ namespace launcher
                     downloadItem = App.DownloadsPopupControl.AddDownloadItem(fileName);
                 });
 
-                using var response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
-                response.EnsureSuccessStatusCode();
+                var retryPolicy = Policy
+                .Handle<Exception>(ex => ex is WebException || ex is TimeoutException)
+                .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
-                totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                downloadedBytes = 0L;
-
-                using var stream = await response.Content.ReadAsStreamAsync();
-                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
-
-                var buffer = new byte[128 * 1024];
-                int bytesRead;
-
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                await retryPolicy.ExecuteAsync(async () =>
                 {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                    downloadedBytes += bytesRead;
+                    var request = (HttpWebRequest)WebRequest.Create(fileUrl);
+                    request.Method = "GET";
+                    request.Timeout = 10000; // Set appropriate timeout
+                    request.AllowAutoRedirect = true;
 
-                    if ((DateTime.Now - lastUpdate).TotalMilliseconds > 100)
+                    using (var response = (HttpWebResponse)await request.GetResponseAsync())
                     {
-                        lastUpdate = DateTime.Now;
+                        if (response.StatusCode != HttpStatusCode.OK)
+                            throw new WebException($"Failed to download: {response.StatusCode}");
 
-                        // Update progress in the popup
-                        if (downloadItem != null && totalBytes > 0)
+                        totalBytes = response.ContentLength;
+                        downloadedBytes = 0L;
+
+                        using var responseStream = response.GetResponseStream();
+                        using var throttledStream = new ThrottledStream(responseStream, maxDownloadSpeedBytesPerSecond);  // Throttling applied here
+                        using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+                        var buffer = new byte[64 * 1024]; // 128KB buffer
+                        int bytesRead;
+                        var stopwatch = new System.Diagnostics.Stopwatch();
+                        stopwatch.Start();
+
+                        while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                         {
-                            var progress = (double)downloadedBytes / totalBytes * 100;
-                            await App.Dispatcher.InvokeAsync(() =>
+                            await fileStream.WriteAsync(buffer, 0, bytesRead);
+                            downloadedBytes += bytesRead;
+
+                            // Update progress in the popup
+                            if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                             {
-                                downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                                downloadItem.downloadFileProgress.Value = progress;
-                            });
+                                lastUpdate = DateTime.Now;
+
+                                if (downloadItem != null && totalBytes > 0)
+                                {
+                                    var progress = (double)downloadedBytes / totalBytes * 100;
+                                    await App.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                                        downloadItem.downloadFileProgress.Value = progress;
+                                    });
+                                }
+                            }
                         }
+
+                        await fileStream.FlushAsync();
                     }
-                }
+                });
 
                 Console.WriteLine($"Downloaded: {destinationPath}");
 
@@ -305,9 +332,15 @@ namespace launcher
 
                 return destinationPath;
             }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine($"Download cancelled for {fileUrl}");
+                badFilesDetected = true;
+                return string.Empty;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to download {fileUrl}: {ex.Message}");
+                Console.WriteLine($"All retries failed for {fileUrl}: {ex.Message}");
                 badFilesDetected = true;
                 return string.Empty;
             }
@@ -533,8 +566,11 @@ namespace launcher
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    Console.WriteLine($"Bad file found: {file.name} | {filePath}");
-                    badFiles.Add($"{file.name}.zst");
+                    if (!filePath.Contains("launcher.exe"))
+                    {
+                        Console.WriteLine($"Bad file found: {file.name} | {filePath}");
+                        badFiles.Add($"{file.name}.zst");
+                    }
                 }
 
                 App.Dispatcher.Invoke(() =>
