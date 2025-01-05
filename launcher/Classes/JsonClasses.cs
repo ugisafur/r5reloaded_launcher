@@ -1,0 +1,87 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace launcher
+{
+    public class ComboBranch
+    {
+        public string title { get; set; }
+        public string subtext { get; set; }
+    }
+
+    public class Branch
+    {
+        public string branch { get; set; }
+        public string currentVersion { get; set; }
+        public string lastVersion { get; set; }
+        public string patch_url { get; set; }
+        public bool enabled { get; set; }
+    }
+
+    public class ServerConfig
+    {
+        public string launcherVersion { get; set; }
+        public string base_game_url { get; set; }
+        public bool allowUpdates { get; set; }
+        public List<Branch> branches { get; set; }
+    }
+
+    public class LauncherConfig
+    {
+        public string currentUpdateVersion { get; set; }
+        public string currentUpdateBranch { get; set; }
+    }
+
+    public class BaseGameFile
+    {
+        public string name { get; set; }
+        public string checksum { get; set; }
+    }
+
+    public class FileChecksum
+    {
+        public string name { get; set; }
+        public string checksum { get; set; }
+    }
+
+    public class BaseGameFiles
+    {
+        public List<BaseGameFile> files { get; set; }
+    }
+
+    public class GamePatch
+    {
+        public List<PatchFile> files { get; set; }
+    }
+
+    public class PatchFile
+    {
+        public string Name { get; set; }
+        public string Action { get; set; }
+    }
+
+    public class GameServerList
+    {
+        public bool success { get; set; }
+        public List<Server> servers { get; set; }
+    }
+
+    public class Server
+    {
+        public string maxPlayers { get; set; }
+        public string port { get; set; }
+        public string checksum { get; set; }
+        public string name { get; set; }
+        public string ip { get; set; }
+        public string description { get; set; }
+        public string hidden { get; set; }
+        public string playerCount { get; set; }
+        public string playlist { get; set; }
+        public string key { get; set; }
+        public string region { get; set; }
+        public string map { get; set; }
+    }
+}

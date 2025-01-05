@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "launcher": {
+      "commandName": "Project",
+      "hotReloadEnabled": true
+    }
+  }
+}
