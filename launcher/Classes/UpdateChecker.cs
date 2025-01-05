@@ -56,7 +56,7 @@ namespace launcher
                     Console.WriteLine($"An unexpected error occurred: {ex.Message}");
                 }
 
-                await Task.Delay(10000);
+                await Task.Delay(30000);
             }
         }
 
