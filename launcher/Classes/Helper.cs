@@ -245,7 +245,7 @@ namespace launcher
                 // Check if file exists and checksum matches
                 if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFileDownload(destinationPath, checksum))
                 {
-                    App.Dispatcher.Invoke(() =>
+                    await App.Dispatcher.InvokeAsync(() =>
                     {
                         progressBar.Value++;
                         lblFilesLeft.Text = $"{--filesLeft} files left";
@@ -255,7 +255,7 @@ namespace launcher
                 }
 
                 // Add download item to the popup
-                App.Dispatcher.Invoke(() =>
+                await App.Dispatcher.InvokeAsync(() =>
                 {
                     downloadItem = App.DownloadsPopupControl.AddDownloadItem(fileName);
                 });
@@ -269,7 +269,7 @@ namespace launcher
                 using var stream = await response.Content.ReadAsStreamAsync();
                 using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-                var buffer = new byte[8192];
+                var buffer = new byte[128 * 1024];
                 int bytesRead;
 
                 while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -285,7 +285,7 @@ namespace launcher
                         if (downloadItem != null && totalBytes > 0)
                         {
                             var progress = (double)downloadedBytes / totalBytes * 100;
-                            App.Dispatcher.Invoke(() =>
+                            await App.Dispatcher.InvokeAsync(() =>
                             {
                                 downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
                                 downloadItem.downloadFileProgress.Value = progress;
@@ -297,7 +297,7 @@ namespace launcher
                 Console.WriteLine($"Downloaded: {destinationPath}");
 
                 // Update global progress
-                App.Dispatcher.Invoke(() =>
+                await App.Dispatcher.InvokeAsync(() =>
                 {
                     progressBar.Value++;
                     lblFilesLeft.Text = $"{--filesLeft} files left";
@@ -316,7 +316,7 @@ namespace launcher
                 // Remove the download item from the popup
                 if (downloadItem != null)
                 {
-                    App.Dispatcher.Invoke(() =>
+                    await App.Dispatcher.InvokeAsync(() =>
                     {
                         App.DownloadsPopupControl.RemoveDownloadItem(downloadItem);
                     });
@@ -430,7 +430,7 @@ namespace launcher
 
                 await decompressionStream.CopyToAsync(output);
 
-                App.Dispatcher.Invoke(() =>
+                await App.Dispatcher.InvokeAsync(() =>
                 {
                     progressBar.Value++;
                     lblFilesLeft.Text = $"{--filesLeft} files left";
