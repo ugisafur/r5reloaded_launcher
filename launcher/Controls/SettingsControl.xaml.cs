@@ -27,7 +27,7 @@ namespace launcher
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Helper.App.HideSettingsControl();
+            Utilities.HideSettingsControl();
         }
     }
 }

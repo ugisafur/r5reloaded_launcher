@@ -7,63 +7,63 @@ namespace launcher
         public async void Start()
         {
             //Install started
-            Helper.SetInstallState(true, "INSTALLING");
+            Utilities.SetInstallState(true, "INSTALLING");
 
             //Create temp directory to store downloaded files
-            string tempDirectory = Helper.CreateTempDirectory();
+            string tempDirectory = FileManager.CreateTempDirectory();
 
             //Fetch compressed base game file list
-            Helper.UpdateStatusLabel("Fetching base game files list");
-            BaseGameFiles baseGameFiles = await Helper.FetchBaseGameFiles(true);
+            Utilities.UpdateStatusLabel("Fetching base game files list");
+            BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
-            Helper.UpdateStatusLabel("Preparing game download");
-            var downloadTasks = Helper.PrepareDownloadTasks(baseGameFiles, tempDirectory);
+            Utilities.UpdateStatusLabel("Preparing game download");
+            var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, tempDirectory);
 
             //Download base game files
-            Helper.UpdateStatusLabel("Downloading game files");
+            Utilities.UpdateStatusLabel("Downloading game files");
             await Task.WhenAll(downloadTasks);
 
             //Prepare decompression tasks
-            Helper.UpdateStatusLabel("Preparing game decompression");
-            var decompressionTasks = Helper.PrepareDecompressionTasks(downloadTasks);
+            Utilities.UpdateStatusLabel("Preparing game decompression");
+            var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
             //Decompress base game files
-            Helper.UpdateStatusLabel("Decompressing game files");
+            Utilities.UpdateStatusLabel("Decompressing game files");
             await Task.WhenAll(decompressionTasks);
 
             //if bad files detected, attempt game repair
-            if (Helper.badFilesDetected)
+            if (Global.badFilesDetected)
             {
-                Helper.UpdateStatusLabel("Reparing game files");
+                Utilities.UpdateStatusLabel("Reparing game files");
                 await AttemptGameRepair();
             }
 
             //Update or create launcher config
-            Helper.UpdateOrCreateLauncherConfig();
+            FileManager.UpdateOrCreateLauncherConfig();
 
             //Install finished
-            Helper.SetInstallState(false);
+            Utilities.SetInstallState(false);
 
             //Set game as installed
-            Helper.isInstalled = true;
+            Global.isInstalled = true;
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))
-                await Task.Run(() => Helper.CleanUpTempDirectory(tempDirectory));
+                await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
         }
 
         private async Task AttemptGameRepair()
         {
             bool isRepaired = false;
 
-            for (int i = 0; i < Helper.MAX_REPAIR_ATTEMPTS; i++)
+            for (int i = 0; i < Global.MAX_REPAIR_ATTEMPTS; i++)
             {
-                isRepaired = await Helper.gameRepair.Start();
+                isRepaired = await ControlReferences.gameRepair.Start();
                 if (isRepaired) break;
             }
 
-            Helper.badFilesDetected = !isRepaired;
+            Global.badFilesDetected = !isRepaired;
         }
     }
 }

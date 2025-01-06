@@ -47,8 +47,8 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            Helper.App.SubMenuPopup.IsOpen = false;
-            Helper.App.ShowSettingsControl();
+            ControlReferences.SubMenuPopup.IsOpen = false;
+            Utilities.ShowSettingsControl();
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)

@@ -7,54 +7,54 @@
             bool repairSuccess = true;
 
             //Install started
-            Helper.SetInstallState(true, "REPAIRING");
+            Utilities.SetInstallState(true, "REPAIRING");
 
             //Create temp directory to store downloaded files
-            string tempDirectory = Helper.CreateTempDirectory();
+            string tempDirectory = FileManager.CreateTempDirectory();
 
             //Prepare checksum tasks
-            Helper.UpdateStatusLabel("Preparing checksum tasks");
-            var checksumTasks = Helper.PrepareChecksumTasks();
+            Utilities.UpdateStatusLabel("Preparing checksum tasks");
+            var checksumTasks = FileManager.PrepareChecksumTasks();
 
             //Generate checksums for local files
-            Helper.UpdateStatusLabel("Generating local checksums");
+            Utilities.UpdateStatusLabel("Generating local checksums");
             await Task.WhenAll(checksumTasks);
 
             //Fetch non compressed base game file list
-            Helper.UpdateStatusLabel("Fetching base game files list");
-            BaseGameFiles baseGameFiles = await Helper.FetchBaseGameFiles(false);
+            Utilities.UpdateStatusLabel("Fetching base game files list");
+            BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(false);
 
             //Identify bad files
-            Helper.UpdateStatusLabel("Identifying bad files");
-            int badFileCount = Helper.IdentifyBadFiles(baseGameFiles, checksumTasks);
+            Utilities.UpdateStatusLabel("Identifying bad files");
+            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks);
 
             //if bad files exist, download and repair
             if (badFileCount > 0)
             {
                 repairSuccess = false;
 
-                Helper.UpdateStatusLabel("Preparing download tasks");
-                var downloadTasks = Helper.PrepareRepairDownloadTasks(tempDirectory);
+                Utilities.UpdateStatusLabel("Preparing download tasks");
+                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(tempDirectory);
 
-                Helper.UpdateStatusLabel("Downloading repaired files");
+                Utilities.UpdateStatusLabel("Downloading repaired files");
                 await Task.WhenAll(downloadTasks);
 
-                Helper.UpdateStatusLabel("Preparing decompression");
-                var decompressionTasks = Helper.PrepareDecompressionTasks(downloadTasks);
+                Utilities.UpdateStatusLabel("Preparing decompression");
+                var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
-                Helper.UpdateStatusLabel("Decompressing repaired files");
+                Utilities.UpdateStatusLabel("Decompressing repaired files");
                 await Task.WhenAll(decompressionTasks);
             }
 
             //Update or create launcher config
-            Helper.UpdateStatusLabel("Updating launcher config");
-            Helper.UpdateOrCreateLauncherConfig();
+            Utilities.UpdateStatusLabel("Updating launcher config");
+            FileManager.UpdateOrCreateLauncherConfig();
 
             //Install finished
-            Helper.SetInstallState(false);
+            Utilities.SetInstallState(false);
 
             //Delete temp directory
-            await Task.Run(() => Helper.CleanUpTempDirectory(tempDirectory));
+            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
 
             return repairSuccess;
         }

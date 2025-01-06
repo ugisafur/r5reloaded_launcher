@@ -20,12 +20,12 @@ namespace launcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Helper.SetupApp(this);
+            Utilities.SetupApp(this);
             UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
-            btnPlay.Content = Helper.isInstalled ? "PLAY" : "INSTALL";
-            if (Helper.isInstalled)
+            btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
+            if (Global.isInstalled)
             {
-                cmbBranch.SelectedItem = Helper.serverConfig.branches.FirstOrDefault(b => b.branch == Helper.launcherConfig.currentUpdateBranch);
+                cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Global.launcherConfig.currentUpdateBranch);
                 Task.Run(() => updateChecker.Start());
             }
         }
@@ -42,20 +42,20 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (Helper.isInstalled)
+            if (Global.isInstalled)
             {
-                if (Helper.updateRequired)
+                if (Global.updateRequired)
                 {
-                    Task.Run(() => Helper.gameUpdate.Start());
+                    Task.Run(() => ControlReferences.gameUpdate.Start());
                 }
                 else
                 {
-                    Helper.LaunchGame();
+                    Utilities.LaunchGame();
                 }
             }
-            else if (!Helper.isInstalling)
+            else if (!Global.isInstalling)
             {
-                Task.Run(() => Helper.gameInstall.Start());
+                Task.Run(() => ControlReferences.gameInstall.Start());
             }
         }
 
@@ -79,7 +79,7 @@ namespace launcher
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            if (!Helper.serverConfig.branches[selectedBranch].enabled)
+            if (!Global.serverConfig.branches[selectedBranch].enabled)
             {
                 comboBox.SelectedIndex = lastSelectedIndex;
                 return;
@@ -87,17 +87,17 @@ namespace launcher
 
             lastSelectedIndex = selectedBranch;
 
-            if (Helper.isInstalled)
+            if (Global.isInstalled)
             {
-                if (Helper.serverConfig.branches[0].branch == Helper.launcherConfig.currentUpdateBranch)
+                if (Global.serverConfig.branches[0].branch == Global.launcherConfig.currentUpdateBranch)
                 {
-                    Helper.updateRequired = false;
+                    Global.updateRequired = false;
                     btnPlay.Content = "Play";
                 }
                 else
                 {
                     btnPlay.Content = "Update";
-                    Helper.updateRequired = true;
+                    Global.updateRequired = true;
                 }
             }
         }
@@ -150,72 +150,6 @@ namespace launcher
         private void DownloadsPopup_Loaded(object sender, EventArgs e)
         {
             DownloadsBtn.Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
-        }
-
-        public void ShowSettingsControl()
-        {
-            var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
-            transitionInStoryboard.Completed += (s, e) =>
-            {
-                SettingsControl.Visibility = Visibility.Visible;
-                var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
-                fadeInStoryboard.Completed += (s, e) =>
-                {
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeInStoryboard.Begin();
-            };
-            transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = false;
-        }
-
-        public void HideSettingsControl()
-        {
-            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.5);
-            transitionInStoryboard.Completed += (s, e) =>
-            {
-                var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
-                fadeOutStoryboard.Completed += (s, e) =>
-                {
-                    SettingsControl.Visibility = Visibility.Hidden;
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeOutStoryboard.Begin();
-            };
-            transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = true;
-        }
-
-        private Storyboard CreateTransitionStoryboard(double from, double to, double duration)
-        {
-            var storyboard = new Storyboard();
-            var doubleAnimation = new DoubleAnimation
-            {
-                From = from,
-                To = to,
-                Duration = new Duration(TimeSpan.FromSeconds(duration))
-            };
-            Storyboard.SetTarget(doubleAnimation, TransitionRect);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
-            storyboard.Children.Add(doubleAnimation);
-            return storyboard;
-        }
-
-        private Storyboard CreateFadeStoryboard(double from, double to, double duration)
-        {
-            var storyboard = new Storyboard();
-            var doubleAnimation = new DoubleAnimation
-            {
-                From = from,
-                To = to,
-                Duration = new Duration(TimeSpan.FromSeconds(duration))
-            };
-            Storyboard.SetTarget(doubleAnimation, SettingsControl);
-            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
-            storyboard.Children.Add(doubleAnimation);
-            return storyboard;
         }
     }
 }

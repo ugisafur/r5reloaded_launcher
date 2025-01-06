@@ -5,6 +5,11 @@ using System.Windows.Threading;
 
 namespace launcher
 {
+    /// <summary>
+    /// The UpdateChecker class is responsible for periodically checking for updates to both the launcher and the game.
+    /// It fetches the latest configuration from a remote server, determines if an update is necessary, and handles the update process.
+    /// This class uses asynchronous operations to perform network requests and updates the UI using a Dispatcher.
+    /// </summary>
     public class UpdateChecker
     {
         private const string ConfigUrl = "https://cdn.r5r.org/launcher/config.json";
@@ -19,9 +24,9 @@ namespace launcher
 
         public async Task Start()
         {
-            Helper.updateCheckLoop = true;
+            Global.updateCheckLoop = true;
 
-            while (Helper.updateCheckLoop)
+            while (Global.updateCheckLoop)
             {
                 Console.WriteLine("Checking for updates...");
 
@@ -65,7 +70,7 @@ namespace launcher
             HttpResponseMessage response = null;
             try
             {
-                response = await Helper.client.GetAsync(ConfigUrl);
+                response = await Global.client.GetAsync(ConfigUrl);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ServerConfig>(responseString);
@@ -83,15 +88,15 @@ namespace launcher
 
         private bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !Helper.isInstalling && Helper.isInstalled && Helper.IsNewVersion(Helper.launcherVersion, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate && !Global.isInstalling && Global.isInstalled && Utilities.IsNewVersion(Global.launcherVersion, newServerConfig.launcherVersion);
         }
 
         private bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
-            return !Helper.isInstalling &&
+            return !Global.isInstalling &&
                    newServerConfig.allowUpdates &&
-                   Helper.launcherConfig != null &&
-                   newServerConfig.branches[0].currentVersion != Helper.launcherConfig.currentUpdateVersion;
+                   Global.launcherConfig != null &&
+                   newServerConfig.branches[0].currentVersion != Global.launcherConfig.currentUpdateVersion;
         }
 
         private void HandleLauncherUpdate()
@@ -104,18 +109,18 @@ namespace launcher
             }
 
             Console.WriteLine("Updating launcher...");
-            Helper.UpdateLauncher();
+            Utilities.UpdateLauncher();
         }
 
         private void HandleGameUpdate(ServerConfig newServerConfig)
         {
             _dispatcher.Invoke(() =>
             {
-                Helper.serverConfig = newServerConfig;
-                Helper.updateRequired = true;
-                Helper.updateCheckLoop = false;
-                Helper.App.cmbBranch.ItemsSource = Helper.SetupGameBranches();
-                Helper.App.cmbBranch.SelectedIndex = 0;
+                Global.serverConfig = newServerConfig;
+                Global.updateRequired = true;
+                Global.updateCheckLoop = false;
+                ControlReferences.cmbBranch.ItemsSource = Utilities.SetupGameBranches();
+                ControlReferences.cmbBranch.SelectedIndex = 0;
             });
         }
     }

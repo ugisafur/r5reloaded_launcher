@@ -5,45 +5,45 @@
         public async void Start()
         {
             // Check if the game is already up to date
-            if (Helper.launcherConfig.currentUpdateVersion == Helper.serverConfig.branches[Helper.GetCmbBranchIndex()].currentVersion)
+            if (Global.launcherConfig.currentUpdateVersion == Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)
                 return;
 
             // Check if user is to outdated to update normally
-            if (Helper.launcherConfig.currentUpdateVersion != Helper.serverConfig.branches[Helper.GetCmbBranchIndex()].lastVersion)
-                await Helper.gameRepair.Start();
+            if (Global.launcherConfig.currentUpdateVersion != Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
+                await ControlReferences.gameRepair.Start();
 
             // Install started
-            Helper.SetInstallState(true, "UPDATING");
+            Utilities.SetInstallState(true, "UPDATING");
 
             // Create temp directory to store downloaded files
-            string tempDirectory = Helper.CreateTempDirectory();
+            string tempDirectory = FileManager.CreateTempDirectory();
 
             // Fetch patch files
-            GamePatch patchFiles = await Helper.FetchPatchFiles();
+            GamePatch patchFiles = await DataFetcher.FetchPatchFiles();
 
             // Prepare download tasks
-            var downloadTasks = Helper.PreparePatchDownloadTasks(patchFiles, tempDirectory);
+            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, tempDirectory);
 
             // Download patch files
             await Task.WhenAll(downloadTasks);
 
             // Prepare file patch tasks
-            var filePatchTasks = Helper.PrepareFilePatchTasks(patchFiles, tempDirectory);
+            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, tempDirectory);
 
             // Patch base game files
             await Task.WhenAll(filePatchTasks);
 
             // Update or create launcher config
-            Helper.UpdateOrCreateLauncherConfig();
+            FileManager.UpdateOrCreateLauncherConfig();
 
             // Install finished
-            Helper.SetInstallState(false);
+            Utilities.SetInstallState(false);
 
             // Set update required to false
-            Helper.updateRequired = false;
+            Global.updateRequired = false;
 
             //Delete temp directory
-            await Task.Run(() => Helper.CleanUpTempDirectory(tempDirectory));
+            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
         }
     }
 }

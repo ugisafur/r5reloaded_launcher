@@ -27,10 +27,10 @@ namespace launcher
 
         private void btnRepair_Click(object sender, RoutedEventArgs e)
         {
-            if (Helper.gameRepair == null)
+            if (ControlReferences.gameRepair == null)
                 return;
 
-            Task.Run(() => Helper.gameRepair.Start());
+            Task.Run(() => ControlReferences.gameRepair.Start());
         }
     }
 }
