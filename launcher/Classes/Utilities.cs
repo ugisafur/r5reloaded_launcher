@@ -33,9 +33,7 @@ namespace launcher
 
             ControlReferences.App.launcherVersionlbl.Text = Global.launcherVersion;
 
-            ControlReferences.progressBar.Visibility = Visibility.Hidden;
-            ControlReferences.lblStatus.Visibility = Visibility.Hidden;
-            ControlReferences.lblFilesLeft.Visibility = Visibility.Hidden;
+            ShowProgressBar(false);
 
             Global.launcherPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
             Console.WriteLine($"Launcher path: {Global.launcherPath}");
@@ -79,25 +77,6 @@ namespace launcher
             Process.Start(startInfo);
         }
 
-        public static bool IsNewVersion(string currentVersion, string newVersion)
-        {
-            var currentParts = currentVersion.Split('.').Select(int.Parse).ToArray();
-            var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
-
-            for (int i = 0; i < Math.Max(currentParts.Length, newParts.Length); i++)
-            {
-                int currentPart = i < currentParts.Length ? currentParts[i] : 0;
-                int newPart = i < newParts.Length ? newParts[i] : 0;
-
-                if (currentPart < newPart)
-                    return true;
-                if (currentPart > newPart)
-                    return false;
-            }
-
-            return false; // Versions are the same
-        }
-
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
             Console.WriteLine($"Set install state to: {installing} | {buttonText}");
@@ -125,7 +104,7 @@ namespace launcher
             });
         }
 
-        public static void ShowProgressBar(bool isVisible)
+        private static void ShowProgressBar(bool isVisible)
         {
             ControlReferences.dispatcher.Invoke(() =>
             {
@@ -133,20 +112,6 @@ namespace launcher
                 ControlReferences.lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 ControlReferences.lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
             });
-        }
-
-        public static void UpdateLauncher()
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{Global.launcherPath}\\bin\\selfupdater.exe\""
-            };
-
-            // Start the new process via cmd
-            Process.Start(startInfo);
-
-            Environment.Exit(0);
         }
 
         public static int GetCmbBranchIndex()

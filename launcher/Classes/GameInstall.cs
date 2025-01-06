@@ -2,6 +2,28 @@
 
 namespace launcher
 {
+    /// <summary>
+    /// The GameInstall class handles the installation process of a game.
+    /// It includes methods to start the installation, download necessary files,
+    /// decompress them, and repair any corrupted files if detected.
+    ///
+    /// The Start method performs the following steps:
+    /// 1. Sets the installation state to "INSTALLING".
+    /// 2. Creates a temporary directory to store downloaded files.
+    /// 3. Fetches the list of base game files.
+    /// 4. Prepares download tasks for the base game files.
+    /// 5. Downloads the base game files.
+    /// 6. Prepares decompression tasks for the downloaded files.
+    /// 7. Decompresses the downloaded files.
+    /// 8. If any bad files are detected, attempts to repair the game files.
+    /// 9. Updates or creates the launcher configuration.
+    /// 10. Sets the installation state to false, indicating the installation is complete.
+    /// 11. Marks the game as installed.
+    /// 12. Cleans up the temporary directory used for downloading files.
+    ///
+    /// The AttemptGameRepair method tries to repair the game files if any bad files are detected.
+    /// It makes multiple attempts (up to a maximum defined by Global.MAX_REPAIR_ATTEMPTS) to repair the files.
+    /// </summary>
     public class GameInstall
     {
         public async void Start()

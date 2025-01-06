@@ -271,21 +271,21 @@ namespace launcher
             return tasks;
         }
 
-        public static void Delete(string file)
+        private static void Delete(string file)
         {
             string fullPath = Path.Combine(Global.launcherPath, file);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
 
-        public static void Update(string file, string tempDirectory)
+        private static void Update(string file, string tempDirectory)
         {
             string sourceCompressedFile = Path.Combine(tempDirectory, file);
             string destinationFile = Path.Combine(Global.launcherPath, file.Replace(".zst", ""));
             DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
-        public static void Patch(string file, string tempDirectory)
+        private static void Patch(string file, string tempDirectory)
         {
             string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
             string sourceDecompressedDeltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
@@ -294,7 +294,7 @@ namespace launcher
             PatchFile(destinationFile, sourceDecompressedDeltaFile);
         }
 
-        public static void PatchFile(string originalFile, string deltaFile)
+        private static void PatchFile(string originalFile, string deltaFile)
         {
             var signatureFile = Path.GetTempFileName();
 
@@ -317,7 +317,7 @@ namespace launcher
             }
         }
 
-        public static bool ShouldSkipFileDownload(string destinationPath, string expectedChecksum)
+        private static bool ShouldSkipFileDownload(string destinationPath, string expectedChecksum)
         {
             if (File.Exists(destinationPath))
             {

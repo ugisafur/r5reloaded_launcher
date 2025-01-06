@@ -25,19 +25,19 @@ namespace launcher
             return JsonConvert.DeserializeObject<GamePatch>(patchFile);
         }
 
-        public static async Task<string> FetchJson(string url)
-        {
-            var response = await Global.client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
-        }
-
         public static async Task<BaseGameFiles> FetchBaseGameFiles(bool compressed)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string baseGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
             string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
             return JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
+        }
+
+        public static async Task<string> FetchJson(string url)
+        {
+            var response = await Global.client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

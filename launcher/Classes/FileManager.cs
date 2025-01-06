@@ -85,7 +85,7 @@ namespace launcher
             }
         }
 
-        public static void TryDeleteFile(string filePath, TimeSpan timeout, TimeSpan retryInterval)
+        private static void TryDeleteFile(string filePath, TimeSpan timeout, TimeSpan retryInterval)
         {
             DateTime endTime = DateTime.Now.Add(timeout);
 

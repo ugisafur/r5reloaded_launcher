@@ -1,5 +1,10 @@
 ﻿namespace launcher
 {
+    /// <summary>
+    /// The GameRepair class is responsible for repairing the game installation.
+    /// It performs several tasks such as generating checksums, identifying corrupted files,
+    /// downloading and decompressing repaired files, and updating the launcher configuration.
+    /// </summary>
     public class GameRepair
     {
         public async Task<bool> Start()

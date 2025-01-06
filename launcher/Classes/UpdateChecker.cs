@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
@@ -86,9 +87,28 @@ namespace launcher
             }
         }
 
+        private bool IsNewVersion(string currentVersion, string newVersion)
+        {
+            var currentParts = currentVersion.Split('.').Select(int.Parse).ToArray();
+            var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
+
+            for (int i = 0; i < Math.Max(currentParts.Length, newParts.Length); i++)
+            {
+                int currentPart = i < currentParts.Length ? currentParts[i] : 0;
+                int newPart = i < newParts.Length ? newParts[i] : 0;
+
+                if (currentPart < newPart)
+                    return true;
+                if (currentPart > newPart)
+                    return false;
+            }
+
+            return false; // Versions are the same
+        }
+
         private bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !Global.isInstalling && Global.isInstalled && Utilities.IsNewVersion(Global.launcherVersion, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate && !Global.isInstalling && Global.isInstalled && IsNewVersion(Global.launcherVersion, newServerConfig.launcherVersion);
         }
 
         private bool ShouldUpdateGame(ServerConfig newServerConfig)
@@ -109,7 +129,21 @@ namespace launcher
             }
 
             Console.WriteLine("Updating launcher...");
-            Utilities.UpdateLauncher();
+            UpdateLauncher();
+        }
+
+        private static void UpdateLauncher()
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c start \"\" \"{Global.launcherPath}\\bin\\selfupdater.exe\""
+            };
+
+            // Start the new process via cmd
+            Process.Start(startInfo);
+
+            Environment.Exit(0);
         }
 
         private void HandleGameUpdate(ServerConfig newServerConfig)
