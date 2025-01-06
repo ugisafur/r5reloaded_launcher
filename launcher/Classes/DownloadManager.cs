@@ -68,7 +68,7 @@ namespace launcher
                 {
                     var request = (HttpWebRequest)WebRequest.Create(fileUrl);
                     request.Method = "GET";
-                    request.Timeout = 10000; // Set appropriate timeout
+                    request.Timeout = 30000; // Set appropriate timeout
                     request.AllowAutoRedirect = true;
 
                     using (var response = (HttpWebResponse)await request.GetResponseAsync())

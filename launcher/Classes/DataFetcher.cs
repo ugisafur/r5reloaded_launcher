@@ -12,7 +12,7 @@ namespace launcher
     {
         public static ServerConfig FetchServerConfig()
         {
-            var response = Global.client.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var response = Global.client.Value.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<ServerConfig>(responseString);
         }
@@ -35,7 +35,7 @@ namespace launcher
 
         public static async Task<string> FetchJson(string url)
         {
-            var response = await Global.client.GetAsync(url);
+            var response = await Global.client.Value.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }

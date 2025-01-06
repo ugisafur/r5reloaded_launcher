@@ -29,8 +29,7 @@ namespace launcher
 
         public static ServerConfig? serverConfig;
         public static LauncherConfig? launcherConfig;
-
-        public static HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(30) };
+        public static Lazy<HttpClient> client { get; } = new Lazy<HttpClient>(() => new HttpClient() { Timeout = TimeSpan.FromSeconds(30) });
 
         public static string launcherPath = "";
         public const int MAX_REPAIR_ATTEMPTS = 5;
