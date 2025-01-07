@@ -62,7 +62,14 @@ namespace launcher
 
                 var retryPolicy = Policy
                 .Handle<Exception>(ex => ex is WebException || ex is TimeoutException)
-                .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+                .WaitAndRetryAsync(5,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        // Log each retry attempt
+                        Logger.Log(Logger.Type.Warning, Logger.Source.DownloadManager,
+                            $"Retry #{retryCount} for {fileUrl} due to: {exception.Message}. Waiting {timeSpan.TotalSeconds:F2}s before next attempt.");
+                    });
 
                 await retryPolicy.ExecuteAsync(async () =>
                 {
@@ -114,7 +121,7 @@ namespace launcher
                     }
                 });
 
-                Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Downloaded: {destinationPath}");
+                //Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Downloaded: {destinationPath}");
 
                 // Update global progress
                 await ControlReferences.dispatcher.InvokeAsync(() =>

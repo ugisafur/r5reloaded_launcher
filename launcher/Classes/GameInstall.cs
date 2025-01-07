@@ -35,7 +35,7 @@ namespace launcher
             string tempDirectory = FileManager.CreateTempDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching base game files list", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Fetching game files list", Logger.Source.Installer);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
