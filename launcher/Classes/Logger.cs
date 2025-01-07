@@ -47,7 +47,11 @@ namespace launcher
             string typeString = GetTypeString(type);
             string sourceString = GetSourceString(source);
             string logMessage = $"{{ \"time\":\"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\", \"[{typeString}] \": \"[{sourceString}] - {message} }},";
+
+#if DEBUG
             Console.WriteLine(logMessage);
+#endif
+
             File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
         }
 

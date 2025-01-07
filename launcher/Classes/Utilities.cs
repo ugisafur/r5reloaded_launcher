@@ -16,6 +16,10 @@ namespace launcher
     {
         public static void SetupApp(MainWindow mainWindow)
         {
+#if DEBUG
+            EnableDebugConsole();
+#endif
+
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Setting up launcher");
 
             ControlReferences.App = mainWindow;
@@ -217,5 +221,18 @@ namespace launcher
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
         }
+
+#if DEBUG
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        public static void EnableDebugConsole()
+        {
+            // Only in Debug build, this will open a console window
+            AllocConsole();  // Opens a new console window
+        }
+
+#endif
     }
 }
