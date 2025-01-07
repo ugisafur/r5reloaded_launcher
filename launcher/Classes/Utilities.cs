@@ -57,6 +57,13 @@ namespace launcher
             Log("Game branches initialized");
         }
 
+        public static void ToggleBackgroundVideo(bool disabled)
+        {
+            Log($"Toggling background video: {disabled}");
+            ControlReferences.App.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
+            ControlReferences.App.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
+        }
+
         public static List<ComboBranch> SetupGameBranches()
         {
             return Global.serverConfig.branches
@@ -134,6 +141,13 @@ namespace launcher
 
         public static void ShowSettingsControl()
         {
+            if (SettingsGlobal.DisableTransitions)
+            {
+                ControlReferences.settingsControl.Visibility = Visibility.Visible;
+                ControlReferences.subMenuControl.Settings.IsEnabled = false;
+                return;
+            }
+
             var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
@@ -152,7 +166,14 @@ namespace launcher
 
         public static void HideSettingsControl()
         {
-            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.5);
+            if (SettingsGlobal.DisableTransitions)
+            {
+                ControlReferences.settingsControl.Visibility = Visibility.Hidden;
+                ControlReferences.subMenuControl.Settings.IsEnabled = true;
+                return;
+            }
+
+            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
                 var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);

@@ -122,7 +122,7 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="1">
-                <local:ApplicationSettings x:Name="applicationPage" Visibility="Hidden" Opacity="0" />
+                <local:ApplicationSettings x:Name="applicationPage" Visibility="Hidden" Opacity="1" />
                 <local:AccessibilitySettings x:Name="accessibilityPage" Visibility="Hidden" Opacity="0" />
                 <local:GameSettings x:Name="gamePage" Visibility="Hidden" Opacity="0" />
                 <local:LaunchOptionSettings x:Name="launchoptionsPage" Visibility="Hidden" Opacity="0" />

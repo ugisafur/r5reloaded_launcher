@@ -35,6 +35,7 @@ namespace launcher
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             ControlReferences.SubMenuPopup.IsOpen = false;
+
             Utilities.ShowSettingsControl();
         }
 

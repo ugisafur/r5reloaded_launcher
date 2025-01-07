@@ -47,10 +47,12 @@ namespace launcher
                 _ => null,
             };
 
+            double fadeSpeed = SettingsGlobal.DisableTransitions ? 0 : 200;
+
             if (visiblePage != null && newPage != null && visiblePage != newPage)
             {
                 // Fade out the old page
-                var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
+                var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(fadeSpeed));
                 fadeOut.Completed += (s, e) =>
                 {
                     visiblePage.Visibility = Visibility.Hidden;
@@ -60,7 +62,7 @@ namespace launcher
                     newPage.Visibility = Visibility.Visible;
                     buttons[pages.IndexOf(newPage)].Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
 
-                    var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                    var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(fadeSpeed));
                     newPage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
                 };
 
@@ -71,7 +73,7 @@ namespace launcher
                 // If there is no currently visible page, just fade in the new page
                 newPage.Visibility = Visibility.Visible;
                 buttons[pages.IndexOf(newPage)].Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
-                var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(fadeSpeed));
                 newPage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
             }
         }
