@@ -29,16 +29,19 @@ namespace launcher
 
         private void Border_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Getting Status Info");
-
             Task.Run(() => GetStatusInfo());
         }
 
         private async void GetStatusInfo()
         {
             bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
+            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting website status");
+
             bool isMSUP = await IsUrlUp("https://r5r.org/");
+            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting master server status");
+
             bool isCDNUP = await IsUrlUp("https://cdn.r5r.org/launcher/config.json");
+            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting CDN status");
 
             Dispatcher.Invoke(() =>
             {
@@ -58,6 +61,8 @@ namespace launcher
                 return;
 
             string serverlist = await SendPostRequestAsync("https://r5r.org/servers", "{}");
+
+            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting total servers and players");
 
             if (string.IsNullOrEmpty(serverlist))
             {
@@ -95,17 +100,17 @@ namespace launcher
             catch (HttpRequestException)
             {
                 // Handle HTTP-related errors (e.g., DNS failure, connection issues)
-                Console.WriteLine($"URL is down or unreachable: {url}");
+                Logger.Log(Logger.Type.Error, Logger.Source.API, $"URL is down or unreachable: {url}");
             }
             catch (TaskCanceledException)
             {
                 // Handle request timeout
-                Console.WriteLine($"Request timed out: {url}");
+                Logger.Log(Logger.Type.Error, Logger.Source.API, $"Request timed out: {url}");
             }
             catch (Exception ex)
             {
                 // Handle other exceptions
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                Logger.Log(Logger.Type.Error, Logger.Source.API, $"An error occurred: {ex.Message}");
             }
 
             return false; // URL is down or unreachable

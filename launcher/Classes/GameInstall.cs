@@ -35,29 +35,29 @@ namespace launcher
             string tempDirectory = FileManager.CreateTempDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching base game files list");
+            Utilities.UpdateStatusLabel("Fetching base game files list", Logger.Source.Installer);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
-            Utilities.UpdateStatusLabel("Preparing game download");
+            Utilities.UpdateStatusLabel("Preparing game download", Logger.Source.Installer);
             var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, tempDirectory);
 
             //Download base game files
-            Utilities.UpdateStatusLabel("Downloading game files");
+            Utilities.UpdateStatusLabel("Downloading game files", Logger.Source.Installer);
             await Task.WhenAll(downloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing game decompression");
+            Utilities.UpdateStatusLabel("Preparing game decompression", Logger.Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing game files");
+            Utilities.UpdateStatusLabel("Decompressing game files", Logger.Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
             //if bad files detected, attempt game repair
             if (Global.badFilesDetected)
             {
-                Utilities.UpdateStatusLabel("Reparing game files");
+                Utilities.UpdateStatusLabel("Reparing game files", Logger.Source.Installer);
                 await AttemptGameRepair();
             }
 

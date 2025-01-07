@@ -28,7 +28,7 @@ namespace launcher
                 {
                     if (!filePath.Contains("launcher.exe"))
                     {
-                        Utilities.Log($"Bad file found: {file.name} | {filePath}");
+                        Logger.Log(Logger.Type.Warning, Logger.Source.Repair, $"Bad file found: {file.name}");
                         Global.badFiles.Add($"{file.name}.zst");
                     }
                 }
@@ -71,17 +71,17 @@ namespace launcher
                     try
                     {
                         Directory.Delete(tempDirectory, true);
-                        Utilities.Log($"Deleted temp directory: {tempDirectory}");
+                        Logger.Log(Logger.Type.Info, Logger.Source.FileManager, $"Deleted temp directory: {tempDirectory}");
                     }
                     catch (Exception ex)
                     {
-                        Utilities.Log($"Error deleting temp directory: {ex.Message}");
+                        Logger.Log(Logger.Type.Error, Logger.Source.FileManager, $"Error deleting temp directory: {ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.Log($"Error cleaning up temp directory: {ex.Message}");
+                Logger.Log(Logger.Type.Error, Logger.Source.FileManager, $"Error cleaning up temp directory: {ex.Message}");
             }
         }
 
@@ -99,23 +99,23 @@ namespace launcher
                     }
 
                     File.Delete(filePath);
-                    Utilities.Log($"Deleted: {filePath}");
+                    Logger.Log(Logger.Type.Info, Logger.Source.FileManager, $"Deleted file: {filePath}");
                     return;
                 }
                 catch (IOException)
                 {
-                    Utilities.Log($"File in use, retrying: {filePath}");
+                    Logger.Log(Logger.Type.Warning, Logger.Source.FileManager, $"File in use, retrying: {filePath}");
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Utilities.Log($"Access denied, skipping: {filePath}");
+                    Logger.Log(Logger.Type.Warning, Logger.Source.FileManager, $"Access denied, skipping: {filePath}");
                     return;
                 }
 
                 Thread.Sleep(retryInterval);
             }
 
-            Utilities.Log($"Failed to delete file after retries: {filePath}");
+            Logger.Log(Logger.Type.Error, Logger.Source.FileManager, $"Failed to delete file after retries: {filePath}");
         }
 
         public static LauncherConfig GetLauncherConfig()
@@ -125,14 +125,14 @@ namespace launcher
             if (!File.Exists(configPath))
                 return null;
 
-            Utilities.Log("Config Exists");
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Found launcher config");
 
             string config_json = File.ReadAllText(configPath);
 
             if (string.IsNullOrEmpty(config_json))
                 return null;
 
-            Utilities.Log("Config JSON: " + config_json);
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher config\n" + config_json);
 
             return JsonConvert.DeserializeObject<LauncherConfig>(config_json);
         }
@@ -178,7 +178,7 @@ namespace launcher
                     checksum = CalculateChecksum(file)
                 };
 
-                Utilities.Log($"Calculated checksum for {file}: {fileChecksum.checksum}");
+                Logger.Log(Logger.Type.Info, Logger.Source.Repair, $"Calculated checksum for {file}: {fileChecksum.checksum}");
 
                 ControlReferences.dispatcher.Invoke(() =>
                 {
@@ -228,7 +228,7 @@ namespace launcher
             string config_json = JsonConvert.SerializeObject(Global.launcherConfig);
             File.WriteAllText(configPath, config_json);
 
-            Utilities.Log("Saved Launcher Config\n" + config_json);
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Saved launcher config\n" + config_json);
         }
     }
 }

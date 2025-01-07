@@ -114,7 +114,7 @@ namespace launcher
                     }
                 });
 
-                Utilities.Log($"Downloaded: {destinationPath}");
+                Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Downloaded: {destinationPath}");
 
                 // Update global progress
                 await ControlReferences.dispatcher.InvokeAsync(() =>
@@ -127,13 +127,13 @@ namespace launcher
             }
             catch (OperationCanceledException)
             {
-                Utilities.Log($"Download cancelled for {fileUrl}");
+                Logger.Log(Logger.Type.Error, Logger.Source.DownloadManager, $"Download cancelled for {fileUrl}");
                 Global.badFilesDetected = true;
                 return string.Empty;
             }
             catch (Exception ex)
             {
-                Utilities.Log($"All retries failed for {fileUrl}: {ex.Message}");
+                Logger.Log(Logger.Type.Error, Logger.Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
                 Global.badFilesDetected = true;
                 return string.Empty;
             }
@@ -321,7 +321,7 @@ namespace launcher
         {
             if (File.Exists(destinationPath))
             {
-                Utilities.Log($"Checking existing file: {destinationPath}");
+                Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Checking existing file: {destinationPath}");
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {

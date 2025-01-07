@@ -18,19 +18,19 @@
             string tempDirectory = FileManager.CreateTempDirectory();
 
             //Prepare checksum tasks
-            Utilities.UpdateStatusLabel("Preparing checksum tasks");
+            Utilities.UpdateStatusLabel("Preparing checksum tasks", Logger.Source.Repair);
             var checksumTasks = FileManager.PrepareChecksumTasks();
 
             //Generate checksums for local files
-            Utilities.UpdateStatusLabel("Generating local checksums");
+            Utilities.UpdateStatusLabel("Generating local checksums", Logger.Source.Repair);
             await Task.WhenAll(checksumTasks);
 
             //Fetch non compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching base game files list");
+            Utilities.UpdateStatusLabel("Fetching base game files list", Logger.Source.Repair);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(false);
 
             //Identify bad files
-            Utilities.UpdateStatusLabel("Identifying bad files");
+            Utilities.UpdateStatusLabel("Identifying bad files", Logger.Source.Repair);
             int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks);
 
             //if bad files exist, download and repair
@@ -38,21 +38,21 @@
             {
                 repairSuccess = false;
 
-                Utilities.UpdateStatusLabel("Preparing download tasks");
+                Utilities.UpdateStatusLabel("Preparing download tasks", Logger.Source.Repair);
                 var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(tempDirectory);
 
-                Utilities.UpdateStatusLabel("Downloading repaired files");
+                Utilities.UpdateStatusLabel("Downloading repaired files", Logger.Source.Repair);
                 await Task.WhenAll(downloadTasks);
 
-                Utilities.UpdateStatusLabel("Preparing decompression");
+                Utilities.UpdateStatusLabel("Preparing decompression", Logger.Source.Repair);
                 var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
-                Utilities.UpdateStatusLabel("Decompressing repaired files");
+                Utilities.UpdateStatusLabel("Decompressing repaired files", Logger.Source.Repair);
                 await Task.WhenAll(decompressionTasks);
             }
 
             //Update or create launcher config
-            Utilities.UpdateStatusLabel("Updating launcher config");
+            Utilities.UpdateStatusLabel("Updating launcher config", Logger.Source.Repair);
             FileManager.UpdateOrCreateLauncherConfig();
 
             //Install finished

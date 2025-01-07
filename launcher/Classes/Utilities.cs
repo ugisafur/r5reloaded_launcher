@@ -16,7 +16,7 @@ namespace launcher
     {
         public static void SetupApp(MainWindow mainWindow)
         {
-            Log("Setting up launcher");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Setting up launcher");
 
             ControlReferences.App = mainWindow;
             ControlReferences.dispatcher = mainWindow.Dispatcher;
@@ -35,31 +35,31 @@ namespace launcher
             ShowProgressBar(false);
 
             ControlReferences.launcherVersionlbl.Text = Global.launcherVersion;
-            Log($"Launcher Version: {Global.launcherVersion}");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher Version: {Global.launcherVersion}");
 
             Global.launcherPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            Log($"Launcher path: {Global.launcherPath}");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher path: {Global.launcherPath}");
 
             ControlReferences.settingsControl.SetupSettingsMenu();
-            Log($"Settings menu initialized");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Settings menu initialized");
 
             Global.serverConfig = DataFetcher.FetchServerConfig();
-            Log($"Server config fetched");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Server config fetched");
 
             Global.launcherConfig = FileManager.GetLauncherConfig();
-            Log($"Launcher config found");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher config found");
 
             Global.isInstalled = Global.launcherConfig != null;
-            Log($"Is game installed: {Global.isInstalled}");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Is game installed: {Global.isInstalled}");
 
             ControlReferences.cmbBranch.ItemsSource = SetupGameBranches();
             ControlReferences.cmbBranch.SelectedIndex = 0;
-            Log("Game branches initialized");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Game branches initialized");
         }
 
         public static void ToggleBackgroundVideo(bool disabled)
         {
-            Log($"Toggling background video: {disabled}");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Toggling background video: {disabled}");
             ControlReferences.App.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
             ControlReferences.App.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
@@ -77,8 +77,7 @@ namespace launcher
 
         public static void LaunchGame()
         {
-            Log("Launching Game");
-
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Launching game");
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
@@ -91,7 +90,7 @@ namespace launcher
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
-            Log($"Set install state to: {installing} | {buttonText}");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Setting install state to: {installing}");
 
             ControlReferences.dispatcher.Invoke(() =>
             {
@@ -107,9 +106,9 @@ namespace launcher
             ShowProgressBar(installing);
         }
 
-        public static void UpdateStatusLabel(string statusText)
+        public static void UpdateStatusLabel(string statusText, Logger.Source source)
         {
-            Log($"Updating status label: {statusText}");
+            Logger.Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
             ControlReferences.dispatcher.Invoke(() =>
             {
                 ControlReferences.lblStatus.Text = statusText;
@@ -217,11 +216,6 @@ namespace launcher
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
-        }
-
-        public static void Log(string text)
-        {
-            Console.WriteLine(text);
         }
     }
 }

@@ -29,14 +29,14 @@ namespace launcher
 
             while (Global.updateCheckLoop)
             {
-                Utilities.Log("Checking for updates...");
+                Logger.Log(Logger.Type.Info, Logger.Source.API, "Checking for updates...");
 
                 try
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     if (newServerConfig == null)
                     {
-                        Utilities.Log("Failed to fetch new server config.");
+                        Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to fetch new server config.");
                         continue;
                     }
 
@@ -51,15 +51,15 @@ namespace launcher
                 }
                 catch (HttpRequestException ex)
                 {
-                    Utilities.Log($"Error during HTTP Request: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"HTTP Request Failed: {ex.Message}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Utilities.Log($"Error during JSON deserialization: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"JSON Deserialization Failed: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Utilities.Log($"An unexpected error occurred: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"Unexpected Error: {ex.Message}");
                 }
 
                 await Task.Delay(30000);
@@ -78,7 +78,7 @@ namespace launcher
             }
             catch (HttpRequestException ex)
             {
-                Utilities.Log($"HTTP Request Failed: {ex.Message}");
+                Logger.Log(Logger.Type.Error, Logger.Source.API, $"HTTP Request Failed: {ex.Message}");
                 return null; //Indicate failure to the caller
             }
             finally
@@ -128,7 +128,7 @@ namespace launcher
                 return;
             }
 
-            Utilities.Log("Updating launcher...");
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Updating launcher...");
             UpdateLauncher();
         }
 
