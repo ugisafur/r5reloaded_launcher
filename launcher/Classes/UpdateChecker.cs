@@ -25,18 +25,20 @@ namespace launcher
 
         public async Task Start()
         {
+            Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Update worker started");
+
             Global.updateCheckLoop = true;
 
             while (Global.updateCheckLoop)
             {
-                Logger.Log(Logger.Type.Info, Logger.Source.API, "Checking for updates...");
+                Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Checking for updates");
 
                 try
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     if (newServerConfig == null)
                     {
-                        Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to fetch new server config.");
+                        Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
@@ -44,25 +46,30 @@ namespace launcher
                     {
                         HandleLauncherUpdate();
                     }
-                    else if (ShouldUpdateGame(newServerConfig))
+                    else
+                    {
+                        Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, $"Update for version {Global.launcherVersion} is not available (latest version: {Global.launcherVersion})");
+                    }
+
+                    if (ShouldUpdateGame(newServerConfig))
                     {
                         HandleGameUpdate(newServerConfig);
                     }
                 }
                 catch (HttpRequestException ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"HTTP Request Failed: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"JSON Deserialization Failed: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.API, $"Unexpected Error: {ex.Message}");
+                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
                 }
 
-                await Task.Delay(30000);
+                await Task.Delay(TimeSpan.FromMinutes(5));
             }
         }
 
@@ -78,7 +85,7 @@ namespace launcher
             }
             catch (HttpRequestException ex)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.API, $"HTTP Request Failed: {ex.Message}");
+                Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 return null; //Indicate failure to the caller
             }
             finally
@@ -128,7 +135,7 @@ namespace launcher
                 return;
             }
 
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Updating launcher...");
+            Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Updating launcher...");
             UpdateLauncher();
         }
 

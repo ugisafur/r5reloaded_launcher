@@ -132,7 +132,7 @@ namespace launcher
             if (string.IsNullOrEmpty(config_json))
                 return null;
 
-            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher config\n" + config_json);
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher config");
 
             return JsonConvert.DeserializeObject<LauncherConfig>(config_json);
         }
@@ -178,7 +178,7 @@ namespace launcher
                     checksum = CalculateChecksum(file)
                 };
 
-                Logger.Log(Logger.Type.Info, Logger.Source.Repair, $"Calculated checksum for {file}: {fileChecksum.checksum}");
+                //Logger.Log(Logger.Type.Info, Logger.Source.Repair, $"Calculated checksum for {file}: {fileChecksum.checksum}");
 
                 ControlReferences.dispatcher.Invoke(() =>
                 {
@@ -228,7 +228,7 @@ namespace launcher
             string config_json = JsonConvert.SerializeObject(Global.launcherConfig);
             File.WriteAllText(configPath, config_json);
 
-            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Saved launcher config\n" + config_json);
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Saved launcher config");
         }
     }
 }

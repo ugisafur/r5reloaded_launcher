@@ -48,7 +48,6 @@ namespace launcher
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Settings menu initialized");
 
             Global.serverConfig = DataFetcher.FetchServerConfig();
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Server config fetched");
 
             Global.launcherConfig = FileManager.GetLauncherConfig();
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher config found");
