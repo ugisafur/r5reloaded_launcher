@@ -28,7 +28,7 @@ namespace launcher
                 {
                     if (!filePath.Contains("launcher.exe"))
                     {
-                        Console.WriteLine($"Bad file found: {file.name} | {filePath}");
+                        Utilities.Log($"Bad file found: {file.name} | {filePath}");
                         Global.badFiles.Add($"{file.name}.zst");
                     }
                 }
@@ -71,17 +71,17 @@ namespace launcher
                     try
                     {
                         Directory.Delete(tempDirectory, true);
-                        Console.WriteLine($"Deleted temp directory: {tempDirectory}");
+                        Utilities.Log($"Deleted temp directory: {tempDirectory}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error deleting temp directory: {ex.Message}");
+                        Utilities.Log($"Error deleting temp directory: {ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error cleaning up temp directory: {ex.Message}");
+                Utilities.Log($"Error cleaning up temp directory: {ex.Message}");
             }
         }
 
@@ -99,23 +99,23 @@ namespace launcher
                     }
 
                     File.Delete(filePath);
-                    Console.WriteLine($"Deleted: {filePath}");
+                    Utilities.Log($"Deleted: {filePath}");
                     return;
                 }
                 catch (IOException)
                 {
-                    Console.WriteLine($"File in use, retrying: {filePath}");
+                    Utilities.Log($"File in use, retrying: {filePath}");
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Console.WriteLine($"Access denied, skipping: {filePath}");
+                    Utilities.Log($"Access denied, skipping: {filePath}");
                     return;
                 }
 
                 Thread.Sleep(retryInterval);
             }
 
-            Console.WriteLine($"Failed to delete file after retries: {filePath}");
+            Utilities.Log($"Failed to delete file after retries: {filePath}");
         }
 
         public static LauncherConfig GetLauncherConfig()
@@ -125,14 +125,14 @@ namespace launcher
             if (!File.Exists(configPath))
                 return null;
 
-            Console.WriteLine("Config Exists");
+            Utilities.Log("Config Exists");
 
             string config_json = File.ReadAllText(configPath);
 
             if (string.IsNullOrEmpty(config_json))
                 return null;
 
-            Console.WriteLine("Config JSON: " + config_json);
+            Utilities.Log("Config JSON: " + config_json);
 
             return JsonConvert.DeserializeObject<LauncherConfig>(config_json);
         }
@@ -178,7 +178,7 @@ namespace launcher
                     checksum = CalculateChecksum(file)
                 };
 
-                Console.WriteLine($"Calculated checksum for {file}: {fileChecksum.checksum}");
+                Utilities.Log($"Calculated checksum for {file}: {fileChecksum.checksum}");
 
                 ControlReferences.dispatcher.Invoke(() =>
                 {
@@ -228,7 +228,7 @@ namespace launcher
             string config_json = JsonConvert.SerializeObject(Global.launcherConfig);
             File.WriteAllText(configPath, config_json);
 
-            Console.WriteLine("Saved Launcher Config\n" + config_json);
+            Utilities.Log("Saved Launcher Config\n" + config_json);
         }
     }
 }

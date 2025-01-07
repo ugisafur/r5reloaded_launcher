@@ -29,14 +29,14 @@ namespace launcher
 
             while (Global.updateCheckLoop)
             {
-                Console.WriteLine("Checking for updates...");
+                Utilities.Log("Checking for updates...");
 
                 try
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     if (newServerConfig == null)
                     {
-                        Console.WriteLine("Failed to fetch new server config.");
+                        Utilities.Log("Failed to fetch new server config.");
                         continue;
                     }
 
@@ -51,15 +51,15 @@ namespace launcher
                 }
                 catch (HttpRequestException ex)
                 {
-                    Console.WriteLine($"Error during HTTP Request: {ex.Message}");
+                    Utilities.Log($"Error during HTTP Request: {ex.Message}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Console.WriteLine($"Error during JSON deserialization: {ex.Message}");
+                    Utilities.Log($"Error during JSON deserialization: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                    Utilities.Log($"An unexpected error occurred: {ex.Message}");
                 }
 
                 await Task.Delay(30000);
@@ -78,7 +78,7 @@ namespace launcher
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"HTTP Request Failed: {ex.Message}");
+                Utilities.Log($"HTTP Request Failed: {ex.Message}");
                 return null; //Indicate failure to the caller
             }
             finally
@@ -128,7 +128,7 @@ namespace launcher
                 return;
             }
 
-            Console.WriteLine("Updating launcher...");
+            Utilities.Log("Updating launcher...");
             UpdateLauncher();
         }
 

@@ -16,13 +16,14 @@ namespace launcher
     {
         public static void SetupApp(MainWindow mainWindow)
         {
-            Console.WriteLine("Setting up launcher");
+            Log("Setting up launcher");
 
             ControlReferences.App = mainWindow;
             ControlReferences.dispatcher = mainWindow.Dispatcher;
             ControlReferences.progressBar = mainWindow.progressBar;
             ControlReferences.lblStatus = mainWindow.lblStatus;
             ControlReferences.lblFilesLeft = mainWindow.lblFilesLeft;
+            ControlReferences.launcherVersionlbl = mainWindow.launcherVersionlbl;
             ControlReferences.cmbBranch = mainWindow.cmbBranch;
             ControlReferences.btnPlay = mainWindow.btnPlay;
             ControlReferences.settingsControl = mainWindow.SettingsControl;
@@ -31,25 +32,29 @@ namespace launcher
             ControlReferences.SubMenuPopup = mainWindow.SubMenuPopup;
             ControlReferences.downloadsPopupControl = mainWindow.DownloadsPopupControl;
 
-            ControlReferences.App.launcherVersionlbl.Text = Global.launcherVersion;
-
             ShowProgressBar(false);
 
+            ControlReferences.launcherVersionlbl.Text = Global.launcherVersion;
+            Log($"Launcher Version: {Global.launcherVersion}");
+
             Global.launcherPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            Console.WriteLine($"Launcher path: {Global.launcherPath}");
+            Log($"Launcher path: {Global.launcherPath}");
+
+            ControlReferences.settingsControl.SetupSettingsMenu();
+            Log($"Settings menu initialized");
 
             Global.serverConfig = DataFetcher.FetchServerConfig();
-            Console.WriteLine($"Server config fetched");
+            Log($"Server config fetched");
 
             Global.launcherConfig = FileManager.GetLauncherConfig();
-            Console.WriteLine($"Launcher config found");
+            Log($"Launcher config found");
 
             Global.isInstalled = Global.launcherConfig != null;
-            Console.WriteLine($"Is game installed: {Global.isInstalled}");
+            Log($"Is game installed: {Global.isInstalled}");
 
             ControlReferences.cmbBranch.ItemsSource = SetupGameBranches();
             ControlReferences.cmbBranch.SelectedIndex = 0;
-            Console.WriteLine("Game branches set up");
+            Log("Game branches initialized");
         }
 
         public static List<ComboBranch> SetupGameBranches()
@@ -65,7 +70,7 @@ namespace launcher
 
         public static void LaunchGame()
         {
-            Console.WriteLine("Launching Game");
+            Log("Launching Game");
 
             var startInfo = new ProcessStartInfo
             {
@@ -79,7 +84,7 @@ namespace launcher
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
-            Console.WriteLine($"Set install state to: {installing} | {buttonText}");
+            Log($"Set install state to: {installing} | {buttonText}");
 
             ControlReferences.dispatcher.Invoke(() =>
             {
@@ -97,7 +102,7 @@ namespace launcher
 
         public static void UpdateStatusLabel(string statusText)
         {
-            Console.WriteLine($"Updating status label: {statusText}");
+            Log($"Updating status label: {statusText}");
             ControlReferences.dispatcher.Invoke(() =>
             {
                 ControlReferences.lblStatus.Text = statusText;
@@ -191,6 +196,11 @@ namespace launcher
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
+        }
+
+        public static void Log(string text)
+        {
+            Console.WriteLine(text);
         }
     }
 }

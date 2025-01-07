@@ -70,11 +70,11 @@ namespace launcher
                     ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
                 });
 
-                Console.WriteLine($"Decompressed: {compressedFilePath} to {decompressedFilePath}");
+                Utilities.Log($"Decompressed: {compressedFilePath} to {decompressedFilePath}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to decompress {compressedFilePath}: {ex.Message}");
+                Utilities.Log($"Failed to decompress {compressedFilePath}: {ex.Message}");
             }
         }
     }

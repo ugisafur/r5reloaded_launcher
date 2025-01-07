@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" LocationChanged="Window_LocationChanged">
+        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" LocationChanged="Window_LocationChanged" Background="#FF0F2C3E">
 
     <Window.Clip>
         <RectangleGeometry Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
@@ -438,12 +438,13 @@
                 <RowDefinition Height="12*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="1">
-                <MediaElement x:Name="mediaElement" Grid.Row="0" Source="assets/launcher_bg.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" MediaEnded="mediaElement_MediaEnded" Volume="0" IsMuted="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-45,0,0" />
+                <MediaElement x:Name="mediaElement" Grid.Row="0" Source="assets/launcher_bg.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" MediaEnded="mediaElement_MediaEnded" Volume="0" IsMuted="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
+                <Image x:Name="mediaImage" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
                 <Rectangle Grid.Row="0" Margin="0,0,0,0">
                     <Rectangle.Fill>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <GradientStop Color="#33061119" />
-                            <GradientStop Color="#FF061119" Offset="0.7" />
+                            <GradientStop Color="#FF061119" Offset="0.8" />
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>

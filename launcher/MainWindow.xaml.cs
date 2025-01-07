@@ -13,6 +13,9 @@ namespace launcher
     {
         private int lastSelectedIndex = 0;
 
+        //TempBoolForTesting
+        private bool useStaticImage = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,6 +31,9 @@ namespace launcher
                 cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Global.launcherConfig.currentUpdateBranch);
                 Task.Run(() => updateChecker.Start());
             }
+
+            mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
+            mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)

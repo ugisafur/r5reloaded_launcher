@@ -25,10 +25,10 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string launcherVersion = "0.3.0";
+        public const string launcherVersion = "0.3.5";
 
-        public static ServerConfig? serverConfig;
-        public static LauncherConfig? launcherConfig;
+        public static ServerConfig serverConfig;
+        public static LauncherConfig launcherConfig;
         public static Lazy<HttpClient> client { get; } = new Lazy<HttpClient>(() => new HttpClient() { Timeout = TimeSpan.FromSeconds(30) });
 
         public static string launcherPath = "";
@@ -42,5 +42,15 @@ namespace launcher
 
         public static SemaphoreSlim downloadSemaphore = new SemaphoreSlim(100);
         public static List<string> badFiles = new List<string>();
+
+        public enum SettingsPage
+        {
+            Application = 0,
+            Accessibility = 1,
+            GameInstalls = 2,
+            LaunchOptions = 3,
+            Download = 4,
+            About = 5
+        }
     }
 }

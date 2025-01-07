@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	<Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<ApplicationIcon>launcher_x64.ico</ApplicationIcon>
@@ -16,6 +16,7 @@
     <None Remove="assets\icons8-left-arrow-100.png" />
     <None Remove="assets\icons8-link-100.png" />
     <None Remove="assets\icons8-settings-100.png" />
+    <None Remove="assets\launcher_bg.jpg" />
     <None Remove="assets\launcher_bg.mp4" />
     <None Remove="assets\launcher_x64.ico" />
     <None Remove="assets\logo-main-white.png" />
@@ -44,6 +45,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\icons8-link-100.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\launcher_bg.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="launcher_x64.ico">

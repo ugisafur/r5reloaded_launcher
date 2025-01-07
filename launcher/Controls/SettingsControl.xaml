@@ -70,7 +70,7 @@
                 <ColumnDefinition Width="939*" />
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0" Background="#0f2c3e" BorderThickness="0" CornerRadius="2" Width="401" Height="707" Padding="10" />
-            <Grid>
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="33*" />
                     <RowDefinition Height="122*" />
@@ -89,32 +89,45 @@
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">
-                    <Button Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40">
+                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
                         <Grid Width="300">
                             <TextBlock Text="Application" />
                         </Grid>
                     </Button>
-                    <Button Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40">
+                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
                         <Grid Width="300">
                             <TextBlock Text="Accessibility" />
                         </Grid>
                     </Button>
-                    <Button Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40">
+                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
                         <Grid Width="300">
-                            <TextBlock Text="Game" />
+                            <TextBlock Text="Game Installs" />
                         </Grid>
                     </Button>
-                    <Button Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40">
+                    <Button x:Name="LaunchOptionsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <Grid Width="300">
+                            <TextBlock Text="Launch Options" />
+                        </Grid>
+                    </Button>
+                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
                         <Grid Width="300">
                             <TextBlock Text="Download" />
                         </Grid>
                     </Button>
-                    <Button Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40">
+                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
                         <Grid Width="300">
                             <TextBlock Text="About" />
                         </Grid>
                     </Button>
                 </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1">
+                <local:ApplicationSettings x:Name="applicationPage" Visibility="Hidden" Opacity="0" />
+                <local:AccessibilitySettings x:Name="accessibilityPage" Visibility="Hidden" Opacity="0" />
+                <local:GameSettings x:Name="gamePage" Visibility="Hidden" Opacity="0" />
+                <local:LaunchOptionSettings x:Name="launchoptionsPage" Visibility="Hidden" Opacity="0" />
+                <local:DownloadSettings x:Name="downloadPage" Visibility="Hidden" Opacity="0" />
+                <local:AboutSettings x:Name="aboutPage" Visibility="Hidden" Opacity="0" />
             </Grid>
         </Grid>
     </Border>

@@ -30,6 +30,7 @@ namespace launcher
         public static ProgressBar progressBar = new ProgressBar();
         public static TextBlock lblStatus = new TextBlock();
         public static TextBlock lblFilesLeft = new TextBlock();
+        public static TextBlock launcherVersionlbl = new TextBlock();
         public static ComboBox cmbBranch = new ComboBox();
         public static Button btnPlay = new Button();
         public static MainWindow App = new MainWindow();

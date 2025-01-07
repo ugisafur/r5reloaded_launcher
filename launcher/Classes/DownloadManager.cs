@@ -114,7 +114,7 @@ namespace launcher
                     }
                 });
 
-                Console.WriteLine($"Downloaded: {destinationPath}");
+                Utilities.Log($"Downloaded: {destinationPath}");
 
                 // Update global progress
                 await ControlReferences.dispatcher.InvokeAsync(() =>
@@ -127,13 +127,13 @@ namespace launcher
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine($"Download cancelled for {fileUrl}");
+                Utilities.Log($"Download cancelled for {fileUrl}");
                 Global.badFilesDetected = true;
                 return string.Empty;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"All retries failed for {fileUrl}: {ex.Message}");
+                Utilities.Log($"All retries failed for {fileUrl}: {ex.Message}");
                 Global.badFilesDetected = true;
                 return string.Empty;
             }
@@ -278,19 +278,19 @@ namespace launcher
                 File.Delete(fullPath);
         }
 
-        private static void Update(string file, string tempDirectory)
+        private static async void Update(string file, string tempDirectory)
         {
             string sourceCompressedFile = Path.Combine(tempDirectory, file);
             string destinationFile = Path.Combine(Global.launcherPath, file.Replace(".zst", ""));
-            DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
+            await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
-        private static void Patch(string file, string tempDirectory)
+        private static async void Patch(string file, string tempDirectory)
         {
             string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
             string sourceDecompressedDeltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
             string destinationFile = Path.Combine(Global.launcherPath, file.Replace(".delta.zst", ""));
-            DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, sourceDecompressedDeltaFile);
+            await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, sourceDecompressedDeltaFile);
             PatchFile(destinationFile, sourceDecompressedDeltaFile);
         }
 
@@ -321,7 +321,7 @@ namespace launcher
         {
             if (File.Exists(destinationPath))
             {
-                Console.WriteLine($"Checking existing file: {destinationPath}");
+                Utilities.Log($"Checking existing file: {destinationPath}");
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {
