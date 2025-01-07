@@ -54,9 +54,12 @@ namespace launcher
                 fadeOut.Completed += (s, e) =>
                 {
                     visiblePage.Visibility = Visibility.Hidden;
+                    buttons[pages.IndexOf(visiblePage)].Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
 
                     // Fade in the new page
                     newPage.Visibility = Visibility.Visible;
+                    buttons[pages.IndexOf(newPage)].Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
+
                     var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
                     newPage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
                 };
@@ -67,6 +70,7 @@ namespace launcher
             {
                 // If there is no currently visible page, just fade in the new page
                 newPage.Visibility = Visibility.Visible;
+                buttons[pages.IndexOf(newPage)].Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
                 var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
                 newPage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
             }

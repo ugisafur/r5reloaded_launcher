@@ -11,11 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\icons8-check-48.png" />
     <None Remove="assets\icons8-download-96.png" />
     <None Remove="assets\icons8-info-96.png" />
     <None Remove="assets\icons8-left-arrow-100.png" />
     <None Remove="assets\icons8-link-100.png" />
     <None Remove="assets\icons8-settings-100.png" />
+    <None Remove="assets\icons8-x-50.png" />
     <None Remove="assets\launcher_bg.jpg" />
     <None Remove="assets\launcher_bg.mp4" />
     <None Remove="assets\launcher_x64.ico" />
@@ -35,6 +37,9 @@
     <Content Include="assets\launcher_bg.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="assets\icons8-check-48.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="assets\icons8-download-96.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -45,6 +50,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\icons8-link-100.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\icons8-x-50.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\launcher_bg.jpg">
