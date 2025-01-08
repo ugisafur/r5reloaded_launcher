@@ -123,7 +123,7 @@ namespace launcher
             return !Global.isInstalling &&
                    newServerConfig.allowUpdates &&
                    Global.launcherConfig != null &&
-                   newServerConfig.branches[0].currentVersion != Global.launcherConfig.currentUpdateVersion;
+                   newServerConfig.branches[0].currentVersion != Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
         }
 
         private void HandleLauncherUpdate()

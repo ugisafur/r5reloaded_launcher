@@ -28,31 +28,29 @@ namespace launcher
 
         public void SetupAccessibilitySettings()
         {
-            SettingsGlobal.DisableBackgroundVideoBtn = DisableBackgroundVideoBtn;
-            SettingsGlobal.DisableAnimationsBtn = DisableAnimationsBtn;
-            SettingsGlobal.DisableTransitionsBtn = DisableTransitionsBtn;
-
             // Set the initial state of the toggle switches
-            DisableTransitionsBtn.IsChecked = SettingsGlobal.DisableTransitions;
-            DisableAnimationsBtn.IsChecked = SettingsGlobal.DisableAnimations;
-            DisableBackgroundVideoBtn.IsChecked = SettingsGlobal.DisableBackgroundVideo;
+            DisableTransitionsBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Transitions, false);
+            DisableAnimationsBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Animations, false);
+            DisableBackgroundVideoBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Background_Video, false);
         }
 
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            SettingsGlobal.DisableBackgroundVideo = DisableBackgroundVideoBtn.IsChecked.Value;
+            bool value = DisableBackgroundVideoBtn.IsChecked.Value;
+            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Background_Video, value);
             Utilities.ToggleBackgroundVideo(DisableBackgroundVideoBtn.IsChecked.Value);
         }
 
         private void DisableAnimationsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            //TODO: Implement the DisableAnimationsBtn_CheckedChanged method
-            SettingsGlobal.DisableAnimations = DisableAnimationsBtn.IsChecked.Value;
+            bool value = DisableAnimationsBtn.IsChecked.Value;
+            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Animations, value);
         }
 
         private void DisableTransitionsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            SettingsGlobal.DisableTransitions = DisableTransitionsBtn.IsChecked.Value;
+            bool value = DisableTransitionsBtn.IsChecked.Value;
+            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Transitions, value);
         }
     }
 }

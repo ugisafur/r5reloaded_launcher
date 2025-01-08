@@ -5,12 +5,9 @@ namespace launcher
     public static class Logger
     {
         private static readonly string AppName = "r5r_launcher"; // Change to your app's name
-        private static readonly string LogFileName = "log.txt";
+        private static readonly string LogFileName = "launcher_log.log";
 
-        private static readonly string LogFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            AppName,
-            LogFileName);
+        private static string LogFilePath = "";
 
         public enum Type
         {
@@ -31,16 +28,23 @@ namespace launcher
             Patcher,
             FileManager,
             Decompression,
+            Ini
         }
 
         static Logger()
         {
             // Ensure the directory exists
-            var logDirectory = Path.GetDirectoryName(LogFilePath);
+            string folderUUID = GenerateFolderUUID();
+            LogFilePath = Path.Combine(Global.launcherPath, $"platform\\logs\\tools\\{AppName}\\{folderUUID}", LogFileName);
+
+            string logDirectory = Path.GetDirectoryName(LogFilePath);
             if (!Directory.Exists(logDirectory))
-            {
                 Directory.CreateDirectory(logDirectory);
-            }
+        }
+
+        public static string GenerateFolderUUID()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         public static void Log(Type type, Source source, string message)
@@ -53,7 +57,14 @@ namespace launcher
             Console.WriteLine(logMessage);
 #endif
 
-            File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
+            try
+            {
+                File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                //Disk full, permission issues, etc.
+            }
         }
 
         private static string GetTypeString(Type type)
@@ -81,6 +92,7 @@ namespace launcher
                 Source.Patcher => "Patcher",
                 Source.FileManager => "FileManager",
                 Source.Decompression => "Decompression",
+                Source.Ini => "Ini",
                 _ => "Unknown"
             };
         }

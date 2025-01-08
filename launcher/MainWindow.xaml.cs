@@ -30,7 +30,7 @@ namespace launcher
             btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
             if (Global.isInstalled)
             {
-                cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Global.launcherConfig.currentUpdateBranch);
+                cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
                 Task.Run(() => updateChecker.Start());
             }
 
@@ -97,7 +97,7 @@ namespace launcher
 
             if (Global.isInstalled)
             {
-                if (Global.serverConfig.branches[0].branch == Global.launcherConfig.currentUpdateBranch)
+                if (Global.serverConfig.branches[0].branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""))
                 {
                     Global.updateRequired = false;
                     btnPlay.Content = "Play";

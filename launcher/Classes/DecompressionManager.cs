@@ -70,7 +70,7 @@ namespace launcher
                     ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
                 });
 
-                Logger.Log(Logger.Type.Info, Logger.Source.Decompression, $"Decompressed: {compressedFilePath} to {decompressedFilePath}");
+                //Logger.Log(Logger.Type.Info, Logger.Source.Decompression, $"Decompressed: {compressedFilePath} to {decompressedFilePath}");
             }
             catch (Exception ex)
             {

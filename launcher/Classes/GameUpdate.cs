@@ -18,12 +18,13 @@
     {
         public async void Start()
         {
+            string currentVersion = Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
             // Check if the game is already up to date
-            if (Global.launcherConfig.currentUpdateVersion == Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)
+            if (currentVersion == Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)
                 return;
 
             // Check if user is to outdated to update normally
-            if (Global.launcherConfig.currentUpdateVersion != Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
+            if (currentVersion != Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
                 await ControlReferences.gameRepair.Start();
 
             // Install started
@@ -48,7 +49,8 @@
             await Task.WhenAll(filePatchTasks);
 
             // Update or create launcher config
-            FileManager.UpdateOrCreateLauncherConfig();
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
 
             // Install finished
             Utilities.SetInstallState(false);

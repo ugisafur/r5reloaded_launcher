@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using SoftCircuits.IniFileParser;
+using System.Net.Http;
 using System.Windows.Controls;
 
 namespace launcher
@@ -28,7 +29,7 @@ namespace launcher
         public const string launcherVersion = "0.3.5";
 
         public static ServerConfig serverConfig;
-        public static LauncherConfig launcherConfig;
+        public static IniFile launcherConfig;
         public static Lazy<HttpClient> client { get; } = new Lazy<HttpClient>(() => new HttpClient() { Timeout = TimeSpan.FromSeconds(30) });
 
         public static string launcherPath = "";

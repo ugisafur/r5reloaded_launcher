@@ -61,14 +61,14 @@ namespace launcher
                 await AttemptGameRepair();
             }
 
-            //Update or create launcher config
-            FileManager.UpdateOrCreateLauncherConfig();
-
             //Install finished
             Utilities.SetInstallState(false);
 
             //Set game as installed
             Global.isInstalled = true;
+            Utilities.SetIniSetting(Utilities.IniSettings.Installed, true);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))

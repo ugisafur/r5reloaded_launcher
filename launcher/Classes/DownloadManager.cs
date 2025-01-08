@@ -328,7 +328,7 @@ namespace launcher
         {
             if (File.Exists(destinationPath))
             {
-                Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Checking existing file: {destinationPath}");
+                //Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Checking existing file: {destinationPath}");
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {

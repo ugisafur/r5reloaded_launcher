@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SoftCircuits.IniFileParser;
 using System.IO;
 using System.Security.Cryptography;
+using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace launcher
 {
@@ -99,7 +102,7 @@ namespace launcher
                     }
 
                     File.Delete(filePath);
-                    Logger.Log(Logger.Type.Info, Logger.Source.FileManager, $"Deleted file: {filePath}");
+                    //Logger.Log(Logger.Type.Info, Logger.Source.FileManager, $"Deleted file: {filePath}");
                     return;
                 }
                 catch (IOException)
@@ -118,23 +121,19 @@ namespace launcher
             Logger.Log(Logger.Type.Error, Logger.Source.FileManager, $"Failed to delete file after retries: {filePath}");
         }
 
-        public static LauncherConfig GetLauncherConfig()
+        public static IniFile GetLauncherConfig()
         {
-            string configPath = Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.json");
+            string configPath = Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini");
 
             if (!File.Exists(configPath))
                 return null;
 
-            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Found launcher config");
+            IniFile file = new IniFile();
+            file.Load(configPath);
 
-            string config_json = File.ReadAllText(configPath);
+            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher ini");
 
-            if (string.IsNullOrEmpty(config_json))
-                return null;
-
-            Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher config");
-
-            return JsonConvert.DeserializeObject<LauncherConfig>(config_json);
+            return file;
         }
 
         public static string CreateTempDirectory()
@@ -197,28 +196,6 @@ namespace launcher
             {
                 var hash = sha256.ComputeHash(stream);
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
-        }
-
-        public static void UpdateOrCreateLauncherConfig()
-        {
-            Directory.CreateDirectory(Path.Combine(Global.launcherPath, "platform\\cfg\\user"));
-
-            string configPath = Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.json");
-            if (File.Exists(configPath))
-            {
-                Global.launcherConfig.currentUpdateBranch = Global.serverConfig.branches[0].branch;
-                Global.launcherConfig.currentUpdateVersion = Global.serverConfig.branches[0].currentVersion;
-                SaveLauncherConfig();
-            }
-            else
-            {
-                Global.launcherConfig = new LauncherConfig
-                {
-                    currentUpdateVersion = Global.serverConfig.branches[0].currentVersion,
-                    currentUpdateBranch = Global.serverConfig.branches[0].branch
-                };
-                SaveLauncherConfig();
             }
         }
 

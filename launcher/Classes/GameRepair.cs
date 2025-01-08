@@ -51,9 +51,9 @@
                 await Task.WhenAll(decompressionTasks);
             }
 
-            //Update or create launcher config
-            Utilities.UpdateStatusLabel("Updating launcher config", Logger.Source.Repair);
-            FileManager.UpdateOrCreateLauncherConfig();
+            //Update launcher config
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
 
             //Install finished
             Utilities.SetInstallState(false);
