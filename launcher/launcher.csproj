@@ -21,6 +21,7 @@
     <None Remove="assets\launcher_bg.jpg" />
     <None Remove="assets\launcher_bg.mp4" />
     <None Remove="assets\launcher_x64.ico" />
+    <None Remove="assets\logo-50.png" />
     <None Remove="assets\logo-main-white.png" />
     <None Remove="assets\logo-main.png" />
     <None Remove="assets\R5R-Logo-White.gif" />
@@ -57,6 +58,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\launcher_bg.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\logo-50.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="launcher_x64.ico">
