@@ -151,38 +151,39 @@ namespace launcher
             }
         }
 
-        private static void SetProcessorAffinity(Process gameProcess, int coreIndex)
+        private static void SetProcessorAffinity(Process gameProcess)
         {
             try
             {
                 // Get the number of logical processors (cores) available on the system
-                int processorCount = GetIniSetting(IniSettings.Processor_Affinity, -1);
+                int coreCount = GetIniSetting(IniSettings.Processor_Affinity, -1);
+                int processorCount = Environment.ProcessorCount;
 
-                // Handle the case where coreIndex is -1 (use all cores)
-                if (coreIndex == -1)
+                if (coreCount == -1 || coreCount == 0)
+                    return;
+
+                if (coreCount > processorCount)
+                    coreCount = processorCount;
+
+                // Handle the case where coreCount is -1 (use all cores)
+                if (coreCount >= 1 && coreCount <= processorCount)
                 {
-                    // Set processor affinity to all cores (bitmask with all bits set)
-                    gameProcess.ProcessorAffinity = (IntPtr)(-1);  // -1 sets all bits, i.e., all cores
-                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Processor affinity set to all cores.");
-                }
-                else if (coreIndex >= 1 && coreIndex <= processorCount)
-                {
-                    // Set processor affinity to the first 'coreIndex' cores
+                    // Set processor affinity to the first 'coreCount' cores
                     int affinityMask = 0;
 
-                    // Set bits for the first 'coreIndex' cores
-                    for (int i = 0; i < coreIndex; i++)
+                    // Set bits for the first 'coreCount' cores
+                    for (int i = 0; i < coreCount; i++)
                     {
                         affinityMask |= (1 << i);  // Set the bit corresponding to core 'i'
                     }
 
                     gameProcess.ProcessorAffinity = (IntPtr)affinityMask;
-                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Processor affinity set to the first {coreIndex} cores.");
+                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
                 }
                 else
                 {
                     // Invalid core index, log an error
-                    Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Invalid core index: {coreIndex}. Must be between -1 and {processorCount}.");
+                    Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
                 }
             }
             catch (Exception ex)
@@ -408,7 +409,7 @@ namespace launcher
                 file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Height", "");
                 file.SetSetting("Settings_Launch_Options_Engine", "Reserved_Cores", -1);
                 file.SetSetting("Settings_Launch_Options_Engine", "Worker_Threads", -1);
-                file.SetSetting("Settings_Launch_Options_Engine", "Processor_Affinity", 0);
+                file.SetSetting("Settings_Launch_Options_Engine", "Processor_Affinity", -1);
                 file.SetSetting("Settings_Launch_Options_Engine", "No_Async", false);
                 file.SetSetting("Settings_Launch_Options_Engine", "Encrypt_Packets", true);
                 file.SetSetting("Settings_Launch_Options_Engine", "Queued_Packets", true);
@@ -581,11 +582,11 @@ namespace launcher
 
         private static void AppendProcessorParameters(ref string svParameters)
         {
-            const int nReservedCores = GetIniSetting(IniSettings.Reserved_Cores, -1);
+            int nReservedCores = GetIniSetting(IniSettings.Reserved_Cores, -1);
             if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
                 AppendParameter(ref svParameters, "-numreservedcores", GetIniSetting(IniSettings.Reserved_Cores, -1).ToString());
 
-            const int nWorkerThreads = GetIniSetting(IniSettings.Worker_Threads, -1);
+            int nWorkerThreads = GetIniSetting(IniSettings.Worker_Threads, -1);
             if (nWorkerThreads > -1)
                 AppendParameter(ref svParameters, "-numworkerthreads", GetIniSetting(IniSettings.Worker_Threads, -1).ToString());
         }
@@ -593,7 +594,7 @@ namespace launcher
         private static void AppendNetParameters(ref string svParameters)
         {
             AppendParameter(ref svParameters, "+net_encryptionEnable", GetIniSetting(IniSettings.Encrypt_Packets, false) == true ? "1" : "0");
-            AppendParameter(ref svParameters, "+net_useRandomKey", GetIniSetting(IniSettings.Ra, false) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_useRandomKey", GetIniSetting(IniSettings.Random_Netkey, false) == true ? "1" : "0");
             AppendParameter(ref svParameters, "+net_queued_packet_thread", GetIniSetting(IniSettings.Queued_Packets, false) == true ? "1" : "0");
 
             if (GetIniSetting(IniSettings.No_Timeout, false))
@@ -618,9 +619,9 @@ namespace launcher
         {
             string svParameters = "";
 
-            AppendProcessorParameters(svParameters);
-            AppendConsoleParameters(svParameters);
-            AppendNetParameters(svParameters);
+            AppendProcessorParameters(ref svParameters);
+            AppendConsoleParameters(ref svParameters);
+            AppendNetParameters(ref svParameters);
 
             eMode mode = (eMode)GetIniSetting(IniSettings.Mode, 0);
             switch (mode)
