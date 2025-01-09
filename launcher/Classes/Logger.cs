@@ -7,7 +7,7 @@ namespace launcher
         private static readonly string AppName = "r5r_launcher"; // Change to your app's name
         private static readonly string LogFileName = "launcher_log.log";
 
-        private static string LogFilePath = "";
+        public static string LogFilePath = "";
 
         public enum Type
         {

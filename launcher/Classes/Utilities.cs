@@ -55,6 +55,20 @@ namespace launcher
             Playlist
         }
 
+        private enum eMode
+        {
+            HOST,
+            SERVER,
+            CLIENT
+        }
+
+        private enum eVisibility
+        {
+            OFFLINE,
+            HIDDEN,
+            PUBLIC,
+        }
+
         public static void SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
@@ -498,20 +512,6 @@ namespace launcher
                 IniSettings.Installed => "Installed",
                 _ => throw new NotImplementedException()
             };
-        }
-
-        private enum eMode
-        {
-            HOST,
-            SERVER,
-            CLIENT
-        }
-
-        private enum eVisibility
-        {
-            OFFLINE,
-            HIDDEN,
-            PUBLIC,
         }
 
         private static void AppendParameter(ref string svParameters, string parameter, string value = "")

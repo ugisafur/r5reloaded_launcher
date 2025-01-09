@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,21 @@ namespace launcher
         public ApplicationSettings()
         {
             InitializeComponent();
+        }
+
+        private void GetLogs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", @System.IO.Path.GetDirectoryName(Logger.LogFilePath));
+        }
+
+        private void ClearCache_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+
+        private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Utilities.SetIniSetting(Utilities.IniSettings.Enable_Quit_On_Close, CloseToQuit.IsChecked.Value);
         }
     }
 }
