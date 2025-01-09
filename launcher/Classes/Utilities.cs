@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Animation;
+using System.Xml.Linq;
 using static launcher.FileManager;
 using static launcher.Logger;
 
@@ -49,7 +50,9 @@ namespace launcher
             Max_FPS,
             Current_Version,
             Current_Branch,
-            Installed
+            Installed,
+            Map,
+            Playlist
         }
 
         public static void SetupApp(MainWindow mainWindow)
@@ -120,14 +123,72 @@ namespace launcher
         public static void LaunchGame()
         {
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Launching game");
+
+            // Build the argument string for r5apex.exe
+            string launcherArguments = BuildParameter();
+
+            // Add any specific game arguments you need here (e.g., --fullscreen, --resolution)
+            string gameArguments = launcherArguments;  // Only pass the arguments, not the executable itself
+
+            // Start the game directly without using cmd.exe
             var startInfo = new ProcessStartInfo
             {
-                FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{Global.launcherPath}\\r5apex.exe\""
+                FileName = $"{Global.launcherPath}\\r5apex.exe",  // Specify the path to r5apex.exe
+                Arguments = gameArguments,  // Pass the arguments for the game
+                UseShellExecute = true,     // Make the process independent of the launcher
+                CreateNoWindow = true       // Optional: Prevents opening a new console window
             };
 
-            // Start the new process via cmd
-            Process.Start(startInfo);
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launching game with arguments: {gameArguments}");
+
+            // Start the game process independently
+            Process gameProcess = Process.Start(startInfo);
+
+            if (gameProcess != null)
+            {
+                // After the process is started, set its processor affinity
+                SetProcessorAffinity(gameProcess);
+            }
+        }
+
+        private static void SetProcessorAffinity(Process gameProcess, int coreIndex)
+        {
+            try
+            {
+                // Get the number of logical processors (cores) available on the system
+                int processorCount = GetIniSetting(IniSettings.Processor_Affinity, -1);
+
+                // Handle the case where coreIndex is -1 (use all cores)
+                if (coreIndex == -1)
+                {
+                    // Set processor affinity to all cores (bitmask with all bits set)
+                    gameProcess.ProcessorAffinity = (IntPtr)(-1);  // -1 sets all bits, i.e., all cores
+                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Processor affinity set to all cores.");
+                }
+                else if (coreIndex >= 1 && coreIndex <= processorCount)
+                {
+                    // Set processor affinity to the first 'coreIndex' cores
+                    int affinityMask = 0;
+
+                    // Set bits for the first 'coreIndex' cores
+                    for (int i = 0; i < coreIndex; i++)
+                    {
+                        affinityMask |= (1 << i);  // Set the bit corresponding to core 'i'
+                    }
+
+                    gameProcess.ProcessorAffinity = (IntPtr)affinityMask;
+                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Processor affinity set to the first {coreIndex} cores.");
+                }
+                else
+                {
+                    // Invalid core index, log an error
+                    Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Invalid core index: {coreIndex}. Must be between -1 and {processorCount}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
+            }
         }
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
@@ -335,14 +396,16 @@ namespace launcher
                 file.SetSetting("Settings_Launch_Options_Game", "Show_Console", false);
                 file.SetSetting("Settings_Launch_Options_Game", "Color_Console", true);
                 file.SetSetting("Settings_Launch_Options_Game", "Playlists_File", "playlists_r5_patch.txt");
+                file.SetSetting("Settings_Launch_Options_Game", "Map", "");
+                file.SetSetting("Settings_Launch_Options_Game", "Playlist", "");
 
                 file.SetSetting("Settings_Launch_Options_Main", "Mode", 0);
                 file.SetSetting("Settings_Launch_Options_Main", "Visibility", 0);
                 file.SetSetting("Settings_Launch_Options_Main", "HostName", "");
                 file.SetSetting("Settings_Launch_Options_Main", "Command_Line", "");
 
-                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Width", -1);
-                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Height", -1);
+                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Width", "");
+                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Height", "");
                 file.SetSetting("Settings_Launch_Options_Engine", "Reserved_Cores", -1);
                 file.SetSetting("Settings_Launch_Options_Engine", "Worker_Threads", -1);
                 file.SetSetting("Settings_Launch_Options_Engine", "Processor_Affinity", 0);
@@ -383,6 +446,8 @@ namespace launcher
                 IniSettings.Show_Console => "Settings_Launch_Options_Game",
                 IniSettings.Color_Console => "Settings_Launch_Options_Game",
                 IniSettings.Playlists_File => "Settings_Launch_Options_Game",
+                IniSettings.Map => "Settings_Launch_Options_Game",
+                IniSettings.Playlist => "Settings_Launch_Options_Game",
 
                 IniSettings.Mode => "Settings_Launch_Options_Main",
                 IniSettings.Visibility => "Settings_Launch_Options_Main",
@@ -425,6 +490,8 @@ namespace launcher
                 IniSettings.Show_Console => "Show_Console",
                 IniSettings.Color_Console => "Color_Console",
                 IniSettings.Playlists_File => "Playlists_File",
+                IniSettings.Map => "Map",
+                IniSettings.Playlist => "Playlist",
                 IniSettings.Mode => "Mode",
                 IniSettings.Visibility => "Visibility",
                 IniSettings.HostName => "HostName",
@@ -447,6 +514,254 @@ namespace launcher
                 IniSettings.Installed => "Installed",
                 _ => throw new NotImplementedException()
             };
+        }
+
+        private enum eMode
+        {
+            HOST,
+            SERVER,
+            CLIENT
+        }
+
+        private enum eVisibility
+        {
+            OFFLINE,
+            HIDDEN,
+            PUBLIC,
+        }
+
+        private static void AppendParameter(ref string svParameters, string parameter, string value = "")
+        {
+            svParameters += value == "" ? $"{parameter} " : $"{parameter} {value} ";
+        }
+
+        private static void AppendHostParameters(ref string svParameters)
+        {
+            if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.HostName, "")))
+            {
+                AppendParameter(ref svParameters, "+hostname", GetIniSetting(IniSettings.HostName, ""));
+
+                int visibility = 0;
+
+                switch ((eVisibility)GetIniSetting(IniSettings.Visibility, 0))
+                {
+                    case eVisibility.PUBLIC:
+                        visibility = 2;
+                        break;
+
+                    case eVisibility.HIDDEN:
+                        visibility = 1;
+                        break;
+                }
+
+                AppendParameter(ref svParameters, "+sv_pylonVisibility", visibility.ToString());
+            }
+        }
+
+        private static void AppendVideoParameters(ref string svParameters)
+        {
+            if (GetIniSetting(IniSettings.Windowed, false))
+                AppendParameter(ref svParameters, "-windowed");
+            else
+                AppendParameter(ref svParameters, "-fullscreen");
+
+            if (GetIniSetting(IniSettings.Borderless, false))
+                AppendParameter(ref svParameters, "-noborder");
+            else
+                AppendParameter(ref svParameters, "-forceborder");
+
+            AppendParameter(ref svParameters, "+fps_max", GetIniSetting(IniSettings.Max_FPS, -1).ToString());
+
+            if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Resolution_Width, "")))
+                AppendParameter(ref svParameters, "-w", GetIniSetting(IniSettings.Resolution_Width, ""));
+
+            if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Resolution_Height, "")))
+                AppendParameter(ref svParameters, "-h", GetIniSetting(IniSettings.Resolution_Height, ""));
+        }
+
+        private static void AppendProcessorParameters(ref string svParameters)
+        {
+            const int nReservedCores = GetIniSetting(IniSettings.Reserved_Cores, -1);
+            if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
+                AppendParameter(ref svParameters, "-numreservedcores", GetIniSetting(IniSettings.Reserved_Cores, -1).ToString());
+
+            const int nWorkerThreads = GetIniSetting(IniSettings.Worker_Threads, -1);
+            if (nWorkerThreads > -1)
+                AppendParameter(ref svParameters, "-numworkerthreads", GetIniSetting(IniSettings.Worker_Threads, -1).ToString());
+        }
+
+        private static void AppendNetParameters(ref string svParameters)
+        {
+            AppendParameter(ref svParameters, "+net_encryptionEnable", GetIniSetting(IniSettings.Encrypt_Packets, false) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_useRandomKey", GetIniSetting(IniSettings.Ra, false) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_queued_packet_thread", GetIniSetting(IniSettings.Queued_Packets, false) == true ? "1" : "0");
+
+            if (GetIniSetting(IniSettings.No_Timeout, false))
+                AppendParameter(ref svParameters, "-notimeout");
+        }
+
+        private static void AppendConsoleParameters(ref string svParameters)
+        {
+            if (GetIniSetting(IniSettings.Show_Console, false))
+                AppendParameter(ref svParameters, "-wconsole");
+            else
+                AppendParameter(ref svParameters, "-noconsole");
+
+            if (GetIniSetting(IniSettings.Color_Console, false))
+                AppendParameter(ref svParameters, "-ansicolor");
+
+            if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Playlists_File, "playlists_r5_patch.txt")))
+                AppendParameter(ref svParameters, "-playlistfile", GetIniSetting(IniSettings.Playlists_File, "playlists_r5_patch.txt"));
+        }
+
+        public static string BuildParameter()
+        {
+            string svParameters = "";
+
+            AppendProcessorParameters(svParameters);
+            AppendConsoleParameters(svParameters);
+            AppendNetParameters(svParameters);
+
+            eMode mode = (eMode)GetIniSetting(IniSettings.Mode, 0);
+            switch (mode)
+            {
+                case eMode.HOST:
+                    {
+                        // GAME ###############################################################
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Map, "")))
+                            AppendParameter(ref svParameters, "+map", GetIniSetting(IniSettings.Map, ""));
+
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Playlist, "")))
+                            AppendParameter(ref svParameters, "+launchplaylist", GetIniSetting(IniSettings.Playlist, ""));
+
+                        if (GetIniSetting(IniSettings.Enable_Developer, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-devsdk");
+                        }
+
+                        if (GetIniSetting(IniSettings.Enable_Cheats, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-showdevmenu");
+                        }
+
+                        // ENGINE ###############################################################
+                        if (GetIniSetting(IniSettings.No_Async, false))
+                        {
+                            AppendParameter(ref svParameters, "-noasync");
+                            AppendParameter(ref svParameters, "+async_serialize", "0");
+                            AppendParameter(ref svParameters, "+buildcubemaps_async", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncAIInit", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncSendSnapshot", "0");
+                            AppendParameter(ref svParameters, "+sv_scriptCompileAsync", "0");
+                            AppendParameter(ref svParameters, "+cl_scriptCompileAsync", "0");
+                            AppendParameter(ref svParameters, "+cl_async_bone_setup", "0");
+                            AppendParameter(ref svParameters, "+cl_updatedirty_async", "0");
+                            AppendParameter(ref svParameters, "+mat_syncGPU", "1");
+                            AppendParameter(ref svParameters, "+mat_sync_rt", "1");
+                            AppendParameter(ref svParameters, "+mat_sync_rt_flushes_gpu", "1");
+                            AppendParameter(ref svParameters, "+net_async_sendto", "0");
+                            AppendParameter(ref svParameters, "+physics_async_sv", "0");
+                            AppendParameter(ref svParameters, "+physics_async_cl", "0");
+                        }
+
+                        AppendHostParameters(ref svParameters);
+                        AppendVideoParameters(ref svParameters);
+
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Command_Line, "")))
+                            AppendParameter(ref svParameters, GetIniSetting(IniSettings.Command_Line, ""));
+
+                        return svParameters;
+                    }
+                case eMode.SERVER:
+                    {
+                        // GAME ###############################################################
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Map, "")))
+                            AppendParameter(ref svParameters, "+map", GetIniSetting(IniSettings.Map, ""));
+
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Playlist, "")))
+                            AppendParameter(ref svParameters, "+launchplaylist", GetIniSetting(IniSettings.Playlist, ""));
+
+                        if (GetIniSetting(IniSettings.Enable_Developer, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-devsdk");
+                        }
+
+                        if (GetIniSetting(IniSettings.Enable_Cheats, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-showdevmenu");
+                        }
+
+                        // ENGINE ###############################################################
+                        if (GetIniSetting(IniSettings.No_Async, false))
+                        {
+                            AppendParameter(ref svParameters, "-noasync");
+                            AppendParameter(ref svParameters, "+async_serialize", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncAIInit", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncSendSnapshot", "0");
+                            AppendParameter(ref svParameters, "+sv_scriptCompileAsync", "0");
+                            AppendParameter(ref svParameters, "+physics_async_sv", "0");
+                        }
+
+                        AppendHostParameters(ref svParameters);
+
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Command_Line, "")))
+                            AppendParameter(ref svParameters, GetIniSetting(IniSettings.Command_Line, ""));
+
+                        return svParameters;
+                    }
+                case eMode.CLIENT:
+                    {
+                        // Tells the loader module to only load the client dll.
+                        AppendParameter(ref svParameters, "-noserverdll");
+
+                        // GAME ###############################################################
+                        if (GetIniSetting(IniSettings.Enable_Developer, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-devsdk");
+                        }
+
+                        if (GetIniSetting(IniSettings.Enable_Cheats, false))
+                        {
+                            AppendParameter(ref svParameters, "-dev");
+                            AppendParameter(ref svParameters, "-showdevmenu");
+                        }
+
+                        // ENGINE ###############################################################
+                        if (GetIniSetting(IniSettings.No_Async, false))
+                        {
+                            AppendParameter(ref svParameters, "-noasync");
+                            AppendParameter(ref svParameters, "+async_serialize", "0");
+                            AppendParameter(ref svParameters, "+buildcubemaps_async", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncAIInit", "0");
+                            AppendParameter(ref svParameters, "+sv_asyncSendSnapshot", "0");
+                            AppendParameter(ref svParameters, "+sv_scriptCompileAsync", "0");
+                            AppendParameter(ref svParameters, "+cl_scriptCompileAsync", "0");
+                            AppendParameter(ref svParameters, "+cl_async_bone_setup", "0");
+                            AppendParameter(ref svParameters, "+cl_updatedirty_async", "0");
+                            AppendParameter(ref svParameters, "+mat_syncGPU", "1");
+                            AppendParameter(ref svParameters, "+mat_sync_rt", "1");
+                            AppendParameter(ref svParameters, "+mat_sync_rt_flushes_gpu", "1");
+                            AppendParameter(ref svParameters, "+net_async_sendto", "0");
+                            AppendParameter(ref svParameters, "+physics_async_sv", "0");
+                            AppendParameter(ref svParameters, "+physics_async_cl", "0");
+                        }
+
+                        AppendVideoParameters(ref svParameters);
+
+                        // MAIN ###############################################################
+                        if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Command_Line, "")))
+                            AppendParameter(ref svParameters, GetIniSetting(IniSettings.Command_Line, ""));
+
+                        return svParameters;
+                    }
+                default:
+                    return "";
+            }
         }
 
 #if DEBUG

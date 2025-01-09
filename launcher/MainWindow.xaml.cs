@@ -97,6 +97,12 @@ namespace launcher
 
             if (Global.isInstalled)
             {
+                if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, "")))
+                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[0].branch);
+
+                if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "")))
+                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[0].currentVersion);
+
                 if (Global.serverConfig.branches[0].branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""))
                 {
                     Global.updateRequired = false;
