@@ -122,40 +122,28 @@ namespace launcher
 
         public static void LaunchGame()
         {
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Launching game");
+            string gameArguments = BuildParameter();
 
-            // Build the argument string for r5apex.exe
-            string launcherArguments = BuildParameter();
-
-            // Add any specific game arguments you need here (e.g., --fullscreen, --resolution)
-            string gameArguments = launcherArguments;  // Only pass the arguments, not the executable itself
-
-            // Start the game directly without using cmd.exe
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{Global.launcherPath}\\r5apex.exe",  // Specify the path to r5apex.exe
-                Arguments = gameArguments,  // Pass the arguments for the game
-                UseShellExecute = true,     // Make the process independent of the launcher
-                CreateNoWindow = true       // Optional: Prevents opening a new console window
+                FileName = $"{Global.launcherPath}\\r5apex.exe",
+                Arguments = gameArguments,
+                UseShellExecute = true,
+                CreateNoWindow = true
             };
 
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launching game with arguments: {gameArguments}");
-
-            // Start the game process independently
             Process gameProcess = Process.Start(startInfo);
 
             if (gameProcess != null)
-            {
-                // After the process is started, set its processor affinity
                 SetProcessorAffinity(gameProcess);
-            }
+
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launched game with arguments: {gameArguments}");
         }
 
         private static void SetProcessorAffinity(Process gameProcess)
         {
             try
             {
-                // Get the number of logical processors (cores) available on the system
                 int coreCount = GetIniSetting(IniSettings.Processor_Affinity, -1);
                 int processorCount = Environment.ProcessorCount;
 
@@ -165,7 +153,6 @@ namespace launcher
                 if (coreCount > processorCount)
                     coreCount = processorCount;
 
-                // Handle the case where coreCount is -1 (use all cores)
                 if (coreCount >= 1 && coreCount <= processorCount)
                 {
                     // Set processor affinity to the first 'coreCount' cores
@@ -173,18 +160,14 @@ namespace launcher
 
                     // Set bits for the first 'coreCount' cores
                     for (int i = 0; i < coreCount; i++)
-                    {
                         affinityMask |= (1 << i);  // Set the bit corresponding to core 'i'
-                    }
 
                     gameProcess.ProcessorAffinity = (IntPtr)affinityMask;
+
                     Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
                 }
                 else
-                {
-                    // Invalid core index, log an error
                     Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
-                }
             }
             catch (Exception ex)
             {
