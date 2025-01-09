@@ -32,5 +32,11 @@ namespace launcher
 
             Task.Run(() => ControlReferences.gameRepair.Start());
         }
+
+        private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
+        {
+            ControlReferences.gameSettingsPopup.IsOpen = false;
+            Utilities.ShowAdvancedControl();
+        }
     }
 }

@@ -35,9 +35,11 @@ namespace launcher
         public static Button btnPlay = new Button();
         public static MainWindow App = new MainWindow();
         public static SettingsControl settingsControl = new SettingsControl();
+        public static AdvancedMenu advancedControl = new AdvancedMenu();
         public static subMenu subMenuControl = new subMenu();
         public static DependencyObject TransitionRect = new DependencyObject();
         public static Popup SubMenuPopup = new Popup();
+        public static Popup gameSettingsPopup = new Popup();
         public static Dispatcher dispatcher = App.Dispatcher;
         public static DownloadsPopup downloadsPopupControl = new DownloadsPopup();
         public static GameRepair gameRepair = new GameRepair();

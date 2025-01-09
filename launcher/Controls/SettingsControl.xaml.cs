@@ -41,7 +41,6 @@ namespace launcher
                 Global.SettingsPage.Application => applicationPage,
                 Global.SettingsPage.Accessibility => accessibilityPage,
                 Global.SettingsPage.GameInstalls => gamePage,
-                Global.SettingsPage.LaunchOptions => launchoptionsPage,
                 Global.SettingsPage.Download => downloadPage,
                 Global.SettingsPage.About => aboutPage,
                 _ => null,
@@ -80,7 +79,7 @@ namespace launcher
 
         private UserControl GetVisiblePage()
         {
-            foreach (var child in new UserControl[] { applicationPage, accessibilityPage, gamePage, launchoptionsPage, downloadPage, aboutPage })
+            foreach (var child in new UserControl[] { applicationPage, accessibilityPage, gamePage, downloadPage, aboutPage })
             {
                 if (child.Visibility == Visibility.Visible)
                 {
@@ -96,14 +95,12 @@ namespace launcher
             pages.Add(applicationPage);
             pages.Add(accessibilityPage);
             pages.Add(gamePage);
-            pages.Add(launchoptionsPage);
             pages.Add(downloadPage);
             pages.Add(aboutPage);
 
             buttons.Add(ApplicationBtn);
             buttons.Add(AccessibilityBtn);
             buttons.Add(GameInstallsBtn);
-            buttons.Add(LaunchOptionsBtn);
             buttons.Add(DownloadBtn);
             buttons.Add(AboutBtn);
 

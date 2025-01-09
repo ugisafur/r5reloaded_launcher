@@ -49,9 +49,8 @@ namespace launcher
             Application = 0,
             Accessibility = 1,
             GameInstalls = 2,
-            LaunchOptions = 3,
-            Download = 4,
-            About = 5
+            Download = 3,
+            About = 4
         }
     }
 

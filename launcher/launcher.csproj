@@ -101,6 +101,7 @@
   <ItemGroup>
     <Page Update="MainWindow.xaml">
       <CopyToOutputDirectory></CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
 

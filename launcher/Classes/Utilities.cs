@@ -87,9 +87,11 @@ namespace launcher
             ControlReferences.cmbBranch = mainWindow.cmbBranch;
             ControlReferences.btnPlay = mainWindow.btnPlay;
             ControlReferences.settingsControl = mainWindow.SettingsControl;
+            ControlReferences.advancedControl = mainWindow.AdvancedControl;
             ControlReferences.subMenuControl = mainWindow.subMenuControl;
             ControlReferences.TransitionRect = mainWindow.TransitionRect;
             ControlReferences.SubMenuPopup = mainWindow.SubMenuPopup;
+            ControlReferences.gameSettingsPopup = mainWindow.SettingsPopup;
             ControlReferences.downloadsPopupControl = mainWindow.DownloadsPopupControl;
 
             ShowProgressBar(false);
@@ -287,6 +289,52 @@ namespace launcher
             };
             transitionInStoryboard.Begin();
             ControlReferences.subMenuControl.Settings.IsEnabled = true;
+        }
+
+        public static void ShowAdvancedControl()
+        {
+            if (SettingsGlobal.DisableTransitions)
+            {
+                ControlReferences.advancedControl.Visibility = Visibility.Visible;
+                return;
+            }
+
+            var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
+            transitionInStoryboard.Completed += (s, e) =>
+            {
+                ControlReferences.advancedControl.Visibility = Visibility.Visible;
+                var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
+                fadeInStoryboard.Completed += (s, e) =>
+                {
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
+                    transitionOutStoryboard.Begin();
+                };
+                fadeInStoryboard.Begin();
+            };
+            transitionInStoryboard.Begin();
+        }
+
+        public static void HideAdvancedControl()
+        {
+            if (SettingsGlobal.DisableTransitions)
+            {
+                ControlReferences.advancedControl.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.25);
+            transitionInStoryboard.Completed += (s, e) =>
+            {
+                var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
+                fadeOutStoryboard.Completed += (s, e) =>
+                {
+                    ControlReferences.advancedControl.Visibility = Visibility.Hidden;
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
+                    transitionOutStoryboard.Begin();
+                };
+                fadeOutStoryboard.Begin();
+            };
+            transitionInStoryboard.Begin();
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)

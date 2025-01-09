@@ -16,13 +16,18 @@ using System.Windows.Shapes;
 namespace launcher
 {
     /// <summary>
-    /// Interaction logic for LaunchOptionSettings.xaml
+    /// Interaction logic for AdvancedMenu.xaml
     /// </summary>
-    public partial class LaunchOptionSettings : UserControl
+    public partial class AdvancedMenu : UserControl
     {
-        public LaunchOptionSettings()
+        public AdvancedMenu()
         {
             InitializeComponent();
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.HideAdvancedControl();
         }
     }
 }

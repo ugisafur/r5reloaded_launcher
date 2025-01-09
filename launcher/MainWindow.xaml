@@ -518,6 +518,7 @@
             </Grid>
 
             <local:SettingsControl x:Name="SettingsControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+            <local:AdvancedMenu x:Name="AdvancedControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
 
             <Rectangle x:Name="TransitionRect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
                 <Rectangle.RenderTransform>
