@@ -14,6 +14,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static launcher.Utilities;
 
 namespace launcher
 {
@@ -46,7 +47,7 @@ namespace launcher
                 _ => null,
             };
 
-            double fadeSpeed = SettingsGlobal.DisableTransitions ? 0 : 200;
+            double fadeSpeed = GetIniSetting(IniSettings.Disable_Transitions, false) ? 0 : 200;
 
             if (visiblePage != null && newPage != null && visiblePage != newPage)
             {

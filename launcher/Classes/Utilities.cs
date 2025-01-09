@@ -243,7 +243,7 @@ namespace launcher
 
         public static void ShowSettingsControl()
         {
-            if (SettingsGlobal.DisableTransitions)
+            if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.settingsControl.Visibility = Visibility.Visible;
                 ControlReferences.subMenuControl.Settings.IsEnabled = false;
@@ -268,7 +268,7 @@ namespace launcher
 
         public static void HideSettingsControl()
         {
-            if (SettingsGlobal.DisableTransitions)
+            if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.settingsControl.Visibility = Visibility.Hidden;
                 ControlReferences.subMenuControl.Settings.IsEnabled = true;
@@ -293,7 +293,7 @@ namespace launcher
 
         public static void ShowAdvancedControl()
         {
-            if (SettingsGlobal.DisableTransitions)
+            if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.advancedControl.Visibility = Visibility.Visible;
                 return;
@@ -316,7 +316,7 @@ namespace launcher
 
         public static void HideAdvancedControl()
         {
-            if (SettingsGlobal.DisableTransitions)
+            if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.advancedControl.Visibility = Visibility.Hidden;
                 return;

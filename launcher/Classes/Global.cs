@@ -59,9 +59,5 @@ namespace launcher
         public static CheckBox DisableTransitionsBtn;
         public static CheckBox DisableAnimationsBtn;
         public static CheckBox DisableBackgroundVideoBtn;
-
-        public static bool DisableBackgroundVideo = false;
-        public static bool DisableAnimations = false;
-        public static bool DisableTransitions = false;
     }
 }
