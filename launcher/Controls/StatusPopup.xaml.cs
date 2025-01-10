@@ -22,8 +22,6 @@ namespace launcher
     /// </summary>
     public partial class StatusPopup : UserControl
     {
-        private bool can_refresh = true;
-
         public StatusPopup()
         {
             InitializeComponent();
@@ -59,15 +57,11 @@ namespace launcher
 
         private async void GetStatusInfo()
         {
-            can_refresh = false;
+            Logger.Log(Logger.Type.Info, Logger.Source.API, "Checking status of services...");
+
             bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
-            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting website status");
-
             bool isMSUP = await IsUrlUp("https://r5r.org/");
-            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting master server status");
-
             bool isCDNUP = await IsUrlUp("https://cdn.r5r.org/launcher/config.json");
-            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting CDN status");
 
             Dispatcher.Invoke(() =>
             {
@@ -84,22 +78,26 @@ namespace launcher
             });
 
             if (!isMSUP)
+            {
+                Logger.Log(Logger.Type.Error, Logger.Source.API, "Master Server is down.");
                 return;
+            }
 
             string serverlist = await SendPostRequestAsync("https://r5r.org/servers", "{}");
 
-            Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting total servers and players");
-
             if (string.IsNullOrEmpty(serverlist))
             {
-                Console.WriteLine("Failed to get server list");
+                Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to get server list from API.");
                 return;
             }
 
             GameServerList game_server_list = JsonConvert.DeserializeObject<GameServerList>(serverlist);
 
             if (!game_server_list.success)
+            {
+                Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to get server list from API.");
                 return;
+            }
 
             int total_players = 0;
 

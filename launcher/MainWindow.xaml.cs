@@ -28,6 +28,10 @@ namespace launcher
             Utilities.SetupApp(this);
             UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
             btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
+
+            if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
+                btnPlay.Content = "REPAIR";
+
             if (Global.isInstalled)
             {
                 cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
@@ -63,7 +67,14 @@ namespace launcher
             }
             else if (!Global.isInstalling)
             {
-                Task.Run(() => ControlReferences.gameInstall.Start());
+                if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
+                {
+                    Task.Run(() => ControlReferences.gameRepair.Start());
+                }
+                else
+                {
+                    Task.Run(() => ControlReferences.gameInstall.Start());
+                }
             }
         }
 

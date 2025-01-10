@@ -52,6 +52,7 @@
             }
 
             //Update launcher config
+            Utilities.SetIniSetting(Utilities.IniSettings.Installed, true);
             Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
             Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
 
