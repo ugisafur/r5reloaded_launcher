@@ -40,6 +40,7 @@ namespace launcher
         public static DependencyObject TransitionRect = new DependencyObject();
         public static Popup SubMenuPopup = new Popup();
         public static Popup gameSettingsPopup = new Popup();
+        public static StatusPopup statusPopup = new StatusPopup();
         public static Dispatcher dispatcher = App.Dispatcher;
         public static DownloadsPopup downloadsPopupControl = new DownloadsPopup();
         public static GameRepair gameRepair = new GameRepair();

@@ -85,8 +85,11 @@ namespace launcher
             ControlReferences.SubMenuPopup = mainWindow.SubMenuPopup;
             ControlReferences.gameSettingsPopup = mainWindow.SettingsPopup;
             ControlReferences.downloadsPopupControl = mainWindow.DownloadsPopupControl;
+            ControlReferences.statusPopup = mainWindow.StatusPopupControl;
 
             ShowProgressBar(false);
+
+            Task.Run(() => ControlReferences.statusPopup.StartStatusTimer());
 
             ControlReferences.launcherVersionlbl.Text = Global.launcherVersion;
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher Version: {Global.launcherVersion}");

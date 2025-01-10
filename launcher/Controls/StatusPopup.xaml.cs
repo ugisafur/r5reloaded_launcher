@@ -22,6 +22,8 @@ namespace launcher
     /// </summary>
     public partial class StatusPopup : UserControl
     {
+        private bool can_refresh = true;
+
         public StatusPopup()
         {
             InitializeComponent();
@@ -29,11 +31,35 @@ namespace launcher
 
         private void Border_Loaded(object sender, RoutedEventArgs e)
         {
+        }
+
+        public async void StartStatusTimer()
+        {
             Task.Run(() => GetStatusInfo());
+
+            int refresh_interval = 30;
+            int current_time = 0;
+            while (true)
+            {
+                await Task.Delay(1000);
+                current_time++;
+
+                Dispatcher.Invoke(() =>
+                {
+                    LastUpdate.Text = $"Last Update: {current_time} seconds ago";
+                });
+
+                if (current_time >= refresh_interval)
+                {
+                    Task.Run(() => GetStatusInfo());
+                    current_time = 0;
+                }
+            }
         }
 
         private async void GetStatusInfo()
         {
+            can_refresh = false;
             bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
             Logger.Log(Logger.Type.Info, Logger.Source.API, "Getting website status");
 

@@ -50,6 +50,8 @@
             </Border>
 
             <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="#3396CAEA" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
+
+            <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="#FF96CAEA" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
         </Grid>
     </Border>
 </UserControl>
