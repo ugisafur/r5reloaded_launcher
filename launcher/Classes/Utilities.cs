@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Animation;
-using System.Xml.Linq;
-using static launcher.FileManager;
 using static launcher.Logger;
 
 namespace launcher
@@ -26,6 +24,7 @@ namespace launcher
             Disable_Transitions,
             Concurrent_Downloads,
             Download_Speed_Limit,
+            Download_HD_Textures,
             Enable_Cheats,
             Enable_Developer,
             Show_Console,
@@ -60,13 +59,6 @@ namespace launcher
             HOST,
             SERVER,
             CLIENT
-        }
-
-        private enum eVisibility
-        {
-            OFFLINE,
-            HIDDEN,
-            PUBLIC,
         }
 
         public static void SetupApp(MainWindow mainWindow)
@@ -104,6 +96,9 @@ namespace launcher
 
             ControlReferences.settingsControl.SetupSettingsMenu();
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Settings menu initialized");
+
+            ControlReferences.advancedControl.SetupAdvancedSettings();
+            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Advanced settings initialized");
 
             Global.serverConfig = DataFetcher.FetchServerConfig();
 
@@ -160,7 +155,7 @@ namespace launcher
         {
             try
             {
-                int coreCount = GetIniSetting(IniSettings.Processor_Affinity, -1);
+                int coreCount = int.Parse(GetIniSetting(IniSettings.Processor_Affinity, "-1"));
                 int processorCount = Environment.ProcessorCount;
 
                 if (coreCount == -1 || coreCount == 0)
@@ -374,8 +369,16 @@ namespace launcher
             return file;
         }
 
+        private static bool IniExists()
+        {
+            return File.Exists(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+        }
+
         public static void SetIniSetting(IniSettings setting, bool value)
         {
+            if (!IniExists())
+                return;
+
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
             file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
@@ -384,6 +387,9 @@ namespace launcher
 
         public static void SetIniSetting(IniSettings setting, int value)
         {
+            if (!IniExists())
+                return;
+
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
             file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
@@ -392,6 +398,9 @@ namespace launcher
 
         public static void SetIniSetting(IniSettings setting, string value)
         {
+            if (!IniExists())
+                return;
+
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
             file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
@@ -400,6 +409,9 @@ namespace launcher
 
         public static bool GetIniSetting(IniSettings setting, bool defaultValue)
         {
+            if (!IniExists())
+                return defaultValue;
+
             IniFile file = GetIniFile();
             bool value = file.GetSetting(GetSettingsSectionString(setting), GetSettingString(setting), defaultValue);
             return value;
@@ -407,6 +419,9 @@ namespace launcher
 
         public static int GetIniSetting(IniSettings setting, int defaultValue)
         {
+            if (!IniExists())
+                return defaultValue;
+
             IniFile file = GetIniFile();
             int value = file.GetSetting(GetSettingsSectionString(setting), GetSettingString(setting), defaultValue);
             return value;
@@ -414,105 +429,102 @@ namespace launcher
 
         public static string GetIniSetting(IniSettings setting, string defaultValue)
         {
+            if (!IniExists())
+                return defaultValue;
+
             IniFile file = GetIniFile();
             string value = file.GetSetting(GetSettingsSectionString(setting), GetSettingString(setting), defaultValue);
             return value;
         }
 
-        public static async Task CreateLauncherConfig()
+        public static void CreateLauncherConfig()
         {
             Directory.CreateDirectory(Path.Combine(Global.launcherPath, "platform\\cfg\\user"));
 
             string iniPath = Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini");
             if (!File.Exists(iniPath))
             {
-                IniFile file = new IniFile();
+                IniFile file = new();
 
-                file.SetSetting("Settings_Appilication", "Enable_Quit_On_Close", true);
+                file.SetSetting("Settings", "Enable_Quit_On_Close", true);
+                file.SetSetting("Settings", "Disable_Background_Video", false);
+                file.SetSetting("Settings", "Disable_Animations", false);
+                file.SetSetting("Settings", "Disable_Transitions", false);
+                file.SetSetting("Settings", "Concurrent_Downloads", "Max");
+                file.SetSetting("Settings", "Download_Speed_Limit", -1);
+                file.SetSetting("Settings", "Download_HD_Textures", false);
 
-                file.SetSetting("Settings_Accessibility", "Disable_Background_Video", false);
-                file.SetSetting("Settings_Accessibility", "Disable_Animations", false);
-                file.SetSetting("Settings_Accessibility", "Disable_Transitions", false);
-
-                file.SetSetting("Settings_Downloads", "Concurrent_Downloads", "Max");
-                file.SetSetting("Settings_Downloads", "Download_Speed_Limit", -1);
-
-                file.SetSetting("Settings_Launch_Options_Game", "Enable_Cheats", false);
-                file.SetSetting("Settings_Launch_Options_Game", "Enable_Developer", false);
-                file.SetSetting("Settings_Launch_Options_Game", "Show_Console", false);
-                file.SetSetting("Settings_Launch_Options_Game", "Color_Console", true);
-                file.SetSetting("Settings_Launch_Options_Game", "Playlists_File", "playlists_r5_patch.txt");
-                file.SetSetting("Settings_Launch_Options_Game", "Map", "");
-                file.SetSetting("Settings_Launch_Options_Game", "Playlist", "");
-
-                file.SetSetting("Settings_Launch_Options_Main", "Mode", 0);
-                file.SetSetting("Settings_Launch_Options_Main", "Visibility", 0);
-                file.SetSetting("Settings_Launch_Options_Main", "HostName", "");
-                file.SetSetting("Settings_Launch_Options_Main", "Command_Line", "");
-
-                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Width", "");
-                file.SetSetting("Settings_Launch_Options_Engine", "Resolution_Height", "");
-                file.SetSetting("Settings_Launch_Options_Engine", "Reserved_Cores", -1);
-                file.SetSetting("Settings_Launch_Options_Engine", "Worker_Threads", -1);
-                file.SetSetting("Settings_Launch_Options_Engine", "Processor_Affinity", -1);
-                file.SetSetting("Settings_Launch_Options_Engine", "No_Async", false);
-                file.SetSetting("Settings_Launch_Options_Engine", "Encrypt_Packets", true);
-                file.SetSetting("Settings_Launch_Options_Engine", "Queued_Packets", true);
-                file.SetSetting("Settings_Launch_Options_Engine", "Random_Netkey", true);
-                file.SetSetting("Settings_Launch_Options_Engine", "No_Timeout", false);
-                file.SetSetting("Settings_Launch_Options_Engine", "Windowed", false);
-                file.SetSetting("Settings_Launch_Options_Engine", "Borderless", false);
-                file.SetSetting("Settings_Launch_Options_Engine", "Max_FPS", -1);
+                file.SetSetting("Advanced_Options", "Enable_Cheats", false);
+                file.SetSetting("Advanced_Options", "Enable_Developer", false);
+                file.SetSetting("Advanced_Options", "Show_Console", false);
+                file.SetSetting("Advanced_Options", "Color_Console", true);
+                file.SetSetting("Advanced_Options", "Playlists_File", "playlists_r5_patch.txt");
+                file.SetSetting("Advanced_Options", "Map", "");
+                file.SetSetting("Advanced_Options", "Playlist", "");
+                file.SetSetting("Advanced_Options", "Mode", 0);
+                file.SetSetting("Advanced_Options", "Visibility", 0);
+                file.SetSetting("Advanced_Options", "HostName", "");
+                file.SetSetting("Advanced_Options", "Command_Line", "");
+                file.SetSetting("Advanced_Options", "Resolution_Width", "");
+                file.SetSetting("Advanced_Options", "Resolution_Height", "");
+                file.SetSetting("Advanced_Options", "Reserved_Cores", "-1");
+                file.SetSetting("Advanced_Options", "Worker_Threads", "-1");
+                file.SetSetting("Advanced_Options", "Processor_Affinity", "0");
+                file.SetSetting("Advanced_Options", "No_Async", false);
+                file.SetSetting("Advanced_Options", "Encrypt_Packets", true);
+                file.SetSetting("Advanced_Options", "Queued_Packets", true);
+                file.SetSetting("Advanced_Options", "Random_Netkey", true);
+                file.SetSetting("Advanced_Options", "No_Timeout", false);
+                file.SetSetting("Advanced_Options", "Windowed", false);
+                file.SetSetting("Advanced_Options", "Borderless", false);
+                file.SetSetting("Advanced_Options", "Max_FPS", "-1");
 
                 file.SetSetting("Launcher", "Current_Version", "");
                 file.SetSetting("Launcher", "Current_Branch", "");
                 file.SetSetting("Launcher", "Installed", false);
 
-                await file.SaveAsync(iniPath);
-            }
+                file.Save(iniPath);
 
-            Log(Logger.Type.Info, Source.Ini, "Launcher config created");
+                Log(Logger.Type.Info, Source.Ini, "Launcher config created");
+            }
         }
 
         private static string GetSettingsSectionString(IniSettings setting)
         {
             return setting switch
             {
-                IniSettings.Enable_Quit_On_Close => "Settings_Appilication",
+                IniSettings.Enable_Quit_On_Close => "Settings",
+                IniSettings.Disable_Background_Video => "Settings",
+                IniSettings.Disable_Animations => "Settings",
+                IniSettings.Disable_Transitions => "Settings",
+                IniSettings.Concurrent_Downloads => "Settings",
+                IniSettings.Download_Speed_Limit => "Settings",
+                IniSettings.Download_HD_Textures => "Settings",
 
-                IniSettings.Disable_Background_Video => "Settings_Accessibility",
-                IniSettings.Disable_Animations => "Settings_Accessibility",
-                IniSettings.Disable_Transitions => "Settings_Accessibility",
-
-                IniSettings.Concurrent_Downloads => "Settings_Downloads",
-                IniSettings.Download_Speed_Limit => "Settings_Downloads",
-
-                IniSettings.Enable_Cheats => "Settings_Launch_Options_Game",
-                IniSettings.Enable_Developer => "Settings_Launch_Options_Game",
-                IniSettings.Show_Console => "Settings_Launch_Options_Game",
-                IniSettings.Color_Console => "Settings_Launch_Options_Game",
-                IniSettings.Playlists_File => "Settings_Launch_Options_Game",
-                IniSettings.Map => "Settings_Launch_Options_Game",
-                IniSettings.Playlist => "Settings_Launch_Options_Game",
-
-                IniSettings.Mode => "Settings_Launch_Options_Main",
-                IniSettings.Visibility => "Settings_Launch_Options_Main",
-                IniSettings.HostName => "Settings_Launch_Options_Main",
-                IniSettings.Command_Line => "Settings_Launch_Options_Main",
-
-                IniSettings.Resolution_Width => "Settings_Launch_Options_Engine",
-                IniSettings.Resolution_Height => "Settings_Launch_Options_Engine",
-                IniSettings.Reserved_Cores => "Settings_Launch_Options_Engine",
-                IniSettings.Worker_Threads => "Settings_Launch_Options_Engine",
-                IniSettings.Processor_Affinity => "Settings_Launch_Options_Engine",
-                IniSettings.No_Async => "Settings_Launch_Options_Engine",
-                IniSettings.Encrypt_Packets => "Settings_Launch_Options_Engine",
-                IniSettings.Queued_Packets => "Settings_Launch_Options_Engine",
-                IniSettings.Random_Netkey => "Settings_Launch_Options_Engine",
-                IniSettings.No_Timeout => "Settings_Launch_Options_Engine",
-                IniSettings.Windowed => "Settings_Launch_Options_Engine",
-                IniSettings.Borderless => "Settings_Launch_Options_Engine",
-                IniSettings.Max_FPS => "Settings_Launch_Options_Engine",
+                IniSettings.Enable_Cheats => "Advanced_Options",
+                IniSettings.Enable_Developer => "Advanced_Options",
+                IniSettings.Show_Console => "Advanced_Options",
+                IniSettings.Color_Console => "Advanced_Options",
+                IniSettings.Playlists_File => "Advanced_Options",
+                IniSettings.Map => "Advanced_Options",
+                IniSettings.Playlist => "Advanced_Options",
+                IniSettings.Mode => "Advanced_Options",
+                IniSettings.Visibility => "Advanced_Options",
+                IniSettings.HostName => "Advanced_Options",
+                IniSettings.Command_Line => "Advanced_Options",
+                IniSettings.Resolution_Width => "Advanced_Options",
+                IniSettings.Resolution_Height => "Advanced_Options",
+                IniSettings.Reserved_Cores => "Advanced_Options",
+                IniSettings.Worker_Threads => "Advanced_Options",
+                IniSettings.Processor_Affinity => "Advanced_Options",
+                IniSettings.No_Async => "Advanced_Options",
+                IniSettings.Encrypt_Packets => "Advanced_Options",
+                IniSettings.Queued_Packets => "Advanced_Options",
+                IniSettings.Random_Netkey => "Advanced_Options",
+                IniSettings.No_Timeout => "Advanced_Options",
+                IniSettings.Windowed => "Advanced_Options",
+                IniSettings.Borderless => "Advanced_Options",
+                IniSettings.Max_FPS => "Advanced_Options",
 
                 IniSettings.Current_Version => "Launcher",
                 IniSettings.Current_Branch => "Launcher",
@@ -531,6 +543,7 @@ namespace launcher
                 IniSettings.Disable_Transitions => "Disable_Transitions",
                 IniSettings.Concurrent_Downloads => "Concurrent_Downloads",
                 IniSettings.Download_Speed_Limit => "Download_Speed_Limit",
+                IniSettings.Download_HD_Textures => "Download_HD_Textures",
                 IniSettings.Enable_Cheats => "Enable_Cheats",
                 IniSettings.Enable_Developer => "Enable_Developer",
                 IniSettings.Show_Console => "Show_Console",
@@ -572,21 +585,7 @@ namespace launcher
             if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.HostName, "")))
             {
                 AppendParameter(ref svParameters, "+hostname", GetIniSetting(IniSettings.HostName, ""));
-
-                int visibility = 0;
-
-                switch ((eVisibility)GetIniSetting(IniSettings.Visibility, 0))
-                {
-                    case eVisibility.PUBLIC:
-                        visibility = 2;
-                        break;
-
-                    case eVisibility.HIDDEN:
-                        visibility = 1;
-                        break;
-                }
-
-                AppendParameter(ref svParameters, "+sv_pylonVisibility", visibility.ToString());
+                AppendParameter(ref svParameters, "+sv_pylonVisibility", GetIniSetting(IniSettings.Visibility, 0).ToString());
             }
         }
 
@@ -602,7 +601,7 @@ namespace launcher
             else
                 AppendParameter(ref svParameters, "-forceborder");
 
-            AppendParameter(ref svParameters, "+fps_max", GetIniSetting(IniSettings.Max_FPS, -1).ToString());
+            AppendParameter(ref svParameters, "+fps_max", GetIniSetting(IniSettings.Max_FPS, "-1"));
 
             if (!string.IsNullOrEmpty(GetIniSetting(IniSettings.Resolution_Width, "")))
                 AppendParameter(ref svParameters, "-w", GetIniSetting(IniSettings.Resolution_Width, ""));
@@ -613,13 +612,13 @@ namespace launcher
 
         private static void AppendProcessorParameters(ref string svParameters)
         {
-            int nReservedCores = GetIniSetting(IniSettings.Reserved_Cores, -1);
+            int nReservedCores = int.Parse(GetIniSetting(IniSettings.Reserved_Cores, "-1"));
             if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
-                AppendParameter(ref svParameters, "-numreservedcores", GetIniSetting(IniSettings.Reserved_Cores, -1).ToString());
+                AppendParameter(ref svParameters, "-numreservedcores", GetIniSetting(IniSettings.Reserved_Cores, "-1"));
 
-            int nWorkerThreads = GetIniSetting(IniSettings.Worker_Threads, -1);
+            int nWorkerThreads = int.Parse(GetIniSetting(IniSettings.Worker_Threads, "-1"));
             if (nWorkerThreads > -1)
-                AppendParameter(ref svParameters, "-numworkerthreads", GetIniSetting(IniSettings.Worker_Threads, -1).ToString());
+                AppendParameter(ref svParameters, "-numworkerthreads", GetIniSetting(IniSettings.Worker_Threads, "-1"));
         }
 
         private static void AppendNetParameters(ref string svParameters)

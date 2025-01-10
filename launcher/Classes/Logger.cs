@@ -92,7 +92,7 @@ namespace launcher
                 Source.Patcher => "Patcher",
                 Source.FileManager => "FileManager",
                 Source.Decompression => "Decompression",
-                Source.Ini => "Ini",
+                Source.Ini => "INI",
                 _ => "Unknown"
             };
         }
