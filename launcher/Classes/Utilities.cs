@@ -138,9 +138,19 @@ namespace launcher
         {
             string gameArguments = BuildParameter();
 
+            eMode mode = (eMode)GetIniSetting(IniSettings.Mode, 0);
+
+            string exeName = mode switch
+            {
+                eMode.HOST => "r5apex.exe",
+                eMode.SERVER => "r5apex_ds.exe",
+                eMode.CLIENT => "r5apex.exe",
+                _ => "r5apex.exe"
+            };
+
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{Global.launcherPath}\\r5apex.exe",
+                FileName = $"{Global.launcherPath}\\{exeName}",
                 Arguments = gameArguments,
                 UseShellExecute = true,
                 CreateNoWindow = true
@@ -636,7 +646,9 @@ namespace launcher
 
         private static void AppendConsoleParameters(ref string svParameters)
         {
-            if (GetIniSetting(IniSettings.Show_Console, false))
+            eMode mode = (eMode)GetIniSetting(IniSettings.Mode, 0);
+
+            if (GetIniSetting(IniSettings.Show_Console, false) || mode == eMode.SERVER)
                 AppendParameter(ref svParameters, "-wconsole");
             else
                 AppendParameter(ref svParameters, "-noconsole");
