@@ -34,8 +34,16 @@ namespace launcher
 
             if (Global.isInstalled)
             {
-                cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
-                Task.Run(() => updateChecker.Start());
+                if (Global.isOnline)
+                {
+                    cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
+                    Task.Run(() => updateChecker.Start());
+                }
+                else
+                {
+                    cmbBranch.IsEnabled = false;
+                    cmbBranch.SelectedIndex = 0;
+                }
             }
 
             mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
@@ -94,6 +102,9 @@ namespace launcher
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!Global.isOnline)
+                return;
+
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;

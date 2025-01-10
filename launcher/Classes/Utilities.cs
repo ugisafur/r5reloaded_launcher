@@ -70,6 +70,13 @@ namespace launcher
 
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Setting up launcher");
 
+            Global.isOnline = DataFetcher.HasInternetConnection();
+
+            if (Global.isOnline)
+                Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Internet connection detected");
+            else
+                Logger.Log(Logger.Type.Warning, Logger.Source.Launcher, "No internet connection detected");
+
             ControlReferences.App = mainWindow;
             ControlReferences.dispatcher = mainWindow.Dispatcher;
             ControlReferences.progressBar = mainWindow.progressBar;
@@ -89,7 +96,13 @@ namespace launcher
 
             ShowProgressBar(false);
 
-            Task.Run(() => ControlReferences.statusPopup.StartStatusTimer());
+            if (Global.isOnline)
+                Task.Run(() => ControlReferences.statusPopup.StartStatusTimer());
+            else
+            {
+                ControlReferences.App.StatusBtn.IsEnabled = false;
+                ControlReferences.App.DownloadsBtn.IsEnabled = false;
+            }
 
             ControlReferences.launcherVersionlbl.Text = Global.launcherVersion;
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher Version: {Global.launcherVersion}");
@@ -103,7 +116,8 @@ namespace launcher
             ControlReferences.advancedControl.SetupAdvancedSettings();
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Advanced settings initialized");
 
-            Global.serverConfig = DataFetcher.FetchServerConfig();
+            if (Global.isOnline)
+                Global.serverConfig = DataFetcher.FetchServerConfig();
 
             Global.launcherConfig = FileManager.GetLauncherConfig();
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher config found");
@@ -125,13 +139,35 @@ namespace launcher
 
         public static List<ComboBranch> SetupGameBranches()
         {
-            return Global.serverConfig.branches
+            if (Global.isOnline)
+            {
+                return Global.serverConfig.branches
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
                     subtext = branch.enabled ? branch.currentVersion : "branch disabled"
                 })
                 .ToList();
+            }
+            else
+            {
+                List<Branch> branches = new();
+
+                Branch branch = new();
+                branch.branch = "No Internet Conenction";
+                branch.enabled = true;
+                branch.currentVersion = "Branch selection disabled";
+
+                branches.Add(branch);
+
+                return branches
+                .Select(branch => new ComboBranch
+                {
+                    title = branch.branch,
+                    subtext = branch.currentVersion
+                })
+                .ToList();
+            }
         }
 
         public static void LaunchGame()

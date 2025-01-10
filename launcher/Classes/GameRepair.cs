@@ -9,6 +9,9 @@
     {
         public async Task<bool> Start()
         {
+            if (!Global.isOnline)
+                return false;
+
             bool repairSuccess = true;
 
             //Install started

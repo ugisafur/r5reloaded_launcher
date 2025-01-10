@@ -29,6 +29,8 @@ namespace launcher
         public const string launcherVersion = "0.4.0";
         public const string serverConfigurl = "https://cdn.r5r.org/launcher/config.json";
 
+        public static bool isOnline = false;
+
         public static ServerConfig serverConfig;
         public static IniFile launcherConfig;
         public static Lazy<HttpClient> client { get; } = new Lazy<HttpClient>(() => new HttpClient() { Timeout = TimeSpan.FromSeconds(30) });

@@ -18,6 +18,9 @@
     {
         public async void Start()
         {
+            if (!Global.isOnline)
+                return;
+
             string currentVersion = Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
             // Check if the game is already up to date
             if (currentVersion == Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)

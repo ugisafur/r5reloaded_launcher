@@ -25,6 +25,9 @@ namespace launcher
 
         public async Task Start()
         {
+            if (!Global.isOnline)
+                return;
+
             Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Update worker started");
 
             Global.updateCheckLoop = true;

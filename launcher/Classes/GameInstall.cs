@@ -28,6 +28,9 @@ namespace launcher
     {
         public async void Start()
         {
+            if (!Global.isOnline)
+                return;
+
             //Install started
             Utilities.SetInstallState(true, "INSTALLING");
 

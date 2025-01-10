@@ -42,5 +42,19 @@ namespace launcher
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
+
+        public static bool HasInternetConnection()
+        {
+            try
+            {
+                using var client = new System.Net.WebClient();
+                using var stream = client.OpenRead("http://www.google.com");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
