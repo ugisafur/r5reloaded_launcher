@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string launcherVersion = "0.3.5";
+        public const string launcherVersion = "0.4.0";
 
         public static ServerConfig serverConfig;
         public static IniFile launcherConfig;

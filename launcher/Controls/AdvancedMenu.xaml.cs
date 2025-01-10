@@ -40,6 +40,8 @@ namespace launcher
             MaxFPS.Text = Utilities.GetIniSetting(Utilities.IniSettings.Max_FPS, "-1");
             HostName.Text = Utilities.GetIniSetting(Utilities.IniSettings.HostName, "");
             PlaylistsFile.Text = Utilities.GetIniSetting(Utilities.IniSettings.Playlists_File, "playlists_r5_patch.txt");
+            MapCmb.SelectedIndex = Utilities.GetIniSetting(Utilities.IniSettings.Map, 0);
+            PlaylistCmb.SelectedIndex = Utilities.GetIniSetting(Utilities.IniSettings.Playlist, 0);
             VisibilityCmb.SelectedIndex = Utilities.GetIniSetting(Utilities.IniSettings.Visibility, 0);
             Mode.SelectedIndex = Utilities.GetIniSetting(Utilities.IniSettings.Mode, 0);
             Borderless.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Borderless, false);
@@ -64,6 +66,8 @@ namespace launcher
             HostName.TextChanged += HostName_TextChanged;
             PlaylistsFile.TextChanged += PlaylistsFile_TextChanged;
 
+            MapCmb.SelectionChanged += Map_SelectionChanged;
+            PlaylistCmb.SelectionChanged += Playlist_SelectionChanged;
             VisibilityCmb.SelectionChanged += Visibility_SelectionChanged;
             Mode.SelectionChanged += Mode_SelectionChanged;
 
@@ -179,6 +183,18 @@ namespace launcher
         {
             if (Utilities.GetIniSetting(Utilities.IniSettings.Playlists_File, "playlists_r5_patch.txt") != PlaylistsFile.Text)
                 Utilities.SetIniSetting(Utilities.IniSettings.Playlists_File, PlaylistsFile.Text);
+        }
+
+        private void Map_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //if (Utilities.GetIniSetting(Utilities.IniSettings.Map, 0) != MapCmb.SelectedIndex)
+            //Utilities.SetIniSetting(Utilities.IniSettings.Map, MapCmb.SelectedIndex);
+        }
+
+        private void Playlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //if (Utilities.GetIniSetting(Utilities.IniSettings.Playlist, 0) != PlaylistCmb.SelectedIndex)
+            //Utilities.SetIniSetting(Utilities.IniSettings.Playlist, PlaylistCmb.SelectedIndex);
         }
 
         private void Visibility_SelectionChanged(object sender, SelectionChangedEventArgs e)

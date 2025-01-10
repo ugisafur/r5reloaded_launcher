@@ -458,14 +458,22 @@
                     <TextBlock Text="Disables all asynchronous game processes" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,7,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="0" Grid.Column="1">
+                    <ComboBox x:Name="MapCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Height="30" Width="275" Foreground="White" />
+                    <TextBlock Text="Map" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="2">
+                    <ComboBox x:Name="PlaylistCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Height="30" Width="275" Foreground="White" />
+                    <TextBlock Text="Playlist" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="1">
                     <TextBox x:Name="PlaylistsFile" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="playlists_r5_patch.txt" Foreground="White" FontSize="16" />
                     <TextBlock Text="Playlists file" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,29,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="0" Grid.Column="2">
+                <Grid Grid.Row="1" Grid.Column="2">
                     <TextBox x:Name="HostName" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" />
                     <TextBlock Text="Host Name" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,61,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="1">
+                <Grid Grid.Row="2" Grid.Column="1">
                     <ComboBox x:Name="Mode" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Height="30" Width="275" Foreground="White">
                         <ComboBoxItem Content="Host" />
                         <ComboBoxItem Content="Server" />
@@ -473,7 +481,7 @@
                     </ComboBox>
                     <TextBlock Text="Mode" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="2">
+                <Grid Grid.Row="2" Grid.Column="2">
                     <ComboBox x:Name="VisibilityCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Height="30" Width="275" Foreground="White">
                         <ComboBoxItem Content="Offline" />
                         <ComboBoxItem Content="Hidden" />
