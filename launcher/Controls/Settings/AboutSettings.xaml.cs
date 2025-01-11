@@ -24,5 +24,11 @@ namespace launcher
         {
             InitializeComponent();
         }
+
+        public void SetupAboutSettings()
+        {
+            // Set the initial state of the toggle switches
+            launcherVersionTxt.Text = Global.launcherVersion;
+        }
     }
 }

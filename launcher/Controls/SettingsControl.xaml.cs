@@ -109,11 +109,22 @@ namespace launcher
 
             accessibilityPage.SetupAccessibilitySettings();
             applicationPage.SetupApplicationSettings();
+            //gamePage.SetupGameSettings();
+            GameInstallsBtn.IsEnabled = false;
+            downloadPage.SetupDownloadSettings();
+            aboutPage.SetupAboutSettings();
+        }
+
+        public void OpenDownloadsSettings()
+        {
+            SetSettingsTab(Global.SettingsPage.Download);
+            Utilities.ShowSettingsControl();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideSettingsControl();
+            if (Global.inSettingsMenu)
+                Utilities.HideSettingsControl();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

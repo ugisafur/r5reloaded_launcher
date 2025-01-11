@@ -79,7 +79,7 @@
                 </ScrollViewer>
             </StackPanel>
             <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads in the queue." Foreground="#FF6E94AB" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
-            <Button Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="4,3,0,0" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" HorizontalAlignment="Left">
+            <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="4,3,0,0" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" HorizontalAlignment="Left" Click="gotoDownloads_Click">
                 <Grid Width="170">
                     <TextBlock Text="Download Settings" HorizontalAlignment="Left" FontSize="16" Margin="29,1,0,-1" />
                     <Image Source="/assets/icons8-settings-100.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="5,0,0,0" />

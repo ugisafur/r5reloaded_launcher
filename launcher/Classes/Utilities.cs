@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using static launcher.Logger;
 
@@ -286,10 +287,13 @@ namespace launcher
 
         public static void ShowSettingsControl()
         {
+            Global.inSettingsMenu = true;
+
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.settingsControl.Visibility = Visibility.Visible;
                 ControlReferences.subMenuControl.Settings.IsEnabled = false;
+                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
                 return;
             }
 
@@ -307,14 +311,18 @@ namespace launcher
             };
             transitionInStoryboard.Begin();
             ControlReferences.subMenuControl.Settings.IsEnabled = false;
+            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideSettingsControl()
         {
+            Global.inSettingsMenu = false;
+
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.settingsControl.Visibility = Visibility.Hidden;
                 ControlReferences.subMenuControl.Settings.IsEnabled = true;
+                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
                 return;
             }
 
@@ -332,13 +340,18 @@ namespace launcher
             };
             transitionInStoryboard.Begin();
             ControlReferences.subMenuControl.Settings.IsEnabled = true;
+            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
         }
 
         public static void ShowAdvancedControl()
         {
+            Global.inAdvancedMenu = true;
+
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.advancedControl.Visibility = Visibility.Visible;
+                ControlReferences.subMenuControl.Settings.IsEnabled = false;
+                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
                 return;
             }
 
@@ -355,13 +368,19 @@ namespace launcher
                 fadeInStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
+            ControlReferences.subMenuControl.Settings.IsEnabled = false;
+            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideAdvancedControl()
         {
+            Global.inAdvancedMenu = false;
+
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
                 ControlReferences.advancedControl.Visibility = Visibility.Hidden;
+                ControlReferences.subMenuControl.Settings.IsEnabled = true;
+                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
                 return;
             }
 
@@ -378,6 +397,8 @@ namespace launcher
                 fadeOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
+            ControlReferences.subMenuControl.Settings.IsEnabled = true;
+            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)
@@ -499,7 +520,7 @@ namespace launcher
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
                 file.SetSetting("Settings", "Concurrent_Downloads", "Max");
-                file.SetSetting("Settings", "Download_Speed_Limit", -1);
+                file.SetSetting("Settings", "Download_Speed_Limit", "");
                 file.SetSetting("Settings", "Download_HD_Textures", false);
 
                 file.SetSetting("Advanced_Options", "Enable_Cheats", false);

@@ -34,9 +34,11 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            ControlReferences.SubMenuPopup.IsOpen = false;
-
-            Utilities.ShowSettingsControl();
+            if (!Global.inSettingsMenu && !Global.inAdvancedMenu)
+            {
+                ControlReferences.SubMenuPopup.IsOpen = false;
+                Utilities.ShowSettingsControl();
+            }
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)

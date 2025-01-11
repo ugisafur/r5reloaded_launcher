@@ -35,8 +35,11 @@ namespace launcher
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
         {
-            ControlReferences.gameSettingsPopup.IsOpen = false;
-            Utilities.ShowAdvancedControl();
+            if (!Global.inAdvancedMenu)
+            {
+                ControlReferences.gameSettingsPopup.IsOpen = false;
+                Utilities.ShowAdvancedControl();
+            }
         }
     }
 }

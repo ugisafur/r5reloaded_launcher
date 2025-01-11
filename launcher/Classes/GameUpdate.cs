@@ -33,6 +33,10 @@
             // Install started
             Utilities.SetInstallState(true, "UPDATING");
 
+            //Set download limits
+            DownloadManager.SetSemaphoreLimit();
+            DownloadManager.SetDownloadSpeedLimit();
+
             // Create temp directory to store downloaded files
             string tempDirectory = FileManager.CreateTempDirectory();
 

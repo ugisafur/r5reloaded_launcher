@@ -67,7 +67,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border x:Name="ComboBoxBorder" Background="#151B28" BorderThickness="2" CornerRadius="4" BorderBrush="#54adf7">
+                            <Border x:Name="ComboBoxBorder" Background="#151B28" BorderThickness="1" CornerRadius="4" BorderBrush="#54adf7">
                                 <DockPanel LastChildFill="True">
                                     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                                       VerticalAlignment="Center"

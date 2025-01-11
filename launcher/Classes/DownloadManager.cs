@@ -20,14 +20,26 @@ namespace launcher
     /// </summary>
     public static class DownloadManager
     {
-        public static void SetSemaphoreLimit(int limit)
+        private static long downloadSpeedLimit = ThrottledStream.Infinite;
+
+        public static void SetSemaphoreLimit()
         {
+            int limit = Utilities.GetIniSetting(Utilities.IniSettings.Concurrent_Downloads, 1000);
+
             Global.downloadSemaphore = new SemaphoreSlim(limit);
+        }
+
+        public static void SetDownloadSpeedLimit()
+        {
+            int limit = Utilities.GetIniSetting(Utilities.IniSettings.Download_Speed_Limit, 0);
+
+            //Convert KB/s to B/s
+            downloadSpeedLimit = limit * 1024;
         }
 
         public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
         {
-            long maxDownloadSpeedBytesPerSecond = ThrottledStream.Infinite; //Todo: Set appropriate download speed limit
+            long maxDownloadSpeedBytesPerSecond = downloadSpeedLimit; //Todo: Set appropriate download speed limit
 
             var cancellationSource = new CancellationTokenSource();
             var cancellationToken = cancellationSource.Token;

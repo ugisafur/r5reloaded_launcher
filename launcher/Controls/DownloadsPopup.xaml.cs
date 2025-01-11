@@ -57,5 +57,14 @@ namespace launcher
         {
             NoDownloadsLbl.Visibility = show ? Visibility.Visible : Visibility.Hidden;
         }
+
+        private void gotoDownloads_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Global.inSettingsMenu && !Global.inAdvancedMenu)
+            {
+                ControlReferences.App.DownloadsPopup.IsOpen = false;
+                ControlReferences.settingsControl.OpenDownloadsSettings();
+            }
+        }
     }
 }

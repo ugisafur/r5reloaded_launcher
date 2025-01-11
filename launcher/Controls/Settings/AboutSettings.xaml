@@ -6,7 +6,21 @@
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
                       d:DesignHeight="704" d:DesignWidth="935">
+    <UserControl.Resources>
+    </UserControl.Resources>
     <Border Background="#0a1d29">
-        <TextBlock Text="About Page" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="121*" />
+                <RowDefinition Height="173*" />
+                <RowDefinition Height="410*" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="About" Foreground="White" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
+            <Image Grid.Row="1" Source="/assets/R5R-Logo-White.gif" HorizontalAlignment="Left" VerticalAlignment="Center" Height="150" Width="150" Margin="10,0,0,0" />
+            <Rectangle Grid.Row="2" Fill="#FF52AAF2" Height="1" VerticalAlignment="Top" Margin="40,0,40,0" />
+            <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="White" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" />
+            <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="162,27,380,367" />
+            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="White" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" />
+        </Grid>
     </Border>
 </UserControl>

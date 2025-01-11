@@ -26,7 +26,8 @@ namespace launcher
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideAdvancedControl();
+            if (Global.inAdvancedMenu)
+                Utilities.HideAdvancedControl();
         }
 
         public void SetupAdvancedSettings()

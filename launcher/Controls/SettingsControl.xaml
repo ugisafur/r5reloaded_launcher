@@ -55,7 +55,10 @@
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF2e6893" />
+                                <Setter Property="TextBlock.Foreground" Value="#FF2e6893" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="true">
+                                <Setter Property="TextBlock.Foreground" Value="#FF52aaf2" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -89,30 +92,20 @@
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">
-                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
-                        <Grid Width="300">
-                            <TextBlock Text="Application" />
-                        </Grid>
+                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <TextBlock Text="Application" Width="300" />
                     </Button>
-                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
-                        <Grid Width="300">
-                            <TextBlock Text="Accessibility" />
-                        </Grid>
+                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <TextBlock Text="Accessibility" Width="300" />
                     </Button>
-                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
-                        <Grid Width="300">
-                            <TextBlock Text="Game Installs" />
-                        </Grid>
+                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <TextBlock Text="Game Installs" Width="300" />
                     </Button>
-                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
-                        <Grid Width="300">
-                            <TextBlock Text="Download" />
-                        </Grid>
+                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <TextBlock Text="Download" Width="300" />
                     </Button>
-                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="Button_Click">
-                        <Grid Width="300">
-                            <TextBlock Text="About" />
-                        </Grid>
+                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click">
+                        <TextBlock Text="About" Width="300" />
                     </Button>
                 </StackPanel>
             </Grid>
