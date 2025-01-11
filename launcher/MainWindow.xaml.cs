@@ -24,6 +24,8 @@ namespace launcher
         {
             Utilities.CreateLauncherConfig();
 
+            Utilities.SetupApp(this);
+
             if (!Utilities.GetIniSetting(Utilities.IniSettings.Disable_Animations, false))
             {
                 OnOpen();
@@ -37,8 +39,6 @@ namespace launcher
                 this.Left = (screenWidth / 2) - (windowWidth / 2);
                 this.Top = (screenHeight / 2) - (windowHeight / 2);
             }
-
-            Utilities.SetupApp(this);
 
             UpdateChecker updateChecker = new(Dispatcher);
             btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";

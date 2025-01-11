@@ -22,10 +22,11 @@ namespace launcher
         public static async Task<GamePatch> FetchPatchFiles()
         {
             int selectedBranchIndex = Utilities.GetCmbBranchIndex();
+
             string patchURL = Global.serverConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
             string patchFile = await FetchJson(patchURL);
-            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
 
+            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
             patchFiles.files = patchFiles.files
                 .Where(file => !file.Name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -36,10 +37,11 @@ namespace launcher
         public static async Task<GamePatch> FetchOptionalPatchFiles()
         {
             int selectedBranchIndex = Utilities.GetCmbBranchIndex();
+
             string patchURL = Global.serverConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
             string patchFile = await FetchJson(patchURL);
-            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
 
+            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
             patchFiles.files = patchFiles.files
                 .Where(file => file.Name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -50,12 +52,14 @@ namespace launcher
         public static async Task<BaseGameFiles> FetchBaseGameFiles(bool compressed)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
+            string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
+
             string baseGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
             string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
 
             var baseGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
             baseGameFiles.files = baseGameFiles.files
-                .Where(file => !file.name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
+                .Where(file => !file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             return baseGameFiles;
@@ -64,15 +68,17 @@ namespace launcher
         public static async Task<BaseGameFiles> FetchOptionalGameFiles(bool compressed)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
-            string baseGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
-            string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
+            string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            var baseGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
-            baseGameFiles.files = baseGameFiles.files
-                .Where(file => file.name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
+            string optionalGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
+            string optionalGameZstChecksums = await FetchJson(optionalGameChecksumUrl);
+
+            var optionalGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(optionalGameZstChecksums);
+            optionalGameFiles.files = optionalGameFiles.files
+                .Where(file => file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
-            return baseGameFiles;
+            return optionalGameFiles;
         }
 
         public static async Task<string> FetchJson(string url)

@@ -554,8 +554,6 @@ namespace launcher
                 file.SetSetting("Launcher", "Installed", false);
 
                 file.Save(iniPath);
-
-                Log(Logger.Type.Info, Source.Ini, "Launcher config created");
             }
         }
 
