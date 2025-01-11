@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string launcherVersion = "0.4.7";
+        public const string launcherVersion = "0.5.0";
         public const string serverConfigurl = "https://cdn.r5r.org/launcher/config.json";
 
         public static bool isOnline = false;
@@ -47,8 +47,8 @@ namespace launcher
         public static bool inSettingsMenu = false;
         public static bool inAdvancedMenu = false;
 
-        public static SemaphoreSlim downloadSemaphore = new SemaphoreSlim(100);
-        public static List<string> badFiles = new List<string>();
+        public static SemaphoreSlim downloadSemaphore = new(100);
+        public static List<string> badFiles = [];
 
         public enum SettingsPage
         {

@@ -27,24 +27,21 @@ namespace launcher
     /// </summary>
     public static class ControlReferences
     {
-        public static ProgressBar progressBar = new ProgressBar();
-        public static TextBlock lblStatus = new TextBlock();
-        public static TextBlock lblFilesLeft = new TextBlock();
-        public static TextBlock launcherVersionlbl = new TextBlock();
-        public static ComboBox cmbBranch = new ComboBox();
-        public static Button btnPlay = new Button();
-        public static MainWindow App = new MainWindow();
-        public static SettingsControl settingsControl = new SettingsControl();
-        public static AdvancedMenu advancedControl = new AdvancedMenu();
-        public static subMenu subMenuControl = new subMenu();
-        public static DependencyObject TransitionRect = new DependencyObject();
-        public static Popup SubMenuPopup = new Popup();
-        public static Popup gameSettingsPopup = new Popup();
-        public static StatusPopup statusPopup = new StatusPopup();
+        public static ProgressBar progressBar = new();
+        public static TextBlock lblStatus = new();
+        public static TextBlock lblFilesLeft = new();
+        public static TextBlock launcherVersionlbl = new();
+        public static ComboBox cmbBranch = new();
+        public static Button btnPlay = new();
+        public static MainWindow App = new();
+        public static SettingsControl settingsControl = new();
+        public static AdvancedMenu advancedControl = new();
+        public static subMenu subMenuControl = new();
+        public static DependencyObject TransitionRect = new();
+        public static Popup SubMenuPopup = new();
+        public static Popup gameSettingsPopup = new();
+        public static StatusPopup statusPopup = new();
         public static Dispatcher dispatcher = App.Dispatcher;
-        public static DownloadsPopup downloadsPopupControl = new DownloadsPopup();
-        public static GameRepair gameRepair = new GameRepair();
-        public static GameInstall gameInstall = new GameInstall();
-        public static GameUpdate gameUpdate = new GameUpdate();
+        public static DownloadsPopup downloadsPopupControl = new();
     }
 }

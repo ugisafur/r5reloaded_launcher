@@ -15,9 +15,6 @@ namespace launcher
     {
         private int lastSelectedIndex = 0;
 
-        //TempBoolForTesting
-        private bool useStaticImage = false;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -43,7 +40,7 @@ namespace launcher
 
             Utilities.SetupApp(this);
 
-            UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
+            UpdateChecker updateChecker = new(Dispatcher);
             btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
 
             if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
@@ -63,6 +60,7 @@ namespace launcher
                 }
             }
 
+            bool useStaticImage = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Background_Video, false);
             mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
@@ -124,7 +122,7 @@ namespace launcher
             storyboard.Children.Add(opacityAnimationWindow);
 
             // Begin the storyboard and await its completion
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool> tcs = new();
             storyboard.Completed += (s, e) => tcs.SetResult(true);
             storyboard.Begin();
 
@@ -162,7 +160,7 @@ namespace launcher
             {
                 if (Global.updateRequired)
                 {
-                    Task.Run(() => ControlReferences.gameUpdate.Start());
+                    Task.Run(() => GameUpdate.Start());
                 }
                 else
                 {
@@ -173,11 +171,11 @@ namespace launcher
             {
                 if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
                 {
-                    Task.Run(() => ControlReferences.gameRepair.Start());
+                    Task.Run(() => GameRepair.Start());
                 }
                 else
                 {
-                    Task.Run(() => ControlReferences.gameInstall.Start());
+                    Task.Run(() => GameInstall.Start());
                 }
             }
         }

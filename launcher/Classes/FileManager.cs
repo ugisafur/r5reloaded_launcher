@@ -96,7 +96,7 @@ namespace launcher
             {
                 try
                 {
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                    using (FileStream fs = new(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                     {
                         // If we get here, the file is not in use and can be safely deleted
                     }
@@ -128,7 +128,7 @@ namespace launcher
             if (!File.Exists(configPath))
                 return null;
 
-            IniFile file = new IniFile();
+            IniFile file = new();
             file.Load(configPath);
 
             Logger.Log(Logger.Type.Info, Logger.Source.FileManager, "Loaded launcher ini");
@@ -143,13 +143,37 @@ namespace launcher
             return tempDirectory;
         }
 
-        public static List<Task<FileChecksum>> PrepareChecksumTasks()
+        public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks()
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
             var allFiles = Directory.GetFiles(Global.launcherPath, "*", SearchOption.AllDirectories)
-                                    .Where(f => !f.Contains("\\temp\\"))
-                                    .ToArray();
+                        .Where(f => !f.Contains("\\temp\\") && !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
+                        .ToArray();
+
+            ControlReferences.dispatcher.Invoke(() =>
+            {
+                ControlReferences.progressBar.Maximum = allFiles.Length;
+                ControlReferences.progressBar.Value = 0;
+            });
+
+            Global.filesLeft = allFiles.Length;
+
+            foreach (var file in allFiles)
+            {
+                checksumTasks.Add(GenerateAndReturnFileChecksum(file));
+            }
+
+            return checksumTasks;
+        }
+
+        public static List<Task<FileChecksum>> PrepareOptionalGameChecksumTasks()
+        {
+            var checksumTasks = new List<Task<FileChecksum>>();
+
+            var allFiles = Directory.GetFiles(Global.launcherPath, "*", SearchOption.AllDirectories)
+                        .Where(f => !f.Contains("\\temp\\") && f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
+                        .ToArray();
 
             ControlReferences.dispatcher.Invoke(() =>
             {
@@ -191,12 +215,10 @@ namespace launcher
 
         public static string CalculateChecksum(string filePath)
         {
-            using (var stream = File.OpenRead(filePath))
-            using (var sha256 = SHA256.Create())
-            {
-                var hash = sha256.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            using var stream = File.OpenRead(filePath);
+            using var sha256 = SHA256.Create();
+            var hash = sha256.ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         public static void SaveLauncherConfig()

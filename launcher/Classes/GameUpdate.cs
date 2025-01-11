@@ -16,7 +16,7 @@
     /// </summary>
     public class GameUpdate
     {
-        public async void Start()
+        public static async void Start()
         {
             if (!Global.isOnline)
                 return;
@@ -28,7 +28,7 @@
 
             // Check if user is to outdated to update normally
             if (currentVersion != Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
-                await ControlReferences.gameRepair.Start();
+                await GameRepair.Start();
 
             // Install started
             Utilities.SetInstallState(true, "UPDATING");
@@ -64,6 +64,37 @@
 
             // Set update required to false
             Global.updateRequired = false;
+
+            //Delete temp directory
+            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+
+            if (Utilities.GetIniSetting(Utilities.IniSettings.Download_HD_Textures, false) && Utilities.GetIniSetting(Utilities.IniSettings.HD_Textures_Installed, false))
+                Task.Run(() => UpdateOptionalFiles());
+        }
+
+        private static async Task UpdateOptionalFiles()
+        {
+            //Set download limits
+            DownloadManager.SetSemaphoreLimit();
+            DownloadManager.SetDownloadSpeedLimit();
+
+            // Create temp directory to store downloaded files
+            string tempDirectory = FileManager.CreateTempDirectory();
+
+            // Fetch patch files
+            GamePatch patchFiles = await DataFetcher.FetchOptionalPatchFiles();
+
+            // Prepare download tasks
+            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, tempDirectory);
+
+            // Download patch files
+            await Task.WhenAll(downloadTasks);
+
+            // Prepare file patch tasks
+            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, tempDirectory);
+
+            // Patch base game files
+            await Task.WhenAll(filePatchTasks);
 
             //Delete temp directory
             await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));

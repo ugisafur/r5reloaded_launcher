@@ -1,4 +1,4 @@
 ﻿[*.cs]
 
-# CS4014: Because this call is not awaited, execution of the current method continues before the call is completed
-dotnet_diagnostic.CS4014.severity = silent
+# CA2211: Non-constant fields should not be visible
+dotnet_diagnostic.CA2211.severity = none

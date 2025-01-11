@@ -8,6 +8,15 @@
     <UseWPF>true</UseWPF>
 	<ApplicationIcon>launcher_x64.ico</ApplicationIcon>
 	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	<NoWarn>$(NoWarn);SYSLIB0014</NoWarn>
+	<NoWarn>$(NoWarn);IDE1006</NoWarn>
+	<NoWarn>$(NoWarn);IDE0130</NoWarn>
+	<NoWarn>$(NoWarn);CA1835</NoWarn>
+	<NoWarn>$(NoWarn);SYSLIB1054</NoWarn>
+	<NoWarn>$(NoWarn);SYSLIB0014</NoWarn>
+	<NoWarn>$(NoWarn);SYSLIB1045</NoWarn>
+	<NoWarn>$(NoWarn);CA1416</NoWarn>
+	<NoWarn>$(NoWarn);CS4014</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +48,7 @@
     <Content Include="assets\launcher_bg.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <Resource Include="assets\icons8-check-48.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

@@ -63,7 +63,7 @@ namespace launcher
             }
             catch (Exception ex)
             {
-                //Disk full, permission issues, etc.
+                throw new Exception($"Failed to write to log file: {ex.Message}");
             }
         }
 

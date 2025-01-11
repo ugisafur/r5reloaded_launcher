@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public class GameInstall
     {
-        public async void Start()
+        public static async void Start()
         {
             if (!Global.isOnline)
                 return;
@@ -80,15 +80,55 @@ namespace launcher
             //Delete temp directory
             if (Directory.Exists(tempDirectory))
                 await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+
+            if (Utilities.GetIniSetting(Utilities.IniSettings.Download_HD_Textures, false))
+                Task.Run(() => InstallOptionalFiles());
         }
 
-        private async Task AttemptGameRepair()
+        private static async Task InstallOptionalFiles()
+        {
+            //Set download limits
+            DownloadManager.SetSemaphoreLimit();
+            DownloadManager.SetDownloadSpeedLimit();
+
+            //Create temp directory to store downloaded files
+            string tempDirectory = FileManager.CreateTempDirectory();
+
+            //Fetch compressed base game file list
+            Utilities.UpdateStatusLabel("Fetching optional files list", Logger.Source.Installer);
+            BaseGameFiles optionalGameFiles = await DataFetcher.FetchOptionalGameFiles(true);
+
+            //Prepare download tasks
+            Utilities.UpdateStatusLabel("Preparing optional download", Logger.Source.Installer);
+            var optionaldownloadTasks = DownloadManager.PrepareDownloadTasks(optionalGameFiles, tempDirectory);
+
+            //Download base game files
+            Utilities.UpdateStatusLabel("Downloading optional files", Logger.Source.Installer);
+            await Task.WhenAll(optionaldownloadTasks);
+
+            //Prepare decompression tasks
+            Utilities.UpdateStatusLabel("Preparing game decompression", Logger.Source.Installer);
+            var decompressionTasks = DecompressionManager.PrepareTasks(optionaldownloadTasks);
+
+            //Decompress base game files
+            Utilities.UpdateStatusLabel("Decompressing game files", Logger.Source.Installer);
+            await Task.WhenAll(decompressionTasks);
+
+            //Set HD textures as installed
+            Utilities.SetIniSetting(Utilities.IniSettings.HD_Textures_Installed, true);
+
+            //Delete temp directory
+            if (Directory.Exists(tempDirectory))
+                await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+        }
+
+        private static async Task AttemptGameRepair()
         {
             bool isRepaired = false;
 
             for (int i = 0; i < Global.MAX_REPAIR_ATTEMPTS; i++)
             {
-                isRepaired = await ControlReferences.gameRepair.Start();
+                isRepaired = await GameRepair.Start();
                 if (isRepaired) break;
             }
 

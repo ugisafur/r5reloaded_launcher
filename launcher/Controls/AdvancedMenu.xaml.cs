@@ -17,8 +17,6 @@ namespace launcher
     /// </summary>
     public partial class AdvancedMenu : UserControl
     {
-        private bool loading = false;
-
         public AdvancedMenu()
         {
             InitializeComponent();

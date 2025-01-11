@@ -26,6 +26,7 @@ namespace launcher
             Concurrent_Downloads,
             Download_Speed_Limit,
             Download_HD_Textures,
+            HD_Textures_Installed,
             Enable_Cheats,
             Enable_Developer,
             Show_Console,
@@ -151,14 +152,13 @@ namespace launcher
             }
             else
             {
-                List<Branch> branches = new();
-
-                Branch branch = new();
-                branch.branch = "No Internet Conenction";
-                branch.enabled = true;
-                branch.currentVersion = "Branch selection disabled";
-
-                branches.Add(branch);
+                List<Branch> branches = [
+                    new Branch() {
+                        branch = "No Internet Conenction",
+                        enabled = true,
+                        currentVersion = "Branch selection disabled"
+                    }
+                ];
 
                 return branches
                 .Select(branch => new ComboBranch
@@ -433,7 +433,7 @@ namespace launcher
 
         private static IniFile GetIniFile()
         {
-            IniFile file = new IniFile();
+            IniFile file = new();
             file.Load(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
             return file;
         }
@@ -548,6 +548,7 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "Borderless", false);
                 file.SetSetting("Advanced_Options", "Max_FPS", "-1");
 
+                file.SetSetting("Launcher", "HD_Textures_Installed", false);
                 file.SetSetting("Launcher", "Current_Version", "");
                 file.SetSetting("Launcher", "Current_Branch", "");
                 file.SetSetting("Launcher", "Installed", false);
@@ -598,6 +599,7 @@ namespace launcher
                 IniSettings.Current_Version => "Launcher",
                 IniSettings.Current_Branch => "Launcher",
                 IniSettings.Installed => "Launcher",
+                IniSettings.HD_Textures_Installed => "Launcher",
                 _ => throw new NotImplementedException()
             };
         }
@@ -640,6 +642,7 @@ namespace launcher
                 IniSettings.Current_Version => "Current_Version",
                 IniSettings.Current_Branch => "Current_Branch",
                 IniSettings.Installed => "Installed",
+                IniSettings.HD_Textures_Installed => "HD_Textures_Installed",
                 _ => throw new NotImplementedException()
             };
         }

@@ -27,10 +27,7 @@ namespace launcher
 
         private void btnRepair_Click(object sender, RoutedEventArgs e)
         {
-            if (ControlReferences.gameRepair == null)
-                return;
-
-            Task.Run(() => ControlReferences.gameRepair.Start());
+            Task.Run(() => GameRepair.Start());
         }
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)

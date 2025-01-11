@@ -90,47 +90,45 @@ namespace launcher
                     request.Timeout = 30000; // Set appropriate timeout
                     request.AllowAutoRedirect = true;
 
-                    using (var response = (HttpWebResponse)await request.GetResponseAsync())
+                    using var response = (HttpWebResponse)await request.GetResponseAsync();
+                    if (response.StatusCode != HttpStatusCode.OK)
+                        throw new WebException($"Failed to download: {response.StatusCode}");
+
+                    totalBytes = response.ContentLength;
+                    downloadedBytes = 0L;
+
+                    using var responseStream = response.GetResponseStream();
+                    using var throttledStream = new ThrottledStream(responseStream, maxDownloadSpeedBytesPerSecond);  // Throttling applied here
+                    using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+                    var buffer = new byte[64 * 1024]; // 128KB buffer
+                    int bytesRead;
+                    var stopwatch = new System.Diagnostics.Stopwatch();
+                    stopwatch.Start();
+
+                    while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                            throw new WebException($"Failed to download: {response.StatusCode}");
+                        await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        downloadedBytes += bytesRead;
 
-                        totalBytes = response.ContentLength;
-                        downloadedBytes = 0L;
-
-                        using var responseStream = response.GetResponseStream();
-                        using var throttledStream = new ThrottledStream(responseStream, maxDownloadSpeedBytesPerSecond);  // Throttling applied here
-                        using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-                        var buffer = new byte[64 * 1024]; // 128KB buffer
-                        int bytesRead;
-                        var stopwatch = new System.Diagnostics.Stopwatch();
-                        stopwatch.Start();
-
-                        while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                        // Update progress in the popup
+                        if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                         {
-                            await fileStream.WriteAsync(buffer, 0, bytesRead);
-                            downloadedBytes += bytesRead;
+                            lastUpdate = DateTime.Now;
 
-                            // Update progress in the popup
-                            if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
+                            if (downloadItem != null && totalBytes > 0)
                             {
-                                lastUpdate = DateTime.Now;
-
-                                if (downloadItem != null && totalBytes > 0)
+                                var progress = (double)downloadedBytes / totalBytes * 100;
+                                await ControlReferences.dispatcher.InvokeAsync(() =>
                                 {
-                                    var progress = (double)downloadedBytes / totalBytes * 100;
-                                    await ControlReferences.dispatcher.InvokeAsync(() =>
-                                    {
-                                        downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                                        downloadItem.downloadFileProgress.Value = progress;
-                                    });
-                                }
+                                    downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                                    downloadItem.downloadFileProgress.Value = progress;
+                                });
                             }
                         }
-
-                        await fileStream.FlushAsync();
                     }
+
+                    await fileStream.FlushAsync();
                 });
 
                 //Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Downloaded: {destinationPath}");
@@ -240,7 +238,7 @@ namespace launcher
 
             foreach (var file in patchFiles.files)
             {
-                if (file.Action.ToLower() == "delete")
+                if (file.Action.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
                     continue;
 
                 string fileUrl = $"{Global.serverConfig.branches[selectedBranchIndex].patch_url}/{file.Name}";
