@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
@@ -12,7 +6,7 @@ using System.Windows.Threading;
 namespace launcher
 {
     /// <summary>
-    /// The ControlReferences.cs file contains a static class that holds references
+    /// The cs file contains a static class that holds references
     /// to various UI controls and components used throughout the application.
     /// These references are initialized as static fields, making them easily
     /// accessible from anywhere within the application.
@@ -33,7 +27,7 @@ namespace launcher
         public static TextBlock launcherVersionlbl = new();
         public static ComboBox cmbBranch = new();
         public static Button btnPlay = new();
-        public static MainWindow App = new();
+        public static MainWindow mainApp = new();
         public static SettingsControl settingsControl = new();
         public static AdvancedMenu advancedControl = new();
         public static subMenu subMenuControl = new();
@@ -41,7 +35,7 @@ namespace launcher
         public static Popup SubMenuPopup = new();
         public static Popup gameSettingsPopup = new();
         public static StatusPopup statusPopup = new();
-        public static Dispatcher dispatcher = App.Dispatcher;
+        public static Dispatcher appDispatcher = mainApp.Dispatcher;
         public static DownloadsPopup downloadsPopupControl = new();
     }
 }

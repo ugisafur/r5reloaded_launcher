@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static launcher.Utilities;
+using static launcher.Global;
 
 namespace launcher
 {
@@ -31,7 +20,7 @@ namespace launcher
             InitializeComponent();
         }
 
-        private void SetSettingsTab(Global.SettingsPage page)
+        private void SetSettingsTab(SettingsPage page)
         {
             // Get the currently visible page
             var visiblePage = GetVisiblePage();
@@ -39,11 +28,11 @@ namespace launcher
             // Get the new page to display
             UserControl newPage = page switch
             {
-                Global.SettingsPage.Application => applicationPage,
-                Global.SettingsPage.Accessibility => accessibilityPage,
-                Global.SettingsPage.GameInstalls => gamePage,
-                Global.SettingsPage.Download => downloadPage,
-                Global.SettingsPage.About => aboutPage,
+                SettingsPage.APPLICATION => applicationPage,
+                SettingsPage.ACCESSIBILITY => accessibilityPage,
+                SettingsPage.GAME_INSTALLS => gamePage,
+                SettingsPage.DOWNLOAD => downloadPage,
+                SettingsPage.ABOUT => aboutPage,
                 _ => null,
             };
 
@@ -105,7 +94,7 @@ namespace launcher
             buttons.Add(DownloadBtn);
             buttons.Add(AboutBtn);
 
-            SetSettingsTab(Global.SettingsPage.Application);
+            SetSettingsTab(SettingsPage.APPLICATION);
 
             accessibilityPage.SetupAccessibilitySettings();
             applicationPage.SetupApplicationSettings();
@@ -117,13 +106,13 @@ namespace launcher
 
         public void OpenDownloadsSettings()
         {
-            SetSettingsTab(Global.SettingsPage.Download);
+            SetSettingsTab(SettingsPage.DOWNLOAD);
             Utilities.ShowSettingsControl();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Global.inSettingsMenu)
+            if (IN_SETTINGS_MENU)
                 Utilities.HideSettingsControl();
         }
 
@@ -133,7 +122,7 @@ namespace launcher
 
             int i = buttons.IndexOf(button);
 
-            SetSettingsTab((Global.SettingsPage)i);
+            SetSettingsTab((SettingsPage)i);
         }
     }
 }

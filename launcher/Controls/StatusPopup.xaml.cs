@@ -4,16 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -57,7 +51,7 @@ namespace launcher
 
         private async void GetStatusInfo()
         {
-            Logger.Log(Logger.Type.Info, Logger.Source.API, "Checking status of services...");
+            Log(Logger.Type.Info, Source.API, "Checking status of services...");
 
             bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
             bool isMSUP = await IsUrlUp("https://r5r.org/");
@@ -79,7 +73,7 @@ namespace launcher
 
             if (!isMSUP)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.API, "Master Server is down.");
+                Log(Logger.Type.Error, Source.API, "Master Server is down.");
                 return;
             }
 
@@ -87,7 +81,7 @@ namespace launcher
 
             if (string.IsNullOrEmpty(serverlist))
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to get server list from API.");
+                Log(Logger.Type.Error, Source.API, "Failed to get server list from API.");
                 return;
             }
 
@@ -95,7 +89,7 @@ namespace launcher
 
             if (!game_server_list.success)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.API, "Failed to get server list from API.");
+                Log(Logger.Type.Error, Source.API, "Failed to get server list from API.");
                 return;
             }
 
@@ -124,17 +118,17 @@ namespace launcher
             catch (HttpRequestException)
             {
                 // Handle HTTP-related errors (e.g., DNS failure, connection issues)
-                Logger.Log(Logger.Type.Error, Logger.Source.API, $"URL is down or unreachable: {url}");
+                Log(Logger.Type.Error, Source.API, $"URL is down or unreachable: {url}");
             }
             catch (TaskCanceledException)
             {
                 // Handle request timeout
-                Logger.Log(Logger.Type.Error, Logger.Source.API, $"Request timed out: {url}");
+                Log(Logger.Type.Error, Source.API, $"Request timed out: {url}");
             }
             catch (Exception ex)
             {
                 // Handle other exceptions
-                Logger.Log(Logger.Type.Error, Logger.Source.API, $"An error occurred: {ex.Message}");
+                Log(Logger.Type.Error, Source.API, $"An error occurred: {ex.Message}");
             }
 
             return false; // URL is down or unreachable

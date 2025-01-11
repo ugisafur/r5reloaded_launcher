@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using static launcher.Logger;
+using static launcher.Global;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -69,80 +71,80 @@ namespace launcher
             EnableDebugConsole();
 #endif
 
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Setting up launcher");
+            Log(Logger.Type.Info, Source.Launcher, "Setting up launcher");
 
-            Global.isOnline = DataFetcher.HasInternetConnection();
+            IS_ONLINE = DataFetcher.HasInternetConnection();
 
-            if (Global.isOnline)
-                Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Internet connection detected");
+            if (IS_ONLINE)
+                Log(Logger.Type.Info, Source.Launcher, "Internet connection detected");
             else
-                Logger.Log(Logger.Type.Warning, Logger.Source.Launcher, "No internet connection detected");
+                Log(Logger.Type.Warning, Source.Launcher, "No internet connection detected");
 
-            ControlReferences.App = mainWindow;
-            ControlReferences.dispatcher = mainWindow.Dispatcher;
-            ControlReferences.progressBar = mainWindow.progressBar;
-            ControlReferences.lblStatus = mainWindow.lblStatus;
-            ControlReferences.lblFilesLeft = mainWindow.lblFilesLeft;
-            ControlReferences.launcherVersionlbl = mainWindow.launcherVersionlbl;
-            ControlReferences.cmbBranch = mainWindow.cmbBranch;
-            ControlReferences.btnPlay = mainWindow.btnPlay;
-            ControlReferences.settingsControl = mainWindow.SettingsControl;
-            ControlReferences.advancedControl = mainWindow.AdvancedControl;
-            ControlReferences.subMenuControl = mainWindow.subMenuControl;
-            ControlReferences.TransitionRect = mainWindow.TransitionRect;
-            ControlReferences.SubMenuPopup = mainWindow.SubMenuPopup;
-            ControlReferences.gameSettingsPopup = mainWindow.SettingsPopup;
-            ControlReferences.downloadsPopupControl = mainWindow.DownloadsPopupControl;
-            ControlReferences.statusPopup = mainWindow.StatusPopupControl;
+            mainApp = mainWindow;
+            appDispatcher = mainWindow.Dispatcher;
+            progressBar = mainWindow.progressBar;
+            lblStatus = mainWindow.lblStatus;
+            lblFilesLeft = mainWindow.lblFilesLeft;
+            launcherVersionlbl = mainWindow.launcherVersionlbl;
+            cmbBranch = mainWindow.cmbBranch;
+            btnPlay = mainWindow.btnPlay;
+            settingsControl = mainWindow.SettingsControl;
+            advancedControl = mainWindow.AdvancedControl;
+            subMenuControl = mainWindow.subMenuControl;
+            TransitionRect = mainWindow.TransitionRect;
+            SubMenuPopup = mainWindow.SubMenuPopup;
+            gameSettingsPopup = mainWindow.SettingsPopup;
+            downloadsPopupControl = mainWindow.DownloadsPopupControl;
+            statusPopup = mainWindow.StatusPopupControl;
 
             ShowProgressBar(false);
 
-            if (Global.isOnline)
-                Task.Run(() => ControlReferences.statusPopup.StartStatusTimer());
+            if (IS_ONLINE)
+                Task.Run(() => statusPopup.StartStatusTimer());
             else
             {
-                ControlReferences.App.StatusBtn.IsEnabled = false;
-                ControlReferences.App.DownloadsBtn.IsEnabled = false;
+                mainApp.StatusBtn.IsEnabled = false;
+                mainApp.DownloadsBtn.IsEnabled = false;
             }
 
-            ControlReferences.launcherVersionlbl.Text = Global.launcherVersion;
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher Version: {Global.launcherVersion}");
+            launcherVersionlbl.Text = LAUNCHER_VERSION;
+            Log(Logger.Type.Info, Source.Launcher, $"Launcher Version: {LAUNCHER_VERSION}");
 
-            Global.launcherPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher path: {Global.launcherPath}");
+            LAUNCHER_PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            Log(Logger.Type.Info, Source.Launcher, $"Launcher path: {LAUNCHER_PATH}");
 
-            ControlReferences.settingsControl.SetupSettingsMenu();
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Settings menu initialized");
+            settingsControl.SetupSettingsMenu();
+            Log(Logger.Type.Info, Source.Launcher, $"Settings menu initialized");
 
-            ControlReferences.advancedControl.SetupAdvancedSettings();
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Advanced settings initialized");
+            advancedControl.SetupAdvancedSettings();
+            Log(Logger.Type.Info, Source.Launcher, $"Advanced settings initialized");
 
-            if (Global.isOnline)
-                Global.serverConfig = DataFetcher.FetchServerConfig();
+            if (IS_ONLINE)
+                SERVER_CONFIG = DataFetcher.FetchServerConfig();
 
-            Global.launcherConfig = FileManager.GetLauncherConfig();
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launcher config found");
+            LAUNCHER_CONFIG = FileManager.GetLauncherConfig();
+            Log(Logger.Type.Info, Source.Launcher, $"Launcher config found");
 
-            Global.isInstalled = GetIniSetting(IniSettings.Installed, false);
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Is game installed: {Global.isInstalled}");
+            IS_INSTALLED = GetIniSetting(IniSettings.Installed, false);
+            Log(Logger.Type.Info, Source.Launcher, $"Is game installed: {IS_INSTALLED}");
 
-            ControlReferences.cmbBranch.ItemsSource = SetupGameBranches();
-            ControlReferences.cmbBranch.SelectedIndex = 0;
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Game branches initialized");
+            cmbBranch.ItemsSource = SetupGameBranches();
+            cmbBranch.SelectedIndex = 0;
+            Log(Logger.Type.Info, Source.Launcher, "Game branches initialized");
         }
 
         public static void ToggleBackgroundVideo(bool disabled)
         {
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Toggling background video: {disabled}");
-            ControlReferences.App.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
-            ControlReferences.App.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
+            Log(Logger.Type.Info, Source.Launcher, $"Toggling background video: {disabled}");
+            mainApp.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
+            mainApp.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
 
         public static List<ComboBranch> SetupGameBranches()
         {
-            if (Global.isOnline)
+            if (IS_ONLINE)
             {
-                return Global.serverConfig.branches
+                return SERVER_CONFIG.branches
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
@@ -186,7 +188,7 @@ namespace launcher
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{Global.launcherPath}\\{exeName}",
+                FileName = $"{LAUNCHER_PATH}\\{exeName}",
                 Arguments = gameArguments,
                 UseShellExecute = true,
                 CreateNoWindow = true
@@ -197,7 +199,7 @@ namespace launcher
             if (gameProcess != null)
                 SetProcessorAffinity(gameProcess);
 
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Launched game with arguments: {gameArguments}");
+            Log(Logger.Type.Info, Source.Launcher, $"Launched game with arguments: {gameArguments}");
         }
 
         private static void SetProcessorAffinity(Process gameProcess)
@@ -224,30 +226,30 @@ namespace launcher
 
                     gameProcess.ProcessorAffinity = (IntPtr)affinityMask;
 
-                    Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
+                    Log(Logger.Type.Info, Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
                 }
                 else
-                    Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
+                    Log(Logger.Type.Error, Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
             }
             catch (Exception ex)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
+                Log(Logger.Type.Error, Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
             }
         }
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
-            Logger.Log(Logger.Type.Info, Logger.Source.Launcher, $"Setting install state to: {installing}");
+            Log(Logger.Type.Info, Source.Launcher, $"Setting install state to: {installing}");
 
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                Global.isInstalling = installing;
+                IS_INSTALLING = installing;
 
-                ControlReferences.btnPlay.Content = buttonText;
-                ControlReferences.cmbBranch.IsEnabled = !installing;
-                ControlReferences.btnPlay.IsEnabled = !installing;
-                ControlReferences.lblStatus.Text = "";
-                ControlReferences.lblFilesLeft.Text = "";
+                btnPlay.Content = buttonText;
+                cmbBranch.IsEnabled = !installing;
+                btnPlay.IsEnabled = !installing;
+                lblStatus.Text = "";
+                lblFilesLeft.Text = "";
             });
 
             ShowProgressBar(installing);
@@ -255,20 +257,20 @@ namespace launcher
 
         public static void UpdateStatusLabel(string statusText, Logger.Source source)
         {
-            Logger.Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
-            ControlReferences.dispatcher.Invoke(() =>
+            Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.lblStatus.Text = statusText;
+                lblStatus.Text = statusText;
             });
         }
 
         private static void ShowProgressBar(bool isVisible)
         {
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.progressBar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                ControlReferences.lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                ControlReferences.lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                progressBar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
             });
         }
 
@@ -287,20 +289,20 @@ namespace launcher
 
         public static void ShowSettingsControl()
         {
-            Global.inSettingsMenu = true;
+            IN_SETTINGS_MENU = true;
 
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
-                ControlReferences.settingsControl.Visibility = Visibility.Visible;
-                ControlReferences.subMenuControl.Settings.IsEnabled = false;
-                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+                settingsControl.Visibility = Visibility.Visible;
+                subMenuControl.Settings.IsEnabled = false;
+                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
                 return;
             }
 
             var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                ControlReferences.settingsControl.Visibility = Visibility.Visible;
+                settingsControl.Visibility = Visibility.Visible;
                 var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
                 fadeInStoryboard.Completed += (s, e) =>
                 {
@@ -310,19 +312,19 @@ namespace launcher
                 fadeInStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            ControlReferences.subMenuControl.Settings.IsEnabled = false;
-            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+            subMenuControl.Settings.IsEnabled = false;
+            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideSettingsControl()
         {
-            Global.inSettingsMenu = false;
+            IN_SETTINGS_MENU = false;
 
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
-                ControlReferences.settingsControl.Visibility = Visibility.Hidden;
-                ControlReferences.subMenuControl.Settings.IsEnabled = true;
-                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+                settingsControl.Visibility = Visibility.Hidden;
+                subMenuControl.Settings.IsEnabled = true;
+                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
                 return;
             }
 
@@ -332,33 +334,33 @@ namespace launcher
                 var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
                 fadeOutStoryboard.Completed += (s, e) =>
                 {
-                    ControlReferences.settingsControl.Visibility = Visibility.Hidden;
+                    settingsControl.Visibility = Visibility.Hidden;
                     var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
                     transitionOutStoryboard.Begin();
                 };
                 fadeOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            ControlReferences.subMenuControl.Settings.IsEnabled = true;
-            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+            subMenuControl.Settings.IsEnabled = true;
+            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
         }
 
         public static void ShowAdvancedControl()
         {
-            Global.inAdvancedMenu = true;
+            IN_ADVANCED_MENU = true;
 
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
-                ControlReferences.advancedControl.Visibility = Visibility.Visible;
-                ControlReferences.subMenuControl.Settings.IsEnabled = false;
-                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+                advancedControl.Visibility = Visibility.Visible;
+                subMenuControl.Settings.IsEnabled = false;
+                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
                 return;
             }
 
             var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                ControlReferences.advancedControl.Visibility = Visibility.Visible;
+                advancedControl.Visibility = Visibility.Visible;
                 var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
                 fadeInStoryboard.Completed += (s, e) =>
                 {
@@ -368,19 +370,19 @@ namespace launcher
                 fadeInStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            ControlReferences.subMenuControl.Settings.IsEnabled = false;
-            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+            subMenuControl.Settings.IsEnabled = false;
+            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideAdvancedControl()
         {
-            Global.inAdvancedMenu = false;
+            IN_ADVANCED_MENU = false;
 
             if (GetIniSetting(IniSettings.Disable_Transitions, false))
             {
-                ControlReferences.advancedControl.Visibility = Visibility.Hidden;
-                ControlReferences.subMenuControl.Settings.IsEnabled = true;
-                ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+                advancedControl.Visibility = Visibility.Hidden;
+                subMenuControl.Settings.IsEnabled = true;
+                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
                 return;
             }
 
@@ -390,15 +392,15 @@ namespace launcher
                 var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
                 fadeOutStoryboard.Completed += (s, e) =>
                 {
-                    ControlReferences.advancedControl.Visibility = Visibility.Hidden;
+                    advancedControl.Visibility = Visibility.Hidden;
                     var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
                     transitionOutStoryboard.Begin();
                 };
                 fadeOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            ControlReferences.subMenuControl.Settings.IsEnabled = true;
-            ControlReferences.App.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+            subMenuControl.Settings.IsEnabled = true;
+            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)
@@ -410,7 +412,7 @@ namespace launcher
                 To = to,
                 Duration = new Duration(TimeSpan.FromSeconds(duration))
             };
-            Storyboard.SetTarget(doubleAnimation, ControlReferences.TransitionRect);
+            Storyboard.SetTarget(doubleAnimation, TransitionRect);
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
@@ -425,7 +427,7 @@ namespace launcher
                 To = to,
                 Duration = new Duration(TimeSpan.FromSeconds(duration))
             };
-            Storyboard.SetTarget(doubleAnimation, ControlReferences.settingsControl);
+            Storyboard.SetTarget(doubleAnimation, settingsControl);
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
@@ -434,13 +436,13 @@ namespace launcher
         private static IniFile GetIniFile()
         {
             IniFile file = new();
-            file.Load(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Load(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
             return file;
         }
 
         private static bool IniExists()
         {
-            return File.Exists(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+            return File.Exists(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
         }
 
         public static void SetIniSetting(IniSettings setting, bool value)
@@ -450,7 +452,7 @@ namespace launcher
 
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
-            file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -461,7 +463,7 @@ namespace launcher
 
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
-            file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -472,7 +474,7 @@ namespace launcher
 
             IniFile file = GetIniFile();
             file.SetSetting(GetSettingsSectionString(setting), GetSettingString(setting), value);
-            file.Save(Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -508,9 +510,9 @@ namespace launcher
 
         public static void CreateLauncherConfig()
         {
-            Directory.CreateDirectory(Path.Combine(Global.launcherPath, "platform\\cfg\\user"));
+            Directory.CreateDirectory(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user"));
 
-            string iniPath = Path.Combine(Global.launcherPath, "platform\\cfg\\user\\launcherConfig.ini");
+            string iniPath = Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini");
             if (!File.Exists(iniPath))
             {
                 IniFile file = new();

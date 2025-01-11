@@ -5,13 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using static launcher.Global;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -32,9 +27,9 @@ namespace launcher
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (!Global.inAdvancedMenu)
+            if (!IN_ADVANCED_MENU)
             {
-                ControlReferences.gameSettingsPopup.IsOpen = false;
+                gameSettingsPopup.IsOpen = false;
                 Utilities.ShowAdvancedControl();
             }
         }

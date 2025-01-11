@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using static launcher.Global;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -60,10 +50,10 @@ namespace launcher
 
         private void gotoDownloads_Click(object sender, RoutedEventArgs e)
         {
-            if (!Global.inSettingsMenu && !Global.inAdvancedMenu)
+            if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
             {
-                ControlReferences.App.DownloadsPopup.IsOpen = false;
-                ControlReferences.settingsControl.OpenDownloadsSettings();
+                mainApp.DownloadsPopup.IsOpen = false;
+                settingsControl.OpenDownloadsSettings();
             }
         }
     }

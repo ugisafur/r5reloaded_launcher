@@ -26,37 +26,37 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string launcherVersion = "0.5.2";
-        public const string serverConfigurl = "https://cdn.r5r.org/launcher/config.json";
+        public const string LAUNCHER_VERSION = "0.5.2";
+        public const string SERVER_CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
 
-        public static bool isOnline = false;
+        public static bool IS_ONLINE = false;
 
-        public static ServerConfig serverConfig;
-        public static IniFile launcherConfig;
-        public static Lazy<HttpClient> client { get; } = new Lazy<HttpClient>(() => new HttpClient() { Timeout = TimeSpan.FromSeconds(30) });
+        public static ServerConfig SERVER_CONFIG;
+        public static IniFile LAUNCHER_CONFIG;
+        public static readonly HttpClient CLIENT = new HttpClient() { Timeout = TimeSpan.FromSeconds(30) };
 
-        public static string launcherPath = "";
+        public static string LAUNCHER_PATH = "";
         public const int MAX_REPAIR_ATTEMPTS = 5;
-        public static int filesLeft = 0;
-        public static bool isInstalling = false;
-        public static bool isInstalled = false;
-        public static bool updateRequired = false;
-        public static bool updateCheckLoop = false;
-        public static bool badFilesDetected = false;
+        public static int FILES_LEFT = 0;
+        public static bool IS_INSTALLING = false;
+        public static bool IS_INSTALLED = false;
+        public static bool UPDATE_REQUIRED = false;
+        public static bool UPDATE_CHECK_LOOP = false;
+        public static bool BAD_FILES_DETECTED = false;
 
-        public static bool inSettingsMenu = false;
-        public static bool inAdvancedMenu = false;
+        public static bool IN_SETTINGS_MENU = false;
+        public static bool IN_ADVANCED_MENU = false;
 
-        public static SemaphoreSlim downloadSemaphore = new(100);
-        public static List<string> badFiles = [];
+        public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new SemaphoreSlim(100);
+        public static List<string> BAD_FILES = [];
 
         public enum SettingsPage
         {
-            Application = 0,
-            Accessibility = 1,
-            GameInstalls = 2,
-            Download = 3,
-            About = 4
+            APPLICATION = 0,
+            ACCESSIBILITY = 1,
+            GAME_INSTALLS = 2,
+            DOWNLOAD = 3,
+            ABOUT = 4
         }
     }
 

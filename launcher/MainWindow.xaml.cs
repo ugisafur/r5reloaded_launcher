@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static launcher.Global;
 
 namespace launcher
 {
@@ -41,16 +42,16 @@ namespace launcher
             }
 
             UpdateChecker updateChecker = new(Dispatcher);
-            btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
+            btnPlay.Content = IS_INSTALLED ? "PLAY" : "INSTALL";
 
-            if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
+            if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 btnPlay.Content = "REPAIR";
 
-            if (Global.isInstalled)
+            if (IS_INSTALLED)
             {
-                if (Global.isOnline)
+                if (IS_ONLINE)
                 {
-                    cmbBranch.SelectedItem = Global.serverConfig.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
+                    cmbBranch.SelectedItem = SERVER_CONFIG.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
                     Task.Run(() => updateChecker.Start());
                 }
                 else
@@ -156,9 +157,9 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (Global.isInstalled)
+            if (IS_INSTALLED)
             {
-                if (Global.updateRequired)
+                if (UPDATE_REQUIRED)
                 {
                     Task.Run(() => GameUpdate.Start());
                 }
@@ -167,9 +168,9 @@ namespace launcher
                     Utilities.LaunchGame();
                 }
             }
-            else if (!Global.isInstalling)
+            else if (!IS_INSTALLING)
             {
-                if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(Global.launcherPath, "r5apex.exe")))
+                if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 {
                     Task.Run(() => GameRepair.Start());
                 }
@@ -196,14 +197,14 @@ namespace launcher
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!Global.isOnline)
+            if (!IS_ONLINE)
                 return;
 
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            if (!Global.serverConfig.branches[selectedBranch].enabled)
+            if (!SERVER_CONFIG.branches[selectedBranch].enabled)
             {
                 comboBox.SelectedIndex = lastSelectedIndex;
                 return;
@@ -211,23 +212,23 @@ namespace launcher
 
             lastSelectedIndex = selectedBranch;
 
-            if (Global.isInstalled)
+            if (IS_INSTALLED)
             {
                 if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, "")))
-                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[0].branch);
+                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[0].branch);
 
                 if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "")))
-                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[0].currentVersion);
+                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[0].currentVersion);
 
-                if (Global.serverConfig.branches[0].branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""))
+                if (SERVER_CONFIG.branches[0].branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""))
                 {
-                    Global.updateRequired = false;
+                    UPDATE_REQUIRED = false;
                     btnPlay.Content = "Play";
                 }
                 else
                 {
                     btnPlay.Content = "Update";
-                    Global.updateRequired = true;
+                    UPDATE_REQUIRED = true;
                 }
             }
         }

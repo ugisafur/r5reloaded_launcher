@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using static launcher.Global;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -12,10 +14,10 @@ namespace launcher
     {
         public static ServerConfig FetchServerConfig()
         {
-            var response = Global.client.Value.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var response = CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
-            Logger.Log(Logger.Type.Info, Logger.Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
-            Logger.Log(Logger.Type.Info, Logger.Source.API, $"response: {responseString}");
+            Log(Logger.Type.Info, Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
+            Log(Logger.Type.Info, Source.API, $"response: {responseString}");
             return JsonConvert.DeserializeObject<ServerConfig>(responseString);
         }
 
@@ -23,7 +25,7 @@ namespace launcher
         {
             int selectedBranchIndex = Utilities.GetCmbBranchIndex();
 
-            string patchURL = Global.serverConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
+            string patchURL = SERVER_CONFIG.branches[selectedBranchIndex].patch_url + "\\patch.json";
             string patchFile = await FetchJson(patchURL);
 
             var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
@@ -38,7 +40,7 @@ namespace launcher
         {
             int selectedBranchIndex = Utilities.GetCmbBranchIndex();
 
-            string patchURL = Global.serverConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
+            string patchURL = SERVER_CONFIG.branches[selectedBranchIndex].patch_url + "\\patch.json";
             string patchFile = await FetchJson(patchURL);
 
             var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
@@ -54,7 +56,7 @@ namespace launcher
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            string baseGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
+            string baseGameChecksumUrl = $"{SERVER_CONFIG.base_game_url}\\{fileName}";
             string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
 
             var baseGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
@@ -70,7 +72,7 @@ namespace launcher
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            string optionalGameChecksumUrl = $"{Global.serverConfig.base_game_url}\\{fileName}";
+            string optionalGameChecksumUrl = $"{SERVER_CONFIG.base_game_url}\\{fileName}";
             string optionalGameZstChecksums = await FetchJson(optionalGameChecksumUrl);
 
             var optionalGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(optionalGameZstChecksums);
@@ -83,8 +85,8 @@ namespace launcher
 
         public static async Task<string> FetchJson(string url)
         {
-            Logger.Log(Logger.Type.Info, Logger.Source.API, $"request: {url}");
-            var response = await Global.client.Value.GetAsync(url);
+            Log(Logger.Type.Info, Source.API, $"request: {url}");
+            var response = await CLIENT.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }

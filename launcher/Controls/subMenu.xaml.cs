@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using static launcher.Global;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -34,9 +36,9 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (!Global.inSettingsMenu && !Global.inAdvancedMenu)
+            if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
             {
-                ControlReferences.SubMenuPopup.IsOpen = false;
+                SubMenuPopup.IsOpen = false;
                 Utilities.ShowSettingsControl();
             }
         }

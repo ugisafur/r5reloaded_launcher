@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+using static launcher.Global;
 using ZstdSharp;
+using static launcher.ControlReferences;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -28,12 +27,12 @@ namespace launcher
         {
             var decompressionTasks = new List<Task>();
 
-            Global.filesLeft = allTasks.Count;
+            FILES_LEFT = allTasks.Count;
 
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.progressBar.Maximum = allTasks.Count;
-                ControlReferences.progressBar.Value = 0;
+                progressBar.Maximum = allTasks.Count;
+                progressBar.Value = 0;
             });
 
             foreach (var downloadTask in allTasks)
@@ -64,17 +63,17 @@ namespace launcher
 
                 await decompressionStream.CopyToAsync(output);
 
-                await ControlReferences.dispatcher.InvokeAsync(() =>
+                await appDispatcher.InvokeAsync(() =>
                 {
-                    ControlReferences.progressBar.Value++;
-                    ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
+                    progressBar.Value++;
+                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
                 });
 
-                //Logger.Log(Logger.Type.Info, Logger.Source.Decompression, $"Decompressed: {compressedFilePath} to {decompressedFilePath}");
+                //Log(Logger.Type.Info, Source.Decompression, $"Decompressed: {compressedFilePath} to {decompressedFilePath}");
             }
             catch (Exception ex)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.Decompression, $"Failed to decompress {compressedFilePath}: {ex.Message}");
+                Log(Logger.Type.Error, Source.Decompression, $"Failed to decompress {compressedFilePath}: {ex.Message}");
             }
         }
     }

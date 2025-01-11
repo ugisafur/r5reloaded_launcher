@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -34,7 +23,7 @@ namespace launcher
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe", @System.IO.Path.GetDirectoryName(Logger.LogFilePath));
+            Process.Start("explorer.exe", @System.IO.Path.GetDirectoryName(LogFilePath));
         }
 
         private void ClearCache_Click(object sender, RoutedEventArgs e)

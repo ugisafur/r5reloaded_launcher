@@ -1,14 +1,11 @@
 ﻿using Octodiff.Core;
 using Octodiff.Diagnostics;
 using Polly;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+using static launcher.Global;
+using static launcher.ControlReferences;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -26,7 +23,7 @@ namespace launcher
         {
             int limit = Utilities.GetIniSetting(Utilities.IniSettings.Concurrent_Downloads, 1000);
 
-            Global.downloadSemaphore = new SemaphoreSlim(limit);
+            DOWNLOAD_SEMAPHORE = new SemaphoreSlim(limit);
         }
 
         public static void SetDownloadSpeedLimit()
@@ -50,26 +47,26 @@ namespace launcher
             DateTime lastUpdate = DateTime.Now;
 
             // Wait for an available semaphore slot
-            await Global.downloadSemaphore.WaitAsync();
+            await DOWNLOAD_SEMAPHORE.WaitAsync();
 
             try
             {
                 // Check if file exists and checksum matches
                 if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFileDownload(destinationPath, checksum))
                 {
-                    await ControlReferences.dispatcher.InvokeAsync(() =>
+                    await appDispatcher.InvokeAsync(() =>
                     {
-                        ControlReferences.progressBar.Value++;
-                        ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
+                        progressBar.Value++;
+                        lblFilesLeft.Text = $"{--FILES_LEFT} files left";
                     });
 
                     return destinationPath;
                 }
 
                 // Add download item to the popup
-                await ControlReferences.dispatcher.InvokeAsync(() =>
+                await appDispatcher.InvokeAsync(() =>
                 {
-                    downloadItem = ControlReferences.downloadsPopupControl.AddDownloadItem(fileName);
+                    downloadItem = downloadsPopupControl.AddDownloadItem(fileName);
                 });
 
                 var retryPolicy = Policy
@@ -79,7 +76,7 @@ namespace launcher
                     (exception, timeSpan, retryCount, context) =>
                     {
                         // Log each retry attempt
-                        Logger.Log(Logger.Type.Warning, Logger.Source.DownloadManager,
+                        Log(Logger.Type.Warning, Source.DownloadManager,
                             $"Retry #{retryCount} for {fileUrl} due to: {exception.Message}. Waiting {timeSpan.TotalSeconds:F2}s before next attempt.");
                     });
 
@@ -119,7 +116,7 @@ namespace launcher
                             if (downloadItem != null && totalBytes > 0)
                             {
                                 var progress = (double)downloadedBytes / totalBytes * 100;
-                                await ControlReferences.dispatcher.InvokeAsync(() =>
+                                await appDispatcher.InvokeAsync(() =>
                                 {
                                     downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
                                     downloadItem.downloadFileProgress.Value = progress;
@@ -131,27 +128,27 @@ namespace launcher
                     await fileStream.FlushAsync();
                 });
 
-                //Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Downloaded: {destinationPath}");
+                //Log(Logger.Type.Info, Source.DownloadManager, $"Downloaded: {destinationPath}");
 
                 // Update global progress
-                await ControlReferences.dispatcher.InvokeAsync(() =>
+                await appDispatcher.InvokeAsync(() =>
                 {
-                    ControlReferences.progressBar.Value++;
-                    ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
+                    progressBar.Value++;
+                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
                 });
 
                 return destinationPath;
             }
             catch (OperationCanceledException)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.DownloadManager, $"Download cancelled for {fileUrl}");
-                Global.badFilesDetected = true;
+                Log(Logger.Type.Error, Source.DownloadManager, $"Download cancelled for {fileUrl}");
+                BAD_FILES_DETECTED = true;
                 return string.Empty;
             }
             catch (Exception ex)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
-                Global.badFilesDetected = true;
+                Log(Logger.Type.Error, Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
+                BAD_FILES_DETECTED = true;
                 return string.Empty;
             }
             finally
@@ -159,14 +156,14 @@ namespace launcher
                 // Remove the download item from the popup
                 if (downloadItem != null)
                 {
-                    await ControlReferences.dispatcher.InvokeAsync(() =>
+                    await appDispatcher.InvokeAsync(() =>
                     {
-                        ControlReferences.downloadsPopupControl.RemoveDownloadItem(downloadItem);
+                        downloadsPopupControl.RemoveDownloadItem(downloadItem);
                     });
                 }
 
                 // Release the semaphore slot
-                Global.downloadSemaphore.Release();
+                DOWNLOAD_SEMAPHORE.Release();
             }
         }
 
@@ -174,17 +171,17 @@ namespace launcher
         {
             var downloadTasks = new List<Task<string>>();
 
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.progressBar.Maximum = baseGameFiles.files.Count;
-                ControlReferences.progressBar.Value = 0;
+                progressBar.Maximum = baseGameFiles.files.Count;
+                progressBar.Value = 0;
             });
 
-            Global.filesLeft = baseGameFiles.files.Count;
+            FILES_LEFT = baseGameFiles.files.Count;
 
             foreach (var file in baseGameFiles.files)
             {
-                string fileUrl = $"{Global.serverConfig.base_game_url}/{file.name}";
+                string fileUrl = $"{SERVER_CONFIG.base_game_url}/{file.name}";
                 string destinationPath = Path.Combine(tempDirectory, file.name);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
@@ -197,21 +194,21 @@ namespace launcher
 
         public static List<Task<string>> PrepareRepairDownloadTasks(string tempDirectory)
         {
-            Global.filesLeft = Global.badFiles.Count;
+            FILES_LEFT = BAD_FILES.Count;
 
             var downloadTasks = new List<Task<string>>();
 
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.progressBar.Maximum = Global.badFiles.Count;
-                ControlReferences.progressBar.Value = 0;
+                progressBar.Maximum = BAD_FILES.Count;
+                progressBar.Value = 0;
             });
 
-            Global.filesLeft = Global.badFiles.Count;
+            FILES_LEFT = BAD_FILES.Count;
 
-            foreach (var file in Global.badFiles)
+            foreach (var file in BAD_FILES)
             {
-                string fileUrl = $"{Global.serverConfig.base_game_url}/{file}";
+                string fileUrl = $"{SERVER_CONFIG.base_game_url}/{file}";
                 string destinationPath = Path.Combine(tempDirectory, file);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
@@ -226,13 +223,13 @@ namespace launcher
         {
             var downloadTasks = new List<Task<string>>();
 
-            ControlReferences.dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
-                ControlReferences.progressBar.Maximum = patchFiles.files.Count;
-                ControlReferences.progressBar.Value = 0;
+                progressBar.Maximum = patchFiles.files.Count;
+                progressBar.Value = 0;
             });
 
-            Global.filesLeft = patchFiles.files.Count;
+            FILES_LEFT = patchFiles.files.Count;
 
             int selectedBranchIndex = Utilities.GetCmbBranchIndex();
 
@@ -241,7 +238,7 @@ namespace launcher
                 if (file.Action.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
                     continue;
 
-                string fileUrl = $"{Global.serverConfig.branches[selectedBranchIndex].patch_url}/{file.Name}";
+                string fileUrl = $"{SERVER_CONFIG.branches[selectedBranchIndex].patch_url}/{file.Name}";
                 string destinationPath = Path.Combine(tempDirectory, file.Name);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
@@ -255,7 +252,7 @@ namespace launcher
         public static List<Task> PrepareFilePatchTasks(GamePatch patchFiles, string tempDirectory)
         {
             var tasks = new List<Task>();
-            Global.filesLeft = patchFiles.files.Count;
+            FILES_LEFT = patchFiles.files.Count;
 
             foreach (var file in patchFiles.files)
             {
@@ -277,10 +274,10 @@ namespace launcher
                     }
 
                     // Update UI thread-safe
-                    ControlReferences.dispatcher.Invoke(() =>
+                    appDispatcher.Invoke(() =>
                     {
-                        ControlReferences.progressBar.Value++;
-                        ControlReferences.lblFilesLeft.Text = $"{--Global.filesLeft} files left";
+                        progressBar.Value++;
+                        lblFilesLeft.Text = $"{--FILES_LEFT} files left";
                     });
                 }));
             }
@@ -290,7 +287,7 @@ namespace launcher
 
         private static void Delete(string file)
         {
-            string fullPath = Path.Combine(Global.launcherPath, file);
+            string fullPath = Path.Combine(LAUNCHER_PATH, file);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
@@ -298,7 +295,7 @@ namespace launcher
         private static async void Update(string file, string tempDirectory)
         {
             string sourceCompressedFile = Path.Combine(tempDirectory, file);
-            string destinationFile = Path.Combine(Global.launcherPath, file.Replace(".zst", ""));
+            string destinationFile = Path.Combine(LAUNCHER_PATH, file.Replace(".zst", ""));
             await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
@@ -306,7 +303,7 @@ namespace launcher
         {
             string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
             string sourceDecompressedDeltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
-            string destinationFile = Path.Combine(Global.launcherPath, file.Replace(".delta.zst", ""));
+            string destinationFile = Path.Combine(LAUNCHER_PATH, file.Replace(".delta.zst", ""));
             await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, sourceDecompressedDeltaFile);
             PatchFile(destinationFile, sourceDecompressedDeltaFile);
         }
@@ -338,11 +335,11 @@ namespace launcher
         {
             if (File.Exists(destinationPath))
             {
-                //Logger.Log(Logger.Type.Info, Logger.Source.DownloadManager, $"Checking existing file: {destinationPath}");
+                //Log(Logger.Type.Info, Source.DownloadManager, $"Checking existing file: {destinationPath}");
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {
-                    ControlReferences.dispatcher.Invoke(() => { ControlReferences.progressBar.Value++; });
+                    appDispatcher.Invoke(() => { progressBar.Value++; });
                     return true;
                 }
             }

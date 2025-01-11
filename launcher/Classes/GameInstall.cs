@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using static launcher.Global;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -28,7 +30,7 @@ namespace launcher
     {
         public static async void Start()
         {
-            if (!Global.isOnline)
+            if (!IS_ONLINE)
                 return;
 
             //Install started
@@ -42,29 +44,29 @@ namespace launcher
             string tempDirectory = FileManager.CreateTempDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching game files list", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Fetching game files list", Source.Installer);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
-            Utilities.UpdateStatusLabel("Preparing game download", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Preparing game download", Source.Installer);
             var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, tempDirectory);
 
             //Download base game files
-            Utilities.UpdateStatusLabel("Downloading game files", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Downloading game files", Source.Installer);
             await Task.WhenAll(downloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing game decompression", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Preparing game decompression", Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing game files", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Decompressing game files", Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
             //if bad files detected, attempt game repair
-            if (Global.badFilesDetected)
+            if (BAD_FILES_DETECTED)
             {
-                Utilities.UpdateStatusLabel("Reparing game files", Logger.Source.Installer);
+                Utilities.UpdateStatusLabel("Reparing game files", Source.Installer);
                 await AttemptGameRepair();
             }
 
@@ -72,10 +74,10 @@ namespace launcher
             Utilities.SetInstallState(false);
 
             //Set game as installed
-            Global.isInstalled = true;
+            IS_INSTALLED = true;
             Utilities.SetIniSetting(Utilities.IniSettings.Installed, true);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))
@@ -95,23 +97,23 @@ namespace launcher
             string tempDirectory = FileManager.CreateTempDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching optional files list", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Fetching optional files list", Source.Installer);
             BaseGameFiles optionalGameFiles = await DataFetcher.FetchOptionalGameFiles(true);
 
             //Prepare download tasks
-            Utilities.UpdateStatusLabel("Preparing optional download", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Preparing optional download", Source.Installer);
             var optionaldownloadTasks = DownloadManager.PrepareDownloadTasks(optionalGameFiles, tempDirectory);
 
             //Download base game files
-            Utilities.UpdateStatusLabel("Downloading optional files", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing game decompression", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Preparing game decompression", Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(optionaldownloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing game files", Logger.Source.Installer);
+            Utilities.UpdateStatusLabel("Decompressing game files", Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
             //Set HD textures as installed
@@ -132,7 +134,7 @@ namespace launcher
                 if (isRepaired) break;
             }
 
-            Global.badFilesDetected = !isRepaired;
+            BAD_FILES_DETECTED = !isRepaired;
         }
     }
 }

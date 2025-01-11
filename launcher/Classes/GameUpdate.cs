@@ -1,4 +1,6 @@
-﻿namespace launcher
+﻿using static launcher.Global;
+
+namespace launcher
 {
     /// <summary>
     /// The GameUpdate class is responsible for managing the update process of the game.
@@ -18,16 +20,16 @@
     {
         public static async void Start()
         {
-            if (!Global.isOnline)
+            if (!IS_ONLINE)
                 return;
 
             string currentVersion = Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
             // Check if the game is already up to date
-            if (currentVersion == Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)
+            if (currentVersion == SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion)
                 return;
 
             // Check if user is to outdated to update normally
-            if (currentVersion != Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
+            if (currentVersion != SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion)
                 await GameRepair.Start();
 
             // Install started
@@ -56,14 +58,14 @@
             await Task.WhenAll(filePatchTasks);
 
             // Update or create launcher config
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, Global.serverConfig.branches[Utilities.GetCmbBranchIndex()].branch);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
 
             // Install finished
             Utilities.SetInstallState(false);
 
             // Set update required to false
-            Global.updateRequired = false;
+            UPDATE_REQUIRED = false;
 
             //Delete temp directory
             await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));

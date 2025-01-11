@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
+using static launcher.Global;
+using static launcher.ControlReferences;
+using static launcher.Logger;
 
 namespace launcher
 {
@@ -25,23 +28,23 @@ namespace launcher
 
         public async Task Start()
         {
-            if (!Global.isOnline)
+            if (!IS_ONLINE)
                 return;
 
-            Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Update worker started");
+            Log(Logger.Type.Info, Source.UpdateChecker, "Update worker started");
 
-            Global.updateCheckLoop = true;
+            UPDATE_CHECK_LOOP = true;
 
-            while (Global.updateCheckLoop)
+            while (UPDATE_CHECK_LOOP)
             {
-                Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Checking for updates");
+                Log(Logger.Type.Info, Source.UpdateChecker, "Checking for updates");
 
                 try
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     if (newServerConfig == null)
                     {
-                        Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, "Failed to fetch new server config");
+                        Log(Logger.Type.Error, Source.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
@@ -51,7 +54,7 @@ namespace launcher
                     }
                     else
                     {
-                        Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, $"Update for version {Global.launcherVersion} is not available (latest version: {Global.launcherVersion})");
+                        Log(Logger.Type.Info, Source.UpdateChecker, $"Update for version {LAUNCHER_VERSION} is not available (latest version: {LAUNCHER_VERSION})");
                     }
 
                     if (ShouldUpdateGame(newServerConfig))
@@ -61,15 +64,15 @@ namespace launcher
                 }
                 catch (HttpRequestException ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                    Log(Logger.Type.Error, Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
+                    Log(Logger.Type.Error, Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
+                    Log(Logger.Type.Error, Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(5));
@@ -81,14 +84,14 @@ namespace launcher
             HttpResponseMessage response = null;
             try
             {
-                response = await Global.client.Value.GetAsync(ConfigUrl);
+                response = await CLIENT.GetAsync(ConfigUrl);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ServerConfig>(responseString);
             }
             catch (HttpRequestException ex)
             {
-                Logger.Log(Logger.Type.Error, Logger.Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                Log(Logger.Type.Error, Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 return null; //Indicate failure to the caller
             }
             finally
@@ -118,14 +121,14 @@ namespace launcher
 
         private bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !Global.isInstalling && Global.isInstalled && IsNewVersion(Global.launcherVersion, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate && !IS_INSTALLING && IS_INSTALLED && IsNewVersion(LAUNCHER_VERSION, newServerConfig.launcherVersion);
         }
 
         private bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
-            return !Global.isInstalling &&
+            return !IS_INSTALLING &&
                    newServerConfig.allowUpdates &&
-                   Global.launcherConfig != null &&
+                   LAUNCHER_CONFIG != null &&
                    newServerConfig.branches[0].currentVersion != Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
         }
 
@@ -138,7 +141,7 @@ namespace launcher
                 return;
             }
 
-            Logger.Log(Logger.Type.Info, Logger.Source.UpdateChecker, "Updating launcher...");
+            Log(Logger.Type.Info, Source.UpdateChecker, "Updating launcher...");
             UpdateLauncher();
         }
 
@@ -147,7 +150,7 @@ namespace launcher
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{Global.launcherPath}\\bin\\selfupdater.exe\""
+                Arguments = $"/c start \"\" \"{LAUNCHER_PATH}\\bin\\selfupdater.exe\""
             };
 
             // Start the new process via cmd
@@ -160,11 +163,11 @@ namespace launcher
         {
             _dispatcher.Invoke(() =>
             {
-                Global.serverConfig = newServerConfig;
-                Global.updateRequired = true;
-                Global.updateCheckLoop = false;
-                ControlReferences.cmbBranch.ItemsSource = Utilities.SetupGameBranches();
-                ControlReferences.cmbBranch.SelectedIndex = 0;
+                SERVER_CONFIG = newServerConfig;
+                UPDATE_REQUIRED = true;
+                UPDATE_CHECK_LOOP = false;
+                cmbBranch.ItemsSource = Utilities.SetupGameBranches();
+                cmbBranch.SelectedIndex = 0;
             });
         }
     }

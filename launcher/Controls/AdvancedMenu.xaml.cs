@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using static launcher.Global;
 
 namespace launcher
 {
@@ -24,7 +25,7 @@ namespace launcher
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Global.inAdvancedMenu)
+            if (IN_ADVANCED_MENU)
                 Utilities.HideAdvancedControl();
         }
 
