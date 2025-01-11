@@ -59,11 +59,4 @@ namespace launcher
             ABOUT = 4
         }
     }
-
-    public static class SettingsGlobal
-    {
-        public static CheckBox DisableTransitionsBtn;
-        public static CheckBox DisableAnimationsBtn;
-        public static CheckBox DisableBackgroundVideoBtn;
-    }
 }
