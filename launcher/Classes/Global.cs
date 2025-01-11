@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string launcherVersion = "0.5.0";
+        public const string launcherVersion = "0.5.1";
         public const string serverConfigurl = "https://cdn.r5r.org/launcher/config.json";
 
         public static bool isOnline = false;
