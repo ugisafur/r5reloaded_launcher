@@ -81,8 +81,8 @@
                 <CheckBox x:Name="DisableTransitionsBtn" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="45,126,840,344" Checked="DisableTransitionsBtn_CheckedChanged" Unchecked="DisableTransitionsBtn_CheckedChanged" />
                 <TextBlock Text="Disable background video" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,24,458,0" Height="20" />
                 <TextBlock Text="Replace the video loop with a static image" TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,44,579,0" Height="15" />
-                <TextBlock Text="Disable non-essential animations" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,76,458,0" Height="20" />
-                <TextBlock Text="Decorative icons, logos, mouse interations..." TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,96,579,0" Height="15" />
+                <TextBlock Text="Disable startup animation" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,76,458,0" Height="20" />
+                <TextBlock Text="Window startup animation when opened" TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,96,579,0" Height="15" />
                 <TextBlock Text="Disable transition effects" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,130,458,0" Height="20" />
                 <TextBlock Text="Animations between sections (pages, tabs...)" TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,150,579,0" Height="15" />
             </Grid>

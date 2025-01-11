@@ -25,7 +25,24 @@ namespace launcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Utilities.CreateLauncherConfig();
+
+            if (!Utilities.GetIniSetting(Utilities.IniSettings.Disable_Animations, false))
+            {
+                OnOpen();
+            }
+            else
+            {
+                double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+                double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+                double windowWidth = this.Width;
+                double windowHeight = this.Height;
+                this.Left = (screenWidth / 2) - (windowWidth / 2);
+                this.Top = (screenHeight / 2) - (windowHeight / 2);
+            }
+
             Utilities.SetupApp(this);
+
             UpdateChecker updateChecker = new UpdateChecker(Dispatcher);
             btnPlay.Content = Global.isInstalled ? "PLAY" : "INSTALL";
 
@@ -48,6 +65,85 @@ namespace launcher
 
             mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+        }
+
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+
+            //Calculate half of the offset to move the form
+
+            if (sizeInfo.HeightChanged)
+                this.Top += (sizeInfo.PreviousSize.Height - sizeInfo.NewSize.Height) / 2;
+
+            if (sizeInfo.WidthChanged)
+                this.Left += (sizeInfo.PreviousSize.Width - sizeInfo.NewSize.Width) / 2;
+        }
+
+        private async Task OnOpen()
+        {
+            // Set initial off-screen state
+            this.Opacity = 0;
+            MainUI.Opacity = 0;
+            this.Width = 0;
+
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
+
+            // Create a storyboard for simultaneous animations
+            var storyboard = new Storyboard();
+
+            // Animate Width
+            var widthAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1340,
+                Duration = new Duration(TimeSpan.FromSeconds(0.75)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            Storyboard.SetTarget(widthAnimation, this);
+            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
+
+            // Animate Opacity
+            var opacityAnimationWindow = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = new Duration(TimeSpan.FromSeconds(0.75)), // Match the duration of the width animation
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            Storyboard.SetTarget(opacityAnimationWindow, this);
+            Storyboard.SetTargetProperty(opacityAnimationWindow, new PropertyPath("Opacity"));
+
+            // Add animations to the storyboard
+            storyboard.Children.Add(widthAnimation);
+            storyboard.Children.Add(opacityAnimationWindow);
+
+            // Begin the storyboard and await its completion
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            storyboard.Completed += (s, e) => tcs.SetResult(true);
+            storyboard.Begin();
+
+            await tcs.Task;
+
+            // Fade in MainUI opacity after width animation completes
+            var opacityAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            Storyboard.SetTarget(opacityAnimation, MainUI);
+            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
+
+            var opacityStoryboard = new Storyboard();
+            opacityStoryboard.Children.Add(opacityAnimation);
+            opacityStoryboard.Begin();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)

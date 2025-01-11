@@ -106,6 +106,9 @@ namespace launcher
             buttons.Add(AboutBtn);
 
             SetSettingsTab(Global.SettingsPage.Application);
+
+            accessibilityPage.SetupAccessibilitySettings();
+            applicationPage.SetupApplicationSettings();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

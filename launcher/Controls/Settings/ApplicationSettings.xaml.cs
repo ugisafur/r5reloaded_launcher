@@ -26,6 +26,12 @@ namespace launcher
             InitializeComponent();
         }
 
+        public void SetupApplicationSettings()
+        {
+            // Set the initial state of the toggle switches
+            CloseToQuit.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Enable_Quit_On_Close, false);
+        }
+
         private void GetLogs_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("explorer.exe", @System.IO.Path.GetDirectoryName(Logger.LogFilePath));

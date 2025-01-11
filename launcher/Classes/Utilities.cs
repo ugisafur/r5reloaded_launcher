@@ -66,7 +66,6 @@ namespace launcher
 #if DEBUG
             EnableDebugConsole();
 #endif
-            CreateLauncherConfig();
 
             Logger.Log(Logger.Type.Info, Logger.Source.Launcher, "Setting up launcher");
 

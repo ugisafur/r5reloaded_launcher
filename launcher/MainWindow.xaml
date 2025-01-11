@@ -432,7 +432,7 @@
     </Window.Resources>
 
     <Border BorderBrush="#FF0F2C3E" BorderThickness="3" CornerRadius="5">
-        <Grid>
+        <Grid x:Name="MainUI" Opacity="1">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="12*" />
