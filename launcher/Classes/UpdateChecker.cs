@@ -14,19 +14,11 @@ namespace launcher
     /// It fetches the latest configuration from a remote server, determines if an update is necessary, and handles the update process.
     /// This class uses asynchronous operations to perform network requests and updates the UI using a Dispatcher.
     /// </summary>
-    public class UpdateChecker
+    public static class UpdateChecker
     {
-        private const string ConfigUrl = "https://cdn.r5r.org/launcher/config.json";
-        private readonly Dispatcher _dispatcher;
+        private static bool iqnoredLauncherUpdate = false;
 
-        private bool iqnoredLauncherUpdate = false;
-
-        public UpdateChecker(Dispatcher dispatcher)
-        {
-            _dispatcher = dispatcher;
-        }
-
-        public async Task Start()
+        public static async Task Start()
         {
             if (!IS_ONLINE)
                 return;
@@ -79,12 +71,12 @@ namespace launcher
             }
         }
 
-        private async Task<ServerConfig> GetServerConfigAsync()
+        private static async Task<ServerConfig> GetServerConfigAsync()
         {
             HttpResponseMessage response = null;
             try
             {
-                response = await CLIENT.GetAsync(ConfigUrl);
+                response = await CLIENT.GetAsync(SERVER_CONFIG_URL);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ServerConfig>(responseString);
@@ -100,7 +92,7 @@ namespace launcher
             }
         }
 
-        private bool IsNewVersion(string currentVersion, string newVersion)
+        private static bool IsNewVersion(string currentVersion, string newVersion)
         {
             var currentParts = currentVersion.Split('.').Select(int.Parse).ToArray();
             var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
@@ -119,12 +111,12 @@ namespace launcher
             return false; // Versions are the same
         }
 
-        private bool ShouldUpdateLauncher(ServerConfig newServerConfig)
+        private static bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
             return !iqnoredLauncherUpdate && !IS_INSTALLING && IS_INSTALLED && IsNewVersion(LAUNCHER_VERSION, newServerConfig.launcherVersion);
         }
 
-        private bool ShouldUpdateGame(ServerConfig newServerConfig)
+        private static bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
             return !IS_INSTALLING &&
                    newServerConfig.allowUpdates &&
@@ -132,7 +124,7 @@ namespace launcher
                    newServerConfig.branches[0].currentVersion != Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
         }
 
-        private void HandleLauncherUpdate()
+        private static void HandleLauncherUpdate()
         {
             var messageBoxResult = MessageBox.Show("A new version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (messageBoxResult == MessageBoxResult.No)
@@ -159,9 +151,9 @@ namespace launcher
             Environment.Exit(0);
         }
 
-        private void HandleGameUpdate(ServerConfig newServerConfig)
+        private static void HandleGameUpdate(ServerConfig newServerConfig)
         {
-            _dispatcher.Invoke(() =>
+            appDispatcher.Invoke(() =>
             {
                 SERVER_CONFIG = newServerConfig;
                 UPDATE_REQUIRED = true;

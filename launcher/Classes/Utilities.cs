@@ -255,7 +255,7 @@ namespace launcher
             ShowProgressBar(installing);
         }
 
-        public static void UpdateStatusLabel(string statusText, Logger.Source source)
+        public static void UpdateStatusLabel(string statusText, Source source)
         {
             Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
             appDispatcher.Invoke(() =>

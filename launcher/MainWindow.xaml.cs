@@ -41,9 +41,7 @@ namespace launcher
                 this.Top = (screenHeight / 2) - (windowHeight / 2);
             }
 
-            UpdateChecker updateChecker = new(Dispatcher);
             btnPlay.Content = IS_INSTALLED ? "PLAY" : "INSTALL";
-
             if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 btnPlay.Content = "REPAIR";
 
@@ -52,7 +50,7 @@ namespace launcher
                 if (IS_ONLINE)
                 {
                     cmbBranch.SelectedItem = SERVER_CONFIG.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
-                    Task.Run(() => updateChecker.Start());
+                    Task.Run(() => UpdateChecker.Start());
                 }
                 else
                 {
