@@ -29,28 +29,28 @@ namespace launcher
         public void SetupAccessibilitySettings()
         {
             // Set the initial state of the toggle switches
-            DisableTransitionsBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Transitions, false);
-            DisableAnimationsBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Animations, false);
-            DisableBackgroundVideoBtn.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Background_Video, false);
+            DisableTransitionsBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Transitions, false);
+            DisableAnimationsBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Animations, false);
+            DisableBackgroundVideoBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Background_Video, false);
         }
 
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableBackgroundVideoBtn.IsChecked.Value;
-            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Background_Video, value);
+            Ini.Set(Ini.Vars.Disable_Background_Video, value);
             Utilities.ToggleBackgroundVideo(DisableBackgroundVideoBtn.IsChecked.Value);
         }
 
         private void DisableAnimationsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableAnimationsBtn.IsChecked.Value;
-            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Animations, value);
+            Ini.Set(Ini.Vars.Disable_Animations, value);
         }
 
         private void DisableTransitionsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableTransitionsBtn.IsChecked.Value;
-            Utilities.SetIniSetting(Utilities.IniSettings.Disable_Transitions, value);
+            Ini.Set(Ini.Vars.Disable_Transitions, value);
         }
     }
 }

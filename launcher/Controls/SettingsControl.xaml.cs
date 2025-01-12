@@ -36,7 +36,7 @@ namespace launcher
                 _ => null,
             };
 
-            double fadeSpeed = GetIniSetting(IniSettings.Disable_Transitions, false) ? 0 : 200;
+            double fadeSpeed = Ini.Get(Ini.Vars.Disable_Transitions, false) ? 0 : 200;
 
             if (visiblePage != null && newPage != null && visiblePage != newPage)
             {

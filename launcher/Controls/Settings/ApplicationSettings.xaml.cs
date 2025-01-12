@@ -18,7 +18,7 @@ namespace launcher
         public void SetupApplicationSettings()
         {
             // Set the initial state of the toggle switches
-            CloseToQuit.IsChecked = Utilities.GetIniSetting(Utilities.IniSettings.Enable_Quit_On_Close, false);
+            CloseToQuit.IsChecked = Ini.Get(Ini.Vars.Enable_Quit_On_Close, false);
         }
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)
@@ -33,7 +33,7 @@ namespace launcher
 
         private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)
         {
-            Utilities.SetIniSetting(Utilities.IniSettings.Enable_Quit_On_Close, CloseToQuit.IsChecked.Value);
+            Ini.Set(Ini.Vars.Enable_Quit_On_Close, CloseToQuit.IsChecked.Value);
         }
     }
 }

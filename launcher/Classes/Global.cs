@@ -33,7 +33,7 @@ namespace launcher
 
         public static ServerConfig SERVER_CONFIG;
         public static IniFile LAUNCHER_CONFIG;
-        public static readonly HttpClient CLIENT = new HttpClient() { Timeout = TimeSpan.FromSeconds(30) };
+        public static readonly HttpClient CLIENT = new() { Timeout = TimeSpan.FromSeconds(30) };
 
         public static string LAUNCHER_PATH = "";
         public const int MAX_REPAIR_ATTEMPTS = 5;
@@ -47,7 +47,7 @@ namespace launcher
         public static bool IN_SETTINGS_MENU = false;
         public static bool IN_ADVANCED_MENU = false;
 
-        public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new SemaphoreSlim(100);
+        public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new(500);
         public static List<string> BAD_FILES = [];
 
         public enum SettingsPage

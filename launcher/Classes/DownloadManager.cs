@@ -21,14 +21,14 @@ namespace launcher
 
         public static void SetSemaphoreLimit()
         {
-            int limit = Utilities.GetIniSetting(Utilities.IniSettings.Concurrent_Downloads, 1000);
+            int limit = Ini.Get(Ini.Vars.Concurrent_Downloads, 1000);
 
             DOWNLOAD_SEMAPHORE = new SemaphoreSlim(limit);
         }
 
         public static void SetDownloadSpeedLimit()
         {
-            int limit = Utilities.GetIniSetting(Utilities.IniSettings.Download_Speed_Limit, 0);
+            int limit = Ini.Get(Ini.Vars.Download_Speed_Limit, 0);
 
             //Convert KB/s to B/s
             downloadSpeedLimit = limit * 1024;
@@ -37,9 +37,6 @@ namespace launcher
         public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
         {
             long maxDownloadSpeedBytesPerSecond = downloadSpeedLimit; //Todo: Set appropriate download speed limit
-
-            var cancellationSource = new CancellationTokenSource();
-            var cancellationToken = cancellationSource.Token;
 
             DownloadItem downloadItem = null;
             long downloadedBytes = 0;
@@ -54,31 +51,14 @@ namespace launcher
                 // Check if file exists and checksum matches
                 if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFileDownload(destinationPath, checksum))
                 {
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        progressBar.Value++;
-                        lblFilesLeft.Text = $"{--FILES_LEFT} files left";
-                    });
+                    UpdateProgressBar(--FILES_LEFT);
 
                     return destinationPath;
                 }
 
                 // Add download item to the popup
-                await appDispatcher.InvokeAsync(() =>
-                {
-                    downloadItem = downloadsPopupControl.AddDownloadItem(fileName);
-                });
-
-                var retryPolicy = Policy
-                .Handle<Exception>(ex => ex is WebException || ex is TimeoutException)
-                .WaitAndRetryAsync(5,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) =>
-                    {
-                        // Log each retry attempt
-                        Log(Logger.Type.Warning, Source.DownloadManager,
-                            $"Retry #{retryCount} for {fileUrl} due to: {exception.Message}. Waiting {timeSpan.TotalSeconds:F2}s before next attempt.");
-                    });
+                downloadItem = CreateDownloadItem(fileName);
+                var retryPolicy = CreatePolicy(fileUrl);
 
                 await retryPolicy.ExecuteAsync(async () =>
                 {
@@ -108,7 +88,6 @@ namespace launcher
                         await fileStream.WriteAsync(buffer, 0, bytesRead);
                         downloadedBytes += bytesRead;
 
-                        // Update progress in the popup
                         if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                         {
                             lastUpdate = DateTime.Now;
@@ -116,11 +95,7 @@ namespace launcher
                             if (downloadItem != null && totalBytes > 0)
                             {
                                 var progress = (double)downloadedBytes / totalBytes * 100;
-                                await appDispatcher.InvokeAsync(() =>
-                                {
-                                    downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                                    downloadItem.downloadFileProgress.Value = progress;
-                                });
+                                UpdateDownloadsItem(downloadItem, progress);
                             }
                         }
                     }
@@ -128,22 +103,9 @@ namespace launcher
                     await fileStream.FlushAsync();
                 });
 
-                //Log(Logger.Type.Info, Source.DownloadManager, $"Downloaded: {destinationPath}");
-
-                // Update global progress
-                await appDispatcher.InvokeAsync(() =>
-                {
-                    progressBar.Value++;
-                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
-                });
+                UpdateProgressBar(--FILES_LEFT);
 
                 return destinationPath;
-            }
-            catch (OperationCanceledException)
-            {
-                Log(Logger.Type.Error, Source.DownloadManager, $"Download cancelled for {fileUrl}");
-                BAD_FILES_DETECTED = true;
-                return string.Empty;
             }
             catch (Exception ex)
             {
@@ -155,27 +117,63 @@ namespace launcher
             {
                 // Remove the download item from the popup
                 if (downloadItem != null)
-                {
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        downloadsPopupControl.RemoveDownloadItem(downloadItem);
-                    });
-                }
+                    RemoveDownloadsItem(downloadItem);
 
                 // Release the semaphore slot
                 DOWNLOAD_SEMAPHORE.Release();
             }
         }
 
+        private static Polly.Retry.AsyncRetryPolicy CreatePolicy(string fileUrl)
+        {
+            var retryPolicy = Policy
+                .Handle<Exception>(ex => ex is WebException || ex is TimeoutException)
+                .WaitAndRetryAsync(5,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        // Log each retry attempt
+                        Log(Logger.Type.Warning, Source.DownloadManager,
+                            $"Retry #{retryCount} for {fileUrl} due to: {exception.Message}. Waiting {timeSpan.TotalSeconds:F2}s before next attempt.");
+                    });
+
+            return retryPolicy;
+        }
+
+        private static DownloadItem CreateDownloadItem(string fileName)
+        {
+            DownloadItem newItem = null;
+
+            appDispatcher.InvokeAsync(() =>
+            {
+                newItem = downloadsPopupControl.AddDownloadItem(fileName);
+            });
+
+            return newItem;
+        }
+
+        private static async void UpdateDownloadsItem(DownloadItem downloadItem, double progress)
+        {
+            await appDispatcher.InvokeAsync(() =>
+            {
+                downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                downloadItem.downloadFileProgress.Value = progress;
+            });
+        }
+
+        private static async void RemoveDownloadsItem(DownloadItem downloadItem)
+        {
+            await appDispatcher.InvokeAsync(() =>
+            {
+                downloadsPopupControl.RemoveDownloadItem(downloadItem);
+            });
+        }
+
         public static List<Task<string>> PrepareDownloadTasks(BaseGameFiles baseGameFiles, string tempDirectory)
         {
             var downloadTasks = new List<Task<string>>();
 
-            appDispatcher.Invoke(() =>
-            {
-                progressBar.Maximum = baseGameFiles.files.Count;
-                progressBar.Value = 0;
-            });
+            SetProgressBar(baseGameFiles.files.Count);
 
             FILES_LEFT = baseGameFiles.files.Count;
 
@@ -198,11 +196,7 @@ namespace launcher
 
             var downloadTasks = new List<Task<string>>();
 
-            appDispatcher.Invoke(() =>
-            {
-                progressBar.Maximum = BAD_FILES.Count;
-                progressBar.Value = 0;
-            });
+            SetProgressBar(BAD_FILES.Count);
 
             FILES_LEFT = BAD_FILES.Count;
 
@@ -223,11 +217,7 @@ namespace launcher
         {
             var downloadTasks = new List<Task<string>>();
 
-            appDispatcher.Invoke(() =>
-            {
-                progressBar.Maximum = patchFiles.files.Count;
-                progressBar.Value = 0;
-            });
+            SetProgressBar(patchFiles.files.Count);
 
             FILES_LEFT = patchFiles.files.Count;
 
@@ -273,12 +263,7 @@ namespace launcher
                             break;
                     }
 
-                    // Update UI thread-safe
-                    appDispatcher.Invoke(() =>
-                    {
-                        progressBar.Value++;
-                        lblFilesLeft.Text = $"{--FILES_LEFT} files left";
-                    });
+                    UpdateProgressBar(--FILES_LEFT);
                 }));
             }
 
@@ -339,11 +324,31 @@ namespace launcher
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {
-                    appDispatcher.Invoke(() => { progressBar.Value++; });
+                    UpdateProgressBar();
                     return true;
                 }
             }
             return false;
+        }
+
+        private static void SetProgressBar(int max)
+        {
+            appDispatcher.Invoke(() =>
+            {
+                progressBar.Maximum = max;
+                progressBar.Value = 0;
+            });
+        }
+
+        private static void UpdateProgressBar(int filesLeft = -1)
+        {
+            appDispatcher.Invoke(() =>
+            {
+                progressBar.Value++;
+
+                if (filesLeft != -1)
+                    lblFilesLeft.Text = $"{filesLeft} files left";
+            });
         }
     }
 }

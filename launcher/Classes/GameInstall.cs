@@ -75,15 +75,15 @@ namespace launcher
 
             //Set game as installed
             IS_INSTALLED = true;
-            Utilities.SetIniSetting(Utilities.IniSettings.Installed, true);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
+            Ini.Set(Ini.Vars.Installed, true);
+            Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))
                 await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
 
-            if (Utilities.GetIniSetting(Utilities.IniSettings.Download_HD_Textures, false))
+            if (Ini.Get(Ini.Vars.Download_HD_Textures, false))
                 Task.Run(() => InstallOptionalFiles());
         }
 
@@ -117,7 +117,7 @@ namespace launcher
             await Task.WhenAll(decompressionTasks);
 
             //Set HD textures as installed
-            Utilities.SetIniSetting(Utilities.IniSettings.HD_Textures_Installed, true);
+            Ini.Set(Ini.Vars.HD_Textures_Installed, true);
 
             //Delete temp directory
             if (Directory.Exists(tempDirectory))

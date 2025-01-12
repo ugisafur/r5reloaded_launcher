@@ -23,11 +23,11 @@ namespace launcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Utilities.CreateLauncherConfig();
+            Ini.CreateLauncherConfig();
 
             Utilities.SetupApp(this);
 
-            if (!Utilities.GetIniSetting(Utilities.IniSettings.Disable_Animations, false))
+            if (!Ini.Get(Ini.Vars.Disable_Animations, false))
             {
                 OnOpen();
             }
@@ -42,14 +42,14 @@ namespace launcher
             }
 
             btnPlay.Content = IS_INSTALLED ? "PLAY" : "INSTALL";
-            if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+            if (!Ini.Get(Ini.Vars.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 btnPlay.Content = "REPAIR";
 
             if (IS_INSTALLED)
             {
                 if (IS_ONLINE)
                 {
-                    cmbBranch.SelectedItem = SERVER_CONFIG.branches.FirstOrDefault(b => b.branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""));
+                    cmbBranch.SelectedItem = SERVER_CONFIG.branches.FirstOrDefault(b => b.branch == Ini.Get(Ini.Vars.Current_Branch, ""));
                     Task.Run(() => UpdateChecker.Start());
                 }
                 else
@@ -59,7 +59,7 @@ namespace launcher
                 }
             }
 
-            bool useStaticImage = Utilities.GetIniSetting(Utilities.IniSettings.Disable_Background_Video, false);
+            bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
             mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
@@ -168,7 +168,7 @@ namespace launcher
             }
             else if (!IS_INSTALLING)
             {
-                if (!Utilities.GetIniSetting(Utilities.IniSettings.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                if (!Ini.Get(Ini.Vars.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 {
                     Task.Run(() => GameRepair.Start());
                 }
@@ -212,13 +212,13 @@ namespace launcher
 
             if (IS_INSTALLED)
             {
-                if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, "")))
-                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[0].branch);
+                if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Current_Branch, "")))
+                    Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[0].branch);
 
-                if (string.IsNullOrEmpty(Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "")))
-                    Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[0].currentVersion);
+                if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Current_Version, "")))
+                    Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[0].currentVersion);
 
-                if (SERVER_CONFIG.branches[0].branch == Utilities.GetIniSetting(Utilities.IniSettings.Current_Branch, ""))
+                if (SERVER_CONFIG.branches[0].branch == Ini.Get(Ini.Vars.Current_Branch, ""))
                 {
                     UPDATE_REQUIRED = false;
                     btnPlay.Content = "Play";

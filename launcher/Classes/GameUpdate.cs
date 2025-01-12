@@ -23,7 +23,7 @@ namespace launcher
             if (!IS_ONLINE)
                 return;
 
-            string currentVersion = Utilities.GetIniSetting(Utilities.IniSettings.Current_Version, "");
+            string currentVersion = Ini.Get(Ini.Vars.Current_Version, "");
             // Check if the game is already up to date
             if (currentVersion == SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion)
                 return;
@@ -58,8 +58,8 @@ namespace launcher
             await Task.WhenAll(filePatchTasks);
 
             // Update or create launcher config
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Utilities.SetIniSetting(Utilities.IniSettings.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
+            Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
 
             // Install finished
             Utilities.SetInstallState(false);
@@ -70,7 +70,7 @@ namespace launcher
             //Delete temp directory
             await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
 
-            if (Utilities.GetIniSetting(Utilities.IniSettings.Download_HD_Textures, false) && Utilities.GetIniSetting(Utilities.IniSettings.HD_Textures_Installed, false))
+            if (Ini.Get(Ini.Vars.Download_HD_Textures, false) && Ini.Get(Ini.Vars.HD_Textures_Installed, false))
                 Task.Run(() => UpdateOptionalFiles());
         }
 

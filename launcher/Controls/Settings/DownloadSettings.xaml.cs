@@ -40,8 +40,8 @@ namespace launcher
         public void SetupDownloadSettings()
         {
             // Set the initial state of the toggle switches
-            MaxSpeed.Text = Utilities.GetIniSetting(Utilities.IniSettings.Download_Speed_Limit, "");
-            ConDownloads.SelectedIndex = Array.IndexOf(downloadSpeeds, Utilities.GetIniSetting(Utilities.IniSettings.Concurrent_Downloads, 1000));
+            MaxSpeed.Text = Ini.Get(Ini.Vars.Download_Speed_Limit, "");
+            ConDownloads.SelectedIndex = Array.IndexOf(downloadSpeeds, Ini.Get(Ini.Vars.Concurrent_Downloads, 1000));
 
             MaxSpeed.TextChanged += MaxSpeed_TextChanged;
             MaxSpeed.PreviewTextInput += NumericTextBox_PreviewTextInput;
@@ -69,14 +69,14 @@ namespace launcher
 
         private void MaxSpeed_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Utilities.GetIniSetting(Utilities.IniSettings.Download_Speed_Limit, "") != MaxSpeed.Text)
-                Utilities.SetIniSetting(Utilities.IniSettings.Download_Speed_Limit, MaxSpeed.Text);
+            if (Ini.Get(Ini.Vars.Download_Speed_Limit, "") != MaxSpeed.Text)
+                Ini.Set(Ini.Vars.Download_Speed_Limit, MaxSpeed.Text);
         }
 
         private void ConDownloads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Utilities.GetIniSetting(Utilities.IniSettings.Concurrent_Downloads, 1000) != downloadSpeeds[ConDownloads.SelectedIndex])
-                Utilities.SetIniSetting(Utilities.IniSettings.Concurrent_Downloads, downloadSpeeds[ConDownloads.SelectedIndex]);
+            if (Ini.Get(Ini.Vars.Concurrent_Downloads, 1000) != downloadSpeeds[ConDownloads.SelectedIndex])
+                Ini.Set(Ini.Vars.Concurrent_Downloads, downloadSpeeds[ConDownloads.SelectedIndex]);
         }
     }
 }
