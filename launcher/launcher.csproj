@@ -28,7 +28,8 @@
     <None Remove="assets\icons8-settings-100.png" />
     <None Remove="assets\icons8-x-50.png" />
     <None Remove="assets\launcher_bg.jpg" />
-    <None Remove="assets\launcher_bg.mp4" />
+    <None Remove="assets\launcher_bg_kc.mp4" />
+    <None Remove="assets\launcher_bg_we.mp4" />
     <None Remove="assets\launcher_x64.ico" />
     <None Remove="assets\logo-50.png" />
     <None Remove="assets\logo-main-white.png" />
@@ -45,8 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets\launcher_bg.mp4">
+    <Content Include="assets\launcher_bg_kc.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\launcher_bg_we.mp4">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <Resource Include="assets\icons8-check-48.png">

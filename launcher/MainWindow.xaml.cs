@@ -33,8 +33,8 @@ namespace launcher
             }
             else
             {
-                double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-                double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+                double screenWidth = SystemParameters.PrimaryScreenWidth;
+                double screenHeight = SystemParameters.PrimaryScreenHeight;
                 double windowWidth = this.Width;
                 double windowHeight = this.Height;
                 this.Left = (screenWidth / 2) - (windowWidth / 2);
@@ -68,8 +68,6 @@ namespace launcher
         {
             base.OnRenderSizeChanged(sizeInfo);
 
-            //Calculate half of the offset to move the form
-
             if (sizeInfo.HeightChanged)
                 this.Top += (sizeInfo.PreviousSize.Height - sizeInfo.NewSize.Height) / 2;
 
@@ -79,7 +77,6 @@ namespace launcher
 
         private async Task OnOpen()
         {
-            // Set initial off-screen state
             this.Opacity = 0;
             MainUI.Opacity = 0;
             this.Width = 0;
@@ -181,7 +178,7 @@ namespace launcher
 
         private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            mediaElement.Position = new TimeSpan(0, 0, 1);
+            mediaElement.Position = TimeSpan.FromSeconds(0);
             mediaElement.Play();
         }
 
