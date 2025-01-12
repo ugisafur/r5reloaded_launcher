@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string LAUNCHER_VERSION = "0.5.2";
+        public const string LAUNCHER_VERSION = "0.5.3";
         public const string SERVER_CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
 
         public static bool IS_ONLINE = false;
