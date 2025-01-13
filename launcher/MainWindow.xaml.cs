@@ -42,8 +42,9 @@ namespace launcher
             if (IS_ONLINE)
             {
                 Task.Run(() => UpdateChecker.Start());
+
                 btnPlay.Content = Utilities.isSelectedBranchInstalled() ? "PLAY" : "INSTALL";
-                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                     btnPlay.Content = "REPAIR";
             }
             else
@@ -156,7 +157,7 @@ namespace launcher
             }
             else if (!IS_INSTALLING)
             {
-                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                 {
                     Task.Run(() => GameRepair.Start());
                 }

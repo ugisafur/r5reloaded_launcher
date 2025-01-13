@@ -283,6 +283,8 @@ namespace launcher
                 btnPlay.IsEnabled = !installing;
                 lblStatus.Text = "";
                 lblFilesLeft.Text = "";
+
+                mainApp.SettingsPopupControl.btnRepair.IsEnabled = !installing;
             });
 
             ShowProgressBar(installing);
@@ -324,7 +326,12 @@ namespace launcher
         public static int GetCmbBranchIndex()
         {
             int cmbSelectedIndex = 0;
-            appDispatcher.Invoke(() => { cmbSelectedIndex = cmbBranch.SelectedIndex; });
+
+            appDispatcher.Invoke(() =>
+            {
+                cmbSelectedIndex = cmbBranch.SelectedIndex;
+            });
+
             return cmbSelectedIndex;
         }
 

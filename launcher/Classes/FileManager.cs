@@ -75,30 +75,21 @@ namespace launcher
 
         public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks(string branchFolder)
         {
-            // Define excluded file patterns
-            var excludedPatterns = new[] { "opt.starpak", ".zst", ".delta" };
+            var checksumTasks = new List<Task<FileChecksum>>();
 
-            // Retrieve all files, excluding those that match any excluded patterns (case-insensitive)
-            var allFiles = Directory
-                .GetFiles(branchFolder, "*", SearchOption.AllDirectories)
-                .Where(file => !excludedPatterns.Any(pattern =>
-                    Path.GetFileName(file).IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0))
-                .ToArray();
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+                        .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
 
-            // Update UI elements on the dispatcher thread
             appDispatcher.Invoke(() =>
             {
                 progressBar.Maximum = allFiles.Length;
                 progressBar.Value = 0;
             });
 
-            // Update the global FILES_LEFT variable
             FILES_LEFT = allFiles.Length;
 
-            // Initialize the list with a predefined capacity to improve performance
-            var checksumTasks = new List<Task<FileChecksum>>(allFiles.Length);
-
-            // Create a checksum task for each file
             foreach (var file in allFiles)
             {
                 checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));

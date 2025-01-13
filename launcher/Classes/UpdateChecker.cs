@@ -7,6 +7,7 @@ using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace launcher
 {
@@ -123,6 +124,7 @@ namespace launcher
                    newServerConfig.allowUpdates &&
                    LAUNCHER_CONFIG != null &&
                    !SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
+                   Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
                    newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetCurrentInstalledBranchVersion();
         }
 
