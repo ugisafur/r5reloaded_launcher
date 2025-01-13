@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
+using System.IO;
 
 namespace launcher
 {
@@ -140,10 +141,16 @@ namespace launcher
 
         private static void UpdateLauncher()
         {
+            if (!File.Exists($"{LAUNCHER_PATH}\\launcher_data\\selfupdater.exe"))
+            {
+                Log(Logger.Type.Error, Source.UpdateChecker, "Self updater not found");
+                return;
+            }
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{LAUNCHER_PATH}\\bin\\selfupdater.exe\""
+                Arguments = $"/c start \"\" \"{LAUNCHER_PATH}\\launcher_data\\selfupdater.exe\""
             };
 
             // Start the new process via cmd
@@ -154,13 +161,18 @@ namespace launcher
 
         private static void HandleGameUpdate(ServerConfig newServerConfig)
         {
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+                return;
+
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available)
+                return;
+
             appDispatcher.Invoke(() =>
             {
-                SERVER_CONFIG = newServerConfig;
-                UPDATE_REQUIRED = true;
-                UPDATE_CHECK_LOOP = false;
-                cmbBranch.ItemsSource = Utilities.SetupGameBranches();
-                cmbBranch.SelectedIndex = 0;
+                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion;
+                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
+                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available = true;
+                btnUpdate.Visibility = Visibility.Visible;
             });
         }
     }

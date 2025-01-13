@@ -23,6 +23,12 @@ namespace launcher
             var fileChecksums = Task.WhenAll(checksumTasks).Result;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
 
+            appDispatcher.Invoke(() =>
+            {
+                progressBar.Maximum = baseGameFiles.files.Count;
+                progressBar.Value = 0;
+            });
+
             FILES_LEFT = baseGameFiles.files.Count;
             BAD_FILES.Clear();
 
@@ -32,11 +38,8 @@ namespace launcher
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    if (!filePath.Contains("launcher.exe"))
-                    {
-                        Log(Logger.Type.Warning, Source.Repair, $"Bad file found: {file.name}");
-                        BAD_FILES.Add($"{file.name}.zst");
-                    }
+                    Log(Logger.Type.Warning, Source.Repair, $"Bad file found: {file.name}");
+                    BAD_FILES.Add($"{file.name}.zst");
                 }
 
                 appDispatcher.Invoke(() =>
@@ -47,21 +50,6 @@ namespace launcher
             }
 
             return BAD_FILES.Count;
-        }
-
-        public static IniFile GetLauncherConfig()
-        {
-            string configPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini");
-
-            if (!File.Exists(configPath))
-                return null;
-
-            IniFile file = new();
-            file.Load(configPath);
-
-            Log(Logger.Type.Info, Source.FileManager, "Loaded launcher ini");
-
-            return file;
         }
 
         public static string GetBranchDirectory()
@@ -87,21 +75,30 @@ namespace launcher
 
         public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks(string branchFolder)
         {
-            var checksumTasks = new List<Task<FileChecksum>>();
+            // Define excluded file patterns
+            var excludedPatterns = new[] { "opt.starpak", ".zst", ".delta" };
 
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
-                        .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
+            // Retrieve all files, excluding those that match any excluded patterns (case-insensitive)
+            var allFiles = Directory
+                .GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+                .Where(file => !excludedPatterns.Any(pattern =>
+                    Path.GetFileName(file).IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0))
+                .ToArray();
 
+            // Update UI elements on the dispatcher thread
             appDispatcher.Invoke(() =>
             {
                 progressBar.Maximum = allFiles.Length;
                 progressBar.Value = 0;
             });
 
+            // Update the global FILES_LEFT variable
             FILES_LEFT = allFiles.Length;
 
+            // Initialize the list with a predefined capacity to improve performance
+            var checksumTasks = new List<Task<FileChecksum>>(allFiles.Length);
+
+            // Create a checksum task for each file
             foreach (var file in allFiles)
             {
                 checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));

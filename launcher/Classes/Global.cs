@@ -40,7 +40,6 @@ namespace launcher
         public const int MAX_REPAIR_ATTEMPTS = 5;
         public static int FILES_LEFT = 0;
         public static bool IS_INSTALLING = false;
-        public static bool UPDATE_REQUIRED = false;
         public static bool UPDATE_CHECK_LOOP = false;
         public static bool BAD_FILES_DETECTED = false;
 

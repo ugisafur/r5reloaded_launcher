@@ -6,6 +6,7 @@ using System.Net;
 using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
+using Polly.Retry;
 
 namespace launcher
 {
@@ -62,7 +63,7 @@ namespace launcher
                     downloadItem = downloadsPopupControl.AddDownloadItem(fileName);
                 });
 
-                var retryPolicy = CreatePolicy(fileUrl);
+                var retryPolicy = CreateRetryPolicy(fileUrl);
 
                 await retryPolicy.ExecuteAsync(async () =>
                 {
@@ -137,17 +138,27 @@ namespace launcher
             }
         }
 
-        private static Polly.Retry.AsyncRetryPolicy CreatePolicy(string fileUrl)
+        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl)
         {
-            var retryPolicy = Policy
-                .Handle<Exception>(ex => ex is WebException || ex is TimeoutException)
-                .WaitAndRetryAsync(5,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) =>
+            const int maxRetryAttempts = 5;
+            const double exponentialBackoffFactor = 2.0;
+
+            // Define the retry policy for handling specific exceptions
+            AsyncRetryPolicy retryPolicy = Policy
+                .Handle<WebException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(
+                    retryCount: maxRetryAttempts,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
+                    onRetry: (exception, timeSpan, retryNumber, context) =>
                     {
-                        // Log each retry attempt
-                        Log(Logger.Type.Warning, Source.DownloadManager,
-                            $"Retry #{retryCount} for {fileUrl} due to: {exception.Message}. Waiting {timeSpan.TotalSeconds:F2}s before next attempt.");
+                        // Log each retry attempt with detailed information
+                        Log(
+                            Logger.Type.Warning,
+                            Source.DownloadManager,
+                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
+                            $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
+                        );
                     });
 
             return retryPolicy;
@@ -155,20 +166,42 @@ namespace launcher
 
         public static List<Task<string>> PrepareDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
         {
-            var downloadTasks = new List<Task<string>>();
+            // Initialize the list to hold download tasks
+            var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
 
+            // Set up progress indicators
             SetProgressBar(baseGameFiles.files.Count);
-
             FILES_LEFT = baseGameFiles.files.Count;
+
+            // Retrieve the branch configuration once
+            var currentBranch = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()];
+            string baseUrl = currentBranch.game_url;
 
             foreach (var file in baseGameFiles.files)
             {
-                string fileUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}/{file.name}";
+                // Construct the full URL for the file
+                string fileUrl = $"{baseUrl}/{file.name}";
+
+                // Determine the destination path for the file
                 string destinationPath = Path.Combine(branchDirectory, file.name);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                // Ensure the destination directory exists
+                string destinationDir = Path.GetDirectoryName(destinationPath);
+                if (!string.IsNullOrEmpty(destinationDir))
+                {
+                    Directory.CreateDirectory(destinationDir);
+                }
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file.name, file.checksum, true));
+                // Add the download task to the list
+                downloadTasks.Add(
+                    DownloadAndReturnFilePathAsync(
+                        fileUrl,
+                        destinationPath,
+                        file.name,
+                        file.checksum,
+                        true
+                    )
+                );
             }
 
             return downloadTasks;
@@ -176,22 +209,47 @@ namespace launcher
 
         public static List<Task<string>> PrepareRepairDownloadTasks(string tempDirectory)
         {
-            FILES_LEFT = BAD_FILES.Count;
+            // Initialize progress indicators
+            int badFilesCount = BAD_FILES.Count;
+            SetProgressBar(badFilesCount);
+            FILES_LEFT = badFilesCount;
 
-            var downloadTasks = new List<Task<string>>();
+            // Initialize the list with a predefined capacity
+            var downloadTasks = new List<Task<string>>(badFilesCount);
 
-            SetProgressBar(BAD_FILES.Count);
-
-            FILES_LEFT = BAD_FILES.Count;
+            // Retrieve the branch configuration once to avoid repeated lookups
+            var currentBranch = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()];
+            string baseUrl = currentBranch.game_url;
 
             foreach (var file in BAD_FILES)
             {
-                string fileUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}/{file}";
+                // Construct the full URL for the file
+                string fileUrl = $"{baseUrl}/{file}";
+
+                // Determine the destination path for the file
                 string destinationPath = Path.Combine(tempDirectory, file);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                // Ensure the destination directory exists
+                string destinationDir = Path.GetDirectoryName(destinationPath);
+                if (!string.IsNullOrEmpty(destinationDir))
+                {
+                    Directory.CreateDirectory(destinationDir);
+                }
+                else
+                {
+                    // Handle cases where destinationDir is null or empty if necessary
+                    Log(Logger.Type.Warning, Source.Repair, $"Destination directory for file '{file}' is invalid.");
+                    continue; // Skip this file or handle accordingly
+                }
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file));
+                // Add the download task to the list
+                downloadTasks.Add(
+                    DownloadAndReturnFilePathAsync(
+                        fileUrl,
+                        destinationPath,
+                        file
+                    )
+                );
             }
 
             return downloadTasks;

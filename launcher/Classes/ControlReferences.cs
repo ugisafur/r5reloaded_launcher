@@ -27,6 +27,7 @@ namespace launcher
         public static TextBlock launcherVersionlbl = new();
         public static ComboBox cmbBranch = new();
         public static Button btnPlay = new();
+        public static Button btnUpdate = new();
         public static MainWindow mainApp = new();
         public static SettingsControl settingsControl = new();
         public static AdvancedMenu advancedControl = new();

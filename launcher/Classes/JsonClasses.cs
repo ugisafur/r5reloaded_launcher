@@ -17,6 +17,7 @@
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
         public bool is_local_branch = false;
+        public bool update_available = false;
     }
 
     public class ServerConfig

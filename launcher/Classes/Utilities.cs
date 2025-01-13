@@ -53,6 +53,9 @@ namespace launcher
             gameSettingsPopup = mainWindow.SettingsPopup;
             downloadsPopupControl = mainWindow.DownloadsPopupControl;
             statusPopup = mainWindow.StatusPopupControl;
+            btnUpdate = mainWindow.btnUpdate;
+
+            btnUpdate.Visibility = Visibility.Hidden;
 
             ShowProgressBar(false);
 
@@ -86,7 +89,7 @@ namespace launcher
             if (IS_ONLINE)
                 SERVER_CONFIG = DataFetcher.FetchServerConfig();
 
-            LAUNCHER_CONFIG = FileManager.GetLauncherConfig();
+            LAUNCHER_CONFIG = Ini.GetFile();
             Log(Logger.Type.Info, Source.Launcher, $"Launcher config found");
 
             cmbBranch.ItemsSource = SetupGameBranches();
@@ -144,48 +147,23 @@ namespace launcher
 
         public static List<ComboBranch> SetupGameBranches()
         {
-            if (IS_ONLINE)
+            string libraryPath = FileManager.GetLibraryPathDirectory();
+            string[] directories = Directory.GetDirectories(libraryPath);
+            string[] folderNames = directories.Select(Path.GetFileName).ToArray();
+
+            folderBranches.Clear();
+
+            foreach (string folder in folderNames)
             {
-                string[] directories = Directory.GetDirectories(FileManager.GetLibraryPathDirectory());
-                string[] folderNames = Array.ConvertAll(directories, Path.GetFileName);
-                folderBranches.Clear();
-                foreach (string folder in folderNames)
+                bool shouldAdd = true;
+
+                if (IS_ONLINE)
                 {
-                    if (!SERVER_CONFIG.branches.Exists(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        Branch branch = new()
-                        {
-                            branch = folder,
-                            currentVersion = "Local Install",
-                            lastVersion = "",
-                            game_url = "",
-                            patch_url = "",
-                            enabled = true,
-                            show_in_launcher = true,
-                            is_local_branch = true
-                        };
-                        folderBranches.Add(branch);
-                        Log(Logger.Type.Info, Source.Launcher, $"Local branch found: {folder}");
-                    }
+                    shouldAdd = !SERVER_CONFIG.branches
+                        .Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
                 }
 
-                SERVER_CONFIG.branches.AddRange(folderBranches);
-
-                return SERVER_CONFIG.branches
-                .Where(branch => branch.show_in_launcher)
-                .Select(branch => new ComboBranch
-                {
-                    title = branch.branch,
-                    subtext = branch.currentVersion,
-                    isLocalBranch = branch.is_local_branch,
-                }).ToList();
-            }
-            else
-            {
-                string[] directories = Directory.GetDirectories(FileManager.GetLibraryPathDirectory());
-                string[] folderNames = Array.ConvertAll(directories, Path.GetFileName);
-                folderBranches.Clear();
-                foreach (string folder in folderNames)
+                if (shouldAdd)
                 {
                     Branch branch = new()
                     {
@@ -201,20 +179,29 @@ namespace launcher
                     folderBranches.Add(branch);
                     Log(Logger.Type.Info, Source.Launcher, $"Local branch found: {folder}");
                 }
+            }
 
-                SERVER_CONFIG = new()
+            if (IS_ONLINE)
+            {
+                SERVER_CONFIG.branches.AddRange(folderBranches);
+            }
+            else
+            {
+                SERVER_CONFIG = new ServerConfig
                 {
-                    branches = folderBranches
+                    branches = new List<Branch>(folderBranches)
                 };
+            }
 
-                return SERVER_CONFIG.branches
+            return SERVER_CONFIG.branches
+                .Where(branch => branch.show_in_launcher || !IS_ONLINE)
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
-                    subtext = branch.currentVersion
+                    subtext = branch.currentVersion,
+                    isLocalBranch = branch.is_local_branch
                 })
                 .ToList();
-            }
         }
 
         public static void LaunchGame()
@@ -337,12 +324,7 @@ namespace launcher
         public static int GetCmbBranchIndex()
         {
             int cmbSelectedIndex = 0;
-
-            appDispatcher.Invoke(() =>
-            {
-                cmbSelectedIndex = cmbBranch.SelectedIndex;
-            });
-
+            appDispatcher.Invoke(() => { cmbSelectedIndex = cmbBranch.SelectedIndex; });
             return cmbSelectedIndex;
         }
 

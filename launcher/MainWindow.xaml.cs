@@ -152,14 +152,7 @@ namespace launcher
 
             if (Utilities.isSelectedBranchInstalled())
             {
-                if (UPDATE_REQUIRED)
-                {
-                    Task.Run(() => GameUpdate.Start());
-                }
-                else
-                {
-                    Utilities.LaunchGame();
-                }
+                Utilities.LaunchGame();
             }
             else if (!IS_INSTALLING)
             {
@@ -199,6 +192,7 @@ namespace launcher
             if (comboBranch.isLocalBranch || !IS_ONLINE)
             {
                 Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
+                btnUpdate.Visibility = Visibility.Hidden;
                 btnPlay.Content = "PLAY";
                 btnPlay.IsEnabled = true;
                 IS_LOCAL_BRANCH = true;
@@ -214,6 +208,7 @@ namespace launcher
             {
                 if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
+                    btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "PLAY";
                     btnPlay.IsEnabled = true;
                     SettingsPopupControl.btnRepair.IsEnabled = false;
@@ -222,23 +217,24 @@ namespace launcher
 
                 if (Utilities.GetCurrentInstalledBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
                 {
+                    btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "PLAY";
                     btnPlay.IsEnabled = true;
                     SettingsPopupControl.btnRepair.IsEnabled = true;
-                    UPDATE_REQUIRED = false;
                 }
                 else
                 {
-                    btnPlay.Content = "UPDATE";
+                    btnUpdate.Visibility = Visibility.Visible;
+                    btnPlay.Content = "PLAY";
                     btnPlay.IsEnabled = true;
                     SettingsPopupControl.btnRepair.IsEnabled = true;
-                    UPDATE_REQUIRED = true;
                 }
             }
             else
             {
                 if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
+                    btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "DISABLED";
                     btnPlay.IsEnabled = false;
                     SettingsPopupControl.btnRepair.IsEnabled = false;
@@ -247,12 +243,14 @@ namespace launcher
 
                 if (File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 {
+                    btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "REPAIR";
                     btnPlay.IsEnabled = true;
                     SettingsPopupControl.btnRepair.IsEnabled = true;
                 }
                 else
                 {
+                    btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "INSTALL";
                     btnPlay.IsEnabled = true;
                     SettingsPopupControl.btnRepair.IsEnabled = false;
@@ -313,6 +311,15 @@ namespace launcher
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.isSelectedBranchInstalled())
+            {
+                Task.Run(() => GameUpdate.Start());
+                btnUpdate.Visibility = Visibility.Hidden;
+            }
         }
     }
 }
