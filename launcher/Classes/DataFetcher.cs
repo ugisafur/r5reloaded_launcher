@@ -56,7 +56,7 @@ namespace launcher
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            string baseGameChecksumUrl = $"{SERVER_CONFIG.base_game_url}\\{fileName}";
+            string baseGameChecksumUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}\\{fileName}";
             string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
 
             var baseGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
@@ -72,7 +72,7 @@ namespace launcher
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            string optionalGameChecksumUrl = $"{SERVER_CONFIG.base_game_url}\\{fileName}";
+            string optionalGameChecksumUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}\\{fileName}";
             string optionalGameZstChecksums = await FetchJson(optionalGameChecksumUrl);
 
             var optionalGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(optionalGameZstChecksums);

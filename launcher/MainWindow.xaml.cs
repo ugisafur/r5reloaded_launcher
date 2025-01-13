@@ -41,22 +41,16 @@ namespace launcher
                 this.Top = (screenHeight / 2) - (windowHeight / 2);
             }
 
-            btnPlay.Content = IS_INSTALLED ? "PLAY" : "INSTALL";
-            if (!Ini.Get(Ini.Vars.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
-                btnPlay.Content = "REPAIR";
-
-            if (IS_INSTALLED)
+            if (IS_ONLINE)
             {
-                if (IS_ONLINE)
-                {
-                    cmbBranch.SelectedItem = SERVER_CONFIG.branches.FirstOrDefault(b => b.branch == Ini.Get(Ini.Vars.Current_Branch, ""));
-                    Task.Run(() => UpdateChecker.Start());
-                }
-                else
-                {
-                    cmbBranch.IsEnabled = false;
-                    cmbBranch.SelectedIndex = 0;
-                }
+                Task.Run(() => UpdateChecker.Start());
+                btnPlay.Content = Utilities.isSelectedBranchInstalled() ? "PLAY" : "INSTALL";
+                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                    btnPlay.Content = "REPAIR";
+            }
+            else
+            {
+                btnPlay.Content = "PLAY";
             }
 
             bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
@@ -152,7 +146,13 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (IS_INSTALLED)
+            if (!IS_ONLINE)
+            {
+                Utilities.LaunchGame();
+                return;
+            }
+
+            if (Utilities.isSelectedBranchInstalled())
             {
                 if (UPDATE_REQUIRED)
                 {
@@ -165,7 +165,7 @@ namespace launcher
             }
             else if (!IS_INSTALLING)
             {
-                if (!Ini.Get(Ini.Vars.Installed, false) && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 {
                     Task.Run(() => GameRepair.Start());
                 }
@@ -192,38 +192,69 @@ namespace launcher
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!IS_ONLINE)
-                return;
-
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            if (!SERVER_CONFIG.branches[selectedBranch].enabled)
+            lastSelectedIndex = selectedBranch;
+
+            ComboBranch comboBranch = (ComboBranch)cmbBranch.Items[selectedBranch];
+
+            if (comboBranch.isLocalBranch || !IS_ONLINE)
             {
-                comboBox.SelectedIndex = lastSelectedIndex;
+                Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
+                btnPlay.Content = "PLAY";
+                btnPlay.IsEnabled = true;
+                IS_LOCAL_BRANCH = true;
+                SettingsPopupControl.btnRepair.IsEnabled = false;
                 return;
             }
 
-            lastSelectedIndex = selectedBranch;
+            IS_LOCAL_BRANCH = false;
+            SettingsPopupControl.btnRepair.IsEnabled = true;
 
-            if (IS_INSTALLED)
+            Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[selectedBranch].branch);
+
+            if (Utilities.isSelectedBranchInstalled())
             {
-                if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Current_Branch, "")))
-                    Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[0].branch);
-
-                if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Current_Version, "")))
-                    Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[0].currentVersion);
-
-                if (SERVER_CONFIG.branches[0].branch == Ini.Get(Ini.Vars.Current_Branch, ""))
+                if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
+                    btnPlay.Content = "PLAY";
+                    btnPlay.IsEnabled = true;
+                    return;
+                }
+
+                if (Utilities.GetCurrentInstalledBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
+                {
+                    btnPlay.Content = "PLAY";
+                    btnPlay.IsEnabled = true;
                     UPDATE_REQUIRED = false;
-                    btnPlay.Content = "Play";
                 }
                 else
                 {
-                    btnPlay.Content = "Update";
+                    btnPlay.Content = "UPDATE";
+                    btnPlay.IsEnabled = true;
                     UPDATE_REQUIRED = true;
+                }
+            }
+            else
+            {
+                if (!SERVER_CONFIG.branches[selectedBranch].enabled)
+                {
+                    btnPlay.Content = "DISABLED";
+                    btnPlay.IsEnabled = false;
+                    return;
+                }
+
+                if (File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                {
+                    btnPlay.Content = "REPAIR";
+                    btnPlay.IsEnabled = true;
+                }
+                else
+                {
+                    btnPlay.Content = "INSTALL";
+                    btnPlay.IsEnabled = true;
                 }
             }
         }

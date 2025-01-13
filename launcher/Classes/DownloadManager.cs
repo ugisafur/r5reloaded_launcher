@@ -57,7 +57,11 @@ namespace launcher
                 }
 
                 // Add download item to the popup
-                downloadItem = CreateDownloadItem(fileName);
+                await appDispatcher.InvokeAsync(() =>
+                {
+                    downloadItem = downloadsPopupControl.AddDownloadItem(fileName);
+                });
+
                 var retryPolicy = CreatePolicy(fileUrl);
 
                 await retryPolicy.ExecuteAsync(async () =>
@@ -95,7 +99,11 @@ namespace launcher
                             if (downloadItem != null && totalBytes > 0)
                             {
                                 var progress = (double)downloadedBytes / totalBytes * 100;
-                                UpdateDownloadsItem(downloadItem, progress);
+                                await appDispatcher.InvokeAsync(() =>
+                                {
+                                    downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                                    downloadItem.downloadFileProgress.Value = progress;
+                                });
                             }
                         }
                     }
@@ -117,7 +125,12 @@ namespace launcher
             {
                 // Remove the download item from the popup
                 if (downloadItem != null)
-                    RemoveDownloadsItem(downloadItem);
+                {
+                    await appDispatcher.InvokeAsync(() =>
+                    {
+                        downloadsPopupControl.RemoveDownloadItem(downloadItem);
+                    });
+                }
 
                 // Release the semaphore slot
                 DOWNLOAD_SEMAPHORE.Release();
@@ -140,36 +153,7 @@ namespace launcher
             return retryPolicy;
         }
 
-        private static DownloadItem CreateDownloadItem(string fileName)
-        {
-            DownloadItem newItem = null;
-
-            appDispatcher.InvokeAsync(() =>
-            {
-                newItem = downloadsPopupControl.AddDownloadItem(fileName);
-            });
-
-            return newItem;
-        }
-
-        private static async void UpdateDownloadsItem(DownloadItem downloadItem, double progress)
-        {
-            await appDispatcher.InvokeAsync(() =>
-            {
-                downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                downloadItem.downloadFileProgress.Value = progress;
-            });
-        }
-
-        private static async void RemoveDownloadsItem(DownloadItem downloadItem)
-        {
-            await appDispatcher.InvokeAsync(() =>
-            {
-                downloadsPopupControl.RemoveDownloadItem(downloadItem);
-            });
-        }
-
-        public static List<Task<string>> PrepareDownloadTasks(BaseGameFiles baseGameFiles, string tempDirectory)
+        public static List<Task<string>> PrepareDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
         {
             var downloadTasks = new List<Task<string>>();
 
@@ -179,8 +163,8 @@ namespace launcher
 
             foreach (var file in baseGameFiles.files)
             {
-                string fileUrl = $"{SERVER_CONFIG.base_game_url}/{file.name}";
-                string destinationPath = Path.Combine(tempDirectory, file.name);
+                string fileUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}/{file.name}";
+                string destinationPath = Path.Combine(branchDirectory, file.name);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
@@ -202,7 +186,7 @@ namespace launcher
 
             foreach (var file in BAD_FILES)
             {
-                string fileUrl = $"{SERVER_CONFIG.base_game_url}/{file}";
+                string fileUrl = $"{SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].game_url}/{file}";
                 string destinationPath = Path.Combine(tempDirectory, file);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));

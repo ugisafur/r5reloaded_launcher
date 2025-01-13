@@ -8,6 +8,8 @@ using static launcher.Logger;
 using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.LaunchParameters;
+using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace launcher
 {
@@ -74,18 +76,53 @@ namespace launcher
             advancedControl.SetupAdvancedSettings();
             Log(Logger.Type.Info, Source.Launcher, $"Advanced settings initialized");
 
+            if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Library_Location, "")))
+            {
+                DirectoryInfo parentDir = Directory.GetParent(LAUNCHER_PATH.TrimEnd(Path.DirectorySeparatorChar));
+
+                Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
+            }
+
             if (IS_ONLINE)
                 SERVER_CONFIG = DataFetcher.FetchServerConfig();
 
             LAUNCHER_CONFIG = FileManager.GetLauncherConfig();
             Log(Logger.Type.Info, Source.Launcher, $"Launcher config found");
 
-            IS_INSTALLED = Ini.Get(Ini.Vars.Installed, false);
-            Log(Logger.Type.Info, Source.Launcher, $"Is game installed: {IS_INSTALLED}");
-
             cmbBranch.ItemsSource = SetupGameBranches();
-            cmbBranch.SelectedIndex = 0;
+
+            string selectedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
+            if (string.IsNullOrEmpty(selectedBranch))
+            {
+                Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[0].branch);
+                selectedBranch = SERVER_CONFIG.branches[0].branch;
+            }
+
+            int selectedIndex = SERVER_CONFIG.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
+
+            if (selectedIndex == -1)
+            {
+                selectedIndex = 0;
+                Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[0].branch);
+            }
+
+            cmbBranch.SelectedIndex = selectedIndex;
+
             Log(Logger.Type.Info, Source.Launcher, "Game branches initialized");
+
+            if (!File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe")))
+            {
+                Log(Logger.Type.Info, Source.Launcher, "Downloading self updater");
+                CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
+                    .ContinueWith(response =>
+                    {
+                        if (response.Result.IsSuccessStatusCode)
+                        {
+                            byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
+                            File.WriteAllBytes(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe"), data);
+                        }
+                    });
+            }
         }
 
         public static void ToggleBackgroundVideo(bool disabled)
@@ -95,29 +132,82 @@ namespace launcher
             mainApp.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
 
+        public static bool isSelectedBranchInstalled()
+        {
+            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Is_Installed", false);
+        }
+
+        public static string GetCurrentInstalledBranchVersion()
+        {
+            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Version", "");
+        }
+
         public static List<ComboBranch> SetupGameBranches()
         {
             if (IS_ONLINE)
             {
+                string[] directories = Directory.GetDirectories(FileManager.GetLibraryPathDirectory());
+                string[] folderNames = Array.ConvertAll(directories, Path.GetFileName);
+                folderBranches.Clear();
+                foreach (string folder in folderNames)
+                {
+                    if (!SERVER_CONFIG.branches.Exists(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        Branch branch = new()
+                        {
+                            branch = folder,
+                            currentVersion = "Local Install",
+                            lastVersion = "",
+                            game_url = "",
+                            patch_url = "",
+                            enabled = true,
+                            show_in_launcher = true,
+                            is_local_branch = true
+                        };
+                        folderBranches.Add(branch);
+                        Log(Logger.Type.Info, Source.Launcher, $"Local branch found: {folder}");
+                    }
+                }
+
+                SERVER_CONFIG.branches.AddRange(folderBranches);
+
                 return SERVER_CONFIG.branches
+                .Where(branch => branch.show_in_launcher)
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
-                    subtext = branch.enabled ? branch.currentVersion : "branch disabled"
-                })
-                .ToList();
+                    subtext = branch.currentVersion,
+                    isLocalBranch = branch.is_local_branch,
+                }).ToList();
             }
             else
             {
-                List<Branch> branches = [
-                    new Branch() {
-                        branch = "No Internet Conenction",
+                string[] directories = Directory.GetDirectories(FileManager.GetLibraryPathDirectory());
+                string[] folderNames = Array.ConvertAll(directories, Path.GetFileName);
+                folderBranches.Clear();
+                foreach (string folder in folderNames)
+                {
+                    Branch branch = new()
+                    {
+                        branch = folder,
+                        currentVersion = "Local Install",
+                        lastVersion = "",
+                        game_url = "",
+                        patch_url = "",
                         enabled = true,
-                        currentVersion = "Branch selection disabled"
-                    }
-                ];
+                        show_in_launcher = true,
+                        is_local_branch = true
+                    };
+                    folderBranches.Add(branch);
+                    Log(Logger.Type.Info, Source.Launcher, $"Local branch found: {folder}");
+                }
 
-                return branches
+                SERVER_CONFIG = new()
+                {
+                    branches = folderBranches
+                };
+
+                return SERVER_CONFIG.branches
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
@@ -143,7 +233,8 @@ namespace launcher
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{LAUNCHER_PATH}\\{exeName}",
+                FileName = $"{FileManager.GetBranchDirectory()}\\{exeName}",
+                WorkingDirectory = FileManager.GetBranchDirectory(),
                 Arguments = gameArguments,
                 UseShellExecute = true,
                 CreateNoWindow = true
@@ -210,6 +301,20 @@ namespace launcher
             ShowProgressBar(installing);
         }
 
+        public static void SetOptionalInstallState(bool installing)
+        {
+            Log(Logger.Type.Info, Source.Launcher, $"Setting optional install state to: {installing}");
+
+            appDispatcher.Invoke(() =>
+            {
+                IS_INSTALLING = installing;
+                lblStatus.Text = "";
+                lblFilesLeft.Text = "";
+            });
+
+            ShowProgressBar(installing);
+        }
+
         public static void UpdateStatusLabel(string statusText, Source source)
         {
             Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
@@ -233,11 +338,10 @@ namespace launcher
         {
             int cmbSelectedIndex = 0;
 
-            //TODO: FOR BRANCHES LATER, ONLY ALLOWING MAIN BRANCH FOR NOW
-            //mainWindow.Dispatcher.Invoke(() =>
-            //{
-            //    cmbSelectedIndex = mainWindow.cmbBranch.SelectedIndex;
-            //});
+            appDispatcher.Invoke(() =>
+            {
+                cmbSelectedIndex = cmbBranch.SelectedIndex;
+            });
 
             return cmbSelectedIndex;
         }

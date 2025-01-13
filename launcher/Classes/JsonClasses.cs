@@ -4,6 +4,7 @@
     {
         public string title { get; set; }
         public string subtext { get; set; }
+        public bool isLocalBranch { get; set; }
     }
 
     public class Branch
@@ -11,13 +12,17 @@
         public string branch { get; set; }
         public string currentVersion { get; set; }
         public string lastVersion { get; set; }
+        public string game_url { get; set; }
         public string patch_url { get; set; }
         public bool enabled { get; set; }
+        public bool show_in_launcher { get; set; }
+        public bool is_local_branch = false;
     }
 
     public class ServerConfig
     {
         public string launcherVersion { get; set; }
+        public string launcherSelfUpdater { get; set; }
         public string base_game_url { get; set; }
         public bool allowUpdates { get; set; }
         public List<Branch> branches { get; set; }

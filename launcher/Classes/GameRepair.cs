@@ -1,4 +1,5 @@
-﻿using static launcher.Global;
+﻿using System.IO;
+using static launcher.Global;
 using static launcher.Logger;
 
 namespace launcher
@@ -15,6 +16,9 @@ namespace launcher
             if (!IS_ONLINE)
                 return false;
 
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+                return false;
+
             bool repairSuccess = true;
 
             //Install started
@@ -24,12 +28,12 @@ namespace launcher
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            //Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             //Prepare checksum tasks
             Utilities.UpdateStatusLabel("Preparing checksum tasks", Source.Repair);
-            var checksumTasks = FileManager.PrepareBaseGameChecksumTasks();
+            var checksumTasks = FileManager.PrepareBaseGameChecksumTasks(branchDirectory);
 
             //Generate checksums for local files
             Utilities.UpdateStatusLabel("Generating local checksums", Source.Repair);
@@ -41,7 +45,7 @@ namespace launcher
 
             //Identify bad files
             Utilities.UpdateStatusLabel("Identifying bad files", Source.Repair);
-            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks);
+            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (badFileCount > 0)
@@ -49,7 +53,7 @@ namespace launcher
                 repairSuccess = false;
 
                 Utilities.UpdateStatusLabel("Preparing download tasks", Source.Repair);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(tempDirectory);
+                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
 
                 Utilities.UpdateStatusLabel("Downloading repaired files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
@@ -62,17 +66,17 @@ namespace launcher
             }
 
             //Update launcher config
-            Ini.Set(Ini.Vars.Installed, true);
-            Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Version", SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+
+            string[] find_opt_files = Directory.GetFiles(LAUNCHER_PATH, "*.opt.starpak", SearchOption.AllDirectories);
+            if (find_opt_files.Length > 0)
+                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", true);
 
             //Install finished
             Utilities.SetInstallState(false);
 
-            //Delete temp directory
-            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
-
-            if (Ini.Get(Ini.Vars.Download_HD_Textures, false) && Ini.Get(Ini.Vars.HD_Textures_Installed, false))
+            if (Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false))
                 Task.Run(() => RepairOptionalFiles());
 
             return repairSuccess;
@@ -80,50 +84,48 @@ namespace launcher
 
         private static async Task RepairOptionalFiles()
         {
+            Utilities.SetOptionalInstallState(true);
+
             //Set download limits
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            //Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             //Prepare checksum tasks
-            Utilities.UpdateStatusLabel("Preparing checksum tasks", Source.Repair);
-            var checksumTasks = FileManager.PrepareOptionalGameChecksumTasks();
+            Utilities.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
+            var checksumTasks = FileManager.PrepareOptionalGameChecksumTasks(branchDirectory);
 
             //Generate checksums for local files
-            Utilities.UpdateStatusLabel("Generating local checksums", Source.Repair);
+            Utilities.UpdateStatusLabel("Generating optional checksums", Source.Repair);
             await Task.WhenAll(checksumTasks);
 
             //Fetch non compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching base game files list", Source.Repair);
+            Utilities.UpdateStatusLabel("Fetching optional files list", Source.Repair);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchOptionalGameFiles(false);
 
             //Identify bad files
-            Utilities.UpdateStatusLabel("Identifying bad files", Source.Repair);
-            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks);
+            Utilities.UpdateStatusLabel("Identifying bad optional files", Source.Repair);
+            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (badFileCount > 0)
             {
-                Utilities.UpdateStatusLabel("Preparing download tasks", Source.Repair);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(tempDirectory);
+                Utilities.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
+                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
 
-                Utilities.UpdateStatusLabel("Downloading repaired files", Source.Repair);
+                Utilities.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
 
                 Utilities.UpdateStatusLabel("Preparing decompression", Source.Repair);
                 var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
-                Utilities.UpdateStatusLabel("Decompressing repaired files", Source.Repair);
+                Utilities.UpdateStatusLabel("Decompressing optional files", Source.Repair);
                 await Task.WhenAll(decompressionTasks);
             }
 
-            //Set HD textures as installed
-            Ini.Set(Ini.Vars.HD_Textures_Installed, true);
-
-            //Delete temp directory
-            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+            Utilities.SetOptionalInstallState(false);
         }
     }
 }

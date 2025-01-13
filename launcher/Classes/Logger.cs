@@ -5,7 +5,6 @@ namespace launcher
 {
     public static class Logger
     {
-        private static readonly string AppName = "r5r_launcher"; // Change to your app's name
         private static readonly string LogFileName = "launcher_log.log";
 
         public static string LogFilePath = "";
@@ -36,7 +35,7 @@ namespace launcher
         {
             // Ensure the directory exists
             string folderUUID = GenerateFolderUUID();
-            LogFilePath = Path.Combine(LAUNCHER_PATH, $"platform\\logs\\tools\\{AppName}\\{folderUUID}", LogFileName);
+            LogFilePath = Path.Combine(LAUNCHER_PATH, $"launcher_data\\logs\\{folderUUID}", LogFileName);
 
             string logDirectory = Path.GetDirectoryName(LogFilePath);
             if (!Directory.Exists(logDirectory))

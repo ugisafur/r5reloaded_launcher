@@ -15,6 +15,8 @@ namespace launcher
     /// </summary>
     public partial class SettingsPopup : UserControl
     {
+        public Button Repair_Button = null;
+
         public SettingsPopup()
         {
             InitializeComponent();

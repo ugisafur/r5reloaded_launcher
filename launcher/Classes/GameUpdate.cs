@@ -1,4 +1,7 @@
-﻿using static launcher.Global;
+﻿using System.Numerics;
+using System.Windows;
+using System.Windows.Shapes;
+using static launcher.Global;
 
 namespace launcher
 {
@@ -23,13 +26,15 @@ namespace launcher
             if (!IS_ONLINE)
                 return;
 
-            string currentVersion = Ini.Get(Ini.Vars.Current_Version, "");
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+                return;
+
             // Check if the game is already up to date
-            if (currentVersion == SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion)
+            if (Utilities.GetCurrentInstalledBranchVersion() == SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion)
                 return;
 
             // Check if user is to outdated to update normally
-            if (currentVersion != SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion)
+            if (Utilities.GetCurrentInstalledBranchVersion() != SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion)
                 await GameRepair.Start();
 
             // Install started
@@ -39,27 +44,27 @@ namespace launcher
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            // Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             // Fetch patch files
             GamePatch patchFiles = await DataFetcher.FetchPatchFiles();
 
             // Prepare download tasks
-            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, tempDirectory);
+            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, branchDirectory);
 
             // Download patch files
             await Task.WhenAll(downloadTasks);
 
             // Prepare file patch tasks
-            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, tempDirectory);
+            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, branchDirectory);
 
             // Patch base game files
             await Task.WhenAll(filePatchTasks);
 
             // Update or create launcher config
-            Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Version", SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
             // Install finished
             Utilities.SetInstallState(false);
@@ -67,39 +72,37 @@ namespace launcher
             // Set update required to false
             UPDATE_REQUIRED = false;
 
-            //Delete temp directory
-            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
-
-            if (Ini.Get(Ini.Vars.Download_HD_Textures, false) && Ini.Get(Ini.Vars.HD_Textures_Installed, false))
+            if (Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false))
                 Task.Run(() => UpdateOptionalFiles());
         }
 
         private static async Task UpdateOptionalFiles()
         {
+            Utilities.SetOptionalInstallState(true);
+
             //Set download limits
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            // Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             // Fetch patch files
             GamePatch patchFiles = await DataFetcher.FetchOptionalPatchFiles();
 
             // Prepare download tasks
-            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, tempDirectory);
+            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, branchDirectory);
 
             // Download patch files
             await Task.WhenAll(downloadTasks);
 
             // Prepare file patch tasks
-            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, tempDirectory);
+            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, branchDirectory);
 
             // Patch base game files
             await Task.WhenAll(filePatchTasks);
 
-            //Delete temp directory
-            await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+            Utilities.SetOptionalInstallState(false);
         }
     }
 }

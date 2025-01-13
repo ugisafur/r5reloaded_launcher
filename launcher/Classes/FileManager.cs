@@ -18,7 +18,7 @@ namespace launcher
     /// </summary>
     public static class FileManager
     {
-        public static int IdentifyBadFiles(BaseGameFiles baseGameFiles, List<Task<FileChecksum>> checksumTasks)
+        public static int IdentifyBadFiles(BaseGameFiles baseGameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory)
         {
             var fileChecksums = Task.WhenAll(checksumTasks).Result;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
@@ -28,7 +28,7 @@ namespace launcher
 
             foreach (var file in baseGameFiles.files)
             {
-                string filePath = Path.Combine(LAUNCHER_PATH, file.name);
+                string filePath = Path.Combine(branchDirectory, file.name);
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
@@ -49,84 +49,9 @@ namespace launcher
             return BAD_FILES.Count;
         }
 
-        public static async Task CleanUpTempDirectory(string tempDirectory, int maxConcurrency = 10)
-        {
-            try
-            {
-                string[] files = Directory.GetFiles(tempDirectory, "*", SearchOption.AllDirectories);
-
-                using var semaphore = new SemaphoreSlim(maxConcurrency);
-
-                var deleteTasks = files.Select(async file =>
-                {
-                    await semaphore.WaitAsync();
-                    try
-                    {
-                        TryDeleteFile(file, TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(500));
-                    }
-                    finally
-                    {
-                        semaphore.Release();
-                    }
-                });
-
-                await Task.WhenAll(deleteTasks);
-
-                if (Directory.Exists(tempDirectory))
-                {
-                    try
-                    {
-                        Directory.Delete(tempDirectory, true);
-                        Log(Logger.Type.Info, Source.FileManager, $"Deleted temp directory: {tempDirectory}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(Logger.Type.Error, Source.FileManager, $"Error deleting temp directory: {ex.Message}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log(Logger.Type.Error, Source.FileManager, $"Error cleaning up temp directory: {ex.Message}");
-            }
-        }
-
-        private static void TryDeleteFile(string filePath, TimeSpan timeout, TimeSpan retryInterval)
-        {
-            DateTime endTime = DateTime.Now.Add(timeout);
-
-            while (DateTime.Now < endTime)
-            {
-                try
-                {
-                    using (FileStream fs = new(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-                    {
-                        // If we get here, the file is not in use and can be safely deleted
-                    }
-
-                    File.Delete(filePath);
-                    //Log(Logger.Type.Info, Source.FileManager, $"Deleted file: {filePath}");
-                    return;
-                }
-                catch (IOException)
-                {
-                    Log(Logger.Type.Warning, Source.FileManager, $"File in use, retrying: {filePath}");
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Log(Logger.Type.Warning, Source.FileManager, $"Access denied, skipping: {filePath}");
-                    return;
-                }
-
-                Thread.Sleep(retryInterval);
-            }
-
-            Log(Logger.Type.Error, Source.FileManager, $"Failed to delete file after retries: {filePath}");
-        }
-
         public static IniFile GetLauncherConfig()
         {
-            string configPath = Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini");
+            string configPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini");
 
             if (!File.Exists(configPath))
                 return null;
@@ -139,20 +64,35 @@ namespace launcher
             return file;
         }
 
-        public static string CreateTempDirectory()
+        public static string GetBranchDirectory()
         {
-            string tempDirectory = Path.Combine(LAUNCHER_PATH, "temp");
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
+            string branchName = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
+            string libraryPath = Ini.Get(Ini.Vars.Library_Location, "C:\\Program Files\\R5Reloaded\\");
+            string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
+
+            Directory.CreateDirectory(finalDirectory);
+
+            return finalDirectory;
         }
 
-        public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks()
+        public static string GetLibraryPathDirectory()
+        {
+            string libraryPath = Ini.Get(Ini.Vars.Library_Location, "C:\\Program Files\\R5Reloaded\\");
+            string finalDirectory = Path.Combine(libraryPath, "R5R Library");
+
+            Directory.CreateDirectory(finalDirectory);
+
+            return finalDirectory;
+        }
+
+        public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks(string branchFolder)
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
-            var allFiles = Directory.GetFiles(LAUNCHER_PATH, "*", SearchOption.AllDirectories)
-                        .Where(f => !f.Contains("\\temp\\") && !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
-                        .ToArray();
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+                        .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {
@@ -164,19 +104,20 @@ namespace launcher
 
             foreach (var file in allFiles)
             {
-                checksumTasks.Add(GenerateAndReturnFileChecksum(file));
+                checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
             }
 
             return checksumTasks;
         }
 
-        public static List<Task<FileChecksum>> PrepareOptionalGameChecksumTasks()
+        public static List<Task<FileChecksum>> PrepareOptionalGameChecksumTasks(string branchFolder)
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
-            var allFiles = Directory.GetFiles(LAUNCHER_PATH, "*", SearchOption.AllDirectories)
-                        .Where(f => !f.Contains("\\temp\\") && f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
-                        .ToArray();
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+                        .Where(f => f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
+                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {
@@ -188,23 +129,21 @@ namespace launcher
 
             foreach (var file in allFiles)
             {
-                checksumTasks.Add(GenerateAndReturnFileChecksum(file));
+                checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
             }
 
             return checksumTasks;
         }
 
-        public static Task<FileChecksum> GenerateAndReturnFileChecksum(string file)
+        public static Task<FileChecksum> GenerateAndReturnFileChecksum(string file, string branchFolder)
         {
             return Task.Run(() =>
             {
                 var fileChecksum = new FileChecksum
                 {
-                    name = file.Replace(LAUNCHER_PATH + "\\", ""),
+                    name = file.Replace(branchFolder + "\\", ""),
                     checksum = CalculateChecksum(file)
                 };
-
-                //Log(Logger.Type.Info, Source.Repair, $"Calculated checksum for {file}: {fileChecksum.checksum}");
 
                 appDispatcher.Invoke(() =>
                 {
@@ -226,7 +165,7 @@ namespace launcher
 
         public static void SaveLauncherConfig()
         {
-            string configPath = Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.json");
+            string configPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.json");
             string config_json = JsonConvert.SerializeObject(LAUNCHER_CONFIG);
             File.WriteAllText(configPath, config_json);
 

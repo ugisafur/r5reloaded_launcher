@@ -113,7 +113,7 @@ namespace launcher
 
         private static bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !IS_INSTALLING && IS_INSTALLED && IsNewVersion(LAUNCHER_VERSION, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate && !IS_INSTALLING && IsNewVersion(LAUNCHER_VERSION, newServerConfig.launcherVersion);
         }
 
         private static bool ShouldUpdateGame(ServerConfig newServerConfig)
@@ -121,7 +121,8 @@ namespace launcher
             return !IS_INSTALLING &&
                    newServerConfig.allowUpdates &&
                    LAUNCHER_CONFIG != null &&
-                   newServerConfig.branches[0].currentVersion != Ini.Get(Ini.Vars.Current_Version, "");
+                   !SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
+                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetCurrentInstalledBranchVersion();
         }
 
         private static void HandleLauncherUpdate()

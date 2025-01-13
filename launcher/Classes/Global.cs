@@ -26,7 +26,7 @@ namespace launcher
     /// </summary>
     public static class Global
     {
-        public const string LAUNCHER_VERSION = "0.5.3";
+        public const string LAUNCHER_VERSION = "0.6.0";
         public const string SERVER_CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
 
         public static bool IS_ONLINE = false;
@@ -35,11 +35,11 @@ namespace launcher
         public static IniFile LAUNCHER_CONFIG;
         public static readonly HttpClient CLIENT = new() { Timeout = TimeSpan.FromSeconds(30) };
 
+        public static bool IS_LOCAL_BRANCH = false;
         public static string LAUNCHER_PATH = "";
         public const int MAX_REPAIR_ATTEMPTS = 5;
         public static int FILES_LEFT = 0;
         public static bool IS_INSTALLING = false;
-        public static bool IS_INSTALLED = false;
         public static bool UPDATE_REQUIRED = false;
         public static bool UPDATE_CHECK_LOOP = false;
         public static bool BAD_FILES_DETECTED = false;
@@ -49,6 +49,7 @@ namespace launcher
 
         public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new(500);
         public static List<string> BAD_FILES = [];
+        public static List<Branch> folderBranches = new();
 
         public enum SettingsPage
         {

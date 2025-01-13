@@ -43,7 +43,7 @@ namespace launcher
                     continue;
                 }
 
-                string decompressedFilePath = compressedFilePath.Replace("\\temp\\", "\\").Replace(".zst", "");
+                string decompressedFilePath = compressedFilePath.Replace(".zst", "");
                 decompressionTasks.Add(DecompressFileAsync(compressedFilePath, decompressedFilePath));
             }
 
@@ -69,11 +69,18 @@ namespace launcher
                     lblFilesLeft.Text = $"{--FILES_LEFT} files left";
                 });
 
-                //Log(Logger.Type.Info, Source.Decompression, $"Decompressed: {compressedFilePath} to {decompressedFilePath}");
+                decompressionStream.Close();
+                output.Close();
+                input.Close();
             }
             catch (Exception ex)
             {
                 Log(Logger.Type.Error, Source.Decompression, $"Failed to decompress {compressedFilePath}: {ex.Message}");
+            }
+            finally
+            {
+                if (File.Exists(compressedFilePath))
+                    File.Delete(compressedFilePath);
             }
         }
     }

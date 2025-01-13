@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using static launcher.Global;
 using static launcher.Logger;
+using static launcher.ControlReferences;
+using System.Windows;
 
 namespace launcher
 {
@@ -33,6 +35,9 @@ namespace launcher
             if (!IS_ONLINE)
                 return;
 
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+                return;
+
             //Install started
             Utilities.SetInstallState(true, "INSTALLING");
 
@@ -40,8 +45,8 @@ namespace launcher
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            //Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             //Fetch compressed base game file list
             Utilities.UpdateStatusLabel("Fetching game files list", Source.Installer);
@@ -49,7 +54,7 @@ namespace launcher
 
             //Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, tempDirectory);
+            var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, branchDirectory);
 
             //Download base game files
             Utilities.UpdateStatusLabel("Downloading game files", Source.Installer);
@@ -73,28 +78,31 @@ namespace launcher
             //Install finished
             Utilities.SetInstallState(false);
 
-            //Set game as installed
-            IS_INSTALLED = true;
-            Ini.Set(Ini.Vars.Installed, true);
-            Ini.Set(Ini.Vars.Current_Version, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
-            Ini.Set(Ini.Vars.Current_Branch, SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch);
+            //Set branch as installed
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
+            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Version", SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
-            //Delete temp directory
-            if (Directory.Exists(tempDirectory))
-                await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+            MessageBoxResult result = MessageBox.Show("The game installation is complete.Would you like to install the HD Textures? you can always choose to install them at another time, they are not required to play.", "Install HD Textures", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes)
+                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", true);
+            else
+                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false);
 
-            if (Ini.Get(Ini.Vars.Download_HD_Textures, false))
+            //Install optional files if HD textures are enabled
+            if (Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false))
                 Task.Run(() => InstallOptionalFiles());
         }
 
         private static async Task InstallOptionalFiles()
         {
+            Utilities.SetOptionalInstallState(true);
+
             //Set download limits
             DownloadManager.SetSemaphoreLimit();
             DownloadManager.SetDownloadSpeedLimit();
 
-            //Create temp directory to store downloaded files
-            string tempDirectory = FileManager.CreateTempDirectory();
+            //Create branch library directory to store downloaded files
+            string branchDirectory = FileManager.GetBranchDirectory();
 
             //Fetch compressed base game file list
             Utilities.UpdateStatusLabel("Fetching optional files list", Source.Installer);
@@ -102,26 +110,21 @@ namespace launcher
 
             //Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing optional download", Source.Installer);
-            var optionaldownloadTasks = DownloadManager.PrepareDownloadTasks(optionalGameFiles, tempDirectory);
+            var optionaldownloadTasks = DownloadManager.PrepareDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
             Utilities.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing game decompression", Source.Installer);
+            Utilities.UpdateStatusLabel("Preparing decompression", Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(optionaldownloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing game files", Source.Installer);
+            Utilities.UpdateStatusLabel("Decompressing optional files", Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
-            //Set HD textures as installed
-            Ini.Set(Ini.Vars.HD_Textures_Installed, true);
-
-            //Delete temp directory
-            if (Directory.Exists(tempDirectory))
-                await Task.Run(() => FileManager.CleanUpTempDirectory(tempDirectory));
+            Utilities.SetOptionalInstallState(false);
         }
 
         private static async Task AttemptGameRepair()

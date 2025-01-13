@@ -20,7 +20,7 @@ namespace launcher
             Concurrent_Downloads,
             Download_Speed_Limit,
             Download_HD_Textures,
-            HD_Textures_Installed,
+            Library_Location,
             Enable_Cheats,
             Enable_Developer,
             Show_Console,
@@ -43,18 +43,16 @@ namespace launcher
             Windowed,
             Borderless,
             Max_FPS,
-            Current_Version,
-            Current_Branch,
-            Installed,
             Map,
-            Playlist
+            Playlist,
+            SelectedBranch
         }
 
         public static void CreateLauncherConfig()
         {
-            Directory.CreateDirectory(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user"));
+            Directory.CreateDirectory(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\"));
 
-            string iniPath = Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini");
+            string iniPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini");
             if (!File.Exists(iniPath))
             {
                 IniFile file = new();
@@ -65,7 +63,7 @@ namespace launcher
                 file.SetSetting("Settings", "Disable_Transitions", false);
                 file.SetSetting("Settings", "Concurrent_Downloads", "Max");
                 file.SetSetting("Settings", "Download_Speed_Limit", "");
-                file.SetSetting("Settings", "Download_HD_Textures", false);
+                file.SetSetting("Settings", "Library_Location", "");
 
                 file.SetSetting("Advanced_Options", "Enable_Cheats", false);
                 file.SetSetting("Advanced_Options", "Enable_Developer", false);
@@ -92,10 +90,7 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "Borderless", false);
                 file.SetSetting("Advanced_Options", "Max_FPS", "-1");
 
-                file.SetSetting("Launcher", "HD_Textures_Installed", false);
-                file.SetSetting("Launcher", "Current_Version", "");
-                file.SetSetting("Launcher", "Current_Branch", "");
-                file.SetSetting("Launcher", "Installed", false);
+                file.SetSetting("Launcher", "SelectedBranch", "");
 
                 file.Save(iniPath);
             }
@@ -104,13 +99,13 @@ namespace launcher
         public static IniFile GetFile()
         {
             IniFile file = new();
-            file.Load(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Load(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             return file;
         }
 
         public static bool Exists()
         {
-            return File.Exists(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
+            return File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
         }
 
         public static void Set(Vars setting, bool value)
@@ -120,7 +115,7 @@ namespace launcher
 
             IniFile file = GetFile();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -131,7 +126,7 @@ namespace launcher
 
             IniFile file = GetFile();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -142,8 +137,50 @@ namespace launcher
 
             IniFile file = GetFile();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "platform\\cfg\\user\\launcherConfig.ini"));
+            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+        }
+
+        public static void Set(string section, string setting, string value)
+        {
+            if (!Exists())
+                return;
+
+            IniFile file = GetFile();
+            file.SetSetting(section, setting, value);
+            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+        }
+
+        public static void Set(string section, string setting, bool value)
+        {
+            if (!Exists())
+                return;
+
+            IniFile file = GetFile();
+            file.SetSetting(section, setting, value);
+            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+        }
+
+        public static bool Get(string section, string setting, bool defaultValue)
+        {
+            if (!Exists())
+                return defaultValue;
+
+            IniFile file = GetFile();
+            bool value = file.GetSetting(section, setting, defaultValue);
+            return value;
+        }
+
+        public static string Get(string section, string setting, string defaultValue)
+        {
+            if (!Exists())
+                return defaultValue;
+
+            IniFile file = GetFile();
+            string value = file.GetSetting(section, setting, defaultValue);
+            return value;
         }
 
         public static bool Get(Vars setting, bool defaultValue)
@@ -187,6 +224,7 @@ namespace launcher
                 Vars.Concurrent_Downloads => "Settings",
                 Vars.Download_Speed_Limit => "Settings",
                 Vars.Download_HD_Textures => "Settings",
+                Vars.Library_Location => "Settings",
 
                 Vars.Enable_Cheats => "Advanced_Options",
                 Vars.Enable_Developer => "Advanced_Options",
@@ -213,10 +251,7 @@ namespace launcher
                 Vars.Borderless => "Advanced_Options",
                 Vars.Max_FPS => "Advanced_Options",
 
-                Vars.Current_Version => "Launcher",
-                Vars.Current_Branch => "Launcher",
-                Vars.Installed => "Launcher",
-                Vars.HD_Textures_Installed => "Launcher",
+                Vars.SelectedBranch => "Launcher",
                 _ => throw new NotImplementedException()
             };
         }
@@ -256,10 +291,8 @@ namespace launcher
                 Vars.Windowed => "Windowed",
                 Vars.Borderless => "Borderless",
                 Vars.Max_FPS => "Max_FPS",
-                Vars.Current_Version => "Current_Version",
-                Vars.Current_Branch => "Current_Branch",
-                Vars.Installed => "Installed",
-                Vars.HD_Textures_Installed => "HD_Textures_Installed",
+                Vars.SelectedBranch => "SelectedBranch",
+                Vars.Library_Location => "Library_Location",
                 _ => throw new NotImplementedException()
             };
         }
