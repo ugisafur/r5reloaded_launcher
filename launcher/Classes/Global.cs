@@ -49,7 +49,7 @@ namespace launcher
 
         public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new(500);
         public static List<string> BAD_FILES = [];
-        public static List<Branch> folderBranches = new();
+        public static List<Branch> folderBranches = [];
 
         public enum SettingsPage
         {

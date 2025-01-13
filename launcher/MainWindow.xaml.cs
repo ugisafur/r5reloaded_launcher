@@ -14,8 +14,6 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int lastSelectedIndex = 0;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -196,8 +194,6 @@ namespace launcher
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            lastSelectedIndex = selectedBranch;
-
             ComboBranch comboBranch = (ComboBranch)cmbBranch.Items[selectedBranch];
 
             if (comboBranch.isLocalBranch || !IS_ONLINE)
@@ -211,7 +207,6 @@ namespace launcher
             }
 
             IS_LOCAL_BRANCH = false;
-            SettingsPopupControl.btnRepair.IsEnabled = true;
 
             Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[selectedBranch].branch);
 
@@ -221,6 +216,7 @@ namespace launcher
                 {
                     btnPlay.Content = "PLAY";
                     btnPlay.IsEnabled = true;
+                    SettingsPopupControl.btnRepair.IsEnabled = false;
                     return;
                 }
 
@@ -228,12 +224,14 @@ namespace launcher
                 {
                     btnPlay.Content = "PLAY";
                     btnPlay.IsEnabled = true;
+                    SettingsPopupControl.btnRepair.IsEnabled = true;
                     UPDATE_REQUIRED = false;
                 }
                 else
                 {
                     btnPlay.Content = "UPDATE";
                     btnPlay.IsEnabled = true;
+                    SettingsPopupControl.btnRepair.IsEnabled = true;
                     UPDATE_REQUIRED = true;
                 }
             }
@@ -243,6 +241,7 @@ namespace launcher
                 {
                     btnPlay.Content = "DISABLED";
                     btnPlay.IsEnabled = false;
+                    SettingsPopupControl.btnRepair.IsEnabled = false;
                     return;
                 }
 
@@ -250,11 +249,13 @@ namespace launcher
                 {
                     btnPlay.Content = "REPAIR";
                     btnPlay.IsEnabled = true;
+                    SettingsPopupControl.btnRepair.IsEnabled = true;
                 }
                 else
                 {
                     btnPlay.Content = "INSTALL";
                     btnPlay.IsEnabled = true;
+                    SettingsPopupControl.btnRepair.IsEnabled = false;
                 }
             }
         }
