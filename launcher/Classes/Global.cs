@@ -1,6 +1,9 @@
 ﻿using SoftCircuits.IniFileParser;
 using System.Net.Http;
 using System.Windows.Controls;
+using static launcher.Logger;
+using static launcher.ControlReferences;
+using System.IO;
 
 namespace launcher
 {
@@ -57,6 +60,20 @@ namespace launcher
             GAME_INSTALLS = 2,
             DOWNLOAD = 3,
             ABOUT = 4
+        }
+
+        public static void SetupGlobals()
+        {
+            launcherVersionlbl.Text = LAUNCHER_VERSION;
+            LogInfo(Source.Launcher, $"Launcher Version: {LAUNCHER_VERSION}");
+
+            LAUNCHER_PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            LogInfo(Source.Launcher, $"Launcher path: {LAUNCHER_PATH}");
+
+            SERVER_CONFIG = IS_ONLINE ? DataFetcher.FetchServerConfig() : null;
+
+            LAUNCHER_CONFIG = Ini.GetConfig();
+            LogInfo(Source.Launcher, $"Launcher config found");
         }
     }
 }

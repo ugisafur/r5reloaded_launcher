@@ -51,7 +51,7 @@ namespace launcher
 
         private async void GetStatusInfo()
         {
-            Log(Logger.Type.Info, Source.API, "Checking status of services...");
+            LogInfo(Source.API, "Checking status of services...");
 
             bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
             bool isMSUP = await IsUrlUp("https://r5r.org/");
@@ -73,7 +73,7 @@ namespace launcher
 
             if (!isMSUP)
             {
-                Log(Logger.Type.Error, Source.API, "Master Server is down.");
+                LogError(Source.API, "Master Server is down.");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace launcher
 
             if (string.IsNullOrEmpty(serverlist))
             {
-                Log(Logger.Type.Error, Source.API, "Failed to get server list from API.");
+                LogError(Source.API, "Failed to get server list from API.");
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace launcher
 
             if (!game_server_list.success)
             {
-                Log(Logger.Type.Error, Source.API, "Failed to get server list from API.");
+                LogError(Source.API, "Failed to get server list from API.");
                 return;
             }
 
@@ -118,17 +118,17 @@ namespace launcher
             catch (HttpRequestException)
             {
                 // Handle HTTP-related errors (e.g., DNS failure, connection issues)
-                Log(Logger.Type.Error, Source.API, $"URL is down or unreachable: {url}");
+                LogError(Source.API, $"URL is down or unreachable: {url}");
             }
             catch (TaskCanceledException)
             {
                 // Handle request timeout
-                Log(Logger.Type.Error, Source.API, $"Request timed out: {url}");
+                LogError(Source.API, $"Request timed out: {url}");
             }
             catch (Exception ex)
             {
                 // Handle other exceptions
-                Log(Logger.Type.Error, Source.API, $"An error occurred: {ex.Message}");
+                LogError(Source.API, $"An error occurred: {ex.Message}");
             }
 
             return false; // URL is down or unreachable

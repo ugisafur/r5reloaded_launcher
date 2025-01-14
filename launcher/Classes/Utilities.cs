@@ -22,43 +22,40 @@ namespace launcher
     /// </summary>
     public static class Utilities
     {
+        #region Setup Functions
+
         public static void SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
+            LogInfo(Source.Launcher, "Debug console enabled");
             EnableDebugConsole();
 #endif
+            CheckInternetConnection();
+            SetupControlReferences(mainWindow);
+            StartStatusChecker();
+            SetupGlobals();
+            SetupSettingsMenus();
+            SetupLibaryPath();
+            SetupBranchComboBox();
+            GetSelfUpdater();
+        }
 
-            Log(Logger.Type.Info, Source.Launcher, "Setting up launcher");
-
-            IS_ONLINE = DataFetcher.HasInternetConnection();
-
-            if (IS_ONLINE)
-                Log(Logger.Type.Info, Source.Launcher, "Internet connection detected");
+        private static void CheckInternetConnection()
+        {
+            if (DataFetcher.HasInternetConnection())
+            {
+                LogInfo(Source.Launcher, "Internet connection detected");
+                IS_ONLINE = true;
+            }
             else
-                Log(Logger.Type.Warning, Source.Launcher, "No internet connection detected");
+            {
+                LogWarning(Source.Launcher, "No internet connection detected");
+                IS_ONLINE = false;
+            }
+        }
 
-            mainApp = mainWindow;
-            appDispatcher = mainWindow.Dispatcher;
-            progressBar = mainWindow.progressBar;
-            lblStatus = mainWindow.lblStatus;
-            lblFilesLeft = mainWindow.lblFilesLeft;
-            launcherVersionlbl = mainWindow.launcherVersionlbl;
-            cmbBranch = mainWindow.cmbBranch;
-            btnPlay = mainWindow.btnPlay;
-            settingsControl = mainWindow.SettingsControl;
-            advancedControl = mainWindow.AdvancedControl;
-            subMenuControl = mainWindow.subMenuControl;
-            TransitionRect = mainWindow.TransitionRect;
-            SubMenuPopup = mainWindow.SubMenuPopup;
-            gameSettingsPopup = mainWindow.SettingsPopup;
-            downloadsPopupControl = mainWindow.DownloadsPopupControl;
-            statusPopup = mainWindow.StatusPopupControl;
-            btnUpdate = mainWindow.btnUpdate;
-
-            btnUpdate.Visibility = Visibility.Hidden;
-
-            ShowProgressBar(false);
-
+        private static void StartStatusChecker()
+        {
             if (IS_ONLINE)
                 Task.Run(() => statusPopup.StartStatusTimer());
             else
@@ -66,33 +63,30 @@ namespace launcher
                 mainApp.StatusBtn.IsEnabled = false;
                 mainApp.DownloadsBtn.IsEnabled = false;
             }
+        }
 
-            launcherVersionlbl.Text = LAUNCHER_VERSION;
-            Log(Logger.Type.Info, Source.Launcher, $"Launcher Version: {LAUNCHER_VERSION}");
-
-            LAUNCHER_PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            Log(Logger.Type.Info, Source.Launcher, $"Launcher path: {LAUNCHER_PATH}");
-
+        private static void SetupSettingsMenus()
+        {
             settingsControl.SetupSettingsMenu();
-            Log(Logger.Type.Info, Source.Launcher, $"Settings menu initialized");
+            LogInfo(Source.Launcher, $"Settings menu initialized");
 
             advancedControl.SetupAdvancedSettings();
-            Log(Logger.Type.Info, Source.Launcher, $"Advanced settings initialized");
+            LogInfo(Source.Launcher, $"Advanced settings initialized");
+        }
 
+        private static void SetupLibaryPath()
+        {
             if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Library_Location, "")))
             {
                 DirectoryInfo parentDir = Directory.GetParent(LAUNCHER_PATH.TrimEnd(Path.DirectorySeparatorChar));
 
                 Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
             }
+        }
 
-            if (IS_ONLINE)
-                SERVER_CONFIG = DataFetcher.FetchServerConfig();
-
-            LAUNCHER_CONFIG = Ini.GetConfig();
-            Log(Logger.Type.Info, Source.Launcher, $"Launcher config found");
-
-            cmbBranch.ItemsSource = SetupGameBranches();
+        private static void SetupBranchComboBox()
+        {
+            cmbBranch.ItemsSource = GetGameBranches();
 
             string selectedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
             if (string.IsNullOrEmpty(selectedBranch))
@@ -111,41 +105,10 @@ namespace launcher
 
             cmbBranch.SelectedIndex = selectedIndex;
 
-            Log(Logger.Type.Info, Source.Launcher, "Game branches initialized");
-
-            if (!File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe")))
-            {
-                Log(Logger.Type.Info, Source.Launcher, "Downloading self updater");
-                CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
-                    .ContinueWith(response =>
-                    {
-                        if (response.Result.IsSuccessStatusCode)
-                        {
-                            byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
-                            File.WriteAllBytes(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe"), data);
-                        }
-                    });
-            }
+            LogInfo(Source.Launcher, "Game branches initialized");
         }
 
-        public static void ToggleBackgroundVideo(bool disabled)
-        {
-            Log(Logger.Type.Info, Source.Launcher, $"Toggling background video: {disabled}");
-            mainApp.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
-            mainApp.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
-        }
-
-        public static bool isSelectedBranchInstalled()
-        {
-            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Is_Installed", false);
-        }
-
-        public static string GetCurrentInstalledBranchVersion()
-        {
-            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Version", "");
-        }
-
-        public static List<ComboBranch> SetupGameBranches()
+        public static List<ComboBranch> GetGameBranches()
         {
             string libraryPath = FileManager.GetLibraryPathDirectory();
             string[] directories = Directory.GetDirectories(libraryPath);
@@ -177,7 +140,7 @@ namespace launcher
                         is_local_branch = true
                     };
                     folderBranches.Add(branch);
-                    Log(Logger.Type.Info, Source.Launcher, $"Local branch found: {folder}");
+                    LogInfo(Source.Launcher, $"Local branch found: {folder}");
                 }
             }
 
@@ -203,6 +166,27 @@ namespace launcher
                 })
                 .ToList();
         }
+
+        private static void GetSelfUpdater()
+        {
+            if (!File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe")))
+            {
+                LogInfo(Source.Launcher, "Downloading self updater");
+                CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
+                    .ContinueWith(response =>
+                    {
+                        if (response.Result.IsSuccessStatusCode)
+                        {
+                            byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
+                            File.WriteAllBytes(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe"), data);
+                        }
+                    });
+            }
+        }
+
+        #endregion Setup Functions
+
+        #region Launch Game Functions
 
         public static void LaunchGame()
         {
@@ -232,7 +216,7 @@ namespace launcher
             if (gameProcess != null)
                 SetProcessorAffinity(gameProcess);
 
-            Log(Logger.Type.Info, Source.Launcher, $"Launched game with arguments: {gameArguments}");
+            LogInfo(Source.Launcher, $"Launched game with arguments: {gameArguments}");
         }
 
         private static void SetProcessorAffinity(Process gameProcess)
@@ -259,68 +243,34 @@ namespace launcher
 
                     gameProcess.ProcessorAffinity = (IntPtr)affinityMask;
 
-                    Log(Logger.Type.Info, Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
+                    LogInfo(Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
                 }
                 else
-                    Log(Logger.Type.Error, Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
+                    LogError(Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
             }
             catch (Exception ex)
             {
-                Log(Logger.Type.Error, Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
+                LogError(Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
             }
         }
 
-        public static void SetInstallState(bool installing, string buttonText = "PLAY")
+        #endregion Launch Game Functions
+
+        #region Branch Functions
+
+        public static bool IsBranchInstalled()
         {
-            Log(Logger.Type.Info, Source.Launcher, $"Setting install state to: {installing}");
-
-            appDispatcher.Invoke(() =>
-            {
-                IS_INSTALLING = installing;
-
-                btnPlay.Content = buttonText;
-                cmbBranch.IsEnabled = !installing;
-                btnPlay.IsEnabled = !installing;
-                lblStatus.Text = "";
-                lblFilesLeft.Text = "";
-
-                mainApp.SettingsPopupControl.btnRepair.IsEnabled = !installing;
-            });
-
-            ShowProgressBar(installing);
+            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Is_Installed", false);
         }
 
-        public static void SetOptionalInstallState(bool installing)
+        public static string GetBranchVersion()
         {
-            Log(Logger.Type.Info, Source.Launcher, $"Setting optional install state to: {installing}");
-
-            appDispatcher.Invoke(() =>
-            {
-                IS_INSTALLING = installing;
-                lblStatus.Text = "";
-                lblFilesLeft.Text = "";
-            });
-
-            ShowProgressBar(installing);
+            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Version", "");
         }
 
-        public static void UpdateStatusLabel(string statusText, Source source)
+        public static Branch GetCurrentBranch()
         {
-            Log(Logger.Type.Info, source, $"Updating status label: {statusText}");
-            appDispatcher.Invoke(() =>
-            {
-                lblStatus.Text = statusText;
-            });
-        }
-
-        private static void ShowProgressBar(bool isVisible)
-        {
-            appDispatcher.Invoke(() =>
-            {
-                progressBar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-            });
+            return SERVER_CONFIG.branches[GetCmbBranchIndex()];
         }
 
         public static int GetCmbBranchIndex()
@@ -334,6 +284,10 @@ namespace launcher
 
             return cmbSelectedIndex;
         }
+
+        #endregion Branch Functions
+
+        #region Settings Functions
 
         public static void ShowSettingsControl()
         {
@@ -480,6 +434,8 @@ namespace launcher
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
         }
+
+        #endregion Settings Functions
 
 #if DEBUG
 

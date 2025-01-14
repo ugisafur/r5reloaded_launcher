@@ -56,8 +56,8 @@ namespace launcher
             {
                 Task.Run(() => UpdateChecker.Start());
 
-                btnPlay.Content = Utilities.isSelectedBranchInstalled() ? "PLAY" : "INSTALL";
-                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
+                btnPlay.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
+                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                     btnPlay.Content = "REPAIR";
             }
             else
@@ -235,13 +235,13 @@ namespace launcher
                 return;
             }
 
-            if (Utilities.isSelectedBranchInstalled())
+            if (Utilities.IsBranchInstalled())
             {
                 Utilities.LaunchGame();
             }
             else if (!IS_INSTALLING)
             {
-                if (!Utilities.isSelectedBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
+                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                 {
                     Task.Run(() => GameRepair.Start());
                 }
@@ -289,7 +289,7 @@ namespace launcher
 
             Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[selectedBranch].branch);
 
-            if (Utilities.isSelectedBranchInstalled())
+            if (Utilities.IsBranchInstalled())
             {
                 if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
@@ -300,7 +300,7 @@ namespace launcher
                     return;
                 }
 
-                if (Utilities.GetCurrentInstalledBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
+                if (Utilities.GetBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
                 {
                     btnUpdate.Visibility = Visibility.Hidden;
                     btnPlay.Content = "PLAY";
@@ -400,7 +400,7 @@ namespace launcher
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.isSelectedBranchInstalled())
+            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
             {
                 Task.Run(() => GameUpdate.Start());
                 btnUpdate.Visibility = Visibility.Hidden;

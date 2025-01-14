@@ -13,6 +13,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static launcher.Logger;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -38,7 +40,7 @@ namespace launcher
         {
             bool value = DisableBackgroundVideoBtn.IsChecked.Value;
             Ini.Set(Ini.Vars.Disable_Background_Video, value);
-            Utilities.ToggleBackgroundVideo(DisableBackgroundVideoBtn.IsChecked.Value);
+            ToggleBackgroundVideo(DisableBackgroundVideoBtn.IsChecked.Value);
         }
 
         private void DisableAnimationsBtn_CheckedChanged(object sender, RoutedEventArgs e)
@@ -51,6 +53,13 @@ namespace launcher
         {
             bool value = DisableTransitionsBtn.IsChecked.Value;
             Ini.Set(Ini.Vars.Disable_Transitions, value);
+        }
+
+        private void ToggleBackgroundVideo(bool disabled)
+        {
+            LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
+            mainApp.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
+            mainApp.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }

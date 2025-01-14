@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
+using System.Windows;
 
 namespace launcher
 {
@@ -55,7 +56,7 @@ namespace launcher
             var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
             ConfigureProgress(baseGameFiles.files.Count);
 
-            string baseUrl = GetCurrentBranch().game_url;
+            string baseUrl = Utilities.GetCurrentBranch().game_url;
 
             foreach (var file in baseGameFiles.files)
             {
@@ -91,7 +92,7 @@ namespace launcher
             ConfigureProgress(badFilesCount);
 
             var downloadTasks = new List<Task<string>>(badFilesCount);
-            string baseUrl = GetCurrentBranch().game_url;
+            string baseUrl = Utilities.GetCurrentBranch().game_url;
 
             foreach (var file in BAD_FILES)
             {
@@ -127,7 +128,7 @@ namespace launcher
             var downloadTasks = new List<Task<string>>(patchFiles.files.Count);
             ConfigureProgress(patchFiles.files.Count);
 
-            string patchUrl = GetCurrentBranch().patch_url;
+            string patchUrl = Utilities.GetCurrentBranch().patch_url;
 
             foreach (var file in patchFiles.files)
             {
@@ -208,7 +209,7 @@ namespace launcher
             }
             catch (Exception ex)
             {
-                Log(Logger.Type.Error, Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
+                LogError(Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
                 BAD_FILES_DETECTED = true;
                 return string.Empty;
             }
@@ -244,13 +245,13 @@ namespace launcher
                         break;
 
                     default:
-                        Log(Logger.Type.Warning, Source.DownloadManager, $"Unknown action '{file.Action}' for file '{file.Name}'.");
+                        LogWarning(Source.DownloadManager, $"Unknown action '{file.Action}' for file '{file.Name}'.");
                         break;
                 }
             }
             catch (Exception ex)
             {
-                Log(Logger.Type.Error, Source.DownloadManager, $"Error processing file '{file.Name}': {ex.Message}");
+                LogError(Source.DownloadManager, $"Error processing file '{file.Name}': {ex.Message}");
             }
             finally
             {
@@ -326,7 +327,7 @@ namespace launcher
             }
             catch (Exception ex)
             {
-                Log(Logger.Type.Warning, Source.DownloadManager, $"Failed to delete '{fullPath}': {ex.Message}");
+                LogWarning(Source.DownloadManager, $"Failed to delete '{fullPath}': {ex.Message}");
             }
         }
 
@@ -498,14 +499,57 @@ namespace launcher
             await fileStream.FlushAsync();
         }
 
-        /// <summary>
-        /// Retrieves the current branch configuration.
-        /// </summary>
-        /// <returns>The current branch configuration.</returns>
-        private static Branch GetCurrentBranch()
+        public static void SetInstallState(bool installing, string buttonText = "PLAY")
         {
-            int branchIndex = Utilities.GetCmbBranchIndex();
-            return SERVER_CONFIG.branches[branchIndex];
+            LogInfo(Source.Launcher, $"Setting install state to: {installing}");
+
+            appDispatcher.Invoke(() =>
+            {
+                IS_INSTALLING = installing;
+
+                btnPlay.Content = buttonText;
+                cmbBranch.IsEnabled = !installing;
+                btnPlay.IsEnabled = !installing;
+                lblStatus.Text = "";
+                lblFilesLeft.Text = "";
+
+                mainApp.SettingsPopupControl.btnRepair.IsEnabled = !installing;
+            });
+
+            ShowProgressBar(installing);
+        }
+
+        public static void SetOptionalInstallState(bool installing)
+        {
+            LogInfo(Source.Launcher, $"Setting optional install state to: {installing}");
+
+            appDispatcher.Invoke(() =>
+            {
+                IS_INSTALLING = installing;
+                lblStatus.Text = "";
+                lblFilesLeft.Text = "";
+            });
+
+            ShowProgressBar(installing);
+        }
+
+        public static void UpdateStatusLabel(string statusText, Source source)
+        {
+            LogInfo(source, $"Updating status label: {statusText}");
+            appDispatcher.Invoke(() =>
+            {
+                lblStatus.Text = statusText;
+            });
+        }
+
+        private static void ShowProgressBar(bool isVisible)
+        {
+            appDispatcher.Invoke(() =>
+            {
+                progressBar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+            });
         }
     }
 }

@@ -38,7 +38,7 @@ namespace launcher
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    Log(Logger.Type.Warning, Source.Repair, $"Bad file found: {file.name}");
+                    LogWarning(Source.Repair, $"Bad file found: {file.name}");
                     BAD_FILES.Add($"{file.name}.zst");
                 }
 
@@ -157,7 +157,7 @@ namespace launcher
             string config_json = JsonConvert.SerializeObject(LAUNCHER_CONFIG);
             File.WriteAllText(configPath, config_json);
 
-            Log(Logger.Type.Info, Source.FileManager, "Saved launcher config");
+            LogInfo(Source.FileManager, "Saved launcher config");
         }
     }
 }

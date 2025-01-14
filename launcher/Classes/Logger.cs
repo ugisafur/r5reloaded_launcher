@@ -96,5 +96,15 @@ namespace launcher
                 _ => "Unknown"
             };
         }
+
+        #region Logging Helpers
+
+        public static void LogInfo(Source source, string message) => Log(Type.Info, source, message);
+
+        public static void LogWarning(Source source, string message) => Log(Type.Warning, source, message);
+
+        public static void LogError(Source source, string message) => Log(Type.Error, source, message);
+
+        #endregion Logging Helpers
     }
 }

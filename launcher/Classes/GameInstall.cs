@@ -39,7 +39,7 @@ namespace launcher
                 return;
 
             //Install started
-            Utilities.SetInstallState(true, "INSTALLING");
+            DownloadManager.SetInstallState(true, "INSTALLING");
 
             //Set download limits
             DownloadManager.ConfigureConcurrency();
@@ -49,34 +49,34 @@ namespace launcher
             string branchDirectory = FileManager.GetBranchDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching game files list", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Fetching game files list", Source.Installer);
             BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
-            Utilities.UpdateStatusLabel("Preparing game download", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Preparing game download", Source.Installer);
             var downloadTasks = DownloadManager.InitializeDownloadTasks(baseGameFiles, branchDirectory);
 
             //Download base game files
-            Utilities.UpdateStatusLabel("Downloading game files", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Downloading game files", Source.Installer);
             await Task.WhenAll(downloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing game decompression", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Preparing game decompression", Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(downloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing game files", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Decompressing game files", Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
             //if bad files detected, attempt game repair
             if (BAD_FILES_DETECTED)
             {
-                Utilities.UpdateStatusLabel("Reparing game files", Source.Installer);
+                DownloadManager.UpdateStatusLabel("Reparing game files", Source.Installer);
                 await AttemptGameRepair();
             }
 
             //Install finished
-            Utilities.SetInstallState(false);
+            DownloadManager.SetInstallState(false);
 
             //Set branch as installed
             Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
@@ -95,7 +95,7 @@ namespace launcher
 
         private static async Task InstallOptionalFiles()
         {
-            Utilities.SetOptionalInstallState(true);
+            DownloadManager.SetOptionalInstallState(true);
 
             //Set download limits
             DownloadManager.ConfigureConcurrency();
@@ -105,26 +105,26 @@ namespace launcher
             string branchDirectory = FileManager.GetBranchDirectory();
 
             //Fetch compressed base game file list
-            Utilities.UpdateStatusLabel("Fetching optional files list", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Installer);
             BaseGameFiles optionalGameFiles = await DataFetcher.FetchOptionalGameFiles(true);
 
             //Prepare download tasks
-            Utilities.UpdateStatusLabel("Preparing optional download", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Preparing optional download", Source.Installer);
             var optionaldownloadTasks = DownloadManager.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
-            Utilities.UpdateStatusLabel("Downloading optional files", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
 
             //Prepare decompression tasks
-            Utilities.UpdateStatusLabel("Preparing decompression", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Preparing decompression", Source.Installer);
             var decompressionTasks = DecompressionManager.PrepareTasks(optionaldownloadTasks);
 
             //Decompress base game files
-            Utilities.UpdateStatusLabel("Decompressing optional files", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Decompressing optional files", Source.Installer);
             await Task.WhenAll(decompressionTasks);
 
-            Utilities.SetOptionalInstallState(false);
+            DownloadManager.SetOptionalInstallState(false);
         }
 
         private static async Task AttemptGameRepair()

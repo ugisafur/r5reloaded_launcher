@@ -16,8 +16,8 @@ namespace launcher
         {
             var response = CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
-            Log(Logger.Type.Info, Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
-            Log(Logger.Type.Info, Source.API, $"response: \n{responseString}");
+            LogInfo(Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
+            LogInfo(Source.API, $"response: \n{responseString}");
             return JsonConvert.DeserializeObject<ServerConfig>(responseString);
         }
 
@@ -85,7 +85,7 @@ namespace launcher
 
         public static async Task<string> FetchJson(string url)
         {
-            Log(Logger.Type.Info, Source.API, $"request: {url}");
+            LogInfo(Source.API, $"request: {url}");
             var response = await CLIENT.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();

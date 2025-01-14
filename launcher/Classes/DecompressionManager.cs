@@ -75,7 +75,7 @@ namespace launcher
             }
             catch (Exception ex)
             {
-                Log(Logger.Type.Error, Source.Decompression, $"Failed to decompress {compressedFilePath}: {ex.Message}");
+                LogError(Source.Decompression, $"Failed to decompress {compressedFilePath}: {ex.Message}");
             }
             finally
             {

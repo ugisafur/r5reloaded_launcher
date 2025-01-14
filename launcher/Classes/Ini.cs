@@ -116,7 +116,7 @@ namespace launcher
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
         public static void Set(Vars setting, int value)
@@ -127,7 +127,7 @@ namespace launcher
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
         public static void Set(Vars setting, string value)
@@ -138,7 +138,7 @@ namespace launcher
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
         public static void Set(string section, string setting, string value)
@@ -149,7 +149,7 @@ namespace launcher
             IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
         public static void Set(string section, string setting, bool value)
@@ -160,7 +160,7 @@ namespace launcher
             IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
         public static bool Get(string section, string setting, bool defaultValue)

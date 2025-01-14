@@ -25,18 +25,18 @@ namespace launcher
             if (!IS_ONLINE)
                 return;
 
-            Log(Logger.Type.Info, Source.UpdateChecker, "Update worker started");
+            LogInfo(Source.UpdateChecker, "Update worker started");
 
             while (true)
             {
-                Log(Logger.Type.Info, Source.UpdateChecker, "Checking for updates");
+                LogInfo(Source.UpdateChecker, "Checking for updates");
 
                 try
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     if (newServerConfig == null)
                     {
-                        Log(Logger.Type.Error, Source.UpdateChecker, "Failed to fetch new server config");
+                        LogError(Source.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
@@ -46,7 +46,7 @@ namespace launcher
                     }
                     else
                     {
-                        Log(Logger.Type.Info, Source.UpdateChecker, $"Update for version {LAUNCHER_VERSION} is not available (latest version: {LAUNCHER_VERSION})");
+                        LogInfo(Source.UpdateChecker, $"Update for version {LAUNCHER_VERSION} is not available (latest version: {LAUNCHER_VERSION})");
                     }
 
                     if (ShouldUpdateGame(newServerConfig))
@@ -56,15 +56,15 @@ namespace launcher
                 }
                 catch (HttpRequestException ex)
                 {
-                    Log(Logger.Type.Error, Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                    LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Log(Logger.Type.Error, Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
+                    LogError(Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Log(Logger.Type.Error, Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
+                    LogError(Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(5));
@@ -83,7 +83,7 @@ namespace launcher
             }
             catch (HttpRequestException ex)
             {
-                Log(Logger.Type.Error, Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
                 return null; //Indicate failure to the caller
             }
             finally
@@ -123,7 +123,7 @@ namespace launcher
                    LAUNCHER_CONFIG != null &&
                    !SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
                    Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
-                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetCurrentInstalledBranchVersion();
+                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetBranchVersion();
         }
 
         private static void HandleLauncherUpdate()
@@ -135,7 +135,7 @@ namespace launcher
                 return;
             }
 
-            Log(Logger.Type.Info, Source.UpdateChecker, "Updating launcher...");
+            LogInfo(Source.UpdateChecker, "Updating launcher...");
             UpdateLauncher();
         }
 
@@ -143,7 +143,7 @@ namespace launcher
         {
             if (!File.Exists($"{LAUNCHER_PATH}\\launcher_data\\selfupdater.exe"))
             {
-                Log(Logger.Type.Error, Source.UpdateChecker, "Self updater not found");
+                LogError(Source.UpdateChecker, "Self updater not found");
                 return;
             }
 

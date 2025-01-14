@@ -38,5 +38,31 @@ namespace launcher
         public static StatusPopup statusPopup = new();
         public static Dispatcher appDispatcher = mainApp.Dispatcher;
         public static DownloadsPopup downloadsPopupControl = new();
+
+        public static void SetupControlReferences(MainWindow mainWindow)
+        {
+            mainApp = mainWindow;
+            appDispatcher = mainWindow.Dispatcher;
+            progressBar = mainWindow.progressBar;
+            lblStatus = mainWindow.lblStatus;
+            lblFilesLeft = mainWindow.lblFilesLeft;
+            launcherVersionlbl = mainWindow.launcherVersionlbl;
+            cmbBranch = mainWindow.cmbBranch;
+            btnPlay = mainWindow.btnPlay;
+            settingsControl = mainWindow.SettingsControl;
+            advancedControl = mainWindow.AdvancedControl;
+            subMenuControl = mainWindow.subMenuControl;
+            TransitionRect = mainWindow.TransitionRect;
+            SubMenuPopup = mainWindow.SubMenuPopup;
+            gameSettingsPopup = mainWindow.SettingsPopup;
+            downloadsPopupControl = mainWindow.DownloadsPopupControl;
+            statusPopup = mainWindow.StatusPopupControl;
+            btnUpdate = mainWindow.btnUpdate;
+
+            btnUpdate.Visibility = Visibility.Hidden;
+            progressBar.Visibility = Visibility.Hidden;
+            lblStatus.Visibility = Visibility.Hidden;
+            lblFilesLeft.Visibility = Visibility.Hidden;
+        }
     }
 }
