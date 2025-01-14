@@ -17,7 +17,7 @@ namespace launcher
             var response = CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
             Log(Logger.Type.Info, Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
-            Log(Logger.Type.Info, Source.API, $"response: {responseString}");
+            Log(Logger.Type.Info, Source.API, $"response: \n{responseString}");
             return JsonConvert.DeserializeObject<ServerConfig>(responseString);
         }
 

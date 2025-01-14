@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using static launcher.Global;
+using Color = System.Windows.Media.Color;
 
 namespace launcher
 {
@@ -14,13 +18,25 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        public TaskbarIcon taskbar;
+        public ICommand ShowWindowCommand { get; }
+
         public MainWindow()
         {
+            ShowWindowCommand = new RelayCommand(ExecuteShowWindow, CanExecuteShowWindow);
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            TaskbarIcon tbi = new();
+            tbi.ToolTipText = "R5Reloaded Launcher";
+            tbi.Icon = this.Icon.ToIcon();
+            tbi.DoubleClickCommand = ShowWindowCommand;
+            tbi.ContextMenu = (ContextMenu)FindResource("tbiContextMenu");
+
+            taskbar = tbi;
+
             Ini.CreateLauncherConfig();
 
             Utilities.SetupApp(this);
@@ -135,7 +151,13 @@ namespace launcher
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            if (Ini.Get(Ini.Vars.Enable_Quit_On_Close, false))
+                Application.Current.Shutdown();
+            else
+            {
+                taskbar.ShowBalloonTip("R5Reloaded Launcher", "Application minimized to tray.", BalloonIcon.Info);
+                this.Hide();
+            }
         }
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
@@ -321,6 +343,61 @@ namespace launcher
                 Task.Run(() => GameUpdate.Start());
                 btnUpdate.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void ExecuteShowWindow()
+        {
+            // Show the main window
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var mainWindow = Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.Show();
+                    mainWindow.WindowState = WindowState.Normal;
+                    mainWindow.Activate();
+                }
+            });
+        }
+
+        private bool CanExecuteShowWindow()
+        {
+            // Logic to determine if the command can execute
+            return true;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+    }
+
+    public class RelayCommand : ICommand
+    {
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
+
+        public RelayCommand(Action execute, Func<bool> canExecute = null)
+        {
+            _execute    = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter) =>
+            _canExecute == null || _canExecute();
+
+        public void Execute(object parameter) =>
+            _execute();
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
     }
 }

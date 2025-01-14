@@ -61,7 +61,7 @@ namespace launcher
                 repairSuccess = false;
 
                 Utilities.UpdateStatusLabel("Preparing download tasks", Source.Repair);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
+                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
 
                 Utilities.UpdateStatusLabel("Downloading repaired files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
@@ -121,7 +121,7 @@ namespace launcher
             if (badFileCount > 0)
             {
                 Utilities.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
+                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
 
                 Utilities.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);

@@ -22,77 +22,83 @@ namespace launcher
 
         public static void SetSemaphoreLimit()
         {
-            int limit = Ini.Get(Ini.Vars.Concurrent_Downloads, 1000);
-
-            DOWNLOAD_SEMAPHORE = new SemaphoreSlim(limit);
+            if (!IS_INSTALLING)
+                DOWNLOAD_SEMAPHORE = new SemaphoreSlim(Ini.Get(Ini.Vars.Concurrent_Downloads, 1000));
         }
 
         public static void SetDownloadSpeedLimit()
         {
-            int limit = Ini.Get(Ini.Vars.Download_Speed_Limit, 0);
-
-            //Convert KB/s to B/s
-            downloadSpeedLimit = limit * 1024;
+            downloadSpeedLimit = Ini.Get(Ini.Vars.Download_Speed_Limit, 0) * 1024;
         }
 
-        public static async Task<string> DownloadAndReturnFilePathAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
+        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
         {
-            long maxDownloadSpeedBytesPerSecond = downloadSpeedLimit; //Todo: Set appropriate download speed limit
+            return await appDispatcher.InvokeAsync(() => downloadsPopupControl.AddDownloadItem(fileName));
+        }
 
-            DownloadItem downloadItem = null;
-            long downloadedBytes = 0;
-            long totalBytes = -1;
-            DateTime lastUpdate = DateTime.Now;
+        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
+        {
+            if (downloadItem != null)
+                await appDispatcher.InvokeAsync(() => downloadsPopupControl.RemoveDownloadItem(downloadItem));
+        }
 
+        public static async Task<string> GetOrDownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
+        {
             // Wait for an available semaphore slot
             await DOWNLOAD_SEMAPHORE.WaitAsync();
 
+            // Check if the file already exists and has the correct checksum
+            if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFile(destinationPath, checksum))
+            {
+                UpdateProgressBar(--FILES_LEFT);
+                return destinationPath;
+            }
+
+            // Add the download item to the popup
+            DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
+
             try
             {
-                // Check if file exists and checksum matches
-                if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFileDownload(destinationPath, checksum))
+                // Execute the download operation with retry policy
+                await CreateRetryPolicy(fileUrl).ExecuteAsync(async () =>
                 {
-                    UpdateProgressBar(--FILES_LEFT);
-
-                    return destinationPath;
-                }
-
-                // Add download item to the popup
-                await appDispatcher.InvokeAsync(() =>
-                {
-                    downloadItem = downloadsPopupControl.AddDownloadItem(fileName);
-                });
-
-                var retryPolicy = CreateRetryPolicy(fileUrl);
-
-                await retryPolicy.ExecuteAsync(async () =>
-                {
+                    // Create a new HTTP request
                     var request = (HttpWebRequest)WebRequest.Create(fileUrl);
                     request.Method = "GET";
-                    request.Timeout = 30000; // Set appropriate timeout
+                    request.Timeout = 30000;
                     request.AllowAutoRedirect = true;
 
+                    // Get the response from the server
                     using var response = (HttpWebResponse)await request.GetResponseAsync();
+
+                    // Check if the response is OK
                     if (response.StatusCode != HttpStatusCode.OK)
                         throw new WebException($"Failed to download: {response.StatusCode}");
 
-                    totalBytes = response.ContentLength;
-                    downloadedBytes = 0L;
+                    // Initialize variables for download progress tracking
+                    DateTime lastUpdate = DateTime.Now;
+                    long totalBytes = response.ContentLength;
+                    long downloadedBytes = 0L;
 
+                    // Open the response stream and create a throttled stream for download speed control
                     using var responseStream = response.GetResponseStream();
-                    using var throttledStream = new ThrottledStream(responseStream, maxDownloadSpeedBytesPerSecond);  // Throttling applied here
+                    using var throttledStream = new ThrottledStream(responseStream, downloadSpeedLimit);  // Throttling applied here
                     using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
+                    // Initialize a buffer for reading data from the stream
                     var buffer = new byte[64 * 1024]; // 128KB buffer
                     int bytesRead;
                     var stopwatch = new System.Diagnostics.Stopwatch();
                     stopwatch.Start();
 
+                    // Read data from the stream and write it to the file
                     while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
+                        // Write the data to the file stream
                         await fileStream.WriteAsync(buffer, 0, bytesRead);
                         downloadedBytes += bytesRead;
 
+                        // Update the download progress every 200 milliseconds, this is to prevent lagging the UI
                         if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                         {
                             lastUpdate = DateTime.Now;
@@ -112,8 +118,8 @@ namespace launcher
                     await fileStream.FlushAsync();
                 });
 
+                // Update the progress bar and return the destination path
                 UpdateProgressBar(--FILES_LEFT);
-
                 return destinationPath;
             }
             catch (Exception ex)
@@ -125,13 +131,7 @@ namespace launcher
             finally
             {
                 // Remove the download item from the popup
-                if (downloadItem != null)
-                {
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        downloadsPopupControl.RemoveDownloadItem(downloadItem);
-                    });
-                }
+                await RemoveDownloadItemAsync(downloadItem);
 
                 // Release the semaphore slot
                 DOWNLOAD_SEMAPHORE.Release();
@@ -164,7 +164,7 @@ namespace launcher
             return retryPolicy;
         }
 
-        public static List<Task<string>> PrepareDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
+        public static List<Task<string>> InitializeDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
         {
             // Initialize the list to hold download tasks
             var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
@@ -194,7 +194,7 @@ namespace launcher
 
                 // Add the download task to the list
                 downloadTasks.Add(
-                    DownloadAndReturnFilePathAsync(
+                    GetOrDownloadFileAsync(
                         fileUrl,
                         destinationPath,
                         file.name,
@@ -207,7 +207,7 @@ namespace launcher
             return downloadTasks;
         }
 
-        public static List<Task<string>> PrepareRepairDownloadTasks(string tempDirectory)
+        public static List<Task<string>> InitializeRepairTasks(string tempDirectory)
         {
             // Initialize progress indicators
             int badFilesCount = BAD_FILES.Count;
@@ -235,16 +235,10 @@ namespace launcher
                 {
                     Directory.CreateDirectory(destinationDir);
                 }
-                else
-                {
-                    // Handle cases where destinationDir is null or empty if necessary
-                    Log(Logger.Type.Warning, Source.Repair, $"Destination directory for file '{file}' is invalid.");
-                    continue; // Skip this file or handle accordingly
-                }
 
                 // Add the download task to the list
                 downloadTasks.Add(
-                    DownloadAndReturnFilePathAsync(
+                    GetOrDownloadFileAsync(
                         fileUrl,
                         destinationPath,
                         file
@@ -255,7 +249,7 @@ namespace launcher
             return downloadTasks;
         }
 
-        public static List<Task<string>> PreparePatchDownloadTasks(GamePatch patchFiles, string tempDirectory)
+        public static List<Task<string>> InitializeUpdateTasks(GamePatch patchFiles, string tempDirectory)
         {
             var downloadTasks = new List<Task<string>>();
 
@@ -275,13 +269,13 @@ namespace launcher
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-                downloadTasks.Add(DownloadAndReturnFilePathAsync(fileUrl, destinationPath, file.Name));
+                downloadTasks.Add(GetOrDownloadFileAsync(fileUrl, destinationPath, file.Name));
             }
 
             return downloadTasks;
         }
 
-        public static List<Task> PrepareFilePatchTasks(GamePatch patchFiles, string tempDirectory)
+        public static List<Task> InitializeFileUpdateTasks(GamePatch patchFiles, string tempDirectory)
         {
             var tasks = new List<Task>();
             FILES_LEFT = patchFiles.files.Count;
@@ -293,15 +287,15 @@ namespace launcher
                     switch (file.Action.ToLower())
                     {
                         case "delete":
-                            Delete(file.Name);
+                            DeleteFile(file.Name);
                             break;
 
                         case "update":
-                            Update(file.Name, tempDirectory);
+                            ReplaceFile(file.Name, tempDirectory);
                             break;
 
                         case "patch":
-                            Patch(file.Name, tempDirectory);
+                            PatchFile(file.Name, tempDirectory);
                             break;
                     }
 
@@ -312,31 +306,28 @@ namespace launcher
             return tasks;
         }
 
-        private static void Delete(string file)
+        private static void DeleteFile(string file)
         {
             string fullPath = Path.Combine(LAUNCHER_PATH, file);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
 
-        private static async void Update(string file, string tempDirectory)
+        private static async void ReplaceFile(string file, string tempDirectory)
         {
             string sourceCompressedFile = Path.Combine(tempDirectory, file);
             string destinationFile = Path.Combine(LAUNCHER_PATH, file.Replace(".zst", ""));
             await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
-        private static async void Patch(string file, string tempDirectory)
+        private static async void PatchFile(string file, string tempDirectory)
         {
             string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
-            string sourceDecompressedDeltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
-            string destinationFile = Path.Combine(LAUNCHER_PATH, file.Replace(".delta.zst", ""));
-            await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, sourceDecompressedDeltaFile);
-            PatchFile(destinationFile, sourceDecompressedDeltaFile);
-        }
+            string deltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
+            string originalFile = Path.Combine(LAUNCHER_PATH, file.Replace(".delta.zst", ""));
 
-        private static void PatchFile(string originalFile, string deltaFile)
-        {
+            await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, deltaFile);
+
             var signatureFile = Path.GetTempFileName();
 
             var signatureBuilder = new SignatureBuilder();
@@ -358,11 +349,10 @@ namespace launcher
             }
         }
 
-        private static bool ShouldSkipFileDownload(string destinationPath, string expectedChecksum)
+        private static bool ShouldSkipFile(string destinationPath, string expectedChecksum)
         {
             if (File.Exists(destinationPath))
             {
-                //Log(Logger.Type.Info, Source.DownloadManager, $"Checking existing file: {destinationPath}");
                 string checksum = FileManager.CalculateChecksum(destinationPath);
                 if (checksum == expectedChecksum)
                 {

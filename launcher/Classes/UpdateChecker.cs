@@ -27,9 +27,7 @@ namespace launcher
 
             Log(Logger.Type.Info, Source.UpdateChecker, "Update worker started");
 
-            UPDATE_CHECK_LOOP = true;
-
-            while (UPDATE_CHECK_LOOP)
+            while (true)
             {
                 Log(Logger.Type.Info, Source.UpdateChecker, "Checking for updates");
 

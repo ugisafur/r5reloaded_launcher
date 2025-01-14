@@ -64,7 +64,7 @@ namespace launcher
 
             // Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing update download", Source.Installer);
-            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, branchDirectory);
+            var downloadTasks = DownloadManager.InitializeUpdateTasks(patchFiles, branchDirectory);
 
             // Download patch files
             Utilities.UpdateStatusLabel("Downloading update files", Source.Installer);
@@ -72,7 +72,7 @@ namespace launcher
 
             // Prepare file patch tasks
             Utilities.UpdateStatusLabel("Preparing file patching", Source.Installer);
-            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, branchDirectory);
+            var filePatchTasks = DownloadManager.InitializeFileUpdateTasks(patchFiles, branchDirectory);
 
             // Patch base game files
             Utilities.UpdateStatusLabel("Patching game files", Source.Installer);
@@ -109,7 +109,7 @@ namespace launcher
 
             // Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing optional download", Source.Update);
-            var downloadTasks = DownloadManager.PreparePatchDownloadTasks(patchFiles, branchDirectory);
+            var downloadTasks = DownloadManager.InitializeUpdateTasks(patchFiles, branchDirectory);
 
             // Download patch files
             Utilities.UpdateStatusLabel("Downloading optional files", Source.Update);
@@ -117,7 +117,7 @@ namespace launcher
 
             // Prepare file patch tasks
             Utilities.UpdateStatusLabel("Preparing optional patching", Source.Update);
-            var filePatchTasks = DownloadManager.PrepareFilePatchTasks(patchFiles, branchDirectory);
+            var filePatchTasks = DownloadManager.InitializeFileUpdateTasks(patchFiles, branchDirectory);
 
             // Patch base game files
             Utilities.UpdateStatusLabel("Patching optional files", Source.Update);
@@ -158,7 +158,7 @@ namespace launcher
             if (changedFileCount > 0)
             {
                 Utilities.UpdateStatusLabel("Preparing download tasks", Source.Update);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
+                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
 
                 Utilities.UpdateStatusLabel("Downloading updated files", Source.Update);
                 await Task.WhenAll(downloadTasks);
@@ -212,7 +212,7 @@ namespace launcher
             if (changedFileCount > 0)
             {
                 Utilities.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = DownloadManager.PrepareRepairDownloadTasks(branchDirectory);
+                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
 
                 Utilities.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);

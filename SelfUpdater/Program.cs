@@ -8,7 +8,7 @@ DirectoryInfo parentDir = Directory.GetParent(appPath.TrimEnd(Path.DirectorySepa
 var launcherURL = "https://cdn.r5r.org/launcher/launcher.exe";
 var destinationPath = parentDir + "\\launcher.exe";
 
-Console.WriteLine("Deleting old launcher at " + destinationPath);
+Console.WriteLine("Deleting old launcher at " + destinationPath);//
 
 int maxAttempts = 10;  // Maximum retry attempts
 int attemptCount = 0;

@@ -12,6 +12,10 @@
     </Window.Clip>
 
     <Window.Resources>
+        <ContextMenu x:Key="tbiContextMenu">
+            <MenuItem Header="Exit" Click="Exit_Click" />
+        </ContextMenu>
+
         <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
             <Viewbox Stretch="Fill">
                 <Grid HorizontalAlignment="Left" Margin="-5 0">
@@ -471,147 +475,149 @@
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="#FF0F2C3E" BorderThickness="3" CornerRadius="5">
-        <Grid x:Name="MainUI" Opacity="1">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="12*" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="1">
-                <MediaElement x:Name="mediaElement" Grid.Row="0" Source="assets/launcher_bg_kc.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
-                <Image x:Name="mediaImage" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
-                <Rectangle Grid.Row="0" Margin="0,0,0,0">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#33061119" />
-                            <GradientStop Color="#FF061119" Offset="0.8" />
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="262*" />
-                        <RowDefinition Height="303*" />
-                        <RowDefinition Height="33*" />
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Image Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" />
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="0,6,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="7*" />
-                            <ColumnDefinition Width="70*" />
-                            <ColumnDefinition Width="136*" />
-                            <ColumnDefinition Width="7*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="25*" />
-                                <RowDefinition Height="68*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="White" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
-                            <Grid Grid.Row="1" Margin="25,0,25,0">
-                                <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
-                                    <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="cmbBranch" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <TextBlock Text="{Binding title, Converter={StaticResource UpperCaseConverter}}" Foreground="White" FontFamily="Bahnschrift SemiLight" FontSize="16" />
-                                                    <TextBlock Text="{Binding subtext}" Foreground="Gray" FontFamily="Bahnschrift Light" FontSize="14" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                    <Button x:Name="SettingsButton" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
-                                    <Popup x:Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-100" AllowsTransparency="True" PopupAnimation="Fade">
-                                        <local:SettingsPopup x:Name="SettingsPopupControl" />
-                                    </Popup>
-                                </StackPanel>
-                                <Button Style="{DynamicResource PlatButtonStyle}" x:Name="btnPlay" Content="PLAY" FontSize="24" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
-                                <ProgressBar Style="{DynamicResource installProgress}" x:Name="progressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
-                                    <ProgressBar.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform ScaleY="-1" />
-                                            <SkewTransform />
-                                            <RotateTransform />
-                                            <TranslateTransform />
-                                        </TransformGroup>
-                                    </ProgressBar.RenderTransform>
-                                </ProgressBar>
-                                <TextBlock x:Name="lblStatus" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                <TextBlock x:Name="lblFilesLeft" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
-                                <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="btnUpdate" Content="UPDATE AVAILABLE" FontSize="18" Background="#FFDB514A" Foreground="White" BorderBrush="#FFDB514A" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+    <Grid>
+        <Border BorderBrush="#FF0F2C3E" BorderThickness="3" CornerRadius="5">
+            <Grid x:Name="MainUI" Opacity="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="12*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="1">
+                    <MediaElement x:Name="mediaElement" Grid.Row="0" Source="assets/launcher_bg_kc.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
+                    <Image x:Name="mediaImage" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
+                    <Rectangle Grid.Row="0" Margin="0,0,0,0">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#33061119" />
+                                <GradientStop Color="#FF061119" Offset="0.8" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="262*" />
+                            <RowDefinition Height="303*" />
+                            <RowDefinition Height="33*" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Image Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" />
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="7*" />
+                                <ColumnDefinition Width="70*" />
+                                <ColumnDefinition Width="136*" />
+                                <ColumnDefinition Width="7*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25*" />
+                                    <RowDefinition Height="68*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="White" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
+                                <Grid Grid.Row="1" Margin="25,0,25,0">
+                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
+                                        <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="cmbBranch" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding title, Converter={StaticResource UpperCaseConverter}}" Foreground="White" FontFamily="Bahnschrift SemiLight" FontSize="16" />
+                                                        <TextBlock Text="{Binding subtext}" Foreground="Gray" FontFamily="Bahnschrift Light" FontSize="14" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <Button x:Name="SettingsButton" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
+                                        <Popup x:Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-100" AllowsTransparency="True" PopupAnimation="Fade">
+                                            <local:SettingsPopup x:Name="SettingsPopupControl" />
+                                        </Popup>
+                                    </StackPanel>
+                                    <Button Style="{DynamicResource PlatButtonStyle}" x:Name="btnPlay" Content="PLAY" FontSize="24" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
+                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="progressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
+                                        <ProgressBar.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleY="-1" />
+                                                <SkewTransform />
+                                                <RotateTransform />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </ProgressBar.RenderTransform>
+                                    </ProgressBar>
+                                    <TextBlock x:Name="lblStatus" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
+                                    <TextBlock x:Name="lblFilesLeft" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="btnUpdate" Content="UPDATE AVAILABLE" FontSize="18" Background="#FFDB514A" Foreground="White" BorderBrush="#FFDB514A" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Column="2">
                             </Grid>
                         </Grid>
-                        <Grid Grid.Column="2">
+                        <Grid Grid.Row="2" Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="7*" />
+                                <ColumnDefinition Width="136*" />
+                                <ColumnDefinition Width="7*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="launcherVersionlbl" Grid.Column="0" Text="0.0.1" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
                         </Grid>
                     </Grid>
-                    <Grid Grid.Row="2" Margin="0,6,0,0">
+                </Grid>
+
+                <local:SettingsControl x:Name="SettingsControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+                <local:AdvancedMenu x:Name="AdvancedControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+
+                <Rectangle x:Name="TransitionRect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <!-- Apply TranslateTransform -->
+                            <TranslateTransform X="-2400" Y="0" />
+                            <!-- Apply SkewTransform -->
+                            <SkewTransform AngleX="-30" AngleY="0" />
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+
+                <Grid Grid.Row="0">
+                    <Rectangle Fill="#FF0F2C3E" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown" />
+                    <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="7*" />
-                            <ColumnDefinition Width="136*" />
-                            <ColumnDefinition Width="7*" />
+                            <ColumnDefinition Width="101*" />
+                            <ColumnDefinition Width="786*" />
+                            <ColumnDefinition Width="206*" />
+                            <ColumnDefinition Width="241*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="launcherVersionlbl" Grid.Column="0" Text="0.0.1" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
+                        <Grid Grid.Column="0">
+                            <Button x:Name="SubMenuBtn" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="White" Click="SubMenuBtn_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent">
+                                    <Image Source="/assets/logo-50.png" Width="55" Height="55" VerticalAlignment="Center" />
+                                    <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                            <Popup x:Name="SubMenuPopup" PlacementTarget="{Binding ElementName=SubMenuBtn}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False">
+                                <local:subMenu x:Name="subMenuControl" />
+                            </Popup>
+                        </Grid>
+                        <Grid Grid.Column="1" />
+                        <Grid Grid.Column="2">
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="StatusBtn" Content="    R5R Status" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="#FF54ADF7" Click="StatusBtn_Click" Cursor="Hand" />
+                            <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
+                            <Rectangle Fill="#3F54ADF7" Margin="198,6,6,6" IsHitTestVisible="False" />
+                            <Popup x:Name="StatusPopup" PlacementTarget="{Binding ElementName=StatusBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
+                                <local:StatusPopup x:Name="StatusPopupControl" />
+                            </Popup>
+                        </Grid>
+                        <Grid Grid.Column="3" Margin="3,0,0,0">
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="DownloadsBtn" Content="    Downloads" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="#FF54ADF7" Click="DownloadsBtn_Click" Cursor="Hand" />
+                            <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
+                            <Popup x:Name="DownloadsPopup" PlacementTarget="{Binding ElementName=DownloadsBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
+                                <local:DownloadsPopup x:Name="DownloadsPopupControl" />
+                            </Popup>
+                            <Button x:Name="btnClose" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
+                            <Button x:Name="btnMinimize" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-
-            <local:SettingsControl x:Name="SettingsControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
-            <local:AdvancedMenu x:Name="AdvancedControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
-
-            <Rectangle x:Name="TransitionRect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <!-- Apply TranslateTransform -->
-                        <TranslateTransform X="-2400" Y="0" />
-                        <!-- Apply SkewTransform -->
-                        <SkewTransform AngleX="-30" AngleY="0" />
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-
-            <Grid Grid.Row="0">
-                <Rectangle Fill="#FF0F2C3E" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown" />
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="101*" />
-                        <ColumnDefinition Width="786*" />
-                        <ColumnDefinition Width="206*" />
-                        <ColumnDefinition Width="241*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Button x:Name="SubMenuBtn" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="White" Click="SubMenuBtn_Click">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent">
-                                <Image Source="/assets/logo-50.png" Width="55" Height="55" VerticalAlignment="Center" />
-                                <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <Popup x:Name="SubMenuPopup" PlacementTarget="{Binding ElementName=SubMenuBtn}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False">
-                            <local:subMenu x:Name="subMenuControl" />
-                        </Popup>
-                    </Grid>
-                    <Grid Grid.Column="1" />
-                    <Grid Grid.Column="2">
-                        <Button Style="{DynamicResource StatusBtnStyle}" x:Name="StatusBtn" Content="    R5R Status" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="#FF54ADF7" Click="StatusBtn_Click" Cursor="Hand" />
-                        <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
-                        <Rectangle Fill="#3F54ADF7" Margin="198,6,6,6" IsHitTestVisible="False" />
-                        <Popup x:Name="StatusPopup" PlacementTarget="{Binding ElementName=StatusBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
-                            <local:StatusPopup x:Name="StatusPopupControl" />
-                        </Popup>
-                    </Grid>
-                    <Grid Grid.Column="3" Margin="3,0,0,0">
-                        <Button Style="{DynamicResource StatusBtnStyle}" x:Name="DownloadsBtn" Content="    Downloads" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="#FF54ADF7" Click="DownloadsBtn_Click" Cursor="Hand" />
-                        <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
-                        <Popup x:Name="DownloadsPopup" PlacementTarget="{Binding ElementName=DownloadsBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
-                            <local:DownloadsPopup x:Name="DownloadsPopupControl" />
-                        </Popup>
-                        <Button x:Name="btnClose" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
-                        <Button x:Name="btnMinimize" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </Window>

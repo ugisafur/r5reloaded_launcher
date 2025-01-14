@@ -54,7 +54,7 @@ namespace launcher
 
             //Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = DownloadManager.PrepareDownloadTasks(baseGameFiles, branchDirectory);
+            var downloadTasks = DownloadManager.InitializeDownloadTasks(baseGameFiles, branchDirectory);
 
             //Download base game files
             Utilities.UpdateStatusLabel("Downloading game files", Source.Installer);
@@ -110,7 +110,7 @@ namespace launcher
 
             //Prepare download tasks
             Utilities.UpdateStatusLabel("Preparing optional download", Source.Installer);
-            var optionaldownloadTasks = DownloadManager.PrepareDownloadTasks(optionalGameFiles, branchDirectory);
+            var optionaldownloadTasks = DownloadManager.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
             Utilities.UpdateStatusLabel("Downloading optional files", Source.Installer);

@@ -57,7 +57,7 @@ namespace launcher
             {
                 IniFile file = new();
 
-                file.SetSetting("Settings", "Enable_Quit_On_Close", true);
+                file.SetSetting("Settings", "Enable_Quit_On_Close", false);
                 file.SetSetting("Settings", "Disable_Background_Video", false);
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
