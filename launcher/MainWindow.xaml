@@ -7,6 +7,14 @@
         mc:Ignorable="d"
         Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" LocationChanged="Window_LocationChanged" Background="#FF0F2C3E" Closing="Window_Closing">
 
+    <Window.RenderTransform>
+        <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
+    </Window.RenderTransform>
+
+    <Window.RenderTransformOrigin>
+        <Point X="0.5" Y="0.5" />
+    </Window.RenderTransformOrigin>
+
     <Window.Clip>
         <RectangleGeometry Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
     </Window.Clip>
@@ -111,7 +119,7 @@
                   IsCheckable="False"
                   Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
             <Separator Style="{StaticResource CustomSeparatorStyle}" />
-            <MenuItem Header="Exit"
+            <MenuItem Header="Quit"
                   Click="Exit_Click"
                   IsCheckable="False"
                   Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />

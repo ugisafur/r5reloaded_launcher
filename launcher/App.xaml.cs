@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Media;
 
 namespace launcher
 {
@@ -100,6 +101,7 @@ namespace launcher
 
                                             this.MainWindow.Show();
                                             this.MainWindow.Activate();
+                                            (this.MainWindow as MainWindow)?.OnOpen();
 
                                             // Bring the window to foreground using Windows API
                                             var hwnd = new System.Windows.Interop.WindowInteropHelper(this.MainWindow).Handle;
@@ -141,6 +143,7 @@ namespace launcher
                     {
                         writer.AutoFlush = true;
                         writer.WriteLine("SHOW_WINDOW");
+                        Debug.WriteLine("Sent SHOW_WINDOW message to existing instance.");
                     }
                 }
             }

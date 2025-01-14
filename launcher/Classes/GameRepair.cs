@@ -33,8 +33,8 @@ namespace launcher
             Utilities.SetInstallState(true, "REPAIRING");
 
             //Set download limits
-            DownloadManager.SetSemaphoreLimit();
-            DownloadManager.SetDownloadSpeedLimit();
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
             string branchDirectory = FileManager.GetBranchDirectory();
@@ -95,8 +95,8 @@ namespace launcher
             Utilities.SetOptionalInstallState(true);
 
             //Set download limits
-            DownloadManager.SetSemaphoreLimit();
-            DownloadManager.SetDownloadSpeedLimit();
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
             string branchDirectory = FileManager.GetBranchDirectory();

@@ -1,125 +1,209 @@
 ﻿using Octodiff.Core;
 using Octodiff.Diagnostics;
 using Polly;
+using Polly.Retry;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
-using Polly.Retry;
 
 namespace launcher
 {
     /// <summary>
-    /// The DownloadManager class provides functionality for managing file downloads in a concurrent and controlled manner.
-    /// It includes methods to set download limits, download files with retry policies, and update the UI with download progress.
-    /// Additionally, it supports preparing download tasks for different scenarios such as base game files, repair tasks, and patch tasks.
-    /// The class also includes methods for file operations like delete, update, and patch.
+    /// Manages file downloads within the launcher application, providing functionalities such as
+    /// concurrent downloads, retry policies, speed throttling, and UI updates.
     /// </summary>
     public static class DownloadManager
     {
-        private static long downloadSpeedLimit = ThrottledStream.Infinite;
+        private static long _downloadSpeedLimit = ThrottledStream.Infinite;
+        private static SemaphoreSlim _downloadSemaphore;
 
-        public static void SetSemaphoreLimit()
+        /// <summary>
+        /// Configures the maximum number of concurrent downloads based on configuration settings.
+        /// </summary>
+        public static void ConfigureConcurrency()
         {
-            if (!IS_INSTALLING)
-                DOWNLOAD_SEMAPHORE = new SemaphoreSlim(Ini.Get(Ini.Vars.Concurrent_Downloads, 1000));
+            int maxConcurrentDownloads = Ini.Get(Ini.Vars.Concurrent_Downloads, 1000);
+            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
         }
 
-        public static void SetDownloadSpeedLimit()
+        /// <summary>
+        /// Sets the download speed limit based on configuration settings.
+        /// </summary>
+        public static void ConfigureDownloadSpeed()
         {
-            downloadSpeedLimit = Ini.Get(Ini.Vars.Download_Speed_Limit, 0) * 1024;
+            int speedLimitKb = Ini.Get(Ini.Vars.Download_Speed_Limit, 0);
+            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : ThrottledStream.Infinite;
         }
 
-        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
+        /// <summary>
+        /// Initializes and starts download tasks for the base game files.
+        /// </summary>
+        /// <param name="baseGameFiles">The base game files to download.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of download tasks.</returns>
+        public static List<Task<string>> InitializeDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
         {
-            return await appDispatcher.InvokeAsync(() => downloadsPopupControl.AddDownloadItem(fileName));
-        }
+            if (baseGameFiles == null) throw new ArgumentNullException(nameof(baseGameFiles));
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
-        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
-        {
-            if (downloadItem != null)
-                await appDispatcher.InvokeAsync(() => downloadsPopupControl.RemoveDownloadItem(downloadItem));
-        }
+            var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
+            ConfigureProgress(baseGameFiles.files.Count);
 
-        public static async Task<string> GetOrDownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)  // 1MB per second
-        {
-            // Wait for an available semaphore slot
-            await DOWNLOAD_SEMAPHORE.WaitAsync();
+            string baseUrl = GetCurrentBranch().game_url;
 
-            // Check if the file already exists and has the correct checksum
-            if (checkForExistingFiles && !string.IsNullOrEmpty(checksum) && ShouldSkipFile(destinationPath, checksum))
+            foreach (var file in baseGameFiles.files)
             {
-                UpdateProgressBar(--FILES_LEFT);
+                string fileUrl = $"{baseUrl}/{file.name}";
+                string destinationPath = Path.Combine(branchDirectory, file.name);
+
+                EnsureDirectoryExists(destinationPath);
+
+                downloadTasks.Add(
+                    DownloadFileAsync(
+                        fileUrl,
+                        destinationPath,
+                        file.name,
+                        file.checksum,
+                        checkForExistingFiles: true
+                    )
+                );
+            }
+
+            return downloadTasks;
+        }
+
+        /// <summary>
+        /// Initializes and starts download tasks for repairing bad files.
+        /// </summary>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of download tasks.</returns>
+        public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
+
+            int badFilesCount = BAD_FILES.Count;
+            ConfigureProgress(badFilesCount);
+
+            var downloadTasks = new List<Task<string>>(badFilesCount);
+            string baseUrl = GetCurrentBranch().game_url;
+
+            foreach (var file in BAD_FILES)
+            {
+                string fileUrl = $"{baseUrl}/{file}";
+                string destinationPath = Path.Combine(branchDirectory, file);
+
+                EnsureDirectoryExists(destinationPath);
+
+                downloadTasks.Add(
+                    DownloadFileAsync(
+                        fileUrl,
+                        destinationPath,
+                        file,
+                        checkForExistingFiles: false
+                    )
+                );
+            }
+
+            return downloadTasks;
+        }
+
+        /// <summary>
+        /// Initializes and starts download tasks for updating game patches.
+        /// </summary>
+        /// <param name="patchFiles">The patch files to download.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of download tasks.</returns>
+        public static List<Task<string>> InitializeUpdateTasks(GamePatch patchFiles, string branchDirectory)
+        {
+            if (patchFiles == null) throw new ArgumentNullException(nameof(patchFiles));
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
+
+            var downloadTasks = new List<Task<string>>(patchFiles.files.Count);
+            ConfigureProgress(patchFiles.files.Count);
+
+            string patchUrl = GetCurrentBranch().patch_url;
+
+            foreach (var file in patchFiles.files)
+            {
+                if (string.Equals(file.Action, "delete", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                string fileUrl = $"{patchUrl}/{file.Name}";
+                string destinationPath = Path.Combine(branchDirectory, file.Name);
+
+                EnsureDirectoryExists(destinationPath);
+
+                downloadTasks.Add(
+                    DownloadFileAsync(
+                        fileUrl,
+                        destinationPath,
+                        file.Name,
+                        checkForExistingFiles: false
+                    )
+                );
+            }
+
+            return downloadTasks;
+        }
+
+        /// <summary>
+        /// Initializes and starts file update tasks based on the provided patch files.
+        /// </summary>
+        /// <param name="patchFiles">The patch files containing update actions.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of update tasks.</returns>
+        public static List<Task> InitializeFileUpdateTasks(GamePatch patchFiles, string branchDirectory)
+        {
+            if (patchFiles == null) throw new ArgumentNullException(nameof(patchFiles));
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
+
+            var updateTasks = new List<Task>(patchFiles.files.Count);
+            FILES_LEFT = patchFiles.files.Count;
+
+            foreach (var file in patchFiles.files)
+            {
+                updateTasks.Add(ProcessFileUpdateAsync(file, branchDirectory));
+            }
+
+            return updateTasks;
+        }
+
+        /// <summary>
+        /// Downloads a file with optional checksum verification and updates the UI accordingly.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file to download.</param>
+        /// <param name="destinationPath">The local path where the file will be saved.</param>
+        /// <param name="fileName">The name of the file.</param>
+        /// <param name="checksum">Optional checksum for file verification.</param>
+        /// <param name="checkForExistingFiles">Whether to check for existing files before downloading.</param>
+        /// <returns>The path to the downloaded file, or an empty string if the download failed.</returns>
+        private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
+        {
+            await _downloadSemaphore.WaitAsync();
+
+            // Check if the file already exists and matches the checksum
+            if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
+            {
+                UpdateProgress(--FILES_LEFT);
                 return destinationPath;
             }
 
-            // Add the download item to the popup
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
 
             try
             {
-                // Execute the download operation with retry policy
                 await CreateRetryPolicy(fileUrl).ExecuteAsync(async () =>
                 {
-                    // Create a new HTTP request
-                    var request = (HttpWebRequest)WebRequest.Create(fileUrl);
-                    request.Method = "GET";
-                    request.Timeout = 30000;
-                    request.AllowAutoRedirect = true;
-
-                    // Get the response from the server
-                    using var response = (HttpWebResponse)await request.GetResponseAsync();
-
-                    // Check if the response is OK
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new WebException($"Failed to download: {response.StatusCode}");
-
-                    // Initialize variables for download progress tracking
-                    DateTime lastUpdate = DateTime.Now;
-                    long totalBytes = response.ContentLength;
-                    long downloadedBytes = 0L;
-
-                    // Open the response stream and create a throttled stream for download speed control
-                    using var responseStream = response.GetResponseStream();
-                    using var throttledStream = new ThrottledStream(responseStream, downloadSpeedLimit);  // Throttling applied here
-                    using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-                    // Initialize a buffer for reading data from the stream
-                    var buffer = new byte[64 * 1024]; // 128KB buffer
-                    int bytesRead;
-                    var stopwatch = new System.Diagnostics.Stopwatch();
-                    stopwatch.Start();
-
-                    // Read data from the stream and write it to the file
-                    while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                    {
-                        // Write the data to the file stream
-                        await fileStream.WriteAsync(buffer, 0, bytesRead);
-                        downloadedBytes += bytesRead;
-
-                        // Update the download progress every 200 milliseconds, this is to prevent lagging the UI
-                        if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
-                        {
-                            lastUpdate = DateTime.Now;
-
-                            if (downloadItem != null && totalBytes > 0)
-                            {
-                                var progress = (double)downloadedBytes / totalBytes * 100;
-                                await appDispatcher.InvokeAsync(() =>
-                                {
-                                    downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                                    downloadItem.downloadFileProgress.Value = progress;
-                                });
-                            }
-                        }
-                    }
-
-                    await fileStream.FlushAsync();
+                    await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
 
-                // Update the progress bar and return the destination path
-                UpdateProgressBar(--FILES_LEFT);
+                UpdateProgress(--FILES_LEFT);
                 return destinationPath;
             }
             catch (Exception ex)
@@ -130,205 +214,79 @@ namespace launcher
             }
             finally
             {
-                // Remove the download item from the popup
                 await RemoveDownloadItemAsync(downloadItem);
-
-                // Release the semaphore slot
-                DOWNLOAD_SEMAPHORE.Release();
+                _downloadSemaphore.Release();
             }
         }
 
-        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl)
+        /// <summary>
+        /// Processes file updates based on the specified action (delete, update, patch).
+        /// </summary>
+        /// <param name="file">The patch file containing the action.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task ProcessFileUpdateAsync(PatchFile file, string branchDirectory)
         {
-            const int maxRetryAttempts = 5;
-            const double exponentialBackoffFactor = 2.0;
-
-            // Define the retry policy for handling specific exceptions
-            AsyncRetryPolicy retryPolicy = Policy
-                .Handle<WebException>()
-                .Or<TimeoutException>()
-                .WaitAndRetryAsync(
-                    retryCount: maxRetryAttempts,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
-                    onRetry: (exception, timeSpan, retryNumber, context) =>
-                    {
-                        // Log each retry attempt with detailed information
-                        Log(
-                            Logger.Type.Warning,
-                            Source.DownloadManager,
-                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
-                            $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
-                        );
-                    });
-
-            return retryPolicy;
-        }
-
-        public static List<Task<string>> InitializeDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
-        {
-            // Initialize the list to hold download tasks
-            var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
-
-            // Set up progress indicators
-            SetProgressBar(baseGameFiles.files.Count);
-            FILES_LEFT = baseGameFiles.files.Count;
-
-            // Retrieve the branch configuration once
-            var currentBranch = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()];
-            string baseUrl = currentBranch.game_url;
-
-            foreach (var file in baseGameFiles.files)
+            try
             {
-                // Construct the full URL for the file
-                string fileUrl = $"{baseUrl}/{file.name}";
-
-                // Determine the destination path for the file
-                string destinationPath = Path.Combine(branchDirectory, file.name);
-
-                // Ensure the destination directory exists
-                string destinationDir = Path.GetDirectoryName(destinationPath);
-                if (!string.IsNullOrEmpty(destinationDir))
+                switch (file.Action.ToLower())
                 {
-                    Directory.CreateDirectory(destinationDir);
+                    case "delete":
+                        DeleteFile(file.Name);
+                        break;
+
+                    case "update":
+                        await ReplaceFileAsync(file.Name, branchDirectory);
+                        break;
+
+                    case "patch":
+                        await PatchFileAsync(file.Name, branchDirectory);
+                        break;
+
+                    default:
+                        Log(Logger.Type.Warning, Source.DownloadManager, $"Unknown action '{file.Action}' for file '{file.Name}'.");
+                        break;
                 }
-
-                // Add the download task to the list
-                downloadTasks.Add(
-                    GetOrDownloadFileAsync(
-                        fileUrl,
-                        destinationPath,
-                        file.name,
-                        file.checksum,
-                        true
-                    )
-                );
             }
-
-            return downloadTasks;
-        }
-
-        public static List<Task<string>> InitializeRepairTasks(string tempDirectory)
-        {
-            // Initialize progress indicators
-            int badFilesCount = BAD_FILES.Count;
-            SetProgressBar(badFilesCount);
-            FILES_LEFT = badFilesCount;
-
-            // Initialize the list with a predefined capacity
-            var downloadTasks = new List<Task<string>>(badFilesCount);
-
-            // Retrieve the branch configuration once to avoid repeated lookups
-            var currentBranch = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()];
-            string baseUrl = currentBranch.game_url;
-
-            foreach (var file in BAD_FILES)
+            catch (Exception ex)
             {
-                // Construct the full URL for the file
-                string fileUrl = $"{baseUrl}/{file}";
-
-                // Determine the destination path for the file
-                string destinationPath = Path.Combine(tempDirectory, file);
-
-                // Ensure the destination directory exists
-                string destinationDir = Path.GetDirectoryName(destinationPath);
-                if (!string.IsNullOrEmpty(destinationDir))
-                {
-                    Directory.CreateDirectory(destinationDir);
-                }
-
-                // Add the download task to the list
-                downloadTasks.Add(
-                    GetOrDownloadFileAsync(
-                        fileUrl,
-                        destinationPath,
-                        file
-                    )
-                );
+                Log(Logger.Type.Error, Source.DownloadManager, $"Error processing file '{file.Name}': {ex.Message}");
             }
-
-            return downloadTasks;
-        }
-
-        public static List<Task<string>> InitializeUpdateTasks(GamePatch patchFiles, string tempDirectory)
-        {
-            var downloadTasks = new List<Task<string>>();
-
-            SetProgressBar(patchFiles.files.Count);
-
-            FILES_LEFT = patchFiles.files.Count;
-
-            int selectedBranchIndex = Utilities.GetCmbBranchIndex();
-
-            foreach (var file in patchFiles.files)
+            finally
             {
-                if (file.Action.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
-                    continue;
-
-                string fileUrl = $"{SERVER_CONFIG.branches[selectedBranchIndex].patch_url}/{file.Name}";
-                string destinationPath = Path.Combine(tempDirectory, file.Name);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
-
-                downloadTasks.Add(GetOrDownloadFileAsync(fileUrl, destinationPath, file.Name));
+                UpdateProgress(--FILES_LEFT);
             }
-
-            return downloadTasks;
         }
 
-        public static List<Task> InitializeFileUpdateTasks(GamePatch patchFiles, string tempDirectory)
+        /// <summary>
+        /// Replaces an existing file with a new version by decompressing it.
+        /// </summary>
+        /// <param name="fileName">The name of the file to replace.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task ReplaceFileAsync(string fileName, string branchDirectory)
         {
-            var tasks = new List<Task>();
-            FILES_LEFT = patchFiles.files.Count;
+            string sourceCompressedFile = Path.Combine(branchDirectory, fileName);
+            string destinationFile = Path.Combine(LAUNCHER_PATH, Path.GetFileNameWithoutExtension(fileName));
 
-            foreach (var file in patchFiles.files)
-            {
-                tasks.Add(Task.Run(() =>
-                {
-                    switch (file.Action.ToLower())
-                    {
-                        case "delete":
-                            DeleteFile(file.Name);
-                            break;
-
-                        case "update":
-                            ReplaceFile(file.Name, tempDirectory);
-                            break;
-
-                        case "patch":
-                            PatchFile(file.Name, tempDirectory);
-                            break;
-                    }
-
-                    UpdateProgressBar(--FILES_LEFT);
-                }));
-            }
-
-            return tasks;
-        }
-
-        private static void DeleteFile(string file)
-        {
-            string fullPath = Path.Combine(LAUNCHER_PATH, file);
-            if (File.Exists(fullPath))
-                File.Delete(fullPath);
-        }
-
-        private static async void ReplaceFile(string file, string tempDirectory)
-        {
-            string sourceCompressedFile = Path.Combine(tempDirectory, file);
-            string destinationFile = Path.Combine(LAUNCHER_PATH, file.Replace(".zst", ""));
             await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
 
-        private static async void PatchFile(string file, string tempDirectory)
+        /// <summary>
+        /// Applies a patch to an existing file using delta compression.
+        /// </summary>
+        /// <param name="fileName">The name of the patch file.</param>
+        /// <param name="branchDirectory">Temporary directory containing the patch file.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task PatchFileAsync(string fileName, string branchDirectory)
         {
-            string sourceCompressedDeltaFile = Path.Combine(tempDirectory, file);
-            string deltaFile = Path.Combine(tempDirectory, file.Replace(".zst", ""));
-            string originalFile = Path.Combine(LAUNCHER_PATH, file.Replace(".delta.zst", ""));
+            string sourceCompressedDeltaFile = Path.Combine(branchDirectory, fileName);
+            string deltaFile = Path.Combine(branchDirectory, Path.GetFileNameWithoutExtension(fileName));
+            string originalFile = Path.Combine(LAUNCHER_PATH, fileName.Replace(".delta.zst", ""));
 
             await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, deltaFile);
 
-            var signatureFile = Path.GetTempFileName();
+            string signatureFile = Path.GetTempFileName();
 
             var signatureBuilder = new SignatureBuilder();
             using (var basisStream = new FileStream(originalFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -345,34 +303,87 @@ namespace launcher
             using (var deltaStream = new FileStream(deltaFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var newFileStream = new FileStream(originalFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
             {
-                deltaApplier.Apply(basisStream, new BinaryDeltaReader(deltaStream, new ConsoleProgressReporter()), newFileStream);
+                var progressReporter = new ConsoleProgressReporter(); // Consider implementing a more sophisticated reporter
+                deltaApplier.Apply(basisStream, new BinaryDeltaReader(deltaStream, progressReporter), newFileStream);
+            }
+
+            // Clean up temporary files
+            File.Delete(signatureFile);
+            File.Delete(deltaFile);
+        }
+
+        /// <summary>
+        /// Deletes a specified file from the launcher directory.
+        /// </summary>
+        /// <param name="fileName">The name of the file to delete.</param>
+        private static void DeleteFile(string fileName)
+        {
+            string fullPath = Path.Combine(LAUNCHER_PATH, fileName);
+            try
+            {
+                if (File.Exists(fullPath))
+                    File.Delete(fullPath);
+            }
+            catch (Exception ex)
+            {
+                Log(Logger.Type.Warning, Source.DownloadManager, $"Failed to delete '{fullPath}': {ex.Message}");
             }
         }
 
-        private static bool ShouldSkipFile(string destinationPath, string expectedChecksum)
+        /// <summary>
+        /// Determines whether a file should be skipped based on its existence and checksum.
+        /// </summary>
+        /// <param name="destinationPath">The path to the destination file.</param>
+        /// <param name="expectedChecksum">The expected checksum of the file.</param>
+        /// <returns>True if the file exists and matches the checksum; otherwise, false.</returns>
+        private static bool ShouldSkipDownload(string destinationPath, string expectedChecksum)
         {
             if (File.Exists(destinationPath))
             {
-                string checksum = FileManager.CalculateChecksum(destinationPath);
-                if (checksum == expectedChecksum)
+                string actualChecksum = FileManager.CalculateChecksum(destinationPath);
+                if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
                 {
-                    UpdateProgressBar();
+                    UpdateProgress(--FILES_LEFT);
                     return true;
                 }
             }
             return false;
         }
 
-        private static void SetProgressBar(int max)
+        /// <summary>
+        /// Ensures that the directory for the specified file path exists.
+        /// </summary>
+        /// <param name="filePath">The file path whose directory should be checked.</param>
+        private static void EnsureDirectoryExists(string filePath)
         {
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        /// <summary>
+        /// Configures the progress bar and related UI elements based on the total number of files.
+        /// </summary>
+        /// <param name="totalFiles">The total number of files to process.</param>
+        private static void ConfigureProgress(int totalFiles)
+        {
+            FILES_LEFT = totalFiles;
+
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = max;
+                progressBar.Maximum = totalFiles;
                 progressBar.Value = 0;
+                lblFilesLeft.Text = $"{totalFiles} files left";
             });
         }
 
-        private static void UpdateProgressBar(int filesLeft = -1)
+        /// <summary>
+        /// Updates the progress bar and related UI elements.
+        /// </summary>
+        /// <param name="filesLeft">The number of files left to process. If -1, it is not updated.</param>
+        private static void UpdateProgress(int filesLeft = -1)
         {
             appDispatcher.Invoke(() =>
             {
@@ -381,6 +392,120 @@ namespace launcher
                 if (filesLeft != -1)
                     lblFilesLeft.Text = $"{filesLeft} files left";
             });
+        }
+
+        /// <summary>
+        /// Creates a retry policy using Polly for handling transient download errors.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file being downloaded.</param>
+        /// <returns>An asynchronous retry policy.</returns>
+        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl)
+        {
+            const int maxRetryAttempts = 5;
+            const double exponentialBackoffFactor = 2.0;
+
+            return Policy
+                .Handle<WebException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(
+                    retryCount: maxRetryAttempts,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
+                    onRetry: (exception, timeSpan, retryNumber, context) =>
+                    {
+                        Log(
+                            Logger.Type.Warning,
+                            Source.DownloadManager,
+                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
+                            $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
+                        );
+                    }
+                );
+        }
+
+        /// <summary>
+        /// Adds a download item to the UI.
+        /// </summary>
+        /// <param name="fileName">The name of the file being downloaded.</param>
+        /// <returns>The added <see cref="DownloadItem"/>.</returns>
+        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
+        {
+            return await appDispatcher.InvokeAsync(() => downloadsPopupControl.AddDownloadItem(fileName));
+        }
+
+        /// <summary>
+        /// Removes a download item from the UI.
+        /// </summary>
+        /// <param name="downloadItem">The download item to remove.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
+        {
+            if (downloadItem != null)
+            {
+                await appDispatcher.InvokeAsync(() => downloadsPopupControl.RemoveDownloadItem(downloadItem));
+            }
+        }
+
+        /// <summary>
+        /// Downloads a file with speed throttling and updates the UI with download progress.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file to download.</param>
+        /// <param name="destinationPath">The local path where the file will be saved.</param>
+        /// <param name="downloadItem">The UI download item to update.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
+            request.Method = "GET";
+            request.Timeout = 30000;
+            request.AllowAutoRedirect = true;
+
+            using var response = (HttpWebResponse)await request.GetResponseAsync();
+
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new WebException($"Failed to download: {response.StatusCode}");
+
+            long totalBytes = response.ContentLength;
+            long downloadedBytes = 0;
+            DateTime lastUpdate = DateTime.Now;
+
+            using var responseStream = response.GetResponseStream();
+            using var throttledStream = new ThrottledStream(responseStream, _downloadSpeedLimit);
+            using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+            byte[] buffer = new byte[64 * 1024]; // 64KB buffer
+            int bytesRead;
+
+            while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                downloadedBytes += bytesRead;
+
+                if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
+                {
+                    lastUpdate = DateTime.Now;
+                    if (downloadItem != null && totalBytes > 0)
+                    {
+                        double progress = (double)downloadedBytes / totalBytes * 100;
+                        await appDispatcher.InvokeAsync(() =>
+                        {
+                            downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
+                            downloadItem.downloadFileProgress.Value = progress;
+                        });
+                    }
+                }
+            }
+
+            await fileStream.FlushAsync();
+        }
+
+        /// <summary>
+        /// Retrieves the current branch configuration.
+        /// </summary>
+        /// <returns>The current branch configuration.</returns>
+        private static Branch GetCurrentBranch()
+        {
+            int branchIndex = Utilities.GetCmbBranchIndex();
+            return SERVER_CONFIG.branches[branchIndex];
         }
     }
 }

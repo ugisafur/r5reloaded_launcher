@@ -27,8 +27,10 @@ namespace launcher
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Opacity = 0;
+
             TaskbarIcon tbi = new()
             {
                 ToolTipText = "R5Reloaded Launcher",
@@ -48,19 +50,7 @@ namespace launcher
 
             Utilities.SetupApp(this);
 
-            if (!Ini.Get(Ini.Vars.Disable_Animations, false))
-            {
-                OnOpen();
-            }
-            else
-            {
-                double screenWidth = SystemParameters.PrimaryScreenWidth;
-                double screenHeight = SystemParameters.PrimaryScreenHeight;
-                double windowWidth = this.Width;
-                double windowHeight = this.Height;
-                this.Left = (screenWidth / 2) - (windowWidth / 2);
-                this.Top = (screenHeight / 2) - (windowHeight / 2);
-            }
+            await OnOpen();
 
             if (IS_ONLINE)
             {
@@ -80,80 +70,145 @@ namespace launcher
             mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
 
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        public async Task OnOpen()
         {
-            base.OnRenderSizeChanged(sizeInfo);
+            if (Ini.Get(Ini.Vars.Disable_Animations, false))
+            {
+                this.Opacity = 1;
+                return;
+            }
 
-            if (sizeInfo.HeightChanged)
-                this.Top += (sizeInfo.PreviousSize.Height - sizeInfo.NewSize.Height) / 2;
-
-            if (sizeInfo.WidthChanged)
-                this.Left += (sizeInfo.PreviousSize.Width - sizeInfo.NewSize.Width) / 2;
-        }
-
-        private async Task OnOpen()
-        {
-            this.Opacity = 0;
-            MainUI.Opacity = 0;
-            this.Width = 0;
-
-            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            double windowWidth = this.Width;
-            double windowHeight = this.Height;
-            this.Left = (screenWidth / 2) - (windowWidth / 2);
-            this.Top = (screenHeight / 2) - (windowHeight / 2);
+            await Task.Delay(100);
 
             // Create a storyboard for simultaneous animations
             var storyboard = new Storyboard();
 
-            // Animate Width
-            var widthAnimation = new DoubleAnimation
+            // Duration for the animations
+            Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+
+            // Easing function for smoothness
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            // Animate ScaleX from 1 to 0
+            var scaleXAnimation = new DoubleAnimation
             {
-                From = 0,
-                To = 1340,
-                Duration = new Duration(TimeSpan.FromSeconds(0.75)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+                From = 0.75,
+                To = 1.0,
+                Duration = animationDuration,
+                EasingFunction = easing
             };
-            Storyboard.SetTarget(widthAnimation, this);
-            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
+            Storyboard.SetTarget(scaleXAnimation, this);
+            Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
 
-            // Animate Opacity
-            var opacityAnimationWindow = new DoubleAnimation
+            // Animate ScaleY from 1 to 0
+            var scaleYAnimation = new DoubleAnimation
             {
-                From = 0,
-                To = 1,
-                Duration = new Duration(TimeSpan.FromSeconds(0.75)), // Match the duration of the width animation
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+                From = 0.75,
+                To = 1.0,
+                Duration = animationDuration,
+                EasingFunction = easing
             };
-            Storyboard.SetTarget(opacityAnimationWindow, this);
-            Storyboard.SetTargetProperty(opacityAnimationWindow, new PropertyPath("Opacity"));
+            Storyboard.SetTarget(scaleYAnimation, this);
+            Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
 
-            // Add animations to the storyboard
-            storyboard.Children.Add(widthAnimation);
-            storyboard.Children.Add(opacityAnimationWindow);
-
-            // Begin the storyboard and await its completion
-            TaskCompletionSource<bool> tcs = new();
-            storyboard.Completed += (s, e) => tcs.SetResult(true);
-            storyboard.Begin();
-
-            await tcs.Task;
-
-            // Fade in MainUI opacity after width animation completes
+            // Animate Opacity from 1 to 0
             var opacityAnimation = new DoubleAnimation
             {
-                From = 0,
-                To = 1,
-                Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+                From = 0.0,
+                To = 1.0,
+                Duration = animationDuration,
+                EasingFunction = easing
             };
-            Storyboard.SetTarget(opacityAnimation, MainUI);
+            Storyboard.SetTarget(opacityAnimation, this);
             Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
 
-            var opacityStoryboard = new Storyboard();
-            opacityStoryboard.Children.Add(opacityAnimation);
-            opacityStoryboard.Begin();
+            // Add animations to the storyboard
+            storyboard.Children.Add(scaleXAnimation);
+            storyboard.Children.Add(scaleYAnimation);
+            storyboard.Children.Add(opacityAnimation);
+
+            // Create a TaskCompletionSource to await the animation
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            storyboard.Completed += (s, e) => tcs.SetResult(true);
+
+            // Begin the storyboard
+            storyboard.Begin();
+
+            // Await the completion of the animation
+            await tcs.Task;
+        }
+
+        private async Task OnClose()
+        {
+            if (Ini.Get(Ini.Vars.Disable_Animations, false))
+            {
+                this.Hide();
+                return;
+            }
+
+            // Create a storyboard for simultaneous animations
+            var storyboard = new Storyboard();
+
+            // Duration for the animations
+            Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+
+            // Easing function for smoothness
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            // Animate ScaleX from 1 to 0
+            var scaleXAnimation = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.75,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(scaleXAnimation, this);
+            Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
+
+            // Animate ScaleY from 1 to 0
+            var scaleYAnimation = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.75,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(scaleYAnimation, this);
+            Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
+
+            // Animate Opacity from 1 to 0
+            var opacityAnimation = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(opacityAnimation, this);
+            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
+
+            // Add animations to the storyboard
+            storyboard.Children.Add(scaleXAnimation);
+            storyboard.Children.Add(scaleYAnimation);
+            storyboard.Children.Add(opacityAnimation);
+
+            // Create a TaskCompletionSource to await the animation
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            storyboard.Completed += (s, e) => tcs.SetResult(true);
+
+            // Begin the storyboard
+            storyboard.Begin();
+
+            // Await the completion of the animation
+            await tcs.Task;
+
+            // Hide the window after animation
+            this.Hide();
+
+            this.Opacity = 1;
+            WindowScale.ScaleX = 1;
+            WindowScale.ScaleY = 1;
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -162,8 +217,8 @@ namespace launcher
                 Application.Current.Shutdown();
             else
             {
-                taskbar.ShowBalloonTip("R5Reloaded Launcher", "Application minimized to tray.", BalloonIcon.Info);
-                this.Hide();
+                taskbar.ShowBalloonTip("R5R Launcher", "Launcher minimized to tray.", BalloonIcon.Info);
+                OnClose();
             }
         }
 
@@ -363,6 +418,7 @@ namespace launcher
                     mainWindow.Show();
                     mainWindow.WindowState = WindowState.Normal;
                     mainWindow.Activate();
+                    OnOpen();
                 }
             });
         }
