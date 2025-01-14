@@ -25,8 +25,8 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = baseGameFiles.files.Count;
-                progressBar.Value = 0;
+                Progress_Bar.Maximum = baseGameFiles.files.Count;
+                Progress_Bar.Value = 0;
             });
 
             FILES_LEFT = baseGameFiles.files.Count;
@@ -44,8 +44,8 @@ namespace launcher
 
                 appDispatcher.Invoke(() =>
                 {
-                    progressBar.Value++;
-                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--FILES_LEFT} files left";
                 });
             }
 
@@ -84,8 +84,8 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = allFiles.Length;
-                progressBar.Value = 0;
+                Progress_Bar.Maximum = allFiles.Length;
+                Progress_Bar.Value = 0;
             });
 
             FILES_LEFT = allFiles.Length;
@@ -109,8 +109,8 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = allFiles.Length;
-                progressBar.Value = 0;
+                Progress_Bar.Maximum = allFiles.Length;
+                Progress_Bar.Value = 0;
             });
 
             FILES_LEFT = allFiles.Length;
@@ -135,8 +135,8 @@ namespace launcher
 
                 appDispatcher.Invoke(() =>
                 {
-                    progressBar.Value++;
-                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--FILES_LEFT} files left";
                 });
 
                 return fileChecksum;

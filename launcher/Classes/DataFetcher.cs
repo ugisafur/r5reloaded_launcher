@@ -96,7 +96,7 @@ namespace launcher
             try
             {
                 using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead("http://cdn.r5r.org");
+                using var stream = client.OpenRead("https://cdn.r5r.org/launcher/config.json");
                 return true;
             }
             catch

@@ -172,7 +172,7 @@ namespace launcher
                 SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion;
                 SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
                 SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available = true;
-                btnUpdate.Visibility = Visibility.Visible;
+                Update_Button.Visibility = Visibility.Visible;
             });
         }
     }

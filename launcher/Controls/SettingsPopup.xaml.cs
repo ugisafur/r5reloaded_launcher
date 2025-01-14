@@ -31,7 +31,7 @@ namespace launcher
         {
             if (!IN_ADVANCED_MENU)
             {
-                gameSettingsPopup.IsOpen = false;
+                GameSettings_Popup.IsOpen = false;
                 Utilities.ShowAdvancedControl();
             }
         }

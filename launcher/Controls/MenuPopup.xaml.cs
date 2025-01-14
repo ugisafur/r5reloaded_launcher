@@ -9,11 +9,11 @@ namespace launcher
     /// <summary>
     /// Interaction logic for subMenu.xaml
     /// </summary>
-    public partial class subMenu : UserControl
+    public partial class MenuPopup : UserControl
     {
         public Button settingsButton;
 
-        public subMenu()
+        public MenuPopup()
         {
             InitializeComponent();
             settingsButton = Settings;
@@ -38,7 +38,7 @@ namespace launcher
         {
             if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
             {
-                SubMenuPopup.IsOpen = false;
+                Menu_Popup.IsOpen = false;
                 Utilities.ShowSettingsControl();
             }
         }

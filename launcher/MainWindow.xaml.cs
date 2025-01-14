@@ -18,7 +18,7 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        public TaskbarIcon taskbar;
+        public TaskbarIcon System_Tray;
         public ICommand ShowWindowCommand { get; }
 
         public MainWindow()
@@ -44,7 +44,7 @@ namespace launcher
             if (versionMenuItem != null)
                 versionMenuItem.Header = "R5RLauncher " + LAUNCHER_VERSION;
 
-            taskbar = tbi;
+            System_Tray = tbi;
 
             Ini.CreateConfig();
 
@@ -56,18 +56,18 @@ namespace launcher
             {
                 Task.Run(() => UpdateChecker.Start());
 
-                btnPlay.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
+                Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
                 if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
-                    btnPlay.Content = "REPAIR";
+                    Play_Button.Content = "REPAIR";
             }
             else
             {
-                btnPlay.Content = "PLAY";
+                Play_Button.Content = "PLAY";
             }
 
             bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
-            mediaImage.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
-            mediaElement.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+            Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
+            Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
 
         public async Task OnOpen()
@@ -217,7 +217,7 @@ namespace launcher
                 Application.Current.Shutdown();
             else
             {
-                taskbar.ShowBalloonTip("R5R Launcher", "Launcher minimized to tray.", BalloonIcon.Info);
+                System_Tray.ShowBalloonTip("R5R Launcher", "Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
             }
         }
@@ -254,11 +254,11 @@ namespace launcher
 
         private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            mediaElement.Position = TimeSpan.FromSeconds(0);
-            mediaElement.Play();
+            Background_Video.Position = TimeSpan.FromSeconds(0);
+            Background_Video.Play();
         }
 
-        private void Rectangle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -272,16 +272,16 @@ namespace launcher
 
             var selectedBranch = comboBox.SelectedIndex;
 
-            ComboBranch comboBranch = (ComboBranch)cmbBranch.Items[selectedBranch];
+            ComboBranch comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
             if (comboBranch.isLocalBranch || !IS_ONLINE)
             {
                 Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
-                btnUpdate.Visibility = Visibility.Hidden;
-                btnPlay.Content = "PLAY";
-                btnPlay.IsEnabled = true;
+                Update_Button.Visibility = Visibility.Hidden;
+                Play_Button.Content = "PLAY";
+                Play_Button.IsEnabled = true;
                 IS_LOCAL_BRANCH = true;
-                SettingsPopupControl.btnRepair.IsEnabled = false;
+                GameSettings_Control.RepairGame_Button.IsEnabled = false;
                 return;
             }
 
@@ -293,104 +293,104 @@ namespace launcher
             {
                 if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
-                    btnUpdate.Visibility = Visibility.Hidden;
-                    btnPlay.Content = "PLAY";
-                    btnPlay.IsEnabled = true;
-                    SettingsPopupControl.btnRepair.IsEnabled = false;
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
                     return;
                 }
 
                 if (Utilities.GetBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
                 {
-                    btnUpdate.Visibility = Visibility.Hidden;
-                    btnPlay.Content = "PLAY";
-                    btnPlay.IsEnabled = true;
-                    SettingsPopupControl.btnRepair.IsEnabled = true;
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
                 }
                 else
                 {
-                    btnUpdate.Visibility = Visibility.Visible;
-                    btnPlay.Content = "PLAY";
-                    btnPlay.IsEnabled = true;
-                    SettingsPopupControl.btnRepair.IsEnabled = true;
+                    Update_Button.Visibility = Visibility.Visible;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
                 }
             }
             else
             {
                 if (!SERVER_CONFIG.branches[selectedBranch].enabled)
                 {
-                    btnUpdate.Visibility = Visibility.Hidden;
-                    btnPlay.Content = "DISABLED";
-                    btnPlay.IsEnabled = false;
-                    SettingsPopupControl.btnRepair.IsEnabled = false;
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "DISABLED";
+                    Play_Button.IsEnabled = false;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
                     return;
                 }
 
                 if (File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
                 {
-                    btnUpdate.Visibility = Visibility.Hidden;
-                    btnPlay.Content = "REPAIR";
-                    btnPlay.IsEnabled = true;
-                    SettingsPopupControl.btnRepair.IsEnabled = true;
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "REPAIR";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
                 }
                 else
                 {
-                    btnUpdate.Visibility = Visibility.Hidden;
-                    btnPlay.Content = "INSTALL";
-                    btnPlay.IsEnabled = true;
-                    SettingsPopupControl.btnRepair.IsEnabled = false;
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "INSTALL";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
                 }
             }
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SettingsPopup.IsOpen = true;
+            GameSettings_Popup.IsOpen = true;
         }
 
         private void StatusBtn_Click(object sender, RoutedEventArgs e)
         {
-            StatusPopup.IsOpen = true;
+            Status_Popup.IsOpen = true;
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            if (StatusPopup.IsOpen)
+            if (Status_Popup.IsOpen)
             {
-                var offset = StatusPopup.HorizontalOffset;
-                StatusPopup.HorizontalOffset = offset + 1;
-                StatusPopup.HorizontalOffset = offset;
+                var offset = Status_Popup.HorizontalOffset;
+                Status_Popup.HorizontalOffset = offset + 1;
+                Status_Popup.HorizontalOffset = offset;
             }
         }
 
         private void StatusPopup_Unloaded(object sender, EventArgs e)
         {
-            StatusBtn.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            Status_Button.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
         }
 
         private void StatusPopup_Loaded(object sender, EventArgs e)
         {
-            StatusBtn.Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
+            Status_Button.Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
         }
 
         private void SubMenuBtn_Click(object sender, RoutedEventArgs e)
         {
-            SubMenuPopup.IsOpen = true;
+            Menu_Popup.IsOpen = true;
         }
 
         private void DownloadsBtn_Click(object sender, RoutedEventArgs e)
         {
-            DownloadsPopup.IsOpen = true;
+            Downloads_Popup.IsOpen = true;
         }
 
         private void DownloadsPopup_Unloaded(object sender, EventArgs e)
         {
-            DownloadsBtn.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            Downloads_Button.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
         }
 
         private void DownloadsPopup_Loaded(object sender, EventArgs e)
         {
-            DownloadsBtn.Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
+            Downloads_Button.Background = new SolidColorBrush(Color.FromArgb(100, 0, 0, 0));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -403,7 +403,7 @@ namespace launcher
             if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
             {
                 Task.Run(() => GameUpdate.Start());
-                btnUpdate.Visibility = Visibility.Hidden;
+                Update_Button.Visibility = Visibility.Hidden;
             }
         }
 

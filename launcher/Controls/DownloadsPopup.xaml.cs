@@ -52,8 +52,8 @@ namespace launcher
         {
             if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
             {
-                mainApp.DownloadsPopup.IsOpen = false;
-                settingsControl.OpenDownloadsSettings();
+                Downloads_Popup.IsOpen = false;
+                Settings_Control.OpenDownloadsSettings();
             }
         }
     }

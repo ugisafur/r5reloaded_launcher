@@ -64,7 +64,7 @@ namespace launcher
 
         public static void SetupGlobals()
         {
-            launcherVersionlbl.Text = LAUNCHER_VERSION;
+            Version_Label.Text = LAUNCHER_VERSION;
             LogInfo(Source.Launcher, $"Launcher Version: {LAUNCHER_VERSION}");
 
             LAUNCHER_PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);

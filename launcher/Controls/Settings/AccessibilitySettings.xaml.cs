@@ -58,8 +58,8 @@ namespace launcher
         private void ToggleBackgroundVideo(bool disabled)
         {
             LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
-            mainApp.mediaElement.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
-            mainApp.mediaImage.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
+            Background_Video.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
+            Background_Image.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }

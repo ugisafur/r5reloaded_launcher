@@ -27,7 +27,6 @@ namespace launcher
         public static void SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
-            LogInfo(Source.Launcher, "Debug console enabled");
             EnableDebugConsole();
 #endif
             CheckInternetConnection();
@@ -50,20 +49,20 @@ namespace launcher
         {
             if (IS_ONLINE)
             {
-                Task.Run(() => statusPopup.StartStatusTimer());
+                Task.Run(() => Status_Control.StartStatusTimer());
                 return;
             }
 
-            mainApp.StatusBtn.IsEnabled = false;
-            mainApp.DownloadsBtn.IsEnabled = false;
+            Status_Button.IsEnabled = false;
+            Downloads_Button.IsEnabled = false;
         }
 
         private static void SetupMenus()
         {
-            settingsControl.SetupSettingsMenu();
+            Settings_Control.SetupSettingsMenu();
             LogInfo(Source.Launcher, $"Settings menu initialized");
 
-            advancedControl.SetupAdvancedSettings();
+            Advanced_Control.SetupAdvancedSettings();
             LogInfo(Source.Launcher, $"Advanced settings initialized");
         }
 
@@ -78,7 +77,7 @@ namespace launcher
 
         private static void SetupBranchComboBox()
         {
-            cmbBranch.ItemsSource = GetGameBranches();
+            Branch_Combobox.ItemsSource = GetGameBranches();
 
             string savedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
             string selectedBranch = string.IsNullOrEmpty(savedBranch) ? SERVER_CONFIG.branches[0].branch : Ini.Get(Ini.Vars.SelectedBranch, "");
@@ -88,7 +87,7 @@ namespace launcher
             if (selectedIndex == -1)
                 selectedIndex = 0;
 
-            cmbBranch.SelectedIndex = selectedIndex;
+            Branch_Combobox.SelectedIndex = selectedIndex;
 
             LogInfo(Source.Launcher, "Game branches initialized");
         }
@@ -254,7 +253,7 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                cmbSelectedIndex = cmbBranch.SelectedIndex;
+                cmbSelectedIndex = Branch_Combobox.SelectedIndex;
             });
 
             return cmbSelectedIndex;
@@ -270,16 +269,16 @@ namespace launcher
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
-                settingsControl.Visibility = Visibility.Visible;
-                subMenuControl.Settings.IsEnabled = false;
-                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+                Settings_Control.Visibility = Visibility.Visible;
+                Menu_Control.Settings.IsEnabled = false;
+                Downloads_Control.gotoDownloads.IsEnabled = false;
                 return;
             }
 
             var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                settingsControl.Visibility = Visibility.Visible;
+                Settings_Control.Visibility = Visibility.Visible;
                 var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
                 fadeInStoryboard.Completed += (s, e) =>
                 {
@@ -289,8 +288,8 @@ namespace launcher
                 fadeInStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = false;
-            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+            Menu_Control.Settings.IsEnabled = false;
+            Downloads_Control.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideSettingsControl()
@@ -299,9 +298,9 @@ namespace launcher
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
-                settingsControl.Visibility = Visibility.Hidden;
-                subMenuControl.Settings.IsEnabled = true;
-                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+                Settings_Control.Visibility = Visibility.Hidden;
+                Menu_Control.Settings.IsEnabled = true;
+                Downloads_Control.gotoDownloads.IsEnabled = true;
                 return;
             }
 
@@ -311,15 +310,15 @@ namespace launcher
                 var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
                 fadeOutStoryboard.Completed += (s, e) =>
                 {
-                    settingsControl.Visibility = Visibility.Hidden;
+                    Settings_Control.Visibility = Visibility.Hidden;
                     var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
                     transitionOutStoryboard.Begin();
                 };
                 fadeOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = true;
-            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+            Menu_Control.Settings.IsEnabled = true;
+            Downloads_Control.gotoDownloads.IsEnabled = true;
         }
 
         public static void ShowAdvancedControl()
@@ -328,27 +327,22 @@ namespace launcher
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
-                advancedControl.Visibility = Visibility.Visible;
-                subMenuControl.Settings.IsEnabled = false;
-                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+                Advanced_Control.Visibility = Visibility.Visible;
+                Menu_Control.Settings.IsEnabled = false;
+                Downloads_Control.gotoDownloads.IsEnabled = false;
                 return;
             }
 
             var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                advancedControl.Visibility = Visibility.Visible;
-                var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
-                fadeInStoryboard.Completed += (s, e) =>
-                {
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeInStoryboard.Begin();
+                Advanced_Control.Visibility = Visibility.Visible;
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
+                transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = false;
-            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = false;
+            Menu_Control.Settings.IsEnabled = false;
+            Downloads_Control.gotoDownloads.IsEnabled = false;
         }
 
         public static void HideAdvancedControl()
@@ -357,27 +351,22 @@ namespace launcher
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
-                advancedControl.Visibility = Visibility.Hidden;
-                subMenuControl.Settings.IsEnabled = true;
-                mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+                Advanced_Control.Visibility = Visibility.Hidden;
+                Menu_Control.Settings.IsEnabled = true;
+                Downloads_Control.gotoDownloads.IsEnabled = true;
                 return;
             }
 
             var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
-                fadeOutStoryboard.Completed += (s, e) =>
-                {
-                    advancedControl.Visibility = Visibility.Hidden;
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeOutStoryboard.Begin();
+                Advanced_Control.Visibility = Visibility.Hidden;
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
+                transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
-            subMenuControl.Settings.IsEnabled = true;
-            mainApp.DownloadsPopupControl.gotoDownloads.IsEnabled = true;
+            Menu_Control.Settings.IsEnabled = true;
+            Downloads_Control.gotoDownloads.IsEnabled = true;
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)
@@ -389,7 +378,7 @@ namespace launcher
                 To = to,
                 Duration = new Duration(TimeSpan.FromSeconds(duration))
             };
-            Storyboard.SetTarget(doubleAnimation, TransitionRect);
+            Storyboard.SetTarget(doubleAnimation, Transition_Rect);
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("RenderTransform.Children[0].X"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;
@@ -404,7 +393,7 @@ namespace launcher
                 To = to,
                 Duration = new Duration(TimeSpan.FromSeconds(duration))
             };
-            Storyboard.SetTarget(doubleAnimation, settingsControl);
+            Storyboard.SetTarget(doubleAnimation, Settings_Control);
             Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("Opacity"));
             storyboard.Children.Add(doubleAnimation);
             return storyboard;

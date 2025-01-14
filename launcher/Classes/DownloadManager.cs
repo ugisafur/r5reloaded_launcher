@@ -374,9 +374,9 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = totalFiles;
-                progressBar.Value = 0;
-                lblFilesLeft.Text = $"{totalFiles} files left";
+                Progress_Bar.Maximum = totalFiles;
+                Progress_Bar.Value = 0;
+                Files_Label.Text = $"{totalFiles} files left";
             });
         }
 
@@ -388,10 +388,10 @@ namespace launcher
         {
             appDispatcher.Invoke(() =>
             {
-                progressBar.Value++;
+                Progress_Bar.Value++;
 
                 if (filesLeft != -1)
-                    lblFilesLeft.Text = $"{filesLeft} files left";
+                    Files_Label.Text = $"{filesLeft} files left";
             });
         }
 
@@ -430,7 +430,7 @@ namespace launcher
         /// <returns>The added <see cref="DownloadItem"/>.</returns>
         private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
         {
-            return await appDispatcher.InvokeAsync(() => downloadsPopupControl.AddDownloadItem(fileName));
+            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
         }
 
         /// <summary>
@@ -442,7 +442,7 @@ namespace launcher
         {
             if (downloadItem != null)
             {
-                await appDispatcher.InvokeAsync(() => downloadsPopupControl.RemoveDownloadItem(downloadItem));
+                await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
             }
         }
 
@@ -507,13 +507,13 @@ namespace launcher
             {
                 IS_INSTALLING = installing;
 
-                btnPlay.Content = buttonText;
-                cmbBranch.IsEnabled = !installing;
-                btnPlay.IsEnabled = !installing;
-                lblStatus.Text = "";
-                lblFilesLeft.Text = "";
+                Play_Button.Content = buttonText;
+                Branch_Combobox.IsEnabled = !installing;
+                Play_Button.IsEnabled = !installing;
+                Status_Label.Text = "";
+                Files_Label.Text = "";
 
-                mainApp.SettingsPopupControl.btnRepair.IsEnabled = !installing;
+                GameSettings_Control.RepairGame_Button.IsEnabled = !installing;
             });
 
             ShowProgressBar(installing);
@@ -526,8 +526,8 @@ namespace launcher
             appDispatcher.Invoke(() =>
             {
                 IS_INSTALLING = installing;
-                lblStatus.Text = "";
-                lblFilesLeft.Text = "";
+                Status_Label.Text = "";
+                Files_Label.Text = "";
             });
 
             ShowProgressBar(installing);
@@ -538,7 +538,7 @@ namespace launcher
             LogInfo(source, $"Updating status label: {statusText}");
             appDispatcher.Invoke(() =>
             {
-                lblStatus.Text = statusText;
+                Status_Label.Text = statusText;
             });
         }
 
@@ -546,9 +546,9 @@ namespace launcher
         {
             appDispatcher.Invoke(() =>
             {
-                progressBar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                lblStatus.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                lblFilesLeft.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
             });
         }
     }

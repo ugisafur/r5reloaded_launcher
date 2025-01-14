@@ -23,7 +23,7 @@ namespace launcher
 
             if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available)
             {
-                btnUpdate.Visibility = Visibility.Hidden;
+                Update_Button.Visibility = Visibility.Hidden;
                 SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available = false;
             }
 

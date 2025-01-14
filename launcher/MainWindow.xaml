@@ -592,8 +592,8 @@
                     <RowDefinition Height="12*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="1">
-                    <MediaElement x:Name="mediaElement" Grid.Row="0" Source="assets/launcher_bg_kc.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
-                    <Image x:Name="mediaImage" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
+                    <MediaElement x:Name="Background_Video" Grid.Row="0" Source="assets/launcher_bg_kc.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
+                    <Image x:Name="Background_Image" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
                     <Rectangle Grid.Row="0" Margin="0,0,0,0">
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -627,7 +627,7 @@
                                 <Grid Grid.Row="1" Margin="25,0,25,0">
                                     <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
-                                        <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="cmbBranch" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
+                                        <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="Branch_Combobox" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
@@ -637,13 +637,13 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
-                                        <Button x:Name="SettingsButton" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
-                                        <Popup x:Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-100" AllowsTransparency="True" PopupAnimation="Fade">
-                                            <local:SettingsPopup x:Name="SettingsPopupControl" />
+                                        <Button x:Name="GameSettings_Button" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
+                                        <Popup x:Name="GameSettings_Popup" PlacementTarget="{Binding ElementName=GameSettings_Button}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-120" AllowsTransparency="True" PopupAnimation="Fade">
+                                            <local:SettingsPopup x:Name="GameSettings_Control" />
                                         </Popup>
                                     </StackPanel>
-                                    <Button Style="{DynamicResource PlatButtonStyle}" x:Name="btnPlay" Content="PLAY" FontSize="24" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
-                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="progressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
+                                    <Button Style="{DynamicResource PlatButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
+                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
                                         <ProgressBar.RenderTransform>
                                             <TransformGroup>
                                                 <ScaleTransform ScaleY="-1" />
@@ -653,9 +653,9 @@
                                             </TransformGroup>
                                         </ProgressBar.RenderTransform>
                                     </ProgressBar>
-                                    <TextBlock x:Name="lblStatus" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                    <TextBlock x:Name="lblFilesLeft" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
-                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="btnUpdate" Content="UPDATE AVAILABLE" FontSize="18" Background="#FFDB514A" Foreground="White" BorderBrush="#FFDB514A" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                    <TextBlock x:Name="Status_Label" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
+                                    <TextBlock x:Name="Files_Label" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="#FFDB514A" Foreground="White" BorderBrush="#FFDB514A" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2">
@@ -667,27 +667,25 @@
                                 <ColumnDefinition Width="136*" />
                                 <ColumnDefinition Width="7*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="launcherVersionlbl" Grid.Column="0" Text="0.0.1" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
+                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
                         </Grid>
                     </Grid>
                 </Grid>
 
-                <local:SettingsControl x:Name="SettingsControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
-                <local:AdvancedMenu x:Name="AdvancedControl" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+                <local:SettingsControl x:Name="Settings_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+                <local:AdvancedMenu x:Name="Advanced_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
 
-                <Rectangle x:Name="TransitionRect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
+                <Rectangle x:Name="Transition_Rect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
                     <Rectangle.RenderTransform>
                         <TransformGroup>
-                            <!-- Apply TranslateTransform -->
                             <TranslateTransform X="-2400" Y="0" />
-                            <!-- Apply SkewTransform -->
                             <SkewTransform AngleX="-30" AngleY="0" />
                         </TransformGroup>
                     </Rectangle.RenderTransform>
                 </Rectangle>
 
                 <Grid Grid.Row="0">
-                    <Rectangle Fill="#FF0F2C3E" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown" />
+                    <Rectangle Fill="#FF0F2C3E" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="101*" />
@@ -696,33 +694,33 @@
                             <ColumnDefinition Width="241*" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <Button x:Name="SubMenuBtn" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="White" Click="SubMenuBtn_Click">
+                            <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="White" Click="SubMenuBtn_Click" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent">
                                     <Image Source="/assets/logo-50.png" Width="55" Height="55" VerticalAlignment="Center" />
                                     <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
-                            <Popup x:Name="SubMenuPopup" PlacementTarget="{Binding ElementName=SubMenuBtn}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False">
-                                <local:subMenu x:Name="subMenuControl" />
+                            <Popup x:Name="Menu_Popup" PlacementTarget="{Binding ElementName=Menu_Button}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False">
+                                <local:MenuPopup x:Name="Menu_Control" />
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="1" />
                         <Grid Grid.Column="2">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="StatusBtn" Content="    R5R Status" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="#FF54ADF7" Click="StatusBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="#FF54ADF7" Click="StatusBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
                             <Rectangle Fill="#3F54ADF7" Margin="198,6,6,6" IsHitTestVisible="False" />
-                            <Popup x:Name="StatusPopup" PlacementTarget="{Binding ElementName=StatusBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
-                                <local:StatusPopup x:Name="StatusPopupControl" />
+                            <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
+                                <local:StatusPopup x:Name="Status_Control" />
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="3" Margin="3,0,0,0">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="DownloadsBtn" Content="    Downloads" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="#FF54ADF7" Click="DownloadsBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="#FF54ADF7" Click="DownloadsBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
-                            <Popup x:Name="DownloadsPopup" PlacementTarget="{Binding ElementName=DownloadsBtn}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
-                                <local:DownloadsPopup x:Name="DownloadsPopupControl" />
+                            <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
+                                <local:DownloadsPopup x:Name="Downloads_Control" />
                             </Popup>
-                            <Button x:Name="btnClose" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
-                            <Button x:Name="btnMinimize" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
+                            <Button x:Name="Close_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
+                            <Button x:Name="Minimize_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
                         </Grid>
                     </Grid>
                 </Grid>

@@ -31,8 +31,8 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                progressBar.Maximum = allTasks.Count;
-                progressBar.Value = 0;
+                Progress_Bar.Maximum = allTasks.Count;
+                Progress_Bar.Value = 0;
             });
 
             foreach (var downloadTask in allTasks)
@@ -62,8 +62,8 @@ namespace launcher
 
                 await appDispatcher.InvokeAsync(() =>
                 {
-                    progressBar.Value++;
-                    lblFilesLeft.Text = $"{--FILES_LEFT} files left";
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--FILES_LEFT} files left";
                 });
 
                 decompressionStream.Close();

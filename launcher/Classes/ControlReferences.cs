@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
@@ -21,50 +22,106 @@ namespace launcher
     /// </summary>
     public static class ControlReferences
     {
-        //TODO: rename these controls to be more descriptive
+        #region Windows
 
-        public static ProgressBar progressBar = new();
-        public static TextBlock lblStatus = new();
-        public static TextBlock lblFilesLeft = new();
-        public static TextBlock launcherVersionlbl = new();
-        public static ComboBox cmbBranch = new();
-        public static Button btnPlay = new();
-        public static Button btnUpdate = new();
-        public static MainWindow mainApp = new();
-        public static SettingsControl settingsControl = new();
-        public static AdvancedMenu advancedControl = new();
-        public static subMenu subMenuControl = new();
-        public static DependencyObject TransitionRect = new();
-        public static Popup SubMenuPopup = new();
-        public static Popup gameSettingsPopup = new();
-        public static StatusPopup statusPopup = new();
-        public static Dispatcher appDispatcher = mainApp.Dispatcher;
-        public static DownloadsPopup downloadsPopupControl = new();
+        public static MainWindow Main_Window = new();
+
+        #endregion Windows
+
+        #region Labels
+
+        public static TextBlock Status_Label = new();
+        public static TextBlock Files_Label = new();
+        public static TextBlock Version_Label = new();
+
+        #endregion Labels
+
+        #region ComboBoxes
+
+        public static ComboBox Branch_Combobox = new();
+
+        #endregion ComboBoxes
+
+        #region Progress Bars
+
+        public static ProgressBar Progress_Bar = new();
+
+        #endregion Progress Bars
+
+        #region User Controls
+
+        public static SettingsControl Settings_Control = new();
+        public static AdvancedMenu Advanced_Control = new();
+
+        #endregion User Controls
+
+        #region Buttons
+
+        public static Button Play_Button = new();
+        public static Button Update_Button = new();
+        public static Button Status_Button = new();
+        public static Button Downloads_Button = new();
+
+        #endregion Buttons
+
+        #region Popups
+
+        public static Popup Menu_Popup = new();
+        public static Popup GameSettings_Popup = new();
+        public static Popup Downloads_Popup = new();
+
+        #endregion Popups
+
+        #region Popup Controls
+
+        public static SettingsPopup GameSettings_Control = new();
+        public static DownloadsPopup Downloads_Control = new();
+        public static StatusPopup Status_Control = new();
+        public static MenuPopup Menu_Control = new();
+
+        #endregion Popup Controls
+
+        #region Other
+
+        public static Dispatcher appDispatcher = Main_Window.Dispatcher;
+        public static DependencyObject Transition_Rect = new();
+        public static MediaElement Background_Video = new();
+        public static Image Background_Image = new();
+        public static TaskbarIcon System_Tray = new();
+
+        #endregion Other
 
         public static void SetupControlReferences(MainWindow mainWindow)
         {
-            mainApp = mainWindow;
+            Main_Window = mainWindow;
             appDispatcher = mainWindow.Dispatcher;
-            progressBar = mainWindow.progressBar;
-            lblStatus = mainWindow.lblStatus;
-            lblFilesLeft = mainWindow.lblFilesLeft;
-            launcherVersionlbl = mainWindow.launcherVersionlbl;
-            cmbBranch = mainWindow.cmbBranch;
-            btnPlay = mainWindow.btnPlay;
-            settingsControl = mainWindow.SettingsControl;
-            advancedControl = mainWindow.AdvancedControl;
-            subMenuControl = mainWindow.subMenuControl;
-            TransitionRect = mainWindow.TransitionRect;
-            SubMenuPopup = mainWindow.SubMenuPopup;
-            gameSettingsPopup = mainWindow.SettingsPopup;
-            downloadsPopupControl = mainWindow.DownloadsPopupControl;
-            statusPopup = mainWindow.StatusPopupControl;
-            btnUpdate = mainWindow.btnUpdate;
+            Progress_Bar = mainWindow.ProgressBar;
+            Status_Label = mainWindow.Status_Label;
+            Files_Label = mainWindow.Files_Label;
+            Version_Label = mainWindow.Version_Label;
+            Branch_Combobox = mainWindow.Branch_Combobox;
+            Play_Button = mainWindow.Play_Button;
+            Settings_Control = mainWindow.Settings_Control;
+            Advanced_Control = mainWindow.Advanced_Control;
+            Menu_Control = mainWindow.Menu_Control;
+            Transition_Rect = mainWindow.Transition_Rect;
+            Menu_Popup = mainWindow.Menu_Popup;
+            GameSettings_Popup = mainWindow.GameSettings_Popup;
+            Downloads_Control = mainWindow.Downloads_Control;
+            Status_Control = mainWindow.Status_Control;
+            Update_Button = mainWindow.Update_Button;
+            System_Tray = mainWindow.System_Tray;
+            Status_Button = mainWindow.Status_Button;
+            Downloads_Button = mainWindow.Downloads_Button;
+            GameSettings_Control = mainWindow.GameSettings_Control;
+            Downloads_Popup = mainWindow.Downloads_Popup;
+            Background_Video = mainWindow.Background_Video;
+            Background_Image = mainWindow.Background_Image;
 
-            btnUpdate.Visibility = Visibility.Hidden;
-            progressBar.Visibility = Visibility.Hidden;
-            lblStatus.Visibility = Visibility.Hidden;
-            lblFilesLeft.Visibility = Visibility.Hidden;
+            Update_Button.Visibility = Visibility.Hidden;
+            Progress_Bar.Visibility = Visibility.Hidden;
+            Status_Label.Visibility = Visibility.Hidden;
+            Files_Label.Visibility = Visibility.Hidden;
         }
     }
 }
