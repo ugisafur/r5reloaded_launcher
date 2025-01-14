@@ -14,7 +14,7 @@ namespace launcher
     {
         public static ServerConfig FetchServerConfig()
         {
-            var response = CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var response = HTTP_CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
             LogInfo(Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
             LogInfo(Source.API, $"response: \n{responseString}");
@@ -86,17 +86,17 @@ namespace launcher
         public static async Task<string> FetchJson(string url)
         {
             LogInfo(Source.API, $"request: {url}");
-            var response = await CLIENT.GetAsync(url);
+            var response = await HTTP_CLIENT.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
 
-        public static bool HasInternetConnection()
+        public static bool TestConnection()
         {
             try
             {
                 using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead("http://www.google.com");
+                using var stream = client.OpenRead("http://cdn.r5r.org");
                 return true;
             }
             catch

@@ -34,7 +34,7 @@ namespace launcher
             SetupControlReferences(mainWindow);
             StartStatusChecker();
             SetupGlobals();
-            SetupSettingsMenus();
+            SetupMenus();
             SetupLibaryPath();
             SetupBranchComboBox();
             GetSelfUpdater();
@@ -42,30 +42,23 @@ namespace launcher
 
         private static void CheckInternetConnection()
         {
-            if (DataFetcher.HasInternetConnection())
-            {
-                LogInfo(Source.Launcher, "Internet connection detected");
-                IS_ONLINE = true;
-            }
-            else
-            {
-                LogWarning(Source.Launcher, "No internet connection detected");
-                IS_ONLINE = false;
-            }
+            LogInfo(Source.Launcher, DataFetcher.TestConnection() ? "Connected to CDN" : "Cant connect to CDN");
+            IS_ONLINE = DataFetcher.TestConnection();
         }
 
         private static void StartStatusChecker()
         {
             if (IS_ONLINE)
-                Task.Run(() => statusPopup.StartStatusTimer());
-            else
             {
-                mainApp.StatusBtn.IsEnabled = false;
-                mainApp.DownloadsBtn.IsEnabled = false;
+                Task.Run(() => statusPopup.StartStatusTimer());
+                return;
             }
+
+            mainApp.StatusBtn.IsEnabled = false;
+            mainApp.DownloadsBtn.IsEnabled = false;
         }
 
-        private static void SetupSettingsMenus()
+        private static void SetupMenus()
         {
             settingsControl.SetupSettingsMenu();
             LogInfo(Source.Launcher, $"Settings menu initialized");
@@ -79,7 +72,6 @@ namespace launcher
             if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Library_Location, "")))
             {
                 DirectoryInfo parentDir = Directory.GetParent(LAUNCHER_PATH.TrimEnd(Path.DirectorySeparatorChar));
-
                 Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
             }
         }
@@ -88,20 +80,13 @@ namespace launcher
         {
             cmbBranch.ItemsSource = GetGameBranches();
 
-            string selectedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
-            if (string.IsNullOrEmpty(selectedBranch))
-            {
-                Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[0].branch);
-                selectedBranch = SERVER_CONFIG.branches[0].branch;
-            }
+            string savedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
+            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? SERVER_CONFIG.branches[0].branch : Ini.Get(Ini.Vars.SelectedBranch, "");
 
             int selectedIndex = SERVER_CONFIG.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
             if (selectedIndex == -1)
-            {
                 selectedIndex = 0;
-                Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[0].branch);
-            }
 
             cmbBranch.SelectedIndex = selectedIndex;
 
@@ -121,10 +106,7 @@ namespace launcher
                 bool shouldAdd = true;
 
                 if (IS_ONLINE)
-                {
-                    shouldAdd = !SERVER_CONFIG.branches
-                        .Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
-                }
+                    shouldAdd = !SERVER_CONFIG.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
 
                 if (shouldAdd)
                 {
@@ -145,16 +127,9 @@ namespace launcher
             }
 
             if (IS_ONLINE)
-            {
                 SERVER_CONFIG.branches.AddRange(folderBranches);
-            }
             else
-            {
-                SERVER_CONFIG = new ServerConfig
-                {
-                    branches = new List<Branch>(folderBranches)
-                };
-            }
+                SERVER_CONFIG = new ServerConfig { branches = new List<Branch>(folderBranches) };
 
             return SERVER_CONFIG.branches
                 .Where(branch => branch.show_in_launcher || !IS_ONLINE)
@@ -172,7 +147,7 @@ namespace launcher
             if (!File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe")))
             {
                 LogInfo(Source.Launcher, "Downloading self updater");
-                CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
+                HTTP_CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)

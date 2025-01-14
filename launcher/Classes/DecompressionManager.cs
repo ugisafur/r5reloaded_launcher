@@ -25,7 +25,7 @@ namespace launcher
     {
         public static List<Task> PrepareTasks(List<Task<string>> allTasks)
         {
-            var decompressionTasks = new List<Task>();
+            List<Task> decompressionTasks = [];
 
             FILES_LEFT = allTasks.Count;
 
@@ -39,9 +39,7 @@ namespace launcher
             {
                 string compressedFilePath = downloadTask.Result;
                 if (string.IsNullOrEmpty(compressedFilePath))
-                {
                     continue;
-                }
 
                 string decompressedFilePath = compressedFilePath.Replace(".zst", "");
                 decompressionTasks.Add(DecompressFileAsync(compressedFilePath, decompressedFilePath));
@@ -54,8 +52,7 @@ namespace launcher
         {
             try
             {
-                if (!Directory.Exists(Path.GetDirectoryName(decompressedFilePath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
+                Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
 
                 using var input = File.OpenRead(compressedFilePath);
                 using var output = File.OpenWrite(decompressedFilePath);

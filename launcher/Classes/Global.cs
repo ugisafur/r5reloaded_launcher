@@ -36,7 +36,7 @@ namespace launcher
 
         public static ServerConfig SERVER_CONFIG;
         public static IniFile LAUNCHER_CONFIG;
-        public static readonly HttpClient CLIENT = new() { Timeout = TimeSpan.FromSeconds(30) };
+        public static readonly HttpClient HTTP_CLIENT = new() { Timeout = TimeSpan.FromSeconds(30) };
 
         public static bool IS_LOCAL_BRANCH = false;
         public static string LAUNCHER_PATH = "";

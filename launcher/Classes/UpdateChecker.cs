@@ -76,7 +76,7 @@ namespace launcher
             HttpResponseMessage response = null;
             try
             {
-                response = await CLIENT.GetAsync(SERVER_CONFIG_URL);
+                response = await HTTP_CLIENT.GetAsync(SERVER_CONFIG_URL);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ServerConfig>(responseString);
