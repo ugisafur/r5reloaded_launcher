@@ -21,6 +21,8 @@ namespace launcher
     /// </summary>
     public static class ControlReferences
     {
+        //TODO: rename these controls to be more descriptive
+
         public static ProgressBar progressBar = new();
         public static TextBlock lblStatus = new();
         public static TextBlock lblFilesLeft = new();
