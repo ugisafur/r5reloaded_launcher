@@ -48,7 +48,7 @@ namespace launcher
             SelectedBranch
         }
 
-        public static void CreateLauncherConfig()
+        public static void CreateConfig()
         {
             Directory.CreateDirectory(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\"));
 
@@ -96,7 +96,7 @@ namespace launcher
             }
         }
 
-        public static IniFile GetFile()
+        public static IniFile GetConfig()
         {
             IniFile file = new();
             file.Load(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
@@ -113,7 +113,7 @@ namespace launcher
             if (!Exists())
                 return;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
@@ -124,7 +124,7 @@ namespace launcher
             if (!Exists())
                 return;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
@@ -135,7 +135,7 @@ namespace launcher
             if (!Exists())
                 return;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
@@ -146,7 +146,7 @@ namespace launcher
             if (!Exists())
                 return;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
@@ -157,7 +157,7 @@ namespace launcher
             if (!Exists())
                 return;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
             file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             Log(Logger.Type.Info, Source.Ini, $"Setting {setting} to: {value}");
@@ -168,7 +168,7 @@ namespace launcher
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             bool value = file.GetSetting(section, setting, defaultValue);
             return value;
         }
@@ -178,7 +178,7 @@ namespace launcher
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             string value = file.GetSetting(section, setting, defaultValue);
             return value;
         }
@@ -188,7 +188,7 @@ namespace launcher
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             bool value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
             return value;
         }
@@ -198,7 +198,7 @@ namespace launcher
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             int value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
             return value;
         }
@@ -208,7 +208,7 @@ namespace launcher
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetFile();
+            IniFile file = GetConfig();
             string value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
             return value;
         }

@@ -29,15 +29,22 @@ namespace launcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TaskbarIcon tbi = new();
-            tbi.ToolTipText = "R5Reloaded Launcher";
-            tbi.Icon = this.Icon.ToIcon();
-            tbi.DoubleClickCommand = ShowWindowCommand;
-            tbi.ContextMenu = (ContextMenu)FindResource("tbiContextMenu");
+            TaskbarIcon tbi = new()
+            {
+                ToolTipText = "R5Reloaded Launcher",
+                Icon = this.Icon.ToIcon(),
+                DoubleClickCommand = ShowWindowCommand,
+                ContextMenu = (ContextMenu)FindResource("tbiContextMenu")
+            };
+
+            ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
+            MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
+            if (versionMenuItem != null)
+                versionMenuItem.Header = "R5RLauncher " + LAUNCHER_VERSION;
 
             taskbar = tbi;
 
-            Ini.CreateLauncherConfig();
+            Ini.CreateConfig();
 
             Utilities.SetupApp(this);
 
@@ -375,18 +382,22 @@ namespace launcher
         {
             Application.Current.Shutdown();
         }
+
+        private void VisitWebsite_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start https://r5reloaded.com") { CreateNoWindow = true });
+        }
+
+        private void JoinDiscord_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start https://discord.com/invite/jqMkUdXrBr") { CreateNoWindow = true });
+        }
     }
 
-    public class RelayCommand : ICommand
+    public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
     {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
-
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
-        {
-            _execute    = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
+        private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        private readonly Func<bool> _canExecute = canExecute;
 
         public bool CanExecute(object parameter) =>
             _canExecute == null || _canExecute();

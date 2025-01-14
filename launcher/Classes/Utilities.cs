@@ -89,7 +89,7 @@ namespace launcher
             if (IS_ONLINE)
                 SERVER_CONFIG = DataFetcher.FetchServerConfig();
 
-            LAUNCHER_CONFIG = Ini.GetFile();
+            LAUNCHER_CONFIG = Ini.GetConfig();
             Log(Logger.Type.Info, Source.Launcher, $"Launcher config found");
 
             cmbBranch.ItemsSource = SetupGameBranches();

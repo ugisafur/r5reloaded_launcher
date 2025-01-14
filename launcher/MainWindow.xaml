@@ -12,8 +12,109 @@
     </Window.Clip>
 
     <Window.Resources>
-        <ContextMenu x:Key="tbiContextMenu">
-            <MenuItem Header="Exit" Click="Exit_Click" />
+        <Style x:Key="CustomContextMenuStyle" TargetType="ContextMenu">
+            <Setter Property="Background" Value="#292A2D" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="#FF4E4E4E"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        SnapsToDevicePixels="True">
+                            <ScrollViewer
+                            Margin="4"
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="Hidden"
+                            HorizontalScrollBarVisibility="Hidden">
+                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Custom MenuItem Style (Unchanged) -->
+        <Style x:Key="CustomMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                        Name="Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="4"
+                        Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                            ContentSource="Header"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#80FFFFFF" />
+                                <!-- 50% Transparent White -->
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Icon" Value="{x:Null}" />
+        </Style>
+
+        <!-- Optional: Custom Separator Style -->
+        <Style x:Key="CustomSeparatorStyle" TargetType="Separator">
+            <!-- Set the height (thickness) of the separator line -->
+            <Setter Property="Height" Value="1" />
+            <!-- Remove left and right margins to eliminate gaps -->
+            <Setter Property="Margin" Value="4,4,4,4" />
+            <!-- Set the background color of the separator line -->
+            <Setter Property="Background" Value="#80FFFFFF" />
+            <!-- Ensure the separator stretches horizontally -->
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <!-- Define the ControlTemplate to render the separator line -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Separator">
+                        <Border
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Define Your Custom ContextMenu -->
+        <ContextMenu x:Key="tbiContextMenu" Style="{StaticResource CustomContextMenuStyle}">
+            <MenuItem x:Name="VersionContext"
+                  Header="R5RLauncher "
+                  IsEnabled="False"
+                  IsCheckable="False"
+                  Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <Separator Style="{StaticResource CustomSeparatorStyle}" />
+            <MenuItem Header="Visit Website"
+                  Click="VisitWebsite_Click"
+                  IsCheckable="False"
+                  Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <MenuItem Header="Join The Discord"
+                  Click="JoinDiscord_Click"
+                  IsCheckable="False"
+                  Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <Separator Style="{StaticResource CustomSeparatorStyle}" />
+            <MenuItem Header="Exit"
+                  Click="Exit_Click"
+                  IsCheckable="False"
+                  Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
         </ContextMenu>
 
         <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
