@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using static launcher.Global;
 
 namespace launcher
 {
@@ -35,7 +34,7 @@ namespace launcher
         {
             // Ensure the directory exists
             string folderUUID = GenerateFolderUUID();
-            LogFilePath = Path.Combine(LAUNCHER_PATH, $"launcher_data\\logs\\{folderUUID}", LogFileName);
+            LogFilePath = Path.Combine(Constants.Paths.LauncherPath, $"launcher_data\\logs\\{folderUUID}", LogFileName);
 
             string logDirectory = Path.GetDirectoryName(LogFilePath);
             if (!Directory.Exists(logDirectory))

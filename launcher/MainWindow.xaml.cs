@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using static launcher.Global;
+
 using Color = System.Windows.Media.Color;
 
 namespace launcher
@@ -42,7 +42,7 @@ namespace launcher
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
             MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
             if (versionMenuItem != null)
-                versionMenuItem.Header = "R5RLauncher " + LAUNCHER_VERSION;
+                versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
 
             System_Tray = tbi;
 
@@ -52,7 +52,7 @@ namespace launcher
 
             await OnOpen();
 
-            if (IS_ONLINE)
+            if (AppState.IsOnline)
             {
                 Task.Run(() => UpdateChecker.Start());
 
@@ -229,7 +229,7 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!IS_ONLINE)
+            if (!AppState.IsOnline)
             {
                 Utilities.LaunchGame();
                 return;
@@ -239,7 +239,7 @@ namespace launcher
             {
                 Utilities.LaunchGame();
             }
-            else if (!IS_INSTALLING)
+            else if (!AppState.IsInstalling)
             {
                 if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                 {
@@ -274,24 +274,24 @@ namespace launcher
 
             ComboBranch comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
-            if (comboBranch.isLocalBranch || !IS_ONLINE)
+            if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
                 Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
                 Update_Button.Visibility = Visibility.Hidden;
                 Play_Button.Content = "PLAY";
                 Play_Button.IsEnabled = true;
-                IS_LOCAL_BRANCH = true;
+                AppState.IsLocalBranch = true;
                 GameSettings_Control.RepairGame_Button.IsEnabled = false;
                 return;
             }
 
-            IS_LOCAL_BRANCH = false;
+            AppState.IsLocalBranch = false;
 
-            Ini.Set(Ini.Vars.SelectedBranch, SERVER_CONFIG.branches[selectedBranch].branch);
+            Ini.Set(Ini.Vars.SelectedBranch, Configuration.ServerConfig.branches[selectedBranch].branch);
 
             if (Utilities.IsBranchInstalled())
             {
-                if (!SERVER_CONFIG.branches[selectedBranch].enabled)
+                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
                 {
                     Update_Button.Visibility = Visibility.Hidden;
                     Play_Button.Content = "PLAY";
@@ -300,7 +300,7 @@ namespace launcher
                     return;
                 }
 
-                if (Utilities.GetBranchVersion() == SERVER_CONFIG.branches[0].currentVersion)
+                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].currentVersion)
                 {
                     Update_Button.Visibility = Visibility.Hidden;
                     Play_Button.Content = "PLAY";
@@ -317,7 +317,7 @@ namespace launcher
             }
             else
             {
-                if (!SERVER_CONFIG.branches[selectedBranch].enabled)
+                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
                 {
                     Update_Button.Visibility = Visibility.Hidden;
                     Play_Button.Content = "DISABLED";
@@ -326,7 +326,7 @@ namespace launcher
                     return;
                 }
 
-                if (File.Exists(Path.Combine(LAUNCHER_PATH, "r5apex.exe")))
+                if (File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                 {
                     Update_Button.Visibility = Visibility.Hidden;
                     Play_Button.Content = "REPAIR";
@@ -400,7 +400,7 @@ namespace launcher
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
             {
                 Task.Run(() => GameUpdate.Start());
                 Update_Button.Visibility = Visibility.Hidden;

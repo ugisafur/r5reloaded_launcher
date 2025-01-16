@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using static launcher.Global;
+
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using System.Windows;
@@ -32,10 +32,10 @@ namespace launcher
     {
         public static async void Start()
         {
-            if (!IS_ONLINE)
+            if (!AppState.IsOnline)
                 return;
 
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
                 return;
 
             //Install started
@@ -69,7 +69,7 @@ namespace launcher
             await Task.WhenAll(decompressionTasks);
 
             //if bad files detected, attempt game repair
-            if (BAD_FILES_DETECTED)
+            if (AppState.BadFilesDetected)
             {
                 DownloadManager.UpdateStatusLabel("Reparing game files", Source.Installer);
                 await AttemptGameRepair();
@@ -78,18 +78,20 @@ namespace launcher
             //Install finished
             DownloadManager.SetInstallState(false);
 
+            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
+
             //Set branch as installed
-            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
-            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Version", SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(branch, "Is_Installed", true);
+            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
             MessageBoxResult result = MessageBox.Show("The game installation is complete.Would you like to install the HD Textures? you can always choose to install them at another time, they are not required to play.", "Install HD Textures", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
-                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", true);
+                Ini.Set(branch, "Download_HD_Textures", true);
             else
-                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false);
+                Ini.Set(branch, "Download_HD_Textures", false);
 
             //Install optional files if HD textures are enabled
-            if (Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false))
+            if (Ini.Get(branch, "Download_HD_Textures", false))
                 Task.Run(() => InstallOptionalFiles());
         }
 
@@ -131,13 +133,13 @@ namespace launcher
         {
             bool isRepaired = false;
 
-            for (int i = 0; i < Global.MAX_REPAIR_ATTEMPTS; i++)
+            for (int i = 0; i < Constants.Launcher.MAX_REPAIR_ATTEMPTS; i++)
             {
                 isRepaired = await GameRepair.Start();
                 if (isRepaired) break;
             }
 
-            BAD_FILES_DETECTED = !isRepaired;
+            AppState.BadFilesDetected = !isRepaired;
         }
     }
 }

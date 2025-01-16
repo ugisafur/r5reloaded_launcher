@@ -4,7 +4,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
-using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
 
@@ -29,8 +28,8 @@ namespace launcher
                 Progress_Bar.Value = 0;
             });
 
-            FILES_LEFT = baseGameFiles.files.Count;
-            BAD_FILES.Clear();
+            AppState.FilesLeft = baseGameFiles.files.Count;
+            DataCollections.BadFiles.Clear();
 
             foreach (var file in baseGameFiles.files)
             {
@@ -39,22 +38,22 @@ namespace launcher
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
                     LogWarning(Source.Repair, $"Bad file found: {file.name}");
-                    BAD_FILES.Add($"{file.name}.zst");
+                    DataCollections.BadFiles.Add($"{file.name}.zst");
                 }
 
                 appDispatcher.Invoke(() =>
                 {
                     Progress_Bar.Value++;
-                    Files_Label.Text = $"{--FILES_LEFT} files left";
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
             }
 
-            return BAD_FILES.Count;
+            return DataCollections.BadFiles.Count;
         }
 
         public static string GetBranchDirectory()
         {
-            string branchName = SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
+            string branchName = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
             string libraryPath = Ini.Get(Ini.Vars.Library_Location, "C:\\Program Files\\R5Reloaded\\");
             string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
 
@@ -88,7 +87,7 @@ namespace launcher
                 Progress_Bar.Value = 0;
             });
 
-            FILES_LEFT = allFiles.Length;
+            AppState.FilesLeft = allFiles.Length;
 
             foreach (var file in allFiles)
             {
@@ -113,7 +112,7 @@ namespace launcher
                 Progress_Bar.Value = 0;
             });
 
-            FILES_LEFT = allFiles.Length;
+            AppState.FilesLeft = allFiles.Length;
 
             foreach (var file in allFiles)
             {
@@ -136,7 +135,7 @@ namespace launcher
                 appDispatcher.Invoke(() =>
                 {
                     Progress_Bar.Value++;
-                    Files_Label.Text = $"{--FILES_LEFT} files left";
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
 
                 return fileChecksum;
@@ -153,8 +152,8 @@ namespace launcher
 
         public static void SaveLauncherConfig()
         {
-            string configPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.json");
-            string config_json = JsonConvert.SerializeObject(LAUNCHER_CONFIG);
+            string configPath = Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.json");
+            string config_json = JsonConvert.SerializeObject(Configuration.LauncherConfig);
             File.WriteAllText(configPath, config_json);
 
             LogInfo(Source.FileManager, "Saved launcher config");

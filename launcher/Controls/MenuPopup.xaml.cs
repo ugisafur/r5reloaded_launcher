@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global;
+
 using static launcher.ControlReferences;
 
 namespace launcher
@@ -36,7 +36,7 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
+            if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
                 Utilities.ShowSettingsControl();

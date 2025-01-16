@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global;
+
 using static launcher.ControlReferences;
 
 namespace launcher
@@ -29,7 +29,7 @@ namespace launcher
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (!IN_ADVANCED_MENU)
+            if (!AppState.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
                 Utilities.ShowAdvancedControl();

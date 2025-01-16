@@ -4,76 +4,83 @@ using System.Windows.Controls;
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using System.IO;
+using Microsoft.VisualBasic;
 
 namespace launcher
 {
-    /// <summary>
-    /// The Global class contains static fields and constants that are used throughout the launcher application.
-    /// It includes configuration settings, HTTP client setup, and various flags and counters to manage the state of the application.
-    ///
-    /// Fields and Constants:
-    /// - launcherVersion: The current version of the launcher.
-    /// - serverConfig: Configuration settings for the server (nullable).
-    /// - launcherConfig: Configuration settings for the launcher (nullable).
-    /// - client: An instance of HttpClient with a timeout of 30 seconds, used for making HTTP requests.
-    /// - launcherPath: The file path where the launcher is located.
-    /// - MAX_REPAIR_ATTEMPTS: The maximum number of attempts to repair the launcher.
-    /// - filesLeft: The number of files left to process.
-    /// - isInstalling: A flag indicating if the installation process is ongoing.
-    /// - isInstalled: A flag indicating if the launcher is installed.
-    /// - updateRequired: A flag indicating if an update is required.
-    /// - updateCheckLoop: A flag indicating if the update check loop is active.
-    /// - badFilesDetected: A flag indicating if any bad files have been detected.
-    /// - downloadSemaphore: A semaphore to limit the number of concurrent downloads to 100.
-    /// - badFiles: A list of bad files detected during the process.
-    /// </summary>
-    public static class Global
+    public static class Constants
     {
-        public const string LAUNCHER_VERSION = "0.6.0";
-        public const string SERVER_CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
-
-        public static bool IS_ONLINE = false;
-
-        public static ServerConfig SERVER_CONFIG;
-        public static IniFile LAUNCHER_CONFIG;
-        public static readonly HttpClient HTTP_CLIENT = new() { Timeout = TimeSpan.FromSeconds(30) };
-
-        public static bool IS_LOCAL_BRANCH = false;
-        public static string LAUNCHER_PATH = "";
-        public const int MAX_REPAIR_ATTEMPTS = 5;
-        public static int FILES_LEFT = 0;
-        public static bool IS_INSTALLING = false;
-        public static bool UPDATE_CHECK_LOOP = false;
-        public static bool BAD_FILES_DETECTED = false;
-
-        public static bool IN_SETTINGS_MENU = false;
-        public static bool IN_ADVANCED_MENU = false;
-
-        public static SemaphoreSlim DOWNLOAD_SEMAPHORE = new(500);
-        public static List<string> BAD_FILES = [];
-        public static List<Branch> folderBranches = [];
-
-        public enum SettingsPage
+        public static class Launcher
         {
-            APPLICATION = 0,
-            ACCESSIBILITY = 1,
-            GAME_INSTALLS = 2,
-            DOWNLOAD = 3,
-            ABOUT = 4
+            public const string VERSION = "0.6.0";
+            public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
+            public const int MAX_REPAIR_ATTEMPTS = 5;
         }
 
-        public static void SetupGlobals()
+        public static class Paths
         {
-            Version_Label.Text = LAUNCHER_VERSION;
-            LogInfo(Source.Launcher, $"Launcher Version: {LAUNCHER_VERSION}");
+            public static string LauncherPath { get; set; } = "";
+        }
 
-            LAUNCHER_PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            LogInfo(Source.Launcher, $"Launcher path: {LAUNCHER_PATH}");
+        public static class Settings
+        {
+            public enum SettingsPage
+            {
+                Application = 0,
+                Accessibility = 1,
+                GameInstalls = 2,
+                Download = 3,
+                About = 4
+            }
+        }
+    }
 
-            SERVER_CONFIG = IS_ONLINE ? DataFetcher.FetchServerConfig() : null;
+    public static class Configuration
+    {
+        public static ServerConfig ServerConfig { get; set; }
+        public static IniFile LauncherConfig { get; set; }
+    }
 
-            LAUNCHER_CONFIG = Ini.GetConfig();
-            LogInfo(Source.Launcher, $"Launcher config found");
+    public static class AppState
+    {
+        public static bool IsOnline { get; set; } = false;
+        public static bool IsLocalBranch { get; set; } = false;
+        public static bool IsInstalling { get; set; } = false;
+        public static bool UpdateCheckLoop { get; set; } = false;
+        public static bool BadFilesDetected { get; set; } = false;
+
+        public static bool InSettingsMenu { get; set; } = false;
+        public static bool InAdvancedMenu { get; set; } = false;
+
+        public static int FilesLeft { get; set; } = 0;
+    }
+
+    public static class Networking
+    {
+        public static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
+        public static SemaphoreSlim DownloadSemaphore = new(500);
+    }
+
+    public static class DataCollections
+    {
+        public static List<string> BadFiles { get; } = new();
+        public static List<Branch> FolderBranches { get; } = new();
+    }
+
+    public static class GlobalInitializer
+    {
+        public static void Setup()
+        {
+            Version_Label.Text = Constants.Launcher.VERSION;
+            Logger.LogInfo(Source.Launcher, $"Launcher Version: {Constants.Launcher.VERSION}");
+
+            Constants.Paths.LauncherPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            Logger.LogInfo(Source.Launcher, $"Launcher path: {Constants.Paths.LauncherPath}");
+
+            Configuration.ServerConfig = AppState.IsOnline ? DataFetcher.FetchServerConfig() : null;
+
+            Configuration.LauncherConfig = Ini.GetConfig();
+            Logger.LogInfo(Source.Launcher, $"Launcher config found");
         }
     }
 }

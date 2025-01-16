@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
-using static launcher.Global;
 
 namespace launcher
 {
@@ -25,7 +24,7 @@ namespace launcher
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (IN_ADVANCED_MENU)
+            if (AppState.InAdvancedMenu)
                 Utilities.HideAdvancedControl();
         }
 
@@ -94,6 +93,22 @@ namespace launcher
             ConsoleShow.Checked += Console_Unchecked;
             Dev.Checked += Dev_Unchecked;
             Cheats.Checked += Cheats_Unchecked;
+        }
+
+        public void SetMapList(List<string> maps)
+        {
+            foreach (string map in maps)
+            {
+                MapCmb.Items.Add(map);
+            }
+        }
+
+        public void SetPlaylistList(List<string> playlists)
+        {
+            foreach (string playlist in playlists)
+            {
+                PlaylistCmb.Items.Add(playlist);
+            }
         }
 
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)

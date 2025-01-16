@@ -1,15 +1,10 @@
-﻿using SoftCircuits.IniFileParser;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using static launcher.Logger;
-using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.LaunchParameters;
-using System.Windows.Shapes;
-using Path = System.IO.Path;
 
 namespace launcher
 {
@@ -32,22 +27,32 @@ namespace launcher
             CheckInternetConnection();
             SetupControlReferences(mainWindow);
             StartStatusChecker();
-            SetupGlobals();
+            GlobalInitializer.Setup();
             SetupMenus();
             SetupLibaryPath();
             SetupBranchComboBox();
             GetSelfUpdater();
+
+            if (File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
+                SetupPlaylists();
+        }
+
+        private static void SetupPlaylists()
+        {
+            var data = PlaylistFile.ParseFile(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+            Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
+            Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
         }
 
         private static void CheckInternetConnection()
         {
             LogInfo(Source.Launcher, DataFetcher.TestConnection() ? "Connected to CDN" : "Cant connect to CDN");
-            IS_ONLINE = DataFetcher.TestConnection();
+            AppState.IsOnline = DataFetcher.TestConnection();
         }
 
         private static void StartStatusChecker()
         {
-            if (IS_ONLINE)
+            if (AppState.IsOnline)
             {
                 Task.Run(() => Status_Control.StartStatusTimer());
                 return;
@@ -70,7 +75,7 @@ namespace launcher
         {
             if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Library_Location, "")))
             {
-                DirectoryInfo parentDir = Directory.GetParent(LAUNCHER_PATH.TrimEnd(Path.DirectorySeparatorChar));
+                DirectoryInfo parentDir = Directory.GetParent(Constants.Paths.LauncherPath.TrimEnd(Path.DirectorySeparatorChar));
                 Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
             }
         }
@@ -80,9 +85,9 @@ namespace launcher
             Branch_Combobox.ItemsSource = GetGameBranches();
 
             string savedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
-            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? SERVER_CONFIG.branches[0].branch : Ini.Get(Ini.Vars.SelectedBranch, "");
+            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Configuration.ServerConfig.branches[0].branch : Ini.Get(Ini.Vars.SelectedBranch, "");
 
-            int selectedIndex = SERVER_CONFIG.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
+            int selectedIndex = Configuration.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
             if (selectedIndex == -1)
                 selectedIndex = 0;
@@ -98,14 +103,14 @@ namespace launcher
             string[] directories = Directory.GetDirectories(libraryPath);
             string[] folderNames = directories.Select(Path.GetFileName).ToArray();
 
-            folderBranches.Clear();
+            DataCollections.FolderBranches.Clear();
 
             foreach (string folder in folderNames)
             {
                 bool shouldAdd = true;
 
-                if (IS_ONLINE)
-                    shouldAdd = !SERVER_CONFIG.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
+                if (AppState.IsOnline)
+                    shouldAdd = !Configuration.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
 
                 if (shouldAdd)
                 {
@@ -120,18 +125,18 @@ namespace launcher
                         show_in_launcher = true,
                         is_local_branch = true
                     };
-                    folderBranches.Add(branch);
+                    DataCollections.FolderBranches.Add(branch);
                     LogInfo(Source.Launcher, $"Local branch found: {folder}");
                 }
             }
 
-            if (IS_ONLINE)
-                SERVER_CONFIG.branches.AddRange(folderBranches);
+            if (AppState.IsOnline)
+                Configuration.ServerConfig.branches.AddRange(DataCollections.FolderBranches);
             else
-                SERVER_CONFIG = new ServerConfig { branches = new List<Branch>(folderBranches) };
+                Configuration.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
 
-            return SERVER_CONFIG.branches
-                .Where(branch => branch.show_in_launcher || !IS_ONLINE)
+            return Configuration.ServerConfig.branches
+                .Where(branch => branch.show_in_launcher || !AppState.IsOnline)
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
@@ -143,16 +148,16 @@ namespace launcher
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe")))
+            if (!File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\selfupdater.exe")))
             {
                 LogInfo(Source.Launcher, "Downloading self updater");
-                HTTP_CLIENT.GetAsync(SERVER_CONFIG.launcherSelfUpdater)
+                Networking.HttpClient.GetAsync(Configuration.ServerConfig.launcherSelfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
-                            File.WriteAllBytes(Path.Combine(LAUNCHER_PATH, "launcher_data\\selfupdater.exe"), data);
+                            File.WriteAllBytes(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\selfupdater.exe"), data);
                         }
                     });
             }
@@ -234,17 +239,17 @@ namespace launcher
 
         public static bool IsBranchInstalled()
         {
-            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Is_Installed", false);
+            return Ini.Get(Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch, "Is_Installed", false);
         }
 
         public static string GetBranchVersion()
         {
-            return Ini.Get(SERVER_CONFIG.branches[GetCmbBranchIndex()].branch, "Version", "");
+            return Ini.Get(Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch, "Version", "");
         }
 
         public static Branch GetCurrentBranch()
         {
-            return SERVER_CONFIG.branches[GetCmbBranchIndex()];
+            return Configuration.ServerConfig.branches[GetCmbBranchIndex()];
         }
 
         public static int GetCmbBranchIndex()
@@ -265,7 +270,7 @@ namespace launcher
 
         public static void ShowSettingsControl()
         {
-            IN_SETTINGS_MENU = true;
+            AppState.InSettingsMenu = true;
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
@@ -294,7 +299,7 @@ namespace launcher
 
         public static void HideSettingsControl()
         {
-            IN_SETTINGS_MENU = false;
+            AppState.InSettingsMenu = false;
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
@@ -323,7 +328,7 @@ namespace launcher
 
         public static void ShowAdvancedControl()
         {
-            IN_ADVANCED_MENU = true;
+            AppState.InAdvancedMenu = true;
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {
@@ -347,7 +352,7 @@ namespace launcher
 
         public static void HideAdvancedControl()
         {
-            IN_ADVANCED_MENU = false;
+            AppState.InAdvancedMenu = false;
 
             if (Ini.Get(Ini.Vars.Disable_Transitions, false))
             {

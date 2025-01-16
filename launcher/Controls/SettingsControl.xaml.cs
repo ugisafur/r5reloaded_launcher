@@ -2,8 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static launcher.Constants.Settings;
 using static launcher.Utilities;
-using static launcher.Global;
 
 namespace launcher
 {
@@ -28,11 +28,11 @@ namespace launcher
             // Get the new page to display
             UserControl newPage = page switch
             {
-                SettingsPage.APPLICATION => applicationPage,
-                SettingsPage.ACCESSIBILITY => accessibilityPage,
-                SettingsPage.GAME_INSTALLS => gamePage,
-                SettingsPage.DOWNLOAD => downloadPage,
-                SettingsPage.ABOUT => aboutPage,
+                SettingsPage.Application => applicationPage,
+                SettingsPage.Accessibility => accessibilityPage,
+                SettingsPage.GameInstalls => gamePage,
+                SettingsPage.Download => downloadPage,
+                SettingsPage.About => aboutPage,
                 _ => null,
             };
 
@@ -94,7 +94,7 @@ namespace launcher
             buttons.Add(DownloadBtn);
             buttons.Add(AboutBtn);
 
-            SetSettingsTab(SettingsPage.APPLICATION);
+            SetSettingsTab(SettingsPage.Application);
 
             accessibilityPage.SetupAccessibilitySettings();
             applicationPage.SetupApplicationSettings();
@@ -106,13 +106,13 @@ namespace launcher
 
         public void OpenDownloadsSettings()
         {
-            SetSettingsTab(SettingsPage.DOWNLOAD);
+            SetSettingsTab(SettingsPage.Download);
             Utilities.ShowSettingsControl();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (IN_SETTINGS_MENU)
+            if (AppState.InSettingsMenu)
                 Utilities.HideSettingsControl();
         }
 

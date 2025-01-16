@@ -43,6 +43,7 @@
     <PackageReference Include="Octopus.Octodiff" Version="2.0.547" />
     <PackageReference Include="Polly" Version="8.5.0" />
     <PackageReference Include="SoftCircuits.IniFileParser" Version="2.6.0" />
+    <PackageReference Include="ValveKeyValue" Version="0.12.0.391" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.4" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using static launcher.Global;
+
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using System.Windows;
@@ -15,16 +15,16 @@ namespace launcher
     {
         public static async Task<bool> Start()
         {
-            if (!IS_ONLINE)
+            if (!AppState.IsOnline)
                 return false;
 
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
                 return false;
 
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available)
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available)
             {
                 Update_Button.Visibility = Visibility.Hidden;
-                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available = false;
+                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = false;
             }
 
             bool repairSuccess = true;
@@ -73,18 +73,20 @@ namespace launcher
                 await Task.WhenAll(decompressionTasks);
             }
 
-            //Update launcher config
-            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", true);
-            Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Version", SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
 
-            string[] find_opt_files = Directory.GetFiles(LAUNCHER_PATH, "*.opt.starpak", SearchOption.AllDirectories);
+            //Update launcher config
+            Ini.Set(branch, "Is_Installed", true);
+            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+
+            string[] find_opt_files = Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories);
             if (find_opt_files.Length > 0)
-                Ini.Set(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", true);
+                Ini.Set(branch, "Download_HD_Textures", true);
 
             //Install finished
             DownloadManager.SetInstallState(false);
 
-            if (Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Download_HD_Textures", false))
+            if (Ini.Get(branch, "Download_HD_Textures", false))
                 Task.Run(() => RepairOptionalFiles());
 
             return repairSuccess;

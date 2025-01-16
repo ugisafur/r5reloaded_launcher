@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using static launcher.Global;
 
 namespace launcher
 {
@@ -16,7 +15,7 @@ namespace launcher
         public void SetupAboutSettings()
         {
             // Set the initial state of the toggle switches
-            launcherVersionTxt.Text = LAUNCHER_VERSION;
+            launcherVersionTxt.Text = Constants.Launcher.VERSION;
         }
     }
 }

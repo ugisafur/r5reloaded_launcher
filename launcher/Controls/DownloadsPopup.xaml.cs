@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global;
+
 using static launcher.ControlReferences;
 
 namespace launcher
@@ -50,7 +50,7 @@ namespace launcher
 
         private void gotoDownloads_Click(object sender, RoutedEventArgs e)
         {
-            if (!IN_SETTINGS_MENU && !IN_ADVANCED_MENU)
+            if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
             {
                 Downloads_Popup.IsOpen = false;
                 Settings_Control.OpenDownloadsSettings();

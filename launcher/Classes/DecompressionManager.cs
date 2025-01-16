@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using static launcher.Global;
+
 using ZstdSharp;
 using static launcher.ControlReferences;
 using static launcher.Logger;
@@ -27,7 +27,7 @@ namespace launcher
         {
             List<Task> decompressionTasks = [];
 
-            FILES_LEFT = allTasks.Count;
+            AppState.FilesLeft = allTasks.Count;
 
             appDispatcher.Invoke(() =>
             {
@@ -63,7 +63,7 @@ namespace launcher
                 await appDispatcher.InvokeAsync(() =>
                 {
                     Progress_Bar.Value++;
-                    Files_Label.Text = $"{--FILES_LEFT} files left";
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
 
                 decompressionStream.Close();

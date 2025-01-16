@@ -8,7 +8,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using static launcher.Global;
+
 using static launcher.ControlReferences;
 using static launcher.Logger;
 using System.Windows;
@@ -88,13 +88,13 @@ namespace launcher
         {
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
 
-            int badFilesCount = BAD_FILES.Count;
+            int badFilesCount = DataCollections.BadFiles.Count;
             ConfigureProgress(badFilesCount);
 
             var downloadTasks = new List<Task<string>>(badFilesCount);
             string baseUrl = Utilities.GetCurrentBranch().game_url;
 
-            foreach (var file in BAD_FILES)
+            foreach (var file in DataCollections.BadFiles)
             {
                 string fileUrl = $"{baseUrl}/{file}";
                 string destinationPath = Path.Combine(branchDirectory, file);
@@ -165,7 +165,7 @@ namespace launcher
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
 
             var updateTasks = new List<Task>(patchFiles.files.Count);
-            FILES_LEFT = patchFiles.files.Count;
+            AppState.FilesLeft = patchFiles.files.Count;
 
             foreach (var file in patchFiles.files)
             {
@@ -191,7 +191,7 @@ namespace launcher
             // Check if the file already exists and matches the checksum
             if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
             {
-                UpdateProgress(--FILES_LEFT);
+                UpdateProgress(--AppState.FilesLeft);
                 return destinationPath;
             }
 
@@ -204,13 +204,13 @@ namespace launcher
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
 
-                UpdateProgress(--FILES_LEFT);
+                UpdateProgress(--AppState.FilesLeft);
                 return destinationPath;
             }
             catch (Exception ex)
             {
                 LogError(Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
-                BAD_FILES_DETECTED = true;
+                AppState.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
@@ -255,7 +255,7 @@ namespace launcher
             }
             finally
             {
-                UpdateProgress(--FILES_LEFT);
+                UpdateProgress(--AppState.FilesLeft);
             }
         }
 
@@ -268,7 +268,7 @@ namespace launcher
         private static async Task ReplaceFileAsync(string fileName, string branchDirectory)
         {
             string sourceCompressedFile = Path.Combine(branchDirectory, fileName);
-            string destinationFile = Path.Combine(LAUNCHER_PATH, Path.GetFileNameWithoutExtension(fileName));
+            string destinationFile = Path.Combine(Constants.Paths.LauncherPath, Path.GetFileNameWithoutExtension(fileName));
 
             await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
         }
@@ -283,7 +283,7 @@ namespace launcher
         {
             string sourceCompressedDeltaFile = Path.Combine(branchDirectory, fileName);
             string deltaFile = Path.Combine(branchDirectory, Path.GetFileNameWithoutExtension(fileName));
-            string originalFile = Path.Combine(LAUNCHER_PATH, fileName.Replace(".delta.zst", ""));
+            string originalFile = Path.Combine(Constants.Paths.LauncherPath, fileName.Replace(".delta.zst", ""));
 
             await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, deltaFile);
 
@@ -319,7 +319,7 @@ namespace launcher
         /// <param name="fileName">The name of the file to delete.</param>
         private static void DeleteFile(string fileName)
         {
-            string fullPath = Path.Combine(LAUNCHER_PATH, fileName);
+            string fullPath = Path.Combine(Constants.Paths.LauncherPath, fileName);
             try
             {
                 if (File.Exists(fullPath))
@@ -344,7 +344,7 @@ namespace launcher
                 string actualChecksum = FileManager.CalculateChecksum(destinationPath);
                 if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
                 {
-                    UpdateProgress(--FILES_LEFT);
+                    UpdateProgress(--AppState.FilesLeft);
                     return true;
                 }
             }
@@ -370,7 +370,7 @@ namespace launcher
         /// <param name="totalFiles">The total number of files to process.</param>
         private static void ConfigureProgress(int totalFiles)
         {
-            FILES_LEFT = totalFiles;
+            AppState.FilesLeft = totalFiles;
 
             appDispatcher.Invoke(() =>
             {
@@ -505,7 +505,7 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                IS_INSTALLING = installing;
+                AppState.IsInstalling = installing;
 
                 Play_Button.Content = buttonText;
                 Branch_Combobox.IsEnabled = !installing;
@@ -525,7 +525,7 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                IS_INSTALLING = installing;
+                AppState.IsInstalling = installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
             });

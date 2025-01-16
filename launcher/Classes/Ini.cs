@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static launcher.Logger;
-using static launcher.Global;
 
 namespace launcher
 {
@@ -50,9 +49,9 @@ namespace launcher
 
         public static void CreateConfig()
         {
-            Directory.CreateDirectory(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\"));
+            Directory.CreateDirectory(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\"));
 
-            string iniPath = Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini");
+            string iniPath = Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini");
             if (!File.Exists(iniPath))
             {
                 IniFile file = new();
@@ -99,13 +98,13 @@ namespace launcher
         public static IniFile GetConfig()
         {
             IniFile file = new();
-            file.Load(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Load(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             return file;
         }
 
         public static bool Exists()
         {
-            return File.Exists(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            return File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
         }
 
         public static void Set(Vars setting, bool value)
@@ -115,7 +114,7 @@ namespace launcher
 
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -126,7 +125,7 @@ namespace launcher
 
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -137,7 +136,7 @@ namespace launcher
 
             IniFile file = GetConfig();
             file.SetSetting(GetSectionString(setting), GetString(setting), value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -148,7 +147,7 @@ namespace launcher
 
             IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 
@@ -159,7 +158,7 @@ namespace launcher
 
             IniFile file = GetConfig();
             file.SetSetting(section, setting, value);
-            file.Save(Path.Combine(LAUNCHER_PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+            file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(Source.Ini, $"Setting {setting} to: {value}");
         }
 

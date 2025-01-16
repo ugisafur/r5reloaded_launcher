@@ -2,12 +2,9 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
-using System.Windows.Threading;
-using static launcher.Global;
 using static launcher.ControlReferences;
 using static launcher.Logger;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace launcher
 {
@@ -22,7 +19,7 @@ namespace launcher
 
         public static async Task Start()
         {
-            if (!IS_ONLINE)
+            if (!AppState.IsOnline)
                 return;
 
             LogInfo(Source.UpdateChecker, "Update worker started");
@@ -46,7 +43,7 @@ namespace launcher
                     }
                     else
                     {
-                        LogInfo(Source.UpdateChecker, $"Update for version {LAUNCHER_VERSION} is not available (latest version: {LAUNCHER_VERSION})");
+                        LogInfo(Source.UpdateChecker, $"Update for launcher is not available (latest version: {newServerConfig.launcherVersion})");
                     }
 
                     if (ShouldUpdateGame(newServerConfig))
@@ -76,7 +73,7 @@ namespace launcher
             HttpResponseMessage response = null;
             try
             {
-                response = await HTTP_CLIENT.GetAsync(SERVER_CONFIG_URL);
+                response = await Networking.HttpClient.GetAsync(Constants.Launcher.CONFIG_URL);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ServerConfig>(responseString);
@@ -113,16 +110,16 @@ namespace launcher
 
         private static bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !IS_INSTALLING && IsNewVersion(LAUNCHER_VERSION, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewVersion(Constants.Launcher.VERSION, newServerConfig.launcherVersion);
         }
 
         private static bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
-            return !IS_INSTALLING &&
+            return !AppState.IsInstalling &&
                    newServerConfig.allowUpdates &&
-                   LAUNCHER_CONFIG != null &&
-                   !SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
-                   Ini.Get(SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
+                   Configuration.LauncherConfig != null &&
+                   !Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
+                   Ini.Get(Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
                    newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetBranchVersion();
         }
 
@@ -141,7 +138,7 @@ namespace launcher
 
         private static void UpdateLauncher()
         {
-            if (!File.Exists($"{LAUNCHER_PATH}\\launcher_data\\selfupdater.exe"))
+            if (!File.Exists($"{Constants.Paths.LauncherPath}\\launcher_data\\selfupdater.exe"))
             {
                 LogError(Source.UpdateChecker, "Self updater not found");
                 return;
@@ -150,7 +147,7 @@ namespace launcher
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{LAUNCHER_PATH}\\launcher_data\\selfupdater.exe\""
+                Arguments = $"/c start \"\" \"{Constants.Paths.LauncherPath}\\launcher_data\\selfupdater.exe\""
             };
 
             // Start the new process via cmd
@@ -161,17 +158,17 @@ namespace launcher
 
         private static void HandleGameUpdate(ServerConfig newServerConfig)
         {
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
                 return;
 
-            if (SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available)
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available)
                 return;
 
             appDispatcher.Invoke(() =>
             {
-                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].currentVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion;
-                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
-                SERVER_CONFIG.branches[Utilities.GetCmbBranchIndex()].update_available = true;
+                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion;
+                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
+                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = true;
                 Update_Button.Visibility = Visibility.Visible;
             });
         }
