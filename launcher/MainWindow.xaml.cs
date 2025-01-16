@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,7 +17,7 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        public TaskbarIcon System_Tray;
+        public TaskbarIcon System_Tray { get; set; }
         public ICommand ShowWindowCommand { get; }
 
         public MainWindow()
@@ -31,20 +30,10 @@ namespace launcher
         {
             this.Opacity = 0;
 
-            TaskbarIcon tbi = new()
-            {
-                ToolTipText = "R5Reloaded Launcher",
-                Icon = this.Icon.ToIcon(),
-                DoubleClickCommand = ShowWindowCommand,
-                ContextMenu = (ContextMenu)FindResource("tbiContextMenu")
-            };
-
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
             MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
             if (versionMenuItem != null)
                 versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
-
-            System_Tray = tbi;
 
             Ini.CreateConfig();
 
@@ -68,6 +57,19 @@ namespace launcher
             bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+
+            System_Tray = new TaskbarIcon();
+            System_Tray.ToolTipText = "R5Reloaded Launcher";
+            System_Tray.Icon = this.Icon.ToIcon();
+            System_Tray.DoubleClickCommand = ShowWindowCommand;
+            System_Tray.ContextMenu = (ContextMenu)FindResource("tbiContextMenu");
+
+            Application.Current.Exit += new ExitEventHandler(Current_Exit);
+        }
+
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            System_Tray.Dispose();
         }
 
         public async Task OnOpen()

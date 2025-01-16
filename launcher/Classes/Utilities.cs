@@ -43,12 +43,19 @@ namespace launcher
             if (!File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
                 return;
 
-            var data = PlaylistFile.ParseFile(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
-            LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
+            try
+            {
+                var data = PlaylistFile.ParseFile(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+                LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
 
-            Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
-            Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
-            LogInfo(Source.Launcher, $"Setup playlists and map combo boxes for branch {GetCurrentBranch().branch}");
+                Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
+                Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
+                LogInfo(Source.Launcher, $"Setup playlists and map combo boxes for branch {GetCurrentBranch().branch}");
+            }
+            catch (Exception ex)
+            {
+                LogError(Source.Launcher, $"Failed to load playlist file: {ex.Message}");
+            }
         }
 
         private static void CheckInternetConnection()

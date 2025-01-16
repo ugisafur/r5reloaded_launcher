@@ -190,10 +190,7 @@ namespace launcher
 
             // Check if the file already exists and matches the checksum
             if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
-            {
-                UpdateProgress(--AppState.FilesLeft);
                 return destinationPath;
-            }
 
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
 
@@ -204,7 +201,6 @@ namespace launcher
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
 
-                UpdateProgress(--AppState.FilesLeft);
                 return destinationPath;
             }
             catch (Exception ex)
@@ -216,6 +212,7 @@ namespace launcher
             finally
             {
                 await RemoveDownloadItemAsync(downloadItem);
+                UpdateProgress(--AppState.FilesLeft);
                 _downloadSemaphore.Release();
             }
         }
@@ -343,11 +340,9 @@ namespace launcher
             {
                 string actualChecksum = FileManager.CalculateChecksum(destinationPath);
                 if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateProgress(--AppState.FilesLeft);
                     return true;
-                }
             }
+
             return false;
         }
 

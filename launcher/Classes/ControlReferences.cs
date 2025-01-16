@@ -87,7 +87,7 @@ namespace launcher
         public static DependencyObject Transition_Rect = new();
         public static MediaElement Background_Video = new();
         public static Image Background_Image = new();
-        public static TaskbarIcon System_Tray = new();
+        public static TaskbarIcon System_Tray;
 
         #endregion Other
 
