@@ -79,6 +79,8 @@ namespace launcher
             Ini.Set(branch, "Is_Installed", true);
             Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
+            Utilities.SetupAdvancedMenu();
+
             string[] find_opt_files = Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories);
             if (find_opt_files.Length > 0)
                 Ini.Set(branch, "Download_HD_Textures", true);

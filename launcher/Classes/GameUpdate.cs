@@ -177,6 +177,8 @@ namespace launcher
             Ini.Set(branch, "Is_Installed", true);
             Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
+            Utilities.SetupAdvancedMenu();
+
             //Install finished
             DownloadManager.SetInstallState(false);
 

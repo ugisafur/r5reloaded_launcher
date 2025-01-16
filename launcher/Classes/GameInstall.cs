@@ -84,6 +84,8 @@ namespace launcher
             Ini.Set(branch, "Is_Installed", true);
             Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
 
+            Utilities.SetupAdvancedMenu();
+
             MessageBoxResult result = MessageBox.Show("The game installation is complete.Would you like to install the HD Textures? you can always choose to install them at another time, they are not required to play.", "Install HD Textures", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
                 Ini.Set(branch, "Download_HD_Textures", true);

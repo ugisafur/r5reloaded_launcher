@@ -97,6 +97,8 @@ namespace launcher
 
         public void SetMapList(List<string> maps)
         {
+            MapCmb.Items.Clear();
+
             foreach (string map in maps)
             {
                 MapCmb.Items.Add(map);
@@ -105,6 +107,8 @@ namespace launcher
 
         public void SetPlaylistList(List<string> playlists)
         {
+            PlaylistCmb.Items.Clear();
+
             foreach (string playlist in playlists)
             {
                 PlaylistCmb.Items.Add(playlist);

@@ -32,16 +32,23 @@ namespace launcher
             SetupLibaryPath();
             SetupBranchComboBox();
             GetSelfUpdater();
-
-            if (File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
-                SetupPlaylists();
+            SetupAdvancedMenu();
         }
 
-        private static void SetupPlaylists()
+        public static void SetupAdvancedMenu()
         {
+            if (!IsBranchInstalled())
+                return;
+
+            if (!File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
+                return;
+
             var data = PlaylistFile.ParseFile(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+            LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
+
             Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
             Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
+            LogInfo(Source.Launcher, $"Setup playlists and map combo boxes for branch {GetCurrentBranch().branch}");
         }
 
         private static void CheckInternetConnection()

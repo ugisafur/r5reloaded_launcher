@@ -291,6 +291,8 @@ namespace launcher
 
             if (Utilities.IsBranchInstalled())
             {
+                Utilities.SetupAdvancedMenu();
+
                 if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
                 {
                     Update_Button.Visibility = Visibility.Hidden;
