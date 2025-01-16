@@ -3,6 +3,7 @@
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using System.Windows;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace launcher
 {
@@ -35,7 +36,7 @@ namespace launcher
             if (!AppState.IsOnline)
                 return;
 
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Utilities.GetCurrentBranch().is_local_branch)
                 return;
 
             //Install started
@@ -78,13 +79,14 @@ namespace launcher
             //Install finished
             DownloadManager.SetInstallState(false);
 
-            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
+            string branch = Utilities.GetCurrentBranch().branch;
 
             //Set branch as installed
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
 
             Utilities.SetupAdvancedMenu();
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been installed!", BalloonIcon.Info);
 
             MessageBoxResult result = MessageBox.Show("The game installation is complete.Would you like to install the HD Textures? you can always choose to install them at another time, they are not required to play.", "Install HD Textures", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
@@ -129,6 +131,8 @@ namespace launcher
             await Task.WhenAll(decompressionTasks);
 
             DownloadManager.SetOptionalInstallState(false);
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been installed!", BalloonIcon.Info);
         }
 
         private static async Task AttemptGameRepair()

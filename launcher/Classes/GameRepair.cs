@@ -3,6 +3,7 @@
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using System.Windows;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace launcher
 {
@@ -18,13 +19,13 @@ namespace launcher
             if (!AppState.IsOnline)
                 return false;
 
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Utilities.GetCurrentBranch().is_local_branch)
                 return false;
 
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available)
+            if (Utilities.GetCurrentBranch().update_available)
             {
                 Update_Button.Visibility = Visibility.Hidden;
-                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = false;
+                Utilities.GetCurrentBranch().update_available = false;
             }
 
             bool repairSuccess = true;
@@ -73,13 +74,14 @@ namespace launcher
                 await Task.WhenAll(decompressionTasks);
             }
 
-            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
+            string branch = Utilities.GetCurrentBranch().branch;
 
             //Update launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
 
             Utilities.SetupAdvancedMenu();
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been repaired!", BalloonIcon.Info);
 
             string[] find_opt_files = Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories);
             if (find_opt_files.Length > 0)
@@ -136,6 +138,8 @@ namespace launcher
                 DownloadManager.UpdateStatusLabel("Decompressing optional files", Source.Repair);
                 await Task.WhenAll(decompressionTasks);
             }
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been repaired!", BalloonIcon.Info);
 
             DownloadManager.SetOptionalInstallState(false);
         }

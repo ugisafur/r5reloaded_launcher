@@ -27,7 +27,8 @@ namespace launcher
             Patcher,
             FileManager,
             Decompression,
-            Ini
+            Ini,
+            VDF
         }
 
         static Logger()
@@ -92,6 +93,7 @@ namespace launcher
                 Source.FileManager => "FileManager",
                 Source.Decompression => "Decompression",
                 Source.Ini => "INI",
+                Source.VDF => "VDF",
                 _ => "Unknown"
             };
         }

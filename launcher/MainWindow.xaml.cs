@@ -28,12 +28,8 @@ namespace launcher
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Hide the window on startup
             this.Opacity = 0;
-
-            ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
-            MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
-            if (versionMenuItem != null)
-                versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
 
             Ini.CreateConfig();
 
@@ -50,13 +46,22 @@ namespace launcher
                     Play_Button.Content = "REPAIR";
             }
             else
-            {
                 Play_Button.Content = "PLAY";
-            }
 
             bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+
+            SetupSystemTray();
+        }
+
+        private void SetupSystemTray()
+        {
+            // Set the version number in the system tray context menu
+            ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
+            MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
+            if (versionMenuItem != null)
+                versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
 
             System_Tray = new TaskbarIcon();
             System_Tray.ToolTipText = "R5Reloaded Launcher";
@@ -219,7 +224,7 @@ namespace launcher
                 Application.Current.Shutdown();
             else
             {
-                System_Tray.ShowBalloonTip("R5R Launcher", "Launcher minimized to tray.", BalloonIcon.Info);
+                Utilities.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
             }
         }

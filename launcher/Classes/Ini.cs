@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static launcher.Logger;
+using System.Security.Cryptography.X509Certificates;
 
 namespace launcher
 {
@@ -13,12 +14,12 @@ namespace launcher
         public enum Vars
         {
             Enable_Quit_On_Close,
+            Enable_Notifications,
             Disable_Background_Video,
             Disable_Animations,
             Disable_Transitions,
             Concurrent_Downloads,
             Download_Speed_Limit,
-            Download_HD_Textures,
             Library_Location,
             Enable_Cheats,
             Enable_Developer,
@@ -57,6 +58,7 @@ namespace launcher
                 IniFile file = new();
 
                 file.SetSetting("Settings", "Enable_Quit_On_Close", false);
+                file.SetSetting("Settings", "Enable_Notifications", false);
                 file.SetSetting("Settings", "Disable_Background_Video", false);
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
@@ -92,6 +94,39 @@ namespace launcher
                 file.SetSetting("Launcher", "SelectedBranch", "");
 
                 file.Save(iniPath);
+            }
+            else
+            {
+                // Check for new settings that may have been added by an update
+                IniFile file = new();
+                file.Load(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
+
+                IEnumerable<IniSetting> settings = file.GetSectionSettings("Settings");
+                IEnumerable<IniSetting> advanced = file.GetSectionSettings("Advanced_Options");
+                IEnumerable<IniSetting> launcher = file.GetSectionSettings("Launcher");
+
+                foreach (Vars setting in Enum.GetValues(typeof(Vars)))
+                {
+                    if (settings.Any(x => x.Name == GetString(setting)))
+                        continue;
+
+                    if (advanced.Any(x => x.Name == GetString(setting)))
+                        continue;
+
+                    if (launcher.Any(x => x.Name == GetString(setting)))
+                        continue;
+
+                    if (GetDefaultValue(setting) is bool v)
+                        file.SetSetting(GetSectionString(setting), GetString(setting), v);
+
+                    if (GetDefaultValue(setting) is string v1)
+                        file.SetSetting(GetSectionString(setting), GetString(setting), v1);
+
+                    if (GetDefaultValue(setting) is int v2)
+                        file.SetSetting(GetSectionString(setting), GetString(setting), v2);
+
+                    file.Save(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.ini"));
+                }
             }
         }
 
@@ -212,17 +247,61 @@ namespace launcher
             return value;
         }
 
+        public static object GetDefaultValue(Vars setting)
+        {
+            return setting switch
+            {
+                Vars.Concurrent_Downloads => "Max",
+                Vars.Download_Speed_Limit => "",
+                Vars.Library_Location => "",
+                Vars.Playlists_File => "playlists_r5_patch.txt",
+                Vars.Map => "",
+                Vars.Playlist => "",
+                Vars.HostName => "",
+                Vars.Command_Line => "",
+                Vars.Resolution_Width => "",
+                Vars.Resolution_Height => "",
+                Vars.Reserved_Cores => "-1",
+                Vars.Worker_Threads => "-1",
+                Vars.Processor_Affinity => "0",
+                Vars.Max_FPS => "",
+                Vars.SelectedBranch => "",
+
+                Vars.Enable_Quit_On_Close => false,
+                Vars.Enable_Notifications => false,
+                Vars.Disable_Background_Video => false,
+                Vars.Disable_Animations => false,
+                Vars.Disable_Transitions => false,
+                Vars.Enable_Cheats => false,
+                Vars.Enable_Developer => false,
+                Vars.Show_Console => false,
+                Vars.Color_Console => true,
+                Vars.No_Async => false,
+                Vars.Encrypt_Packets => true,
+                Vars.Queued_Packets => true,
+                Vars.Random_Netkey => true,
+                Vars.No_Timeout => false,
+                Vars.Windowed => false,
+                Vars.Borderless => false,
+
+                Vars.Mode => 0,
+                Vars.Visibility => 0,
+
+                _ => throw new NotImplementedException($"Default value for {setting} is not implemented.")
+            };
+        }
+
         public static string GetSectionString(Vars setting)
         {
             return setting switch
             {
                 Vars.Enable_Quit_On_Close => "Settings",
+                Vars.Enable_Notifications => "Settings",
                 Vars.Disable_Background_Video => "Settings",
                 Vars.Disable_Animations => "Settings",
                 Vars.Disable_Transitions => "Settings",
                 Vars.Concurrent_Downloads => "Settings",
                 Vars.Download_Speed_Limit => "Settings",
-                Vars.Download_HD_Textures => "Settings",
                 Vars.Library_Location => "Settings",
 
                 Vars.Enable_Cheats => "Advanced_Options",
@@ -260,12 +339,12 @@ namespace launcher
             return setting switch
             {
                 Vars.Enable_Quit_On_Close => "Enable_Quit_On_Close",
+                Vars.Enable_Notifications => "Enable_Notifications",
                 Vars.Disable_Background_Video => "Disable_Background_Video",
                 Vars.Disable_Animations => "Disable_Animations",
                 Vars.Disable_Transitions => "Disable_Transitions",
                 Vars.Concurrent_Downloads => "Concurrent_Downloads",
                 Vars.Download_Speed_Limit => "Download_Speed_Limit",
-                Vars.Download_HD_Textures => "Download_HD_Textures",
                 Vars.Enable_Cheats => "Enable_Cheats",
                 Vars.Enable_Developer => "Enable_Developer",
                 Vars.Show_Console => "Show_Console",

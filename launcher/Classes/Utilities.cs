@@ -5,6 +5,7 @@ using System.Windows.Media.Animation;
 using static launcher.Logger;
 using static launcher.ControlReferences;
 using static launcher.LaunchParameters;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace launcher
 {
@@ -45,7 +46,7 @@ namespace launcher
 
             try
             {
-                var data = PlaylistFile.ParseFile(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+                PlaylistRoot data = PlaylistFile.Parse(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
                 LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
 
                 Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
@@ -419,6 +420,12 @@ namespace launcher
         }
 
         #endregion Settings Functions
+
+        public static void SendNotification(string message, BalloonIcon icon)
+        {
+            if (Ini.Get(Ini.Vars.Enable_Notifications, true))
+                System_Tray.ShowBalloonTip("R5R Launcher", message, icon);
+        }
 
 #if DEBUG
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System.IO;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Shapes;
@@ -27,18 +28,18 @@ namespace launcher
             if (!AppState.IsOnline)
                 return;
 
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch)
+            if (Utilities.GetCurrentBranch().is_local_branch)
                 return;
 
-            if (!Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available)
+            if (!Utilities.GetCurrentBranch().update_available)
                 return;
 
             // Check if the game is already up to date
-            if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion)
+            if (Utilities.GetBranchVersion() == Utilities.GetCurrentBranch().currentVersion)
                 return;
 
             // Check if user is to outdated to update normally
-            if (Utilities.GetBranchVersion() != Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion)
+            if (Utilities.GetBranchVersion() != Utilities.GetCurrentBranch().lastVersion)
             {
                 // Update the game without patching
                 await UpdateWithoutPatching();
@@ -77,17 +78,19 @@ namespace launcher
             DownloadManager.UpdateStatusLabel("Patching game files", Source.Installer);
             await Task.WhenAll(filePatchTasks);
 
-            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
+            string branch = Utilities.GetCurrentBranch().branch;
 
             // Update or create launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
 
             // Install finished
             DownloadManager.SetInstallState(false);
 
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been updated!", BalloonIcon.Info);
+
             // Set update required to false
-            Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = false;
+            Utilities.GetCurrentBranch().update_available = false;
 
             if (Ini.Get(branch, "Download_HD_Textures", false))
                 Task.Run(() => UpdateOptionalFiles());
@@ -125,6 +128,8 @@ namespace launcher
             await Task.WhenAll(filePatchTasks);
 
             DownloadManager.SetOptionalInstallState(false);
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task UpdateWithoutPatching()
@@ -171,11 +176,13 @@ namespace launcher
                 await Task.WhenAll(decompressionTasks);
             }
 
-            string branch = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch;
+            string branch = Utilities.GetCurrentBranch().branch;
 
             //Update launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been updated!", BalloonIcon.Info);
 
             Utilities.SetupAdvancedMenu();
 
@@ -230,6 +237,8 @@ namespace launcher
             }
 
             DownloadManager.SetOptionalInstallState(false);
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been updated!", BalloonIcon.Info);
         }
     }
 }
