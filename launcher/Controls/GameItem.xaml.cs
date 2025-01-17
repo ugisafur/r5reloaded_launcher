@@ -67,7 +67,7 @@ namespace launcher
             int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
 
             var storyboard = new Storyboard();
-            Duration animationDuration = new Duration(TimeSpan.FromMilliseconds(duration));
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
             var heightAnimation = new DoubleAnimation
@@ -120,7 +120,7 @@ namespace launcher
             int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
 
             var storyboard = new Storyboard();
-            Duration animationDuration = new Duration(TimeSpan.FromMilliseconds(duration));
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
             var heightAnimation = new DoubleAnimation

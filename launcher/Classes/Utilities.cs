@@ -33,6 +33,7 @@ namespace launcher
             SetupLibaryPath();
             SetupBranchComboBox();
             GetSelfUpdater();
+            EULA_Control.SetupEULA();
         }
 
         public static void SetupAdvancedMenu()
@@ -160,16 +161,16 @@ namespace launcher
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\selfupdater.exe")))
+            if (!File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\updater.exe")))
             {
-                LogInfo(Source.Launcher, "Downloading self updater");
+                LogInfo(Source.Launcher, "Downloading launcher updater");
                 Networking.HttpClient.GetAsync(Configuration.ServerConfig.launcherSelfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
-                            File.WriteAllBytes(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\selfupdater.exe"), data);
+                            File.WriteAllBytes(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\updater.exe"), data);
                         }
                     });
             }
@@ -248,6 +249,11 @@ namespace launcher
         #endregion Launch Game Functions
 
         #region Branch Functions
+
+        public static bool IsBranchEULAAccepted()
+        {
+            return Ini.Get(Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch, "EULA_Accepted", false);
+        }
 
         public static bool IsBranchInstalled()
         {
@@ -431,6 +437,85 @@ namespace launcher
             {
                 LogError(Source.Launcher, $"Failed to send notification: {ex.Message}");
             }
+        }
+
+        public static void ShowEULA()
+        {
+            EULA_Control.Visibility = Visibility.Visible;
+            EULA_BG.Visibility = Visibility.Visible;
+
+            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+
+            var storyboard = new Storyboard();
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var EULA_BG_OPACITY = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(EULA_BG_OPACITY, EULA_BG);
+            Storyboard.SetTargetProperty(EULA_BG_OPACITY, new PropertyPath("Opacity"));
+
+            var EULA_OPACITY = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(EULA_OPACITY, EULA_Control);
+            Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
+
+            storyboard.Children.Add(EULA_OPACITY);
+            storyboard.Children.Add(EULA_BG_OPACITY);
+
+            storyboard.Begin();
+        }
+
+        public static async void HideEULA()
+        {
+            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+
+            var storyboard = new Storyboard();
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var EULA_BG_OPACITY = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(EULA_BG_OPACITY, EULA_BG);
+            Storyboard.SetTargetProperty(EULA_BG_OPACITY, new PropertyPath("Opacity"));
+
+            var EULA_OPACITY = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(EULA_OPACITY, EULA_Control);
+            Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
+
+            storyboard.Children.Add(EULA_OPACITY);
+            storyboard.Children.Add(EULA_BG_OPACITY);
+
+            TaskCompletionSource<bool> tcs = new();
+            storyboard.Completed += (s, e) => tcs.SetResult(true);
+
+            storyboard.Begin();
+
+            await tcs.Task;
+
+            EULA_Control.Visibility = Visibility.Hidden;
+            EULA_BG.Visibility = Visibility.Hidden;
         }
 
 #if DEBUG

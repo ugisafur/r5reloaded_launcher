@@ -5,14 +5,14 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "launcher", "launcher\launcher.csproj", "{4E9A0BF6-3D34-4883-803C-97DCC76B3498}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "self_updater", "SelfUpdater\self_updater.csproj", "{6C563C1B-EA73-4009-BECE-22ABC60AF432}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "updater", "SelfUpdater\updater.csproj", "{6C563C1B-EA73-4009-BECE-22ABC60AF432}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B03A62FF-42D0-4A4B-AC0A-DEDA0B2F0689}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patch_creator", "patch_creator\patch_creator.csproj", "{40F580FE-A04C-4F9A-BD31-C17F9DA3760A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "patch_creator", "patch_creator\patch_creator.csproj", "{40F580FE-A04C-4F9A-BD31-C17F9DA3760A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

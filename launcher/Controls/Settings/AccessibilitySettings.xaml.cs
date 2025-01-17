@@ -55,7 +55,7 @@ namespace launcher
             Ini.Set(Ini.Vars.Disable_Transitions, value);
         }
 
-        private void ToggleBackgroundVideo(bool disabled)
+        private static void ToggleBackgroundVideo(bool disabled)
         {
             LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
             Background_Video.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;

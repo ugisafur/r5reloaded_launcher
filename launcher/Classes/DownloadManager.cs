@@ -48,17 +48,17 @@ namespace launcher
         /// <param name="baseGameFiles">The base game files to download.</param>
         /// <param name="branchDirectory">The directory where files will be downloaded.</param>
         /// <returns>A list of download tasks.</returns>
-        public static List<Task<string>> InitializeDownloadTasks(BaseGameFiles baseGameFiles, string branchDirectory)
+        public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
-            if (baseGameFiles == null) throw new ArgumentNullException(nameof(baseGameFiles));
+            if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
-            var downloadTasks = new List<Task<string>>(baseGameFiles.files.Count);
-            ConfigureProgress(baseGameFiles.files.Count);
+            var downloadTasks = new List<Task<string>>(gameFiles.files.Count);
+            ConfigureProgress(gameFiles.files.Count);
 
             string baseUrl = Utilities.GetCurrentBranch().game_url;
 
-            foreach (var file in baseGameFiles.files)
+            foreach (var file in gameFiles.files)
             {
                 string fileUrl = $"{baseUrl}/{file.name}";
                 string destinationPath = Path.Combine(branchDirectory, file.name);

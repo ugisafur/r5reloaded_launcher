@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using ZstdSharp;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace patch_creator
 {
@@ -16,6 +17,8 @@ namespace patch_creator
 
         private List<string> patchFiles = new List<string>();
         private HttpClient client = new HttpClient();
+
+        private ServerConfig serverConfig;
 
         private readonly string[] whitelistPatchPaths = new string[] {
             "vpk",
@@ -32,14 +35,51 @@ namespace patch_creator
         private void Form1_Load(object sender, EventArgs e)
         {
             AllocConsole();
+
+            var response = client.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+            serverConfig = JsonConvert.DeserializeObject<ServerConfig>(responseString);
+
+            foreach (Branch branch in serverConfig.branches)
+            {
+                comboBox1.Items.Add(branch.branch);
+            }
+
+            comboBox1.SelectedIndex = 0;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            var directoryDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select Folder"
+            };
+
+            if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                textBox1.Text = directoryDialog.FileName;
+
+                if (string.IsNullOrEmpty(textBox2.Text))
+                {
+                    DirectoryInfo parentDir = Directory.GetParent(directoryDialog.FileName.TrimEnd(Path.DirectorySeparatorChar));
+                    textBox2.Text = Path.Combine(parentDir.FullName, $"{serverConfig.branches[comboBox1.SelectedIndex].branch}_update");
+                }
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            var directoryDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select Folder"
+            };
+
+            if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                textBox2.Text = directoryDialog.FileName;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -54,15 +94,15 @@ namespace patch_creator
             patch.files = new List<PatchFile>();
 
             //Setup final directories for the base game and current patch
-            var final_patch_dir = textBox2.Text + "\\patch";
-            var final_game_dir = textBox2.Text + "\\game";
+            //var final_patch_dir = textBox2.Text + "\\patch";
+            var final_game_dir = textBox2.Text;
 
             // Create the final directories if they don't exist
-            Directory.CreateDirectory(final_patch_dir);
+            //Directory.CreateDirectory(final_patch_dir);
             Directory.CreateDirectory(final_game_dir);
 
             //Get current checksums.json file
-            var response = await client.GetStringAsync("https://cdn.r5r.org/launcher/base_game/checksums.json");
+            var response = await client.GetStringAsync(Path.Combine(serverConfig.branches[comboBox1.SelectedIndex].game_url, "checksums.json"));
             GameChecksums checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
 
             //Get updated checksums.json file
@@ -93,7 +133,7 @@ namespace patch_creator
             GameChecksums new_checksums = new();
             new_checksums.files = finalFiles;
 
-            //Compress and move the changed files to the base game directory
+            //Compress and move the changed files to the game directory
             foreach (var file in changedFiles)
             {
                 // Normalize the path separators to ensure consistent comparison
@@ -115,14 +155,14 @@ namespace patch_creator
                 CompressFile(sourceFile, destFile);
 
                 //Copy destFile to patch directory
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(final_patch_dir, file.name + ".zst")));
-                File.Copy(destFile, Path.Combine(final_patch_dir, file.name + ".zst"), overwrite: true);
+                //Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(final_patch_dir, file.name + ".zst")));
+                // File.Copy(destFile, Path.Combine(final_patch_dir, file.name + ".zst"), overwrite: true);
 
-                Log("Compressing file: " + sourceFile);
+                Log("Compressed file: " + sourceFile);
             }
 
             //Add the changed files to the patch
-            foreach (var file in changedFiles)
+            /*foreach (var file in changedFiles)
             {
                 PatchFile patchFile = new PatchFile
                 {
@@ -131,21 +171,21 @@ namespace patch_creator
                 };
 
                 patch.files.Add(patchFile);
-            }
+            }*/
 
             //Add the removed files to the patch
-            foreach (var file in removedFiles)
+            /*foreach (var file in removedFiles)
             {
                 PatchFile patchFile = new PatchFile();
                 patchFile.Name = file.name;
                 patchFile.Action = "delete";
 
                 patch.files.Add(patchFile);
-            }
+            }*/
 
             //Create a json file with the list of patched files
-            var json_patch_file = JsonSerializer.Serialize(patch, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(final_patch_dir + "\\patch.json", json_patch_file);
+            //var json_patch_file = JsonSerializer.Serialize(patch, new JsonSerializerOptions { WriteIndented = true });
+            //await File.WriteAllTextAsync(final_patch_dir + "\\patch.json", json_patch_file);
 
             var game_checksums_file = JsonSerializer.Serialize(new_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
@@ -187,7 +227,7 @@ namespace patch_creator
                 }
             });
 
-            var compressedresponse = await client.GetStringAsync("https://cdn.r5r.org/launcher/base_game/checksums_zst.json");
+            var compressedresponse = await client.GetStringAsync(Path.Combine(serverConfig.branches[comboBox1.SelectedIndex].game_url, "checksums_zst.json"));
             GameChecksums conmpressed_checksums = JsonConvert.DeserializeObject<GameChecksums>(compressedresponse);
 
             //Find the changed files
@@ -218,7 +258,7 @@ namespace patch_creator
             await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", compressed_game_checksums_file);
         }
 
-        public void ProcessDeltasWithProgress(List<string> changedFiles, string patch_files)
+        /*public void ProcessDeltasWithProgress(List<string> changedFiles, string patch_files)
         {
             // Use Parallel.ForEach for multithreading
             Parallel.ForEach(changedFiles, (changedFile) =>
@@ -230,7 +270,7 @@ namespace patch_creator
                     Path.Combine(patch_files, changedFile + ".delta")
                 );
             });
-        }
+        }*/
 
         public void Log(string message)
         {
@@ -307,7 +347,7 @@ namespace patch_creator
             delta_temp_input.CopyTo(compressionStream);
         }
 
-        public void CreateFileDelta(string originalFile, string updatedFile, string deltaFile)
+        /*public void CreateFileDelta(string originalFile, string updatedFile, string deltaFile)
         {
             // Ensure the delta directory exists
             if (!Directory.Exists(Path.GetDirectoryName(deltaFile)))
@@ -358,7 +398,7 @@ namespace patch_creator
 
             // Clean up the temporary signature file
             File.Delete(signatureFile);
-        }
+        }*/
     }
 
     internal class Patch
@@ -381,5 +421,25 @@ namespace patch_creator
     {
         public string name { get; set; }
         public string checksum { get; set; }
+    }
+
+    public class Branch
+    {
+        public string branch { get; set; }
+        public string currentVersion { get; set; }
+        public string lastVersion { get; set; }
+        public string game_url { get; set; }
+        public string patch_url { get; set; }
+        public bool enabled { get; set; }
+        public bool show_in_launcher { get; set; }
+    }
+
+    public class ServerConfig
+    {
+        public string launcherVersion { get; set; }
+        public string launcherSelfUpdater { get; set; }
+        public string base_game_url { get; set; }
+        public bool allowUpdates { get; set; }
+        public List<Branch> branches { get; set; }
     }
 }

@@ -63,8 +63,8 @@ namespace launcher
 
     public static class DataCollections
     {
-        public static List<string> BadFiles { get; } = new();
-        public static List<Branch> FolderBranches { get; } = new();
+        public static List<string> BadFiles { get; } = [];
+        public static List<Branch> FolderBranches { get; } = [];
     }
 
     public static class GlobalInitializer

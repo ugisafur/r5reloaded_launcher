@@ -17,21 +17,21 @@ namespace launcher
     /// </summary>
     public static class FileManager
     {
-        public static int IdentifyBadFiles(BaseGameFiles baseGameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory)
+        public static int IdentifyBadFiles(GameFiles gameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory)
         {
             var fileChecksums = Task.WhenAll(checksumTasks).Result;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
 
             appDispatcher.Invoke(() =>
             {
-                Progress_Bar.Maximum = baseGameFiles.files.Count;
+                Progress_Bar.Maximum = gameFiles.files.Count;
                 Progress_Bar.Value = 0;
             });
 
-            AppState.FilesLeft = baseGameFiles.files.Count;
+            AppState.FilesLeft = gameFiles.files.Count;
             DataCollections.BadFiles.Clear();
 
-            foreach (var file in baseGameFiles.files)
+            foreach (var file in gameFiles.files)
             {
                 string filePath = Path.Combine(branchDirectory, file.name);
 

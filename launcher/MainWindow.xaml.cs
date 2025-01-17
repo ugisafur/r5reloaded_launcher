@@ -31,12 +31,16 @@ namespace launcher
             // Hide the window on startup
             this.Opacity = 0;
 
+            // Create the configuration file if it doesn't exist
             Ini.CreateConfig();
 
+            // Setup the system tray
             SetupSystemTray();
 
+            // Setup the application
             Utilities.SetupApp(this);
 
+            // Show window open animation
             await OnOpen();
 
             if (AppState.IsOnline)
@@ -57,17 +61,18 @@ namespace launcher
 
         private void SetupSystemTray()
         {
-            // Set the version number in the system tray context menu
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
             MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
             if (versionMenuItem != null)
                 versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
 
-            System_Tray = new TaskbarIcon();
-            System_Tray.ToolTipText = "R5Reloaded Launcher";
-            System_Tray.Icon = this.Icon.ToIcon();
-            System_Tray.DoubleClickCommand = ShowWindowCommand;
-            System_Tray.ContextMenu = (ContextMenu)FindResource("tbiContextMenu");
+            System_Tray = new TaskbarIcon
+            {
+                ToolTipText = "R5Reloaded Launcher",
+                Icon = this.Icon.ToIcon(),
+                DoubleClickCommand = ShowWindowCommand,
+                ContextMenu = (ContextMenu)FindResource("tbiContextMenu")
+            };
 
             Application.Current.Exit += new ExitEventHandler(Current_Exit);
         }
@@ -88,16 +93,16 @@ namespace launcher
             await Task.Delay(100);
 
             // Create a storyboard for simultaneous animations
-            var storyboard = new Storyboard();
+            Storyboard storyboard = new();
 
             // Duration for the animations
-            Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+            Duration animationDuration = new(TimeSpan.FromSeconds(0.5));
 
             // Easing function for smoothness
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+            CubicEase easing = new() { EasingMode = EasingMode.EaseInOut };
 
             // Animate ScaleX from 1 to 0
-            var scaleXAnimation = new DoubleAnimation
+            DoubleAnimation scaleXAnimation = new()
             {
                 From = 0.75,
                 To = 1.0,
@@ -108,7 +113,7 @@ namespace launcher
             Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
 
             // Animate ScaleY from 1 to 0
-            var scaleYAnimation = new DoubleAnimation
+            DoubleAnimation scaleYAnimation = new()
             {
                 From = 0.75,
                 To = 1.0,
@@ -119,7 +124,7 @@ namespace launcher
             Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
 
             // Animate Opacity from 1 to 0
-            var opacityAnimation = new DoubleAnimation
+            DoubleAnimation opacityAnimation = new()
             {
                 From = 0.0,
                 To = 1.0,
@@ -135,7 +140,7 @@ namespace launcher
             storyboard.Children.Add(opacityAnimation);
 
             // Create a TaskCompletionSource to await the animation
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool> tcs = new();
             storyboard.Completed += (s, e) => tcs.SetResult(true);
 
             // Begin the storyboard
@@ -154,16 +159,16 @@ namespace launcher
             }
 
             // Create a storyboard for simultaneous animations
-            var storyboard = new Storyboard();
+            Storyboard storyboard = new();
 
             // Duration for the animations
-            Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+            Duration animationDuration = new(TimeSpan.FromSeconds(0.5));
 
             // Easing function for smoothness
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+            CubicEase easing = new() { EasingMode = EasingMode.EaseInOut };
 
             // Animate ScaleX from 1 to 0
-            var scaleXAnimation = new DoubleAnimation
+            DoubleAnimation scaleXAnimation = new()
             {
                 From = 1.0,
                 To = 0.75,
@@ -174,7 +179,7 @@ namespace launcher
             Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
 
             // Animate ScaleY from 1 to 0
-            var scaleYAnimation = new DoubleAnimation
+            DoubleAnimation scaleYAnimation = new()
             {
                 From = 1.0,
                 To = 0.75,
@@ -185,7 +190,7 @@ namespace launcher
             Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
 
             // Animate Opacity from 1 to 0
-            var opacityAnimation = new DoubleAnimation
+            DoubleAnimation opacityAnimation = new()
             {
                 From = 1.0,
                 To = 0.0,
@@ -201,7 +206,7 @@ namespace launcher
             storyboard.Children.Add(opacityAnimation);
 
             // Create a TaskCompletionSource to await the animation
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool> tcs = new();
             storyboard.Completed += (s, e) => tcs.SetResult(true);
 
             // Begin the storyboard
@@ -254,7 +259,14 @@ namespace launcher
                 }
                 else
                 {
-                    Task.Run(() => GameInstall.Start());
+                    if (Utilities.IsBranchEULAAccepted())
+                    {
+                        Task.Run(() => GameInstall.Start());
+                    }
+                    else
+                    {
+                        Utilities.ShowEULA();
+                    }
                 }
             }
         }
@@ -364,12 +376,6 @@ namespace launcher
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            if (Status_Popup.IsOpen)
-            {
-                var offset = Status_Popup.HorizontalOffset;
-                Status_Popup.HorizontalOffset = offset + 1;
-                Status_Popup.HorizontalOffset = offset;
-            }
         }
 
         private void StatusPopup_Unloaded(object sender, EventArgs e)

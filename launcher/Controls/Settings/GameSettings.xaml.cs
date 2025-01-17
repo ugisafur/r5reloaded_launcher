@@ -53,7 +53,7 @@ namespace launcher
 
                 if (gameItem.isLastItem)
                 {
-                    Separator separator = new Separator
+                    Separator separator = new()
                     {
                         Opacity = 0,
                         Height = 20

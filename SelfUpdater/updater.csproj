@@ -5,12 +5,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>selfupdater</PackageId>
-    <Authors>selfupdater</Authors>
+    <PackageId>updater</PackageId>
+    <Authors>updater</Authors>
     <Company>r5reloaded</Company>
-    <Product>selfupdater</Product>
-    <AssemblyName>selfupdater</AssemblyName>
-    <RootNamespace>selfupdater</RootNamespace>
+    <Product>updater</Product>
+    <AssemblyName>updater</AssemblyName>
+    <RootNamespace>updater</RootNamespace>
   </PropertyGroup>
 
 </Project>

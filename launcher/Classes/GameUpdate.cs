@@ -2,7 +2,6 @@
 using System.IO;
 using System.Numerics;
 using System.Windows;
-using System.Windows.Shapes;
 using static launcher.Logger;
 
 namespace launcher
@@ -39,7 +38,7 @@ namespace launcher
                 return;
 
             // Check if user is to outdated to update normally
-            if (Utilities.GetBranchVersion() != Utilities.GetCurrentBranch().lastVersion)
+            //if (Utilities.GetBranchVersion() != Utilities.GetCurrentBranch().lastVersion)
             {
                 // Update the game without patching
                 await UpdateWithoutPatching();
@@ -48,6 +47,9 @@ namespace launcher
                 return;
             }
 
+            // File patching is disabled for now until I patching tool is finished.
+
+            /*
             // Install started
             DownloadManager.SetInstallState(true, "UPDATING");
 
@@ -93,10 +95,10 @@ namespace launcher
             Utilities.GetCurrentBranch().update_available = false;
 
             if (Ini.Get(branch, "Download_HD_Textures", false))
-                Task.Run(() => UpdateOptionalFiles());
+                Task.Run(() => UpdateOptionalFiles());*/
         }
 
-        private static async Task UpdateOptionalFiles()
+        /*private static async Task UpdateOptionalFiles()
         {
             DownloadManager.SetOptionalInstallState(true);
 
@@ -130,7 +132,7 @@ namespace launcher
             DownloadManager.SetOptionalInstallState(false);
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been updated!", BalloonIcon.Info);
-        }
+        }*/
 
         private static async Task UpdateWithoutPatching()
         {
@@ -144,6 +146,9 @@ namespace launcher
             //Create branch library directory to store downloaded files
             string branchDirectory = FileManager.GetBranchDirectory();
 
+            //Check for deleted files
+            await CheckForDeletedFiles(false);
+
             //Prepare checksum tasks
             DownloadManager.UpdateStatusLabel("Preparing checksum tasks", Source.Update);
             var checksumTasks = FileManager.PrepareBaseGameChecksumTasks(branchDirectory);
@@ -154,11 +159,11 @@ namespace launcher
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching update files list", Source.Update);
-            BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(false);
+            GameFiles gameFiles = await DataFetcher.FetchBaseGameFiles(false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Update);
-            int changedFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
+            int changedFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (changedFileCount > 0)
@@ -204,6 +209,9 @@ namespace launcher
             //Create branch library directory to store downloaded files
             string branchDirectory = FileManager.GetBranchDirectory();
 
+            //Check for deleted files
+            await CheckForDeletedFiles(true);
+
             //Prepare checksum tasks
             DownloadManager.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
             var checksumTasks = FileManager.PrepareOptionalGameChecksumTasks(branchDirectory);
@@ -214,11 +222,11 @@ namespace launcher
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Repair);
-            BaseGameFiles baseGameFiles = await DataFetcher.FetchOptionalGameFiles(false);
+            GameFiles gameFiles = await DataFetcher.FetchOptionalGameFiles(false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Repair);
-            int changedFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
+            int changedFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (changedFileCount > 0)
@@ -239,6 +247,31 @@ namespace launcher
             DownloadManager.SetOptionalInstallState(false);
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been updated!", BalloonIcon.Info);
+        }
+
+        private static async Task CheckForDeletedFiles(bool optfiles)
+        {
+            string branchDirectory = FileManager.GetBranchDirectory();
+            string[] files = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
+            GameFiles gameFiles = optfiles ? await DataFetcher.FetchOptionalGameFiles(false) : await DataFetcher.FetchBaseGameFiles(false);
+
+            foreach (var file in files)
+            {
+                string relativePath = Path.GetRelativePath(branchDirectory, file);
+
+                try
+                {
+                    if (!gameFiles.files.Exists(f => f.name.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        if (File.Exists(file))
+                            File.Delete(file);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(Source.Update, $"Error deleting file ({relativePath}): {ex.Message}");
+                }
+            }
         }
     }
 }

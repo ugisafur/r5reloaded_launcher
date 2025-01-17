@@ -12,9 +12,9 @@ namespace launcher
     /// </summary>
     public partial class SettingsControl : UserControl
     {
-        private List<UserControl> pages = new List<UserControl>();
-        private List<Button> buttons = new List<Button>();
-        public GameSettings gameInstalls = new GameSettings();
+        private List<UserControl> pages = [];
+        private List<Button> buttons = [];
+        public GameSettings gameInstalls = new();
 
         public SettingsControl()
         {

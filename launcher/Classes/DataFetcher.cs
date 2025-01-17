@@ -50,7 +50,7 @@ namespace launcher
             return patchFiles;
         }
 
-        public static async Task<BaseGameFiles> FetchBaseGameFiles(bool compressed)
+        public static async Task<GameFiles> FetchBaseGameFiles(bool compressed)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
@@ -58,7 +58,7 @@ namespace launcher
             string baseGameChecksumUrl = $"{Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].game_url}\\{fileName}";
             string baseGameZstChecksums = await FetchJson(baseGameChecksumUrl);
 
-            var baseGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(baseGameZstChecksums);
+            var baseGameFiles = JsonConvert.DeserializeObject<GameFiles>(baseGameZstChecksums);
             baseGameFiles.files = baseGameFiles.files
                 .Where(file => !file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -66,7 +66,7 @@ namespace launcher
             return baseGameFiles;
         }
 
-        public static async Task<BaseGameFiles> FetchOptionalGameFiles(bool compressed)
+        public static async Task<GameFiles> FetchOptionalGameFiles(bool compressed)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
@@ -74,7 +74,7 @@ namespace launcher
             string optionalGameChecksumUrl = $"{Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].game_url}\\{fileName}";
             string optionalGameZstChecksums = await FetchJson(optionalGameChecksumUrl);
 
-            var optionalGameFiles = JsonConvert.DeserializeObject<BaseGameFiles>(optionalGameZstChecksums);
+            var optionalGameFiles = JsonConvert.DeserializeObject<GameFiles>(optionalGameZstChecksums);
             optionalGameFiles.files = optionalGameFiles.files
                 .Where(file => file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
                 .ToList();

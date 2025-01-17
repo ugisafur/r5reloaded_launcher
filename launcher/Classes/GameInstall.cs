@@ -51,11 +51,11 @@ namespace launcher
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching game files list", Source.Installer);
-            BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(true);
+            GameFiles gameFiles = await DataFetcher.FetchBaseGameFiles(true);
 
             //Prepare download tasks
             DownloadManager.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = DownloadManager.InitializeDownloadTasks(baseGameFiles, branchDirectory);
+            var downloadTasks = DownloadManager.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             //Download base game files
             DownloadManager.UpdateStatusLabel("Downloading game files", Source.Installer);
@@ -112,7 +112,7 @@ namespace launcher
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Installer);
-            BaseGameFiles optionalGameFiles = await DataFetcher.FetchOptionalGameFiles(true);
+            GameFiles optionalGameFiles = await DataFetcher.FetchOptionalGameFiles(true);
 
             //Prepare download tasks
             DownloadManager.UpdateStatusLabel("Preparing optional download", Source.Installer);

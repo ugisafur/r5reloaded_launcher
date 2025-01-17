@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace launcher
@@ -78,6 +79,7 @@ namespace launcher
         public static DownloadsPopup Downloads_Control = new();
         public static StatusPopup Status_Control = new();
         public static MenuPopup Menu_Control = new();
+        public static EULAPopup EULA_Control = new();
 
         #endregion Popup Controls
 
@@ -88,6 +90,7 @@ namespace launcher
         public static MediaElement Background_Video = new();
         public static Image Background_Image = new();
         public static TaskbarIcon System_Tray;
+        public static Rectangle EULA_BG = new();
 
         #endregion Other
 
@@ -117,6 +120,8 @@ namespace launcher
             Downloads_Popup = mainWindow.Downloads_Popup;
             Background_Video = mainWindow.Background_Video;
             Background_Image = mainWindow.Background_Image;
+            EULA_Control = mainWindow.EULA_Control;
+            EULA_BG = mainWindow.EULA_BG;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

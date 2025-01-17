@@ -21,8 +21,8 @@ namespace launcher
     /// </summary>
     public partial class DownloadSettings : UserControl
     {
-        private int[] downloadSpeeds =
-        {
+        private readonly int[] downloadSpeeds =
+        [
             1000,
             100,
             50,
@@ -30,7 +30,7 @@ namespace launcher
             15,
             10,
             5
-        };
+        ];
 
         public DownloadSettings()
         {

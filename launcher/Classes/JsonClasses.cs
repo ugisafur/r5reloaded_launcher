@@ -35,7 +35,7 @@
         public string currentUpdateBranch { get; set; }
     }
 
-    public class BaseGameFile
+    public class GameFile
     {
         public string name { get; set; }
         public string checksum { get; set; }
@@ -47,9 +47,9 @@
         public string checksum { get; set; }
     }
 
-    public class BaseGameFiles
+    public class GameFiles
     {
-        public List<BaseGameFile> files { get; set; }
+        public List<GameFile> files { get; set; }
     }
 
     public class GamePatch

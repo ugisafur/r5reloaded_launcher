@@ -50,11 +50,11 @@ namespace launcher
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching base game files list", Source.Repair);
-            BaseGameFiles baseGameFiles = await DataFetcher.FetchBaseGameFiles(false);
+            GameFiles gameFiles = await DataFetcher.FetchBaseGameFiles(false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying bad files", Source.Repair);
-            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
+            int badFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (badFileCount > 0)
@@ -117,11 +117,11 @@ namespace launcher
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Repair);
-            BaseGameFiles baseGameFiles = await DataFetcher.FetchOptionalGameFiles(false);
+            GameFiles gameFiles = await DataFetcher.FetchOptionalGameFiles(false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying bad optional files", Source.Repair);
-            int badFileCount = FileManager.IdentifyBadFiles(baseGameFiles, checksumTasks, branchDirectory);
+            int badFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (badFileCount > 0)
