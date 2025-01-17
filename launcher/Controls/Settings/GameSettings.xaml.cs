@@ -20,6 +20,9 @@ namespace launcher
     /// </summary>
     public partial class GameSettings : UserControl
     {
+        private List<GameItem> gameItems = [];
+        private bool firstTime = true;
+
         public GameSettings()
         {
             InitializeComponent();
@@ -27,23 +30,53 @@ namespace launcher
 
         public void SetupGameSettings()
         {
+            gameItems.Clear();
+            BranchPanel.Children.Clear();
+
             LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
 
             List<Branch> branches = Configuration.ServerConfig.branches;
-            foreach (Branch branch in branches)
-            {
-                Separator separator = new Separator();
-                separator.Opacity = 0;
-                separator.Height = 20;
 
-                GameItem gameItem = new GameItem();
-                gameItem.SetupGameItem(branch);
+            for (int i = 0; i < branches.Count; i++)
+            {
+                // Skip local branches
+                if (branches[i].is_local_branch)
+                    continue;
+
+                GameItem gameItem = new();
+                gameItem.SetupGameItem(branches[i]);
                 gameItem.Width = 860;
+                gameItem.isFirstItem = i == 0;
+                gameItem.isLastItem = i == branches.Count - 1;
 
                 BranchPanel.Children.Add(gameItem);
-                BranchPanel.Children.Add(separator);
 
-                gameItem.CollapseItem();
+                if (gameItem.isLastItem)
+                {
+                    Separator separator = new Separator
+                    {
+                        Opacity = 0,
+                        Height = 20
+                    };
+
+                    BranchPanel.Children.Add(separator);
+                }
+
+                gameItems.Add(gameItem);
+            }
+        }
+
+        //I hate this, but it's the only way to get the first item to collapse on first load
+        //otherwise i cant set the corner radius of the top bars button as it dosnt exist until the item is loaded
+        public void FirstTime()
+        {
+            if (firstTime)
+            {
+                firstTime = false;
+                foreach (GameItem gameItem in gameItems)
+                {
+                    gameItem.CollapseItem();
+                }
             }
         }
     }

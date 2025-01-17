@@ -114,24 +114,24 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" CornerRadius="5">
+                        <Border x:Name="btnborder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" CornerRadius="5">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#194967" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#194967" />
+                                <Setter Property="Background" TargetName="btnborder" Value="#194967" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="#194967" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#194967" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#194967" />
+                                <Setter Property="Background" TargetName="btnborder" Value="#194967" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="#194967" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#194967" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#194967" />
+                                <Setter Property="Background" TargetName="btnborder" Value="#194967" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="#194967" />
                                 <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="White" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -141,7 +141,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#0F2C3E" CornerRadius="10">
+    <Border x:Name="MainBG" Background="#0F2C3E" CornerRadius="10">
         <Grid>
             <Border x:Name="TopBar" Background="#143A52" Height="65" CornerRadius="10,10,0,0" VerticalAlignment="Top">
                 <Grid>
@@ -154,12 +154,12 @@
             <TextBlock Text="Game location complete path:" Foreground="White" FontSize="18" Margin="48,113,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
             <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="White" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
 
-            <Rectangle Height="2" Fill="#40FFFFFF" Margin="48,205,52,236" />
+            <Rectangle Height="2" Width="760" Fill="#40FFFFFF"  VerticalAlignment="Top" Margin="50,210,50,0" />
             <TextBlock Text="Game Files" Foreground="White" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
             <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." TextWrapping="Wrap" Foreground="#9EC5DC" FontSize="14" Margin="48,286,447,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
-            <Button x:Name="VerifyGame" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,667,59" Content="VERIFY GAME" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" />
-            <Button x:Name="UninstallGame" Style="{DynamicResource UninstallBtnStyle}" Margin="213,344,474,59" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="#DD7477" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" />
-            <Button x:Name="InstallGame" Style="{DynamicResource SettingsBtnStyle}" Margin="213,344,474,59" Content="INSTALL BRANCH" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" />
+            <Button x:Name="VerifyGame" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,667,0" Content="VERIFY GAME" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" VerticalAlignment="Top" Height="40" />
+            <Button x:Name="UninstallGame" Style="{DynamicResource UninstallBtnStyle}" Margin="213,344,474,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="#DD7477" FontSize="18" FontFamily="Bahnschrift SemiLight" VerticalAlignment="Top" Cursor="Hand" Height="40" />
+            <Button x:Name="InstallGame" Style="{DynamicResource SettingsBtnStyle}" Margin="213,344,474,0" Content="INSTALL BRANCH" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" VerticalAlignment="Top" Cursor="Hand" Height="40" />
         </Grid>
     </Border>
 </UserControl>

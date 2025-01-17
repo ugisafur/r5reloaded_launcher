@@ -40,6 +40,9 @@ namespace launcher
             {
                 Menu_Popup.IsOpen = false;
                 Utilities.ShowSettingsControl();
+
+                //i hate this
+                Settings_Control.gameInstalls.FirstTime();
             }
         }
 
