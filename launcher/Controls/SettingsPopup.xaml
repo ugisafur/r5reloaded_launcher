@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-             d:DesignHeight="100" d:DesignWidth="170">
+             d:DesignHeight="140" d:DesignWidth="170">
     <UserControl.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -63,10 +63,11 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="5" Width="170" Height="95" Padding="5">
+    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="5" Width="170" Height="135" Padding="5">
         <StackPanel VerticalAlignment="Center">
             <Button Style="{DynamicResource SettingsButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
             <Button x:Name="RepairGame_Button" Style="{DynamicResource SettingsButton}" Content="Verify Game Files" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="btnRepair_Click" Cursor="Hand" />
+            <Button x:Name="UninstallGame_Button" Style="{DynamicResource SettingsButton}" Content="Uninstall Branch" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#DD7477" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="Uninstall_Click" />
         </StackPanel>
     </Border>
 </UserControl>

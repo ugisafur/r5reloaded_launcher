@@ -301,6 +301,7 @@ namespace launcher
                 Play_Button.IsEnabled = true;
                 AppState.IsLocalBranch = true;
                 GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                GameSettings_Control.UninstallGame_Button.IsEnabled = false;
                 return;
             }
 
@@ -318,6 +319,7 @@ namespace launcher
                     Play_Button.Content = "PLAY";
                     Play_Button.IsEnabled = true;
                     GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
                     return;
                 }
 
@@ -327,6 +329,7 @@ namespace launcher
                     Play_Button.Content = "PLAY";
                     Play_Button.IsEnabled = true;
                     GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
                 }
                 else
                 {
@@ -334,6 +337,7 @@ namespace launcher
                     Play_Button.Content = "PLAY";
                     Play_Button.IsEnabled = true;
                     GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
                 }
             }
             else
@@ -344,6 +348,7 @@ namespace launcher
                     Play_Button.Content = "DISABLED";
                     Play_Button.IsEnabled = false;
                     GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
                     return;
                 }
 
@@ -353,6 +358,7 @@ namespace launcher
                     Play_Button.Content = "REPAIR";
                     Play_Button.IsEnabled = true;
                     GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
                 }
                 else
                 {
@@ -360,6 +366,7 @@ namespace launcher
                     Play_Button.Content = "INSTALL";
                     Play_Button.IsEnabled = true;
                     GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
                 }
             }
         }

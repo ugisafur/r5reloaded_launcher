@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace launcher
 {
@@ -41,6 +44,9 @@ namespace launcher
             {
                 // Skip local branches
                 if (branches[i].is_local_branch)
+                    continue;
+
+                if (!branches[i].show_in_launcher)
                     continue;
 
                 GameItem gameItem = new();
@@ -76,6 +82,26 @@ namespace launcher
                 foreach (GameItem gameItem in gameItems)
                 {
                     gameItem.CollapseItem();
+                }
+            }
+        }
+
+        private void ChangePath_Click(object sender, RoutedEventArgs e)
+        {
+            var directoryDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select Folder"
+            };
+
+            if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                LibraryPath.Text = directoryDialog.FileName;
+                Ini.Set(Ini.Vars.Library_Location, directoryDialog.FileName);
+
+                foreach (var item in gameItems)
+                {
+                    item.InstallPath.Text = $"{directoryDialog.FileName}\\R5R Library\\{item.branchName.ToUpper()}";
                 }
             }
         }

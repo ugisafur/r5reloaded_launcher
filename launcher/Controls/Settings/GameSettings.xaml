@@ -132,7 +132,7 @@
 
                 <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" />
                 <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" />
-                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,269,402" />
+                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiLight" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,269,402" Click="ChangePath_Click" />
 
                 <StackPanel x:Name="BranchPanel" Margin="0,340,0,0">
                 </StackPanel>

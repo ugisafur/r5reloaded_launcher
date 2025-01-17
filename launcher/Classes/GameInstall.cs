@@ -147,5 +147,55 @@ namespace launcher
 
             AppState.BadFilesDetected = !isRepaired;
         }
+
+        public static async void Uninstall()
+        {
+            if (!Utilities.IsBranchInstalled())
+                return;
+
+            DownloadManager.SetInstallState(true, "UNINSTALLING");
+
+            string[] files = Directory.GetFiles(FileManager.GetBranchDirectory(), "*", SearchOption.AllDirectories);
+
+            DownloadManager.UpdateStatusLabel("Removeing Game Files", Source.Installer);
+            AppState.FilesLeft = files.Length;
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = files.Length;
+                Files_Label.Text = $"{AppState.FilesLeft} files left";
+            });
+
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(files, file =>
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch
+                    {
+                        LogError(Source.Installer, $"Failed to delete file: {file}");
+                    }
+                    finally
+                    {
+                        appDispatcher.Invoke(() =>
+                        {
+                            Progress_Bar.Value++;
+                            Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                        });
+                    }
+                });
+            });
+
+            DownloadManager.SetInstallState(false);
+
+            string branch = Utilities.GetCurrentBranch().branch;
+            Ini.Set(branch, "Is_Installed", false);
+            Ini.Set(branch, "Version", "");
+
+            Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been uninstalled!", BalloonIcon.Info);
+        }
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -33,6 +34,8 @@ namespace launcher
         private bool isExpanded = true;
         public bool isFirstItem = false;
         public bool isLastItem = false;
+        public string branchName = "";
+        public int index = 0;
 
         public GameItem()
         {
@@ -45,6 +48,12 @@ namespace launcher
             InstallPath.Text = $"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper()}";
             UninstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Visible : Visibility.Hidden;
             InstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Hidden : Visibility.Visible;
+            branchName = branch.branch;
+
+            UninstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
+            InstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
+            VerifyGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
+            BranchDisabledTxt.Visibility = branch.enabled ? Visibility.Hidden : Visibility.Visible;
         }
 
         private void TopButton_Click(object sender, RoutedEventArgs e)
@@ -163,6 +172,27 @@ namespace launcher
                 if (border != null)
                     border.CornerRadius = new CornerRadius(0, 0, 0, 0);
             }
+        }
+
+        private void VerifyGame_Click(object sender, RoutedEventArgs e)
+        {
+            Branch_Combobox.SelectedIndex = index;
+            Task.Run(() => GameRepair.Start());
+            Utilities.HideSettingsControl();
+        }
+
+        private void UninstallGame_Click(object sender, RoutedEventArgs e)
+        {
+            Branch_Combobox.SelectedIndex = index;
+            Task.Run(() => GameInstall.Uninstall());
+            Utilities.HideSettingsControl();
+        }
+
+        private void InstallGame_Click(object sender, RoutedEventArgs e)
+        {
+            Branch_Combobox.SelectedIndex = index;
+            Task.Run(() => GameInstall.Start());
+            Utilities.HideSettingsControl();
         }
     }
 }

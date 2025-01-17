@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,8 +16,6 @@ namespace launcher
     /// </summary>
     public partial class SettingsPopup : UserControl
     {
-        public Button Repair_Button = null;
-
         public SettingsPopup()
         {
             InitializeComponent();
@@ -34,6 +33,11 @@ namespace launcher
                 GameSettings_Popup.IsOpen = false;
                 Utilities.ShowAdvancedControl();
             }
+        }
+
+        private void Uninstall_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() => GameInstall.Uninstall());
         }
     }
 }
