@@ -60,12 +60,6 @@ namespace launcher
 
                 await decompressionStream.CopyToAsync(output);
 
-                await appDispatcher.InvokeAsync(() =>
-                {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
-
                 decompressionStream.Close();
                 output.Close();
                 input.Close();
@@ -78,6 +72,12 @@ namespace launcher
             {
                 if (File.Exists(compressedFilePath))
                     File.Delete(compressedFilePath);
+
+                await appDispatcher.InvokeAsync(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
             }
         }
     }

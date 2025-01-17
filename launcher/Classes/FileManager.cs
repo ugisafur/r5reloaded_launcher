@@ -57,8 +57,6 @@ namespace launcher
             string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
 
-            Directory.CreateDirectory(finalDirectory);
-
             return finalDirectory;
         }
 

@@ -28,6 +28,9 @@ namespace launcher
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            System.Threading.Tasks.TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
             // Hide the window on startup
             this.Opacity = 0;
 
@@ -46,10 +49,7 @@ namespace launcher
             if (AppState.IsOnline)
             {
                 Task.Run(() => UpdateChecker.Start());
-
-                Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
-                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
-                    Play_Button.Content = "REPAIR";
+                SetButtonState();
             }
             else
                 Play_Button.Content = "PLAY";
@@ -75,6 +75,13 @@ namespace launcher
             };
 
             Application.Current.Exit += new ExitEventHandler(Current_Exit);
+        }
+
+        public void SetButtonState()
+        {
+            Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
+            if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
+                Play_Button.Content = "REPAIR";
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)
@@ -323,7 +330,7 @@ namespace launcher
                     return;
                 }
 
-                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].currentVersion)
+                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version)
                 {
                     Update_Button.Visibility = Visibility.Hidden;
                     Play_Button.Content = "PLAY";
@@ -373,12 +380,14 @@ namespace launcher
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSettings_Popup.IsOpen = true;
+            if (!GameSettings_Popup.IsOpen)
+                GameSettings_Popup.IsOpen = true;
         }
 
         private void StatusBtn_Click(object sender, RoutedEventArgs e)
         {
-            Status_Popup.IsOpen = true;
+            if (!Status_Popup.IsOpen)
+                Status_Popup.IsOpen = true;
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
@@ -397,12 +406,14 @@ namespace launcher
 
         private void SubMenuBtn_Click(object sender, RoutedEventArgs e)
         {
-            Menu_Popup.IsOpen = true;
+            if (!Menu_Popup.IsOpen)
+                Menu_Popup.IsOpen = true;
         }
 
         private void DownloadsBtn_Click(object sender, RoutedEventArgs e)
         {
-            Downloads_Popup.IsOpen = true;
+            if (!Downloads_Popup.IsOpen)
+                Downloads_Popup.IsOpen = true;
         }
 
         private void DownloadsPopup_Unloaded(object sender, EventArgs e)
@@ -469,6 +480,35 @@ namespace launcher
         private void JoinDiscord_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("cmd", $"/c start https://discord.com/invite/jqMkUdXrBr") { CreateNoWindow = true });
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                LogCrashToFile(ex);
+            }
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(object sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
+        {
+            LogCrashToFile(e.Exception);
+            e.SetObserved();
+        }
+
+        private static void LogCrashToFile(Exception ex)
+        {
+            string filePath = Path.Combine(Path.GetDirectoryName(Logger.LogFilePath), "crash.log");
+
+            string log = $@"--- Crash Log ---
+Date: {DateTime.Now}
+Message: {ex.Message}
+StackTrace: {ex.StackTrace}
+InnerException: {ex.InnerException?.Message}
+-------------------";
+
+            File.AppendAllText(filePath, log + Environment.NewLine);
+            Logger.LogError(Logger.Source.Launcher, "An error occurred. Check crash.log for details.");
         }
     }
 

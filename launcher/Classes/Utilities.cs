@@ -46,10 +46,13 @@ namespace launcher
 
             try
             {
-                PlaylistRoot data = PlaylistFile.Parse(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
-                Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
-                Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
-                LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
+                appDispatcher.Invoke(new Action(() =>
+                {
+                    PlaylistRoot data = PlaylistFile.Parse(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+                    Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
+                    Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
+                    LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
+                }));
             }
             catch (Exception ex)
             {
@@ -130,7 +133,7 @@ namespace launcher
                     Branch branch = new()
                     {
                         branch = folder,
-                        currentVersion = "Local Install",
+                        version = "Local Install",
                         lastVersion = "",
                         game_url = "",
                         patch_url = "",
@@ -153,7 +156,7 @@ namespace launcher
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
-                    subtext = branch.currentVersion,
+                    subtext = branch.version,
                     isLocalBranch = branch.is_local_branch
                 })
                 .ToList();

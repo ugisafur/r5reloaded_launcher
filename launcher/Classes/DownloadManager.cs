@@ -190,7 +190,17 @@ namespace launcher
 
             // Check if the file already exists and matches the checksum
             if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
+            {
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
+
+                _downloadSemaphore.Release();
+
                 return destinationPath;
+            }
 
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
 
@@ -211,8 +221,13 @@ namespace launcher
             }
             finally
             {
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
+
                 await RemoveDownloadItemAsync(downloadItem);
-                UpdateProgress(--AppState.FilesLeft);
                 _downloadSemaphore.Release();
             }
         }
@@ -252,7 +267,11 @@ namespace launcher
             }
             finally
             {
-                UpdateProgress(--AppState.FilesLeft);
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
             }
         }
 
@@ -372,21 +391,6 @@ namespace launcher
                 Progress_Bar.Maximum = totalFiles;
                 Progress_Bar.Value = 0;
                 Files_Label.Text = $"{totalFiles} files left";
-            });
-        }
-
-        /// <summary>
-        /// Updates the progress bar and related UI elements.
-        /// </summary>
-        /// <param name="filesLeft">The number of files left to process. If -1, it is not updated.</param>
-        private static void UpdateProgress(int filesLeft = -1)
-        {
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Value++;
-
-                if (filesLeft != -1)
-                    Files_Label.Text = $"{filesLeft} files left";
             });
         }
 

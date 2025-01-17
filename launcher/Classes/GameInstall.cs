@@ -83,7 +83,7 @@ namespace launcher
 
             //Set branch as installed
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
 
             Utilities.SetupAdvancedMenu();
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been installed!", BalloonIcon.Info);
@@ -157,7 +157,7 @@ namespace launcher
 
             string[] files = Directory.GetFiles(FileManager.GetBranchDirectory(), "*", SearchOption.AllDirectories);
 
-            DownloadManager.UpdateStatusLabel("Removeing Game Files", Source.Installer);
+            DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
             AppState.FilesLeft = files.Length;
 
             appDispatcher.Invoke(() =>
@@ -188,6 +188,8 @@ namespace launcher
                     }
                 });
             });
+
+            Directory.Delete(FileManager.GetBranchDirectory(), true);
 
             DownloadManager.SetInstallState(false);
 

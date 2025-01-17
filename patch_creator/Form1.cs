@@ -426,7 +426,7 @@ namespace patch_creator
     public class Branch
     {
         public string branch { get; set; }
-        public string currentVersion { get; set; }
+        public string version { get; set; }
         public string lastVersion { get; set; }
         public string game_url { get; set; }
         public string patch_url { get; set; }
@@ -438,7 +438,6 @@ namespace patch_creator
     {
         public string launcherVersion { get; set; }
         public string launcherSelfUpdater { get; set; }
-        public string base_game_url { get; set; }
         public bool allowUpdates { get; set; }
         public List<Branch> branches { get; set; }
     }

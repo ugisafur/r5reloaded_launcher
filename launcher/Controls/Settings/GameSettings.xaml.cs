@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
+using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -97,13 +98,37 @@ namespace launcher
             if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 LibraryPath.Text = directoryDialog.FileName;
-                Ini.Set(Ini.Vars.Library_Location, directoryDialog.FileName);
 
-                foreach (var item in gameItems)
-                {
-                    item.InstallPath.Text = $"{directoryDialog.FileName}\\R5R Library\\{item.branchName.ToUpper()}";
-                }
+                SetLibaryPath();
             }
+        }
+
+        private void InputTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SetLibaryPath();
+        }
+
+        private void LibraryPath_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SetLibaryPath();
+            }
+        }
+
+        private void SetLibaryPath()
+        {
+            if ((string)Ini.Get(Ini.Vars.Library_Location) == LibraryPath.Text)
+                return;
+
+            Ini.Set(Ini.Vars.Library_Location, LibraryPath.Text);
+
+            foreach (var item in gameItems)
+            {
+                item.InstallPath.Text = $"{LibraryPath.Text}\\R5R Library\\{item.branchName.ToUpper()}";
+            }
+
+            Main_Window.SetButtonState();
         }
     }
 }

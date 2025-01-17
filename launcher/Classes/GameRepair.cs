@@ -78,7 +78,7 @@ namespace launcher
 
             //Update launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
 
             Utilities.SetupAdvancedMenu();
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been repaired!", BalloonIcon.Info);

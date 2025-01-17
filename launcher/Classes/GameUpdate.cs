@@ -34,7 +34,7 @@ namespace launcher
                 return;
 
             // Check if the game is already up to date
-            if (Utilities.GetBranchVersion() == Utilities.GetCurrentBranch().currentVersion)
+            if (Utilities.GetBranchVersion() == Utilities.GetCurrentBranch().version)
                 return;
 
             // Check if user is to outdated to update normally
@@ -84,7 +84,7 @@ namespace launcher
 
             // Update or create launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
 
             // Install finished
             DownloadManager.SetInstallState(false);
@@ -161,11 +161,11 @@ namespace launcher
             DownloadManager.UpdateStatusLabel("Fetching update files list", Source.Update);
             GameFiles gameFiles = await DataFetcher.FetchBaseGameFiles(false);
 
-            //Identify bad files
+            //Identify changed files
             DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Update);
             int changedFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
-            //if bad files exist, download and repair
+            //if changed files exist, download and update
             if (changedFileCount > 0)
             {
                 DownloadManager.UpdateStatusLabel("Preparing download tasks", Source.Update);
@@ -185,7 +185,7 @@ namespace launcher
 
             //Update launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().currentVersion);
+            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been updated!", BalloonIcon.Info);
 

@@ -89,9 +89,9 @@ namespace launcher
             }
         }
 
-        private static bool IsNewVersion(string currentVersion, string newVersion)
+        private static bool IsNewVersion(string version, string newVersion)
         {
-            var currentParts = currentVersion.Split('.').Select(int.Parse).ToArray();
+            var currentParts = version.Split('.').Select(int.Parse).ToArray();
             var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
 
             for (int i = 0; i < Math.Max(currentParts.Length, newParts.Length); i++)
@@ -120,7 +120,7 @@ namespace launcher
                    Configuration.LauncherConfig != null &&
                    !Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
                    Ini.Get(Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
-                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion != Utilities.GetBranchVersion();
+                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].version != Utilities.GetBranchVersion();
         }
 
         private static void HandleLauncherUpdate()
@@ -166,8 +166,8 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].currentVersion;
-                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
+                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].version = newServerConfig.branches[Utilities.GetCmbBranchIndex()].version;
+                //Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
                 Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = true;
                 Update_Button.Visibility = Visibility.Visible;
             });

@@ -42,6 +42,9 @@ namespace launcher
         {
             List<string> maps = [];
 
+            if (data.Playlists == null)
+                return maps;
+
             try
             {
                 foreach (var playlists in data.Playlists)
@@ -67,6 +70,9 @@ namespace launcher
         public static List<string> GetPlaylists(PlaylistRoot data)
         {
             List<string> playlistnames = [];
+
+            if (data.Playlists == null)
+                return playlistnames;
 
             try
             {
