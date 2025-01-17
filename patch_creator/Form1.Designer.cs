@@ -37,6 +37,8 @@
             button3 = new Button();
             comboBox1 = new ComboBox();
             label3 = new Label();
+            richTextBox1 = new RichTextBox();
+            label4 = new Label();
             SuspendLayout();
             // 
             // textBox1
@@ -118,11 +120,32 @@
             label3.TabIndex = 8;
             label3.Text = "Game Branch";
             // 
+            // richTextBox1
+            // 
+            richTextBox1.DetectUrls = false;
+            richTextBox1.Location = new Point(12, 209);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.Size = new Size(632, 193);
+            richTextBox1.TabIndex = 9;
+            richTextBox1.Text = "";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(12, 191);
+            label4.Name = "label4";
+            label4.Size = new Size(96, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Clear Cache Files";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(656, 179);
+            ClientSize = new Size(656, 414);
+            Controls.Add(label4);
+            Controls.Add(richTextBox1);
             Controls.Add(label3);
             Controls.Add(comboBox1);
             Controls.Add(button3);
@@ -151,5 +174,7 @@
         private Button button3;
         private ComboBox comboBox1;
         private Label label3;
+        private RichTextBox richTextBox1;
+        private Label label4;
     }
 }

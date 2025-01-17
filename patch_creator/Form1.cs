@@ -93,6 +93,13 @@ namespace patch_creator
             Patch patch = new Patch();
             patch.files = new List<PatchFile>();
 
+            int selected_index = 0;
+
+            comboBox1.Invoke(() =>
+            {
+                selected_index = comboBox1.SelectedIndex;
+            });
+
             //Setup final directories for the base game and current patch
             //var final_patch_dir = textBox2.Text + "\\patch";
             var final_game_dir = textBox2.Text;
@@ -102,7 +109,7 @@ namespace patch_creator
             Directory.CreateDirectory(final_game_dir);
 
             //Get current checksums.json file
-            var response = await client.GetStringAsync(Path.Combine(serverConfig.branches[comboBox1.SelectedIndex].game_url, "checksums.json"));
+            var response = await client.GetStringAsync(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json"));
             GameChecksums checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
 
             //Get updated checksums.json file
@@ -256,6 +263,16 @@ namespace patch_creator
 
             var compressed_game_checksums_file = JsonSerializer.Serialize(new_compressed_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", compressed_game_checksums_file);
+
+            richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
+            richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
+
+            foreach (var file in compressed_changedFiles)
+            {
+                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
+            }
+
+            Log("---------- Patch creation finished ----------");
         }
 
         /*public void ProcessDeltasWithProgress(List<string> changedFiles, string patch_files)
@@ -427,9 +444,7 @@ namespace patch_creator
     {
         public string branch { get; set; }
         public string version { get; set; }
-        public string lastVersion { get; set; }
         public string game_url { get; set; }
-        public string patch_url { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
     }
