@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,9 +36,27 @@ namespace launcher
 
         public void SetupEULA()
         {
-            string eula = SendPostRequestAsync("https://r5r.org/eula", "{}");
-            EULAData euladata = JsonConvert.DeserializeObject<EULAData>(eula);
-            EULATextBox.Text = euladata.data.contents;
+            if (!AppState.IsOnline)
+            {
+                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA, no internet connection");
+                EULATextBox.Text = "Failed to get EULA, no internet connection";
+                return;
+            }
+
+            var content = new StringContent("{}", Encoding.UTF8, "application/json");
+            HttpResponseMessage response = Networking.HttpClient.PostAsync("https://r5r.org/eula", content).Result;
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Logger.LogInfo(Logger.Source.Launcher, "Successfully got EULA");
+                EULAData euladata = JsonConvert.DeserializeObject<EULAData>(response.Content.ReadAsStringAsync().Result);
+                EULATextBox.Text = euladata.data.contents;
+            }
+            else
+            {
+                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA");
+            }
         }
 
         public string SendPostRequestAsync(string url, string jsonContent)

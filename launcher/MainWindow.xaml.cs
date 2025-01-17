@@ -248,17 +248,13 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.IsOnline)
+            if (!AppState.IsOnline || Utilities.IsBranchInstalled())
             {
                 Utilities.LaunchGame();
                 return;
             }
 
-            if (Utilities.IsBranchInstalled())
-            {
-                Utilities.LaunchGame();
-            }
-            else if (!AppState.IsInstalling)
+            if (!AppState.IsInstalling)
             {
                 if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
                 {
