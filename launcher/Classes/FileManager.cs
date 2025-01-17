@@ -54,7 +54,7 @@ namespace launcher
         public static string GetBranchDirectory()
         {
             string branchName = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
-            string libraryPath = Ini.Get(Ini.Vars.Library_Location, "C:\\Program Files\\R5Reloaded\\");
+            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
 
             Directory.CreateDirectory(finalDirectory);
@@ -64,7 +64,7 @@ namespace launcher
 
         public static string GetLibraryPathDirectory()
         {
-            string libraryPath = Ini.Get(Ini.Vars.Library_Location, "C:\\Program Files\\R5Reloaded\\");
+            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library");
 
             Directory.CreateDirectory(finalDirectory);

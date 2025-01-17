@@ -23,69 +23,69 @@ namespace launcher
 
         private static void AppendHostParameters(ref string svParameters)
         {
-            if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.HostName, "")))
+            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.HostName)))
             {
-                AppendParameter(ref svParameters, "+hostname", Ini.Get(Ini.Vars.HostName, ""));
-                AppendParameter(ref svParameters, "+sv_pylonVisibility", Ini.Get(Ini.Vars.Visibility, 0).ToString());
+                AppendParameter(ref svParameters, "+hostname", (string)Ini.Get(Ini.Vars.HostName));
+                AppendParameter(ref svParameters, "+sv_pylonVisibility", (string)Ini.Get(Ini.Vars.Visibility).ToString());
             }
         }
 
         private static void AppendVideoParameters(ref string svParameters)
         {
-            if (Ini.Get(Ini.Vars.Windowed, false))
+            if ((bool)Ini.Get(Ini.Vars.Windowed))
                 AppendParameter(ref svParameters, "-windowed");
             else
                 AppendParameter(ref svParameters, "-fullscreen");
 
-            if (Ini.Get(Ini.Vars.Borderless, false))
+            if ((bool)Ini.Get(Ini.Vars.Borderless))
                 AppendParameter(ref svParameters, "-noborder");
             else
                 AppendParameter(ref svParameters, "-forceborder");
 
-            AppendParameter(ref svParameters, "+fps_max", Ini.Get(Ini.Vars.Max_FPS, "-1"));
+            AppendParameter(ref svParameters, "+fps_max", (string)Ini.Get(Ini.Vars.Max_FPS));
 
-            if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Resolution_Width, "")))
-                AppendParameter(ref svParameters, "-w", Ini.Get(Ini.Vars.Resolution_Width, ""));
+            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Resolution_Width)))
+                AppendParameter(ref svParameters, "-w", (string)Ini.Get(Ini.Vars.Resolution_Width));
 
-            if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Resolution_Height, "")))
-                AppendParameter(ref svParameters, "-h", Ini.Get(Ini.Vars.Resolution_Height, ""));
+            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Resolution_Height)))
+                AppendParameter(ref svParameters, "-h", (string)Ini.Get(Ini.Vars.Resolution_Height));
         }
 
         private static void AppendProcessorParameters(ref string svParameters)
         {
-            int nReservedCores = int.Parse(Ini.Get(Ini.Vars.Reserved_Cores, "-1"));
+            int nReservedCores = int.Parse((string)Ini.Get(Ini.Vars.Reserved_Cores));
             if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
-                AppendParameter(ref svParameters, "-numreservedcores", Ini.Get(Ini.Vars.Reserved_Cores, "-1"));
+                AppendParameter(ref svParameters, "-numreservedcores", (string)Ini.Get(Ini.Vars.Reserved_Cores));
 
-            int nWorkerThreads = int.Parse(Ini.Get(Ini.Vars.Worker_Threads, "-1"));
+            int nWorkerThreads = int.Parse((string)Ini.Get(Ini.Vars.Worker_Threads));
             if (nWorkerThreads > -1)
-                AppendParameter(ref svParameters, "-numworkerthreads", Ini.Get(Ini.Vars.Worker_Threads, "-1"));
+                AppendParameter(ref svParameters, "-numworkerthreads", (string)Ini.Get(Ini.Vars.Worker_Threads));
         }
 
         private static void AppendNetParameters(ref string svParameters)
         {
-            AppendParameter(ref svParameters, "+net_encryptionEnable", Ini.Get(Ini.Vars.Encrypt_Packets, false) == true ? "1" : "0");
-            AppendParameter(ref svParameters, "+net_useRandomKey", Ini.Get(Ini.Vars.Random_Netkey, false) == true ? "1" : "0");
-            AppendParameter(ref svParameters, "+net_queued_packet_thread", Ini.Get(Ini.Vars.Queued_Packets, false) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_encryptionEnable", (bool)Ini.Get(Ini.Vars.Encrypt_Packets) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_useRandomKey", (bool)Ini.Get(Ini.Vars.Random_Netkey) == true ? "1" : "0");
+            AppendParameter(ref svParameters, "+net_queued_packet_thread", (bool)Ini.Get(Ini.Vars.Queued_Packets) == true ? "1" : "0");
 
-            if (Ini.Get(Ini.Vars.No_Timeout, false))
+            if ((bool)Ini.Get(Ini.Vars.No_Timeout))
                 AppendParameter(ref svParameters, "-notimeout");
         }
 
         private static void AppendConsoleParameters(ref string svParameters)
         {
-            eMode mode = (eMode)Ini.Get(Ini.Vars.Mode, 0);
+            eMode mode = (eMode)(int)Ini.Get(Ini.Vars.Mode);
 
-            if (Ini.Get(Ini.Vars.Show_Console, false) || mode == eMode.SERVER)
+            if ((bool)Ini.Get(Ini.Vars.Show_Console) || mode == eMode.SERVER)
                 AppendParameter(ref svParameters, "-wconsole");
             else
                 AppendParameter(ref svParameters, "-noconsole");
 
-            if (Ini.Get(Ini.Vars.Color_Console, false))
+            if ((bool)Ini.Get(Ini.Vars.Color_Console))
                 AppendParameter(ref svParameters, "-ansicolor");
 
-            if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Playlists_File, "playlists_r5_patch.txt")))
-                AppendParameter(ref svParameters, "-playlistfile", Ini.Get(Ini.Vars.Playlists_File, "playlists_r5_patch.txt"));
+            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Playlists_File)))
+                AppendParameter(ref svParameters, "-playlistfile", (string)Ini.Get(Ini.Vars.Playlists_File));
         }
 
         public static string BuildParameter()
@@ -96,32 +96,32 @@ namespace launcher
             AppendConsoleParameters(ref svParameters);
             AppendNetParameters(ref svParameters);
 
-            eMode mode = (eMode)Ini.Get(Ini.Vars.Mode, 0);
+            eMode mode = (eMode)(int)Ini.Get(Ini.Vars.Mode);
             switch (mode)
             {
                 case eMode.HOST:
                     {
                         // GAME ###############################################################
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Map, "")))
-                            AppendParameter(ref svParameters, "+map", Ini.Get(Ini.Vars.Map, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Map)))
+                            AppendParameter(ref svParameters, "+map", (string)Ini.Get(Ini.Vars.Map));
 
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Playlist, "")))
-                            AppendParameter(ref svParameters, "+launchplaylist", Ini.Get(Ini.Vars.Playlist, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Playlist)))
+                            AppendParameter(ref svParameters, "+launchplaylist", (string)Ini.Get(Ini.Vars.Playlist));
 
-                        if (Ini.Get(Ini.Vars.Enable_Developer, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Developer))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-devsdk");
                         }
 
-                        if (Ini.Get(Ini.Vars.Enable_Cheats, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         // ENGINE ###############################################################
-                        if (Ini.Get(Ini.Vars.No_Async, false))
+                        if ((bool)Ini.Get(Ini.Vars.No_Async))
                         {
                             AppendParameter(ref svParameters, "-noasync");
                             AppendParameter(ref svParameters, "+async_serialize", "0");
@@ -143,34 +143,34 @@ namespace launcher
                         AppendHostParameters(ref svParameters);
                         AppendVideoParameters(ref svParameters);
 
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Command_Line, "")))
-                            AppendParameter(ref svParameters, Ini.Get(Ini.Vars.Command_Line, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Command_Line)))
+                            AppendParameter(ref svParameters, (string)Ini.Get(Ini.Vars.Command_Line));
 
                         return svParameters;
                     }
                 case eMode.SERVER:
                     {
                         // GAME ###############################################################
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Map, "")))
-                            AppendParameter(ref svParameters, "+map", Ini.Get(Ini.Vars.Map, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Map)))
+                            AppendParameter(ref svParameters, "+map", (string)Ini.Get(Ini.Vars.Map));
 
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Playlist, "")))
-                            AppendParameter(ref svParameters, "+launchplaylist", Ini.Get(Ini.Vars.Playlist, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Playlist)))
+                            AppendParameter(ref svParameters, "+launchplaylist", (string)Ini.Get(Ini.Vars.Playlist));
 
-                        if (Ini.Get(Ini.Vars.Enable_Developer, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Developer))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-devsdk");
                         }
 
-                        if (Ini.Get(Ini.Vars.Enable_Cheats, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         // ENGINE ###############################################################
-                        if (Ini.Get(Ini.Vars.No_Async, false))
+                        if ((bool)Ini.Get(Ini.Vars.No_Async))
                         {
                             AppendParameter(ref svParameters, "-noasync");
                             AppendParameter(ref svParameters, "+async_serialize", "0");
@@ -182,8 +182,8 @@ namespace launcher
 
                         AppendHostParameters(ref svParameters);
 
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Command_Line, "")))
-                            AppendParameter(ref svParameters, Ini.Get(Ini.Vars.Command_Line, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Command_Line)))
+                            AppendParameter(ref svParameters, (string)Ini.Get(Ini.Vars.Command_Line));
 
                         return svParameters;
                     }
@@ -193,20 +193,20 @@ namespace launcher
                         AppendParameter(ref svParameters, "-noserverdll");
 
                         // GAME ###############################################################
-                        if (Ini.Get(Ini.Vars.Enable_Developer, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Developer))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-devsdk");
                         }
 
-                        if (Ini.Get(Ini.Vars.Enable_Cheats, false))
+                        if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         // ENGINE ###############################################################
-                        if (Ini.Get(Ini.Vars.No_Async, false))
+                        if ((bool)Ini.Get(Ini.Vars.No_Async))
                         {
                             AppendParameter(ref svParameters, "-noasync");
                             AppendParameter(ref svParameters, "+async_serialize", "0");
@@ -228,8 +228,8 @@ namespace launcher
                         AppendVideoParameters(ref svParameters);
 
                         // MAIN ###############################################################
-                        if (!string.IsNullOrEmpty(Ini.Get(Ini.Vars.Command_Line, "")))
-                            AppendParameter(ref svParameters, Ini.Get(Ini.Vars.Command_Line, ""));
+                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Command_Line)))
+                            AppendParameter(ref svParameters, (string)Ini.Get(Ini.Vars.Command_Line));
 
                         return svParameters;
                     }

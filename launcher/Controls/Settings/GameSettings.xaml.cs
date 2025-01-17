@@ -24,5 +24,27 @@ namespace launcher
         {
             InitializeComponent();
         }
+
+        public void SetupGameSettings()
+        {
+            LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
+
+            List<Branch> branches = Configuration.ServerConfig.branches;
+            foreach (Branch branch in branches)
+            {
+                Separator separator = new Separator();
+                separator.Opacity = 0;
+                separator.Height = 20;
+
+                GameItem gameItem = new GameItem();
+                gameItem.SetupGameItem(branch);
+                gameItem.Width = 860;
+
+                BranchPanel.Children.Add(gameItem);
+                BranchPanel.Children.Add(separator);
+
+                gameItem.CollapseItem();
+            }
+        }
     }
 }

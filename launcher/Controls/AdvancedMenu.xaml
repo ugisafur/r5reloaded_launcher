@@ -322,6 +322,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+            <Setter Property="CaretBrush" Value="White" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -462,7 +463,7 @@
                     <TextBlock Text="Map" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
                 <Grid Grid.Row="0" Grid.Column="2">
-                    <ComboBox x:Name="PlaylistCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand" MaxDropDownHeight="1"/>
+                    <ComboBox x:Name="PlaylistCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand" MaxDropDownHeight="1" />
                     <TextBlock Text="Playlist" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="1">

@@ -58,12 +58,12 @@ namespace launcher
                 IniFile file = new();
 
                 file.SetSetting("Settings", "Enable_Quit_On_Close", false);
-                file.SetSetting("Settings", "Enable_Notifications", false);
+                file.SetSetting("Settings", "Enable_Notifications", true);
                 file.SetSetting("Settings", "Disable_Background_Video", false);
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
-                file.SetSetting("Settings", "Concurrent_Downloads", "Max");
-                file.SetSetting("Settings", "Download_Speed_Limit", "");
+                file.SetSetting("Settings", "Concurrent_Downloads", 1000);
+                file.SetSetting("Settings", "Download_Speed_Limit", 0);
                 file.SetSetting("Settings", "Library_Location", "");
 
                 file.SetSetting("Advanced_Options", "Enable_Cheats", false);
@@ -71,8 +71,8 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "Show_Console", false);
                 file.SetSetting("Advanced_Options", "Color_Console", true);
                 file.SetSetting("Advanced_Options", "Playlists_File", "playlists_r5_patch.txt");
-                file.SetSetting("Advanced_Options", "Map", "");
-                file.SetSetting("Advanced_Options", "Playlist", "");
+                file.SetSetting("Advanced_Options", "Map", 0);
+                file.SetSetting("Advanced_Options", "Playlist", 0);
                 file.SetSetting("Advanced_Options", "Mode", 0);
                 file.SetSetting("Advanced_Options", "Visibility", 0);
                 file.SetSetting("Advanced_Options", "HostName", "");
@@ -89,7 +89,7 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "No_Timeout", false);
                 file.SetSetting("Advanced_Options", "Windowed", false);
                 file.SetSetting("Advanced_Options", "Borderless", false);
-                file.SetSetting("Advanced_Options", "Max_FPS", "-1");
+                file.SetSetting("Advanced_Options", "Max_FPS", "");
 
                 file.SetSetting("Launcher", "SelectedBranch", "");
 
@@ -217,33 +217,21 @@ namespace launcher
             return value;
         }
 
-        public static bool Get(Vars setting, bool defaultValue)
+        public static object Get(Vars setting)
         {
             if (!Exists())
-                return defaultValue;
+                return GetDefaultValue(setting);
 
             IniFile file = GetConfig();
-            bool value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
-            return value;
-        }
+            object value = GetDefaultValue(setting);
 
-        public static int Get(Vars setting, int defaultValue)
-        {
-            if (!Exists())
-                return defaultValue;
+            if (value is string v)
+                value = file.GetSetting(GetSectionString(setting), GetString(setting), v);
+            else if (value is bool v1)
+                value = file.GetSetting(GetSectionString(setting), GetString(setting), v1);
+            else if (value is int v2)
+                value = file.GetSetting(GetSectionString(setting), GetString(setting), v2);
 
-            IniFile file = GetConfig();
-            int value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
-            return value;
-        }
-
-        public static string Get(Vars setting, string defaultValue)
-        {
-            if (!Exists())
-                return defaultValue;
-
-            IniFile file = GetConfig();
-            string value = file.GetSetting(GetSectionString(setting), GetString(setting), defaultValue);
             return value;
         }
 
@@ -251,12 +239,8 @@ namespace launcher
         {
             return setting switch
             {
-                Vars.Concurrent_Downloads => "Max",
-                Vars.Download_Speed_Limit => "",
                 Vars.Library_Location => "",
                 Vars.Playlists_File => "playlists_r5_patch.txt",
-                Vars.Map => "",
-                Vars.Playlist => "",
                 Vars.HostName => "",
                 Vars.Command_Line => "",
                 Vars.Resolution_Width => "",
@@ -286,6 +270,10 @@ namespace launcher
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
+                Vars.Concurrent_Downloads => 1000,
+                Vars.Download_Speed_Limit => 0,
+                Vars.Map => 0,
+                Vars.Playlist => 0,
 
                 _ => throw new NotImplementedException($"Default value for {setting} is not implemented.")
             };

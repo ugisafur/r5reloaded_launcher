@@ -33,6 +33,8 @@ namespace launcher
 
             Ini.CreateConfig();
 
+            SetupSystemTray();
+
             Utilities.SetupApp(this);
 
             await OnOpen();
@@ -48,11 +50,9 @@ namespace launcher
             else
                 Play_Button.Content = "PLAY";
 
-            bool useStaticImage = Ini.Get(Ini.Vars.Disable_Background_Video, false);
+            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
-
-            SetupSystemTray();
         }
 
         private void SetupSystemTray()
@@ -79,7 +79,7 @@ namespace launcher
 
         public async Task OnOpen()
         {
-            if (Ini.Get(Ini.Vars.Disable_Animations, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
             {
                 this.Opacity = 1;
                 return;
@@ -147,7 +147,7 @@ namespace launcher
 
         private async Task OnClose()
         {
-            if (Ini.Get(Ini.Vars.Disable_Animations, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
             {
                 this.Hide();
                 return;
@@ -220,7 +220,7 @@ namespace launcher
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Enable_Quit_On_Close, false))
+            if ((bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close))
                 Application.Current.Shutdown();
             else
             {

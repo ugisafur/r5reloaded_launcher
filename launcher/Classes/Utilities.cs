@@ -33,7 +33,6 @@ namespace launcher
             SetupLibaryPath();
             SetupBranchComboBox();
             GetSelfUpdater();
-            SetupAdvancedMenu();
         }
 
         public static void SetupAdvancedMenu()
@@ -47,11 +46,9 @@ namespace launcher
             try
             {
                 PlaylistRoot data = PlaylistFile.Parse(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
-                LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
-
                 Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
                 Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
-                LogInfo(Source.Launcher, $"Setup playlists and map combo boxes for branch {GetCurrentBranch().branch}");
+                LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
             }
             catch (Exception ex)
             {
@@ -88,7 +85,7 @@ namespace launcher
 
         private static void SetupLibaryPath()
         {
-            if (string.IsNullOrEmpty(Ini.Get(Ini.Vars.Library_Location, "")))
+            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
             {
                 DirectoryInfo parentDir = Directory.GetParent(Constants.Paths.LauncherPath.TrimEnd(Path.DirectorySeparatorChar));
                 Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
@@ -99,8 +96,8 @@ namespace launcher
         {
             Branch_Combobox.ItemsSource = GetGameBranches();
 
-            string savedBranch = Ini.Get(Ini.Vars.SelectedBranch, "");
-            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Configuration.ServerConfig.branches[0].branch : Ini.Get(Ini.Vars.SelectedBranch, "");
+            string savedBranch = (string)Ini.Get(Ini.Vars.SelectedBranch);
+            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Configuration.ServerConfig.branches[0].branch : (string)Ini.Get(Ini.Vars.SelectedBranch);
 
             int selectedIndex = Configuration.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
@@ -186,7 +183,7 @@ namespace launcher
         {
             string gameArguments = BuildParameter();
 
-            eMode mode = (eMode)Ini.Get(Ini.Vars.Mode, 0);
+            eMode mode = (eMode)(int)Ini.Get(Ini.Vars.Mode);
 
             string exeName = mode switch
             {
@@ -217,7 +214,7 @@ namespace launcher
         {
             try
             {
-                int coreCount = int.Parse(Ini.Get(Ini.Vars.Processor_Affinity, "-1"));
+                int coreCount = int.Parse((string)Ini.Get(Ini.Vars.Processor_Affinity));
                 int processorCount = Environment.ProcessorCount;
 
                 if (coreCount == -1 || coreCount == 0)
@@ -287,7 +284,7 @@ namespace launcher
         {
             AppState.InSettingsMenu = true;
 
-            if (Ini.Get(Ini.Vars.Disable_Transitions, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Transitions))
             {
                 Settings_Control.Visibility = Visibility.Visible;
                 Menu_Control.Settings.IsEnabled = false;
@@ -316,7 +313,7 @@ namespace launcher
         {
             AppState.InSettingsMenu = false;
 
-            if (Ini.Get(Ini.Vars.Disable_Transitions, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Transitions))
             {
                 Settings_Control.Visibility = Visibility.Hidden;
                 Menu_Control.Settings.IsEnabled = true;
@@ -345,7 +342,7 @@ namespace launcher
         {
             AppState.InAdvancedMenu = true;
 
-            if (Ini.Get(Ini.Vars.Disable_Transitions, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Transitions))
             {
                 Advanced_Control.Visibility = Visibility.Visible;
                 Menu_Control.Settings.IsEnabled = false;
@@ -369,7 +366,7 @@ namespace launcher
         {
             AppState.InAdvancedMenu = false;
 
-            if (Ini.Get(Ini.Vars.Disable_Transitions, false))
+            if ((bool)Ini.Get(Ini.Vars.Disable_Transitions))
             {
                 Advanced_Control.Visibility = Visibility.Hidden;
                 Menu_Control.Settings.IsEnabled = true;
@@ -423,8 +420,17 @@ namespace launcher
 
         public static void SendNotification(string message, BalloonIcon icon)
         {
-            if (Ini.Get(Ini.Vars.Enable_Notifications, true))
+            if (!(bool)Ini.Get(Ini.Vars.Enable_Notifications))
+                return;
+
+            try
+            {
                 System_Tray.ShowBalloonTip("R5R Launcher", message, icon);
+            }
+            catch (Exception ex)
+            {
+                LogError(Source.Launcher, $"Failed to send notification: {ex.Message}");
+            }
         }
 
 #if DEBUG

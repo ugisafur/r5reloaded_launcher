@@ -36,7 +36,7 @@ namespace launcher
                 _ => null,
             };
 
-            double fadeSpeed = Ini.Get(Ini.Vars.Disable_Transitions, false) ? 0 : 200;
+            double fadeSpeed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 200;
 
             if (visiblePage != null && newPage != null && visiblePage != newPage)
             {
@@ -98,8 +98,7 @@ namespace launcher
 
             accessibilityPage.SetupAccessibilitySettings();
             applicationPage.SetupApplicationSettings();
-            //gamePage.SetupGameSettings();
-            GameInstallsBtn.IsEnabled = false;
+            gamePage.SetupGameSettings();
             downloadPage.SetupDownloadSettings();
             aboutPage.SetupAboutSettings();
         }

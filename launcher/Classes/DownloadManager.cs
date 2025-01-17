@@ -29,7 +29,7 @@ namespace launcher
         /// </summary>
         public static void ConfigureConcurrency()
         {
-            int maxConcurrentDownloads = Ini.Get(Ini.Vars.Concurrent_Downloads, 1000);
+            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
             _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
         }
 
@@ -38,7 +38,7 @@ namespace launcher
         /// </summary>
         public static void ConfigureDownloadSpeed()
         {
-            int speedLimitKb = Ini.Get(Ini.Vars.Download_Speed_Limit, 0);
+            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
             _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : ThrottledStream.Infinite;
         }
 

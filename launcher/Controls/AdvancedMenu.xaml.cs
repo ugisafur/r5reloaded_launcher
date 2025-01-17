@@ -30,30 +30,30 @@ namespace launcher
 
         public void SetupAdvancedSettings()
         {
-            CommandLine.Text = Ini.Get(Ini.Vars.Command_Line, "");
-            HeightRes.Text = Ini.Get(Ini.Vars.Resolution_Height, "");
-            WidthRes.Text = Ini.Get(Ini.Vars.Resolution_Width, "");
-            ThreadsWorker.Text = Ini.Get(Ini.Vars.Worker_Threads, "-1");
-            AffinityProc.Text = Ini.Get(Ini.Vars.Processor_Affinity, "-1");
-            ReservedCores.Text = Ini.Get(Ini.Vars.Reserved_Cores, "0");
-            MaxFPS.Text = Ini.Get(Ini.Vars.Max_FPS, "-1");
-            HostName.Text = Ini.Get(Ini.Vars.HostName, "");
-            PlaylistsFile.Text = Ini.Get(Ini.Vars.Playlists_File, "playlists_r5_patch.txt");
-            MapCmb.SelectedIndex = Ini.Get(Ini.Vars.Map, 0);
-            PlaylistCmb.SelectedIndex = Ini.Get(Ini.Vars.Playlist, 0);
-            VisibilityCmb.SelectedIndex = Ini.Get(Ini.Vars.Visibility, 0);
-            Mode.SelectedIndex = Ini.Get(Ini.Vars.Mode, 0);
-            Borderless.IsChecked = Ini.Get(Ini.Vars.Borderless, false);
-            Windowed.IsChecked = Ini.Get(Ini.Vars.Windowed, false);
-            NoAsync.IsChecked = Ini.Get(Ini.Vars.No_Async, false);
-            NoTimeout.IsChecked = Ini.Get(Ini.Vars.No_Timeout, false);
-            RandomNetKey.IsChecked = Ini.Get(Ini.Vars.Random_Netkey, false);
-            PacketsQueued.IsChecked = Ini.Get(Ini.Vars.Queued_Packets, false);
-            PacketsEncrypt.IsChecked = Ini.Get(Ini.Vars.Encrypt_Packets, false);
-            ColoredCon.IsChecked = Ini.Get(Ini.Vars.Color_Console, false);
-            ConsoleShow.IsChecked = Ini.Get(Ini.Vars.Show_Console, false);
-            Dev.IsChecked = Ini.Get(Ini.Vars.Enable_Developer, false);
-            Cheats.IsChecked = Ini.Get(Ini.Vars.Enable_Cheats, false);
+            CommandLine.Text = (string)Ini.Get(Ini.Vars.Command_Line);
+            HeightRes.Text = (string)Ini.Get(Ini.Vars.Resolution_Height);
+            WidthRes.Text = (string)Ini.Get(Ini.Vars.Resolution_Width);
+            ThreadsWorker.Text = (string)Ini.Get(Ini.Vars.Worker_Threads);
+            AffinityProc.Text = (string)Ini.Get(Ini.Vars.Processor_Affinity);
+            ReservedCores.Text = (string)Ini.Get(Ini.Vars.Reserved_Cores);
+            MaxFPS.Text = (string)Ini.Get(Ini.Vars.Max_FPS);
+            HostName.Text = (string)Ini.Get(Ini.Vars.HostName);
+            PlaylistsFile.Text = (string)Ini.Get(Ini.Vars.Playlists_File);
+            MapCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Map);
+            PlaylistCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Playlist);
+            VisibilityCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Visibility);
+            Mode.SelectedIndex = (int)Ini.Get(Ini.Vars.Mode);
+            Borderless.IsChecked = (bool)Ini.Get(Ini.Vars.Borderless);
+            Windowed.IsChecked = (bool)Ini.Get(Ini.Vars.Windowed);
+            NoAsync.IsChecked = (bool)Ini.Get(Ini.Vars.No_Async);
+            NoTimeout.IsChecked = (bool)Ini.Get(Ini.Vars.No_Timeout);
+            RandomNetKey.IsChecked = (bool)Ini.Get(Ini.Vars.Random_Netkey);
+            PacketsQueued.IsChecked = (bool)Ini.Get(Ini.Vars.Queued_Packets);
+            PacketsEncrypt.IsChecked = (bool)Ini.Get(Ini.Vars.Encrypt_Packets);
+            ColoredCon.IsChecked = (bool)Ini.Get(Ini.Vars.Color_Console);
+            ConsoleShow.IsChecked = (bool)Ini.Get(Ini.Vars.Show_Console);
+            Dev.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Developer);
+            Cheats.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Cheats);
 
             CommandLine.TextChanged += CommandLine_TextChanged;
             HeightRes.TextChanged += Height_TextChanged;
@@ -103,6 +103,11 @@ namespace launcher
             {
                 MapCmb.Items.Add(map);
             }
+
+            if ((int)Ini.Get(Ini.Vars.Map) <= MapCmb.Items.Count)
+                MapCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Map);
+            else
+                MapCmb.SelectedIndex = 0;
         }
 
         public void SetPlaylistList(List<string> playlists)
@@ -113,6 +118,11 @@ namespace launcher
             {
                 PlaylistCmb.Items.Add(playlist);
             }
+
+            if ((int)Ini.Get(Ini.Vars.Playlist) <= PlaylistCmb.Items.Count)
+                PlaylistCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Playlist);
+            else
+                PlaylistCmb.SelectedIndex = 0;
         }
 
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -134,7 +144,7 @@ namespace launcher
 
         private void CommandLine_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Command_Line, "") != CommandLine.Text)
+            if ((string)Ini.Get(Ini.Vars.Command_Line) != CommandLine.Text)
                 Ini.Set(Ini.Vars.Command_Line, CommandLine.Text);
         }
 
@@ -143,7 +153,7 @@ namespace launcher
             if (HeightRes.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Resolution_Height, "") != HeightRes.Text)
+            if ((string)Ini.Get(Ini.Vars.Resolution_Height) != HeightRes.Text)
                 Ini.Set(Ini.Vars.Resolution_Height, HeightRes.Text);
         }
 
@@ -152,7 +162,7 @@ namespace launcher
             if (WidthRes.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Resolution_Width, "") != WidthRes.Text)
+            if ((string)Ini.Get(Ini.Vars.Resolution_Width) != WidthRes.Text)
                 Ini.Set(Ini.Vars.Resolution_Width, WidthRes.Text);
         }
 
@@ -161,7 +171,7 @@ namespace launcher
             if (string.IsNullOrEmpty(ThreadsWorker.Text) || ThreadsWorker.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Worker_Threads, "-1") != ThreadsWorker.Text)
+            if ((string)Ini.Get(Ini.Vars.Worker_Threads) != ThreadsWorker.Text)
                 Ini.Set(Ini.Vars.Worker_Threads, ThreadsWorker.Text);
         }
 
@@ -170,7 +180,7 @@ namespace launcher
             if (string.IsNullOrEmpty(AffinityProc.Text) || AffinityProc.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Processor_Affinity, "-1") != AffinityProc.Text)
+            if ((string)Ini.Get(Ini.Vars.Processor_Affinity) != AffinityProc.Text)
                 Ini.Set(Ini.Vars.Processor_Affinity, AffinityProc.Text);
         }
 
@@ -179,7 +189,7 @@ namespace launcher
             if (string.IsNullOrEmpty(ReservedCores.Text) || ReservedCores.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Reserved_Cores, "0") != ReservedCores.Text)
+            if ((string)Ini.Get(Ini.Vars.Reserved_Cores) != ReservedCores.Text)
                 Ini.Set(Ini.Vars.Reserved_Cores, ReservedCores.Text);
         }
 
@@ -188,109 +198,109 @@ namespace launcher
             if (string.IsNullOrEmpty(MaxFPS.Text) || MaxFPS.Text == "-")
                 return;
 
-            if (Ini.Get(Ini.Vars.Max_FPS, "-1") != MaxFPS.Text)
+            if ((string)Ini.Get(Ini.Vars.Max_FPS) != MaxFPS.Text)
                 Ini.Set(Ini.Vars.Max_FPS, MaxFPS.Text);
         }
 
         private void HostName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.HostName, "") != HostName.Text)
+            if ((string)Ini.Get(Ini.Vars.HostName) != HostName.Text)
                 Ini.Set(Ini.Vars.HostName, HostName.Text);
         }
 
         private void PlaylistsFile_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Playlists_File, "playlists_r5_patch.txt") != PlaylistsFile.Text)
+            if ((string)Ini.Get(Ini.Vars.Playlists_File) != PlaylistsFile.Text)
                 Ini.Set(Ini.Vars.Playlists_File, PlaylistsFile.Text);
         }
 
         private void Map_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (Ini.Get(Ini.Vars.Map, 0) != MapCmb.SelectedIndex)
-            //Ini.Set(Ini.Vars.Map, MapCmb.SelectedIndex);
+            if ((int)Ini.Get(Ini.Vars.Map) != MapCmb.SelectedIndex)
+                Ini.Set(Ini.Vars.Map, MapCmb.SelectedIndex);
         }
 
         private void Playlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (Ini.Get(Ini.Vars.Playlist, 0) != PlaylistCmb.SelectedIndex)
-            //Ini.Set(Ini.Vars.Playlist, PlaylistCmb.SelectedIndex);
+            if ((int)Ini.Get(Ini.Vars.Playlist) != PlaylistCmb.SelectedIndex)
+                Ini.Set(Ini.Vars.Playlist, PlaylistCmb.SelectedIndex);
         }
 
         private void Visibility_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Visibility, 0) != VisibilityCmb.SelectedIndex)
+            if ((int)Ini.Get(Ini.Vars.Visibility) != VisibilityCmb.SelectedIndex)
                 Ini.Set(Ini.Vars.Visibility, VisibilityCmb.SelectedIndex);
         }
 
         private void Mode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Mode, 0) != Mode.SelectedIndex)
+            if ((int)Ini.Get(Ini.Vars.Mode) != Mode.SelectedIndex)
                 Ini.Set(Ini.Vars.Mode, Mode.SelectedIndex);
         }
 
         private void Borderless_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Borderless, false) != Borderless.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Borderless) != Borderless.IsChecked.Value)
                 Ini.Set(Ini.Vars.Borderless, Borderless.IsChecked.Value);
         }
 
         private void Windowed_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Windowed, false) != Windowed.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Windowed) != Windowed.IsChecked.Value)
                 Ini.Set(Ini.Vars.Windowed, Windowed.IsChecked.Value);
         }
 
         private void NoAsync_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.No_Async, false) != NoAsync.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.No_Async) != NoAsync.IsChecked.Value)
                 Ini.Set(Ini.Vars.No_Async, NoAsync.IsChecked.Value);
         }
 
         private void NoTimeout_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.No_Timeout, false) != NoTimeout.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.No_Timeout) != NoTimeout.IsChecked.Value)
                 Ini.Set(Ini.Vars.No_Timeout, NoTimeout.IsChecked.Value);
         }
 
         private void RandomNetKey_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Random_Netkey, true) != RandomNetKey.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Random_Netkey) != RandomNetKey.IsChecked.Value)
                 Ini.Set(Ini.Vars.Random_Netkey, RandomNetKey.IsChecked.Value);
         }
 
         private void PacketsQueued_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Queued_Packets, true) != PacketsQueued.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Queued_Packets) != PacketsQueued.IsChecked.Value)
                 Ini.Set(Ini.Vars.Queued_Packets, PacketsQueued.IsChecked.Value);
         }
 
         private void PacketsEncrypt_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Encrypt_Packets, true) != PacketsEncrypt.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Encrypt_Packets) != PacketsEncrypt.IsChecked.Value)
                 Ini.Set(Ini.Vars.Encrypt_Packets, PacketsEncrypt.IsChecked.Value);
         }
 
         private void ColoredCon_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Color_Console, false) != ColoredCon.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Color_Console) != ColoredCon.IsChecked.Value)
                 Ini.Set(Ini.Vars.Color_Console, ColoredCon.IsChecked.Value);
         }
 
         private void Console_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Show_Console, false) != ConsoleShow.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Show_Console) != ConsoleShow.IsChecked.Value)
                 Ini.Set(Ini.Vars.Show_Console, ConsoleShow.IsChecked.Value);
         }
 
         private void Dev_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Enable_Developer, false) != Dev.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Enable_Developer) != Dev.IsChecked.Value)
                 Ini.Set(Ini.Vars.Enable_Developer, Dev.IsChecked.Value);
         }
 
         private void Cheats_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (Ini.Get(Ini.Vars.Enable_Cheats, false) != Cheats.IsChecked.Value)
+            if ((bool)Ini.Get(Ini.Vars.Enable_Cheats) != Cheats.IsChecked.Value)
                 Ini.Set(Ini.Vars.Enable_Cheats, Cheats.IsChecked.Value);
         }
 

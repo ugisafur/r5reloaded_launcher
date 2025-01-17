@@ -217,6 +217,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+            <Setter Property="CaretBrush" Value="White" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -301,7 +302,7 @@
                     <ComboBoxItem Content="5" />
                 </ComboBox>
                 <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" />
-                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection." TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" />
+                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" />
             </Grid>
         </Grid>
     </Border>

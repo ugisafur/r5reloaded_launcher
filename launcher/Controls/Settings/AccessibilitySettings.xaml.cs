@@ -31,9 +31,9 @@ namespace launcher
         public void SetupAccessibilitySettings()
         {
             // Set the initial state of the toggle switches
-            DisableTransitionsBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Transitions, false);
-            DisableAnimationsBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Animations, false);
-            DisableBackgroundVideoBtn.IsChecked = Ini.Get(Ini.Vars.Disable_Background_Video, false);
+            DisableTransitionsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Transitions);
+            DisableAnimationsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Animations);
+            DisableBackgroundVideoBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
         }
 
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)
