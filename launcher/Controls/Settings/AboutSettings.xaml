@@ -21,6 +21,24 @@
             <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="White" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" />
             <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="162,27,380,367" />
             <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="White" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="White" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,53,778,341" />
+            <TextBlock Grid.Row="2" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,53,377,341">
+                <Hyperlink NavigateUri="https://github.com/AyeZeeBB/r5reloaded_launcher" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://github.com/AyeZeeBB/r5reloaded_launcher" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Grid.Row="2" Text="Website:" Foreground="White" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,778,315" />
+            <TextBlock Grid.Row="2" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,377,315">
+                <Hyperlink NavigateUri="https://r5reloaded.com" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://r5reloaded.com" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Grid.Row="2" Text="Discord:" Foreground="White" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,778,289" />
+            <TextBlock Grid.Row="2" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,377,289">
+                <Hyperlink NavigateUri="https://discord.com/invite/jqMkUdXrBr" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://discord.com/invite/jqMkUdXrBr" />
+                </Hyperlink>
+            </TextBlock>
         </Grid>
     </Border>
 </UserControl>

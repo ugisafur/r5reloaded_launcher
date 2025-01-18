@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace launcher
 {
@@ -16,6 +17,12 @@ namespace launcher
         {
             // Set the initial state of the toggle switches
             launcherVersionTxt.Text = Constants.Launcher.VERSION;
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {e.Uri.AbsoluteUri}") { CreateNoWindow = true });
+            e.Handled = true;
         }
     }
 }

@@ -438,29 +438,14 @@ namespace launcher
         {
             if (e.ExceptionObject is Exception ex)
             {
-                LogCrashToFile(ex);
+                Logger.LogCrashToFile(ex);
             }
         }
 
         private static void TaskScheduler_UnobservedTaskException(object sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
         {
-            LogCrashToFile(e.Exception);
+            Logger.LogCrashToFile(e.Exception);
             e.SetObserved();
-        }
-
-        private static void LogCrashToFile(Exception ex)
-        {
-            string filePath = Path.Combine(Path.GetDirectoryName(Logger.LogFilePath), "crash.log");
-
-            string log = $@"--- Crash Log ---
-Date: {DateTime.Now}
-Message: {ex.Message}
-StackTrace: {ex.StackTrace}
-InnerException: {ex.InnerException?.Message}
--------------------";
-
-            File.AppendAllText(filePath, log + Environment.NewLine);
-            Logger.LogError(Logger.Source.Launcher, "An error occurred. Check crash.log for details.");
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
