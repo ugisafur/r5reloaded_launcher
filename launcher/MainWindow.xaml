@@ -382,9 +382,8 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#2E6894" />
+                                <Setter Property="Background" TargetName="border" Value="#8C000000" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="#8C000000" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -638,7 +637,7 @@
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                         <Button x:Name="GameSettings_Button" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
-                                        <Popup x:Name="GameSettings_Popup" PlacementTarget="{Binding ElementName=GameSettings_Button}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-120" AllowsTransparency="True" PopupAnimation="Fade">
+                                        <Popup x:Name="GameSettings_Popup" PlacementTarget="{Binding ElementName=GameSettings_Button}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-120" AllowsTransparency="True" PopupAnimation="Fade" Opened="GameSettings_Popup_Opened" Closed="GameSettings_Popup_Closed">
                                             <local:SettingsPopup x:Name="GameSettings_Control" />
                                         </Popup>
                                     </StackPanel>
@@ -700,7 +699,7 @@
                                     <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
-                            <Popup x:Name="Menu_Popup" PlacementTarget="{Binding ElementName=Menu_Button}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False">
+                            <Popup x:Name="Menu_Popup" PlacementTarget="{Binding ElementName=Menu_Button}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="MenuPopup_Loaded" Closed="MenuPopup_Unloaded">
                                 <local:MenuPopup x:Name="Menu_Control" />
                             </Popup>
                         </Grid>
