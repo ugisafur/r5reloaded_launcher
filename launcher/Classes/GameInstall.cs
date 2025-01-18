@@ -88,18 +88,10 @@ namespace launcher
             Utilities.SetupAdvancedMenu();
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been installed!", BalloonIcon.Info);
 
-            MessageBoxResult result = MessageBox.Show("The game installation is complete.Would you like to install the HD Textures? you can always choose to install them at another time, they are not required to play.", "Install HD Textures", MessageBoxButton.YesNo, MessageBoxImage.Information);
-            if (result == MessageBoxResult.Yes)
-                Ini.Set(branch, "Download_HD_Textures", true);
-            else
-                Ini.Set(branch, "Download_HD_Textures", false);
-
-            //Install optional files if HD textures are enabled
-            if (Ini.Get(branch, "Download_HD_Textures", false))
-                Task.Run(() => InstallOptionalFiles());
+            Utilities.ShowDownloadOptlFiles();
         }
 
-        private static async Task InstallOptionalFiles()
+        public static async Task InstallOptionalFiles()
         {
             DownloadManager.SetOptionalInstallState(true);
 

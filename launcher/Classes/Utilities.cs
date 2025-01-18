@@ -445,7 +445,7 @@ namespace launcher
         public static void ShowEULA()
         {
             EULA_Control.Visibility = Visibility.Visible;
-            EULA_BG.Visibility = Visibility.Visible;
+            POPUP_BG.Visibility = Visibility.Visible;
 
             int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
 
@@ -453,15 +453,15 @@ namespace launcher
             Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-            var EULA_BG_OPACITY = new DoubleAnimation
+            var POPUP_BG_OPACITY = new DoubleAnimation
             {
                 From = 0,
                 To = 1,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
-            Storyboard.SetTarget(EULA_BG_OPACITY, EULA_BG);
-            Storyboard.SetTargetProperty(EULA_BG_OPACITY, new PropertyPath("Opacity"));
+            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
+            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
 
             var EULA_OPACITY = new DoubleAnimation
             {
@@ -474,7 +474,7 @@ namespace launcher
             Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
 
             storyboard.Children.Add(EULA_OPACITY);
-            storyboard.Children.Add(EULA_BG_OPACITY);
+            storyboard.Children.Add(POPUP_BG_OPACITY);
 
             storyboard.Begin();
         }
@@ -487,15 +487,15 @@ namespace launcher
             Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-            var EULA_BG_OPACITY = new DoubleAnimation
+            var POPUP_BG_OPACITY = new DoubleAnimation
             {
                 From = 1,
                 To = 0,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
-            Storyboard.SetTarget(EULA_BG_OPACITY, EULA_BG);
-            Storyboard.SetTargetProperty(EULA_BG_OPACITY, new PropertyPath("Opacity"));
+            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
+            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
 
             var EULA_OPACITY = new DoubleAnimation
             {
@@ -508,7 +508,7 @@ namespace launcher
             Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
 
             storyboard.Children.Add(EULA_OPACITY);
-            storyboard.Children.Add(EULA_BG_OPACITY);
+            storyboard.Children.Add(POPUP_BG_OPACITY);
 
             TaskCompletionSource<bool> tcs = new();
             storyboard.Completed += (s, e) => tcs.SetResult(true);
@@ -518,7 +518,86 @@ namespace launcher
             await tcs.Task;
 
             EULA_Control.Visibility = Visibility.Hidden;
-            EULA_BG.Visibility = Visibility.Hidden;
+            POPUP_BG.Visibility = Visibility.Hidden;
+        }
+
+        public static void ShowDownloadOptlFiles()
+        {
+            OptFiles_Control.Visibility = Visibility.Visible;
+            POPUP_BG.Visibility = Visibility.Visible;
+
+            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+
+            var storyboard = new Storyboard();
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var POPUP_BG_OPACITY = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
+            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
+
+            var OPT_OPACITY = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(OPT_OPACITY, OptFiles_Control);
+            Storyboard.SetTargetProperty(OPT_OPACITY, new PropertyPath("Opacity"));
+
+            storyboard.Children.Add(OPT_OPACITY);
+            storyboard.Children.Add(POPUP_BG_OPACITY);
+
+            storyboard.Begin();
+        }
+
+        public static async void HideDownloadOptlFiles()
+        {
+            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+
+            var storyboard = new Storyboard();
+            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
+            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var POPUP_BG_OPACITY = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
+            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
+
+            var OPT_OPACITY = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = animationDuration,
+                EasingFunction = easing
+            };
+            Storyboard.SetTarget(OPT_OPACITY, OptFiles_Control);
+            Storyboard.SetTargetProperty(OPT_OPACITY, new PropertyPath("Opacity"));
+
+            storyboard.Children.Add(OPT_OPACITY);
+            storyboard.Children.Add(POPUP_BG_OPACITY);
+
+            TaskCompletionSource<bool> tcs = new();
+            storyboard.Completed += (s, e) => tcs.SetResult(true);
+
+            storyboard.Begin();
+
+            await tcs.Task;
+
+            OptFiles_Control.Visibility = Visibility.Hidden;
+            POPUP_BG.Visibility = Visibility.Hidden;
         }
 
 #if DEBUG

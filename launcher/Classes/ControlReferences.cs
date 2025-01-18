@@ -80,6 +80,7 @@ namespace launcher
         public static StatusPopup Status_Control = new();
         public static MenuPopup Menu_Control = new();
         public static EULAPopup EULA_Control = new();
+        public static InstallOptFilesPopup OptFiles_Control = new();
 
         #endregion Popup Controls
 
@@ -90,7 +91,7 @@ namespace launcher
         public static MediaElement Background_Video = new();
         public static Image Background_Image = new();
         public static TaskbarIcon System_Tray;
-        public static Rectangle EULA_BG = new();
+        public static Rectangle POPUP_BG = new();
 
         #endregion Other
 
@@ -121,7 +122,8 @@ namespace launcher
             Background_Video = mainWindow.Background_Video;
             Background_Image = mainWindow.Background_Image;
             EULA_Control = mainWindow.EULA_Control;
-            EULA_BG = mainWindow.EULA_BG;
+            POPUP_BG = mainWindow.POPUP_BG;
+            OptFiles_Control = mainWindow.OptFiles_Control;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

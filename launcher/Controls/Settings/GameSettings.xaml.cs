@@ -41,6 +41,8 @@ namespace launcher
 
             List<Branch> branches = Configuration.ServerConfig.branches;
 
+            int index = 0;
+
             for (int i = 0; i < branches.Count; i++)
             {
                 // Skip local branches
@@ -55,6 +57,9 @@ namespace launcher
                 gameItem.Width = 860;
                 gameItem.isFirstItem = i == 0;
                 gameItem.isLastItem = i == branches.Count - 1;
+                gameItem.index = index;
+
+                index++;
 
                 BranchPanel.Children.Add(gameItem);
 
@@ -129,6 +134,16 @@ namespace launcher
             }
 
             Main_Window.SetButtonState();
+        }
+
+        public void UpdateGameItems()
+        {
+            List<Branch> branches = Configuration.ServerConfig.branches;
+
+            foreach (var item in gameItems)
+            {
+                item.SetupGameItem(branches[item.index]);
+            }
         }
     }
 }

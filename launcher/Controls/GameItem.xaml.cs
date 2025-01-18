@@ -54,6 +54,17 @@ namespace launcher
             InstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
             VerifyGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
             BranchDisabledTxt.Visibility = branch.enabled ? Visibility.Hidden : Visibility.Visible;
+
+            if (branch.enabled && Ini.Get(branch.branch, "Is_Installed", false))
+            {
+                InstallOpt.Visibility = Ini.Get(branch.branch, "Download_HD_Textures", false) ? Visibility.Hidden : Visibility.Visible;
+                HDTexturesInstalledTxt.Visibility = Ini.Get(branch.branch, "Download_HD_Textures", false) ? Visibility.Visible : Visibility.Hidden;
+            }
+            else
+            {
+                InstallOpt.Visibility = Visibility.Hidden;
+                HDTexturesInstalledTxt.Visibility = Visibility.Hidden;
+            }
         }
 
         private void TopButton_Click(object sender, RoutedEventArgs e)
@@ -176,6 +187,9 @@ namespace launcher
 
         private void VerifyGame_Click(object sender, RoutedEventArgs e)
         {
+            if (AppState.IsInstalling)
+                return;
+
             Branch_Combobox.SelectedIndex = index;
             Task.Run(() => GameRepair.Start());
             Utilities.HideSettingsControl();
@@ -183,6 +197,9 @@ namespace launcher
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
         {
+            if (AppState.IsInstalling)
+                return;
+
             Branch_Combobox.SelectedIndex = index;
             Task.Run(() => GameInstall.Uninstall());
             Utilities.HideSettingsControl();
@@ -190,9 +207,22 @@ namespace launcher
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
         {
+            if (AppState.IsInstalling)
+                return;
+
             Branch_Combobox.SelectedIndex = index;
             Task.Run(() => GameInstall.Start());
             Utilities.HideSettingsControl();
+        }
+
+        private void InstallOpt_Click(object sender, RoutedEventArgs e)
+        {
+            if (AppState.IsInstalling)
+                return;
+
+            Branch_Combobox.SelectedIndex = index;
+            Utilities.HideSettingsControl();
+            Utilities.ShowDownloadOptlFiles();
         }
     }
 }
