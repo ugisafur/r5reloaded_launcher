@@ -40,7 +40,7 @@ namespace launcher
 
         public static List<string> GetMaps(PlaylistRoot data)
         {
-            List<string> maps = [];
+            List<string> maps = ["No Selection"];
 
             if (data.Playlists == null)
                 return maps;
@@ -69,7 +69,7 @@ namespace launcher
 
         public static List<string> GetPlaylists(PlaylistRoot data)
         {
-            List<string> playlistnames = [];
+            List<string> playlistnames = ["No Selection"];
 
             if (data.Playlists == null)
                 return playlistnames;

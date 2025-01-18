@@ -100,29 +100,13 @@ namespace launcher
 
         public void SetMapList(List<string> maps)
         {
-            MapCmb.Items.Clear();
-
-            MapCmb.Items.Add("No Selection");
-
-            foreach (string map in maps)
-            {
-                MapCmb.Items.Add(map);
-            }
-
+            MapCmb.ItemsSource = maps;
             MapCmb.SelectedIndex = 0;
         }
 
         public void SetPlaylistList(List<string> playlists)
         {
-            PlaylistCmb.Items.Clear();
-
-            PlaylistCmb.Items.Add("No Selection");
-
-            foreach (string playlist in playlists)
-            {
-                PlaylistCmb.Items.Add(playlist);
-            }
-
+            PlaylistCmb.ItemsSource = playlists;
             PlaylistCmb.SelectedIndex = 0;
         }
 

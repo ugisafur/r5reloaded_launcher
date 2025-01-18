@@ -147,6 +147,8 @@ namespace launcher
             var selectedBranch = comboBox.SelectedIndex;
             var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
+            Utilities.SetupAdvancedMenu();
+
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
                 HandleLocalBranch(comboBranch.title);
@@ -172,12 +174,10 @@ namespace launcher
             Update_Button.Visibility = Visibility.Hidden;
             SetPlayState("PLAY", true, false, true);
             AppState.IsLocalBranch = true;
-            Utilities.SetupAdvancedMenu();
         }
 
         private void HandleInstalledBranch(int selectedBranch)
         {
-            Utilities.SetupAdvancedMenu();
             var branch = Configuration.ServerConfig.branches[selectedBranch];
 
             if (!branch.enabled)
@@ -325,9 +325,25 @@ namespace launcher
                 return;
             }
 
-            Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
+            if (!Utilities.GetCurrentBranch().enabled)
+            {
+                Play_Button.Content = "DISABLED";
+                return;
+            }
+
+            if (Utilities.IsBranchInstalled())
+            {
+                Play_Button.Content = "PLAY";
+                return;
+            }
+
             if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
+            {
                 Play_Button.Content = "REPAIR";
+                return;
+            }
+
+            Play_Button.Content = "INSTALL";
         }
 
         public async Task OnOpen()

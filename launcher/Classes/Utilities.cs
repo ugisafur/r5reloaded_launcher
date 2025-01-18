@@ -38,11 +38,15 @@ namespace launcher
 
         public static void SetupAdvancedMenu()
         {
-            if (!IsBranchInstalled() && !GetCurrentBranch().is_local_branch)
+            if ((!IsBranchInstalled() && !GetCurrentBranch().is_local_branch) || !File.Exists(Path.Combine(GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
+            {
+                maps = new List<string> { "No Selection" };
+                gamemodes = new List<string> { "No Selection" };
+                Advanced_Control.SetMapList(maps);
+                Advanced_Control.SetPlaylistList(gamemodes);
+                LogInfo(Source.Launcher, "Branch not installed, skipping playlist file");
                 return;
-
-            if (!File.Exists(Path.Combine(GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
-                return;
+            }
 
             try
             {

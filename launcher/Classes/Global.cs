@@ -12,7 +12,7 @@ namespace launcher
     {
         public static class Launcher
         {
-            public const string VERSION = "0.7.5";
+            public const string VERSION = "0.7.7";
             public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
             public const int MAX_REPAIR_ATTEMPTS = 5;
         }
