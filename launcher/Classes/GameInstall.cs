@@ -33,6 +33,9 @@ namespace launcher
     {
         public static async void Start()
         {
+            if (AppState.IsInstalling)
+                return;
+
             if (!AppState.IsOnline)
                 return;
 
@@ -96,6 +99,15 @@ namespace launcher
 
         public static async Task InstallOptionalFiles()
         {
+            if (AppState.IsInstalling)
+                return;
+
+            if (!AppState.IsOnline)
+                return;
+
+            if (Utilities.GetCurrentBranch().is_local_branch)
+                return;
+
             DownloadManager.SetOptionalInstallState(true);
 
             //Set download limits

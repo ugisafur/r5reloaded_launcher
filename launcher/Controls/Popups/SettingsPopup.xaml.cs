@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -38,6 +39,17 @@ namespace launcher
         private void Uninstall_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(() => GameInstall.Uninstall());
+        }
+
+        private void OpenDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (Utilities.IsBranchInstalled() || Utilities.GetCurrentBranch().is_local_branch)
+            {
+                string dir = Utilities.GetBranchDirectory();
+
+                if (Directory.Exists(dir))
+                    System.Diagnostics.Process.Start("explorer.exe", dir);
+            }
         }
     }
 }

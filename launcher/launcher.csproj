@@ -90,6 +90,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\Popups\CheckExisitngFilesPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -108,6 +111,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\Popups\CheckExisitngFilesPopup.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="MainWindow.xaml">
       <CopyToOutputDirectory></CopyToOutputDirectory>
       <SubType>Designer</SubType>

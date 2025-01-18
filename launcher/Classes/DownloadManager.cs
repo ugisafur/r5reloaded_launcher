@@ -513,6 +513,7 @@ namespace launcher
                 Files_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing;
+                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing;
             });
 
             ShowProgressBar(installing);

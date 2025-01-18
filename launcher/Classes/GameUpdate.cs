@@ -24,6 +24,9 @@ namespace launcher
     {
         public static async void Start()
         {
+            if (AppState.IsInstalling)
+                return;
+
             if (!AppState.IsOnline)
                 return;
 

@@ -124,7 +124,7 @@ namespace launcher
             {
                 if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
                 {
-                    Task.Run(() => GameRepair.Start());
+                    Utilities.ShowCheckExistingFiles();
                 }
                 else
                 {
@@ -148,6 +148,8 @@ namespace launcher
             var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
             Utilities.SetupAdvancedMenu();
+            GameSettings_Control.OpenDir_Button.IsEnabled = Utilities.IsBranchInstalled() || comboBranch.isLocalBranch;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = Utilities.IsBranchInstalled() || comboBranch.isLocalBranch;
 
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
@@ -166,51 +168,6 @@ namespace launcher
             {
                 HandleUninstalledBranch(selectedBranch);
             }
-        }
-
-        private void HandleLocalBranch(string branchTitle)
-        {
-            Ini.Set(Ini.Vars.SelectedBranch, branchTitle);
-            Update_Button.Visibility = Visibility.Hidden;
-            SetPlayState("PLAY", true, false, true);
-            AppState.IsLocalBranch = true;
-        }
-
-        private void HandleInstalledBranch(int selectedBranch)
-        {
-            var branch = Configuration.ServerConfig.branches[selectedBranch];
-
-            if (!branch.enabled)
-            {
-                SetPlayState("PLAY", false, false, true);
-                return;
-            }
-
-            bool isUpToDate = Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version;
-            Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
-            SetPlayState("PLAY", true, true, true);
-        }
-
-        private void HandleUninstalledBranch(int selectedBranch)
-        {
-            var branch = Configuration.ServerConfig.branches[selectedBranch];
-
-            if (!branch.enabled)
-            {
-                SetPlayState("DISABLED", false, false, false);
-                return;
-            }
-
-            bool executableExists = File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe"));
-            SetPlayState(executableExists ? "REPAIR" : "INSTALL", executableExists, executableExists, executableExists);
-        }
-
-        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled)
-        {
-            Play_Button.Content = playContent;
-            Play_Button.IsEnabled = playEnabled;
-            GameSettings_Control.RepairGame_Button.IsEnabled = repairEnabled;
-            GameSettings_Control.UninstallGame_Button.IsEnabled = uninstallEnabled;
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -299,6 +256,51 @@ namespace launcher
 
         #region functions
 
+        private void HandleLocalBranch(string branchTitle)
+        {
+            Ini.Set(Ini.Vars.SelectedBranch, branchTitle);
+            Update_Button.Visibility = Visibility.Hidden;
+            SetPlayState("PLAY", true, false, true);
+            AppState.IsLocalBranch = true;
+        }
+
+        private void HandleInstalledBranch(int selectedBranch)
+        {
+            var branch = Configuration.ServerConfig.branches[selectedBranch];
+
+            if (!branch.enabled)
+            {
+                SetPlayState("PLAY", false, false, true);
+                return;
+            }
+
+            bool isUpToDate = Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version;
+            Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
+            SetPlayState("PLAY", true, true, true);
+        }
+
+        private void HandleUninstalledBranch(int selectedBranch)
+        {
+            var branch = Configuration.ServerConfig.branches[selectedBranch];
+
+            if (!branch.enabled)
+            {
+                SetPlayState("DISABLED", false, false, false);
+                return;
+            }
+
+            bool executableExists = File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe"));
+            SetPlayState(executableExists ? "REPAIR" : "INSTALL", executableExists, executableExists, executableExists);
+        }
+
+        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled)
+        {
+            Play_Button.Content = playContent;
+            Play_Button.IsEnabled = playEnabled;
+            GameSettings_Control.RepairGame_Button.IsEnabled = repairEnabled;
+            GameSettings_Control.UninstallGame_Button.IsEnabled = uninstallEnabled;
+        }
+
         private void SetupSystemTray()
         {
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
@@ -339,22 +341,34 @@ namespace launcher
 
             if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
             {
-                Play_Button.Content = "REPAIR";
+                Play_Button.Content = "CHECK FILES";
                 return;
             }
 
             Play_Button.Content = "INSTALL";
         }
 
-        public async Task OnOpen()
+        private async Task AnimateWindow(bool isOpening)
         {
             if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
             {
-                this.Opacity = 1;
+                if (isOpening)
+                {
+                    this.Opacity = 1;
+                }
+                else
+                {
+                    this.Hide();
+                    this.Opacity = 1;
+                    WindowScale.ScaleX = 1;
+                    WindowScale.ScaleY = 1;
+                }
                 return;
             }
 
-            await Task.Delay(100);
+            // Delay before opening animation
+            if (isOpening)
+                await Task.Delay(100);
 
             // Create a storyboard for simultaneous animations
             Storyboard storyboard = new();
@@ -365,33 +379,39 @@ namespace launcher
             // Easing function for smoothness
             CubicEase easing = new() { EasingMode = EasingMode.EaseInOut };
 
-            // Animate ScaleX from 1 to 0
+            // Define animation values based on opening or closing
+            double scaleStart = isOpening ? 0.75 : 1.0;
+            double scaleEnd = isOpening ? 1.0 : 0.75;
+            double opacityStart = isOpening ? 0.0 : 1.0;
+            double opacityEnd = isOpening ? 1.0 : 0.0;
+
+            // Animate ScaleX
             DoubleAnimation scaleXAnimation = new()
             {
-                From = 0.75,
-                To = 1.0,
+                From = scaleStart,
+                To = scaleEnd,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
             Storyboard.SetTarget(scaleXAnimation, this);
             Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
 
-            // Animate ScaleY from 1 to 0
+            // Animate ScaleY
             DoubleAnimation scaleYAnimation = new()
             {
-                From = 0.75,
-                To = 1.0,
+                From = scaleStart,
+                To = scaleEnd,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
             Storyboard.SetTarget(scaleYAnimation, this);
             Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
 
-            // Animate Opacity from 1 to 0
+            // Animate Opacity
             DoubleAnimation opacityAnimation = new()
             {
-                From = 0.0,
-                To = 1.0,
+                From = opacityStart,
+                To = opacityEnd,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
@@ -412,80 +432,20 @@ namespace launcher
 
             // Await the completion of the animation
             await tcs.Task;
-        }
 
-        private async Task OnClose()
-        {
-            if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
+            // Finalize actions after animation
+            if (!isOpening)
             {
                 this.Hide();
-                return;
+                this.Opacity = 1;
+                WindowScale.ScaleX = 1;
+                WindowScale.ScaleY = 1;
             }
-
-            // Create a storyboard for simultaneous animations
-            Storyboard storyboard = new();
-
-            // Duration for the animations
-            Duration animationDuration = new(TimeSpan.FromSeconds(0.5));
-
-            // Easing function for smoothness
-            CubicEase easing = new() { EasingMode = EasingMode.EaseInOut };
-
-            // Animate ScaleX from 1 to 0
-            DoubleAnimation scaleXAnimation = new()
-            {
-                From = 1.0,
-                To = 0.75,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(scaleXAnimation, this);
-            Storyboard.SetTargetProperty(scaleXAnimation, new PropertyPath("RenderTransform.ScaleX"));
-
-            // Animate ScaleY from 1 to 0
-            DoubleAnimation scaleYAnimation = new()
-            {
-                From = 1.0,
-                To = 0.75,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(scaleYAnimation, this);
-            Storyboard.SetTargetProperty(scaleYAnimation, new PropertyPath("RenderTransform.ScaleY"));
-
-            // Animate Opacity from 1 to 0
-            DoubleAnimation opacityAnimation = new()
-            {
-                From = 1.0,
-                To = 0.0,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(opacityAnimation, this);
-            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
-
-            // Add animations to the storyboard
-            storyboard.Children.Add(scaleXAnimation);
-            storyboard.Children.Add(scaleYAnimation);
-            storyboard.Children.Add(opacityAnimation);
-
-            // Create a TaskCompletionSource to await the animation
-            TaskCompletionSource<bool> tcs = new();
-            storyboard.Completed += (s, e) => tcs.SetResult(true);
-
-            // Begin the storyboard
-            storyboard.Begin();
-
-            // Await the completion of the animation
-            await tcs.Task;
-
-            // Hide the window after animation
-            this.Hide();
-
-            this.Opacity = 1;
-            WindowScale.ScaleX = 1;
-            WindowScale.ScaleY = 1;
         }
+
+        public Task OnOpen() => AnimateWindow(isOpening: true);
+
+        public Task OnClose() => AnimateWindow(isOpening: false);
 
         private void ExecuteShowWindow()
         {

@@ -728,5 +728,6 @@
         <Rectangle x:Name="POPUP_BG" Fill="#66000000" Opacity="0" Visibility="Hidden" />
         <local:EULAPopup x:Name="EULA_Control" Width="561" Height="720" Opacity="0" Visibility="Hidden" />
         <local:InstallOptFilesPopup x:Name="OptFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:CheckExisitngFilesPopup x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
     </Grid>
 </Window>

@@ -99,7 +99,7 @@
                         <TextBlock Text="Accessibility" Width="300" />
                     </Button>
                     <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
-                        <TextBlock Text="Game Installs" Width="300" />
+                        <TextBlock Text="Game Branches" Width="300" />
                     </Button>
                     <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Download" Width="300" />

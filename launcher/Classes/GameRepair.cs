@@ -16,6 +16,9 @@ namespace launcher
     {
         public static async Task<bool> Start()
         {
+            if (AppState.IsInstalling)
+                return false;
+
             if (!AppState.IsOnline)
                 return false;
 

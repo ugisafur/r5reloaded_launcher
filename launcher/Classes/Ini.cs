@@ -323,7 +323,7 @@ namespace launcher
                 Vars.Windowed => "Advanced_Options",
                 Vars.Borderless => "Advanced_Options",
                 Vars.Max_FPS => "Advanced_Options",
-                Vars.Offline_Mode => "Offline_Mode",
+                Vars.Offline_Mode => "Advanced_Options",
 
                 Vars.SelectedBranch => "Launcher",
                 _ => throw new NotImplementedException()

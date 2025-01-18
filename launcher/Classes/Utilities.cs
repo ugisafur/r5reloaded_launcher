@@ -470,73 +470,43 @@ namespace launcher
             }
         }
 
-        public static void ShowEULA()
+        public static async Task AnimateElement(FrameworkElement element, FrameworkElement background, bool isShowing, bool disableAnimations)
         {
-            EULA_Control.Visibility = Visibility.Visible;
-            POPUP_BG.Visibility = Visibility.Visible;
+            if (isShowing)
+            {
+                element.Visibility = Visibility.Visible;
+                background.Visibility = Visibility.Visible;
+            }
 
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
-
+            int duration = disableAnimations ? 1 : 500;
             var storyboard = new Storyboard();
             Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-            var POPUP_BG_OPACITY = new DoubleAnimation
+            // Animation for the background
+            var backgroundOpacity = new DoubleAnimation
             {
-                From = 0,
-                To = 1,
+                From = isShowing ? 0 : 1,
+                To = isShowing ? 1 : 0,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
-            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
-            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
+            Storyboard.SetTarget(backgroundOpacity, background);
+            Storyboard.SetTargetProperty(backgroundOpacity, new PropertyPath("Opacity"));
 
-            var EULA_OPACITY = new DoubleAnimation
+            // Animation for the element
+            var elementOpacity = new DoubleAnimation
             {
-                From = 0,
-                To = 1,
+                From = isShowing ? 0 : 1,
+                To = isShowing ? 1 : 0,
                 Duration = animationDuration,
                 EasingFunction = easing
             };
-            Storyboard.SetTarget(EULA_OPACITY, EULA_Control);
-            Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
+            Storyboard.SetTarget(elementOpacity, element);
+            Storyboard.SetTargetProperty(elementOpacity, new PropertyPath("Opacity"));
 
-            storyboard.Children.Add(EULA_OPACITY);
-            storyboard.Children.Add(POPUP_BG_OPACITY);
-
-            storyboard.Begin();
-        }
-
-        public static async void HideEULA()
-        {
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
-
-            var storyboard = new Storyboard();
-            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
-
-            var POPUP_BG_OPACITY = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
-            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
-
-            var EULA_OPACITY = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(EULA_OPACITY, EULA_Control);
-            Storyboard.SetTargetProperty(EULA_OPACITY, new PropertyPath("Opacity"));
-
-            storyboard.Children.Add(EULA_OPACITY);
-            storyboard.Children.Add(POPUP_BG_OPACITY);
+            storyboard.Children.Add(backgroundOpacity);
+            storyboard.Children.Add(elementOpacity);
 
             TaskCompletionSource<bool> tcs = new();
             storyboard.Completed += (s, e) => tcs.SetResult(true);
@@ -545,88 +515,33 @@ namespace launcher
 
             await tcs.Task;
 
-            EULA_Control.Visibility = Visibility.Hidden;
-            POPUP_BG.Visibility = Visibility.Hidden;
+            if (!isShowing)
+            {
+                element.Visibility = Visibility.Hidden;
+                background.Visibility = Visibility.Hidden;
+            }
         }
 
-        public static void ShowDownloadOptlFiles()
-        {
-            OptFiles_Control.Visibility = Visibility.Visible;
-            POPUP_BG.Visibility = Visibility.Visible;
+        // Methods to show and hide EULA
+        public static Task ShowEULA() =>
+            AnimateElement(EULA_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+        public static Task HideEULA() =>
+            AnimateElement(EULA_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
-            var storyboard = new Storyboard();
-            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+        // Methods to show and hide DownloadOptFiles
+        public static Task ShowDownloadOptlFiles() =>
+            AnimateElement(OptFiles_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
-            var POPUP_BG_OPACITY = new DoubleAnimation
-            {
-                From = 0,
-                To = 1,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
-            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
+        public static Task HideDownloadOptlFiles() =>
+            AnimateElement(OptFiles_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
-            var OPT_OPACITY = new DoubleAnimation
-            {
-                From = 0,
-                To = 1,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(OPT_OPACITY, OptFiles_Control);
-            Storyboard.SetTargetProperty(OPT_OPACITY, new PropertyPath("Opacity"));
+        // Methods to show and hide CheckExistingFiles
+        public static Task ShowCheckExistingFiles() =>
+            AnimateElement(CheckFiles_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
-            storyboard.Children.Add(OPT_OPACITY);
-            storyboard.Children.Add(POPUP_BG_OPACITY);
-
-            storyboard.Begin();
-        }
-
-        public static async void HideDownloadOptlFiles()
-        {
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
-
-            var storyboard = new Storyboard();
-            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
-
-            var POPUP_BG_OPACITY = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(POPUP_BG_OPACITY, POPUP_BG);
-            Storyboard.SetTargetProperty(POPUP_BG_OPACITY, new PropertyPath("Opacity"));
-
-            var OPT_OPACITY = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(OPT_OPACITY, OptFiles_Control);
-            Storyboard.SetTargetProperty(OPT_OPACITY, new PropertyPath("Opacity"));
-
-            storyboard.Children.Add(OPT_OPACITY);
-            storyboard.Children.Add(POPUP_BG_OPACITY);
-
-            TaskCompletionSource<bool> tcs = new();
-            storyboard.Completed += (s, e) => tcs.SetResult(true);
-
-            storyboard.Begin();
-
-            await tcs.Task;
-
-            OptFiles_Control.Visibility = Visibility.Hidden;
-            POPUP_BG.Visibility = Visibility.Hidden;
-        }
+        public static Task HideCheckExistingFiles() =>
+            AnimateElement(CheckFiles_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
 #if DEBUG
 

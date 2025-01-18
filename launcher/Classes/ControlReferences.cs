@@ -81,6 +81,7 @@ namespace launcher
         public static MenuPopup Menu_Control = new();
         public static EULAPopup EULA_Control = new();
         public static InstallOptFilesPopup OptFiles_Control = new();
+        public static CheckExisitngFilesPopup CheckFiles_Control = new();
 
         #endregion Popup Controls
 
@@ -128,6 +129,7 @@ namespace launcher
             EULA_Control = mainWindow.EULA_Control;
             POPUP_BG = mainWindow.POPUP_BG;
             OptFiles_Control = mainWindow.OptFiles_Control;
+            CheckFiles_Control = mainWindow.CheckFiles_Control;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;
