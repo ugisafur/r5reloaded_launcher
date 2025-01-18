@@ -26,7 +26,7 @@ namespace launcher
             if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.HostName)))
             {
                 AppendParameter(ref svParameters, "+hostname", (string)Ini.Get(Ini.Vars.HostName));
-                AppendParameter(ref svParameters, "+sv_pylonVisibility", (string)Ini.Get(Ini.Vars.Visibility).ToString());
+                AppendParameter(ref svParameters, "+sv_pylonVisibility", ((int)Ini.Get(Ini.Vars.Visibility)).ToString());
             }
         }
 
@@ -102,11 +102,11 @@ namespace launcher
                 case eMode.HOST:
                     {
                         // GAME ###############################################################
-                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Map)))
-                            AppendParameter(ref svParameters, "+map", (string)Ini.Get(Ini.Vars.Map));
+                        if ((int)Ini.Get(Ini.Vars.Map) > 0)
+                            AppendParameter(ref svParameters, "+map", ControlReferences.maps[(int)Ini.Get(Ini.Vars.Map)]);
 
-                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Playlist)))
-                            AppendParameter(ref svParameters, "+launchplaylist", (string)Ini.Get(Ini.Vars.Playlist));
+                        if ((int)Ini.Get(Ini.Vars.Playlist) > 0)
+                            AppendParameter(ref svParameters, "+launchplaylist", ControlReferences.gamemodes[(int)Ini.Get(Ini.Vars.Playlist)]);
 
                         if ((bool)Ini.Get(Ini.Vars.Enable_Developer))
                         {
@@ -151,11 +151,11 @@ namespace launcher
                 case eMode.SERVER:
                     {
                         // GAME ###############################################################
-                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Map)))
-                            AppendParameter(ref svParameters, "+map", (string)Ini.Get(Ini.Vars.Map));
+                        if ((int)Ini.Get(Ini.Vars.Map) > 0)
+                            AppendParameter(ref svParameters, "+map", ControlReferences.maps[(int)Ini.Get(Ini.Vars.Map)]);
 
-                        if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Playlist)))
-                            AppendParameter(ref svParameters, "+launchplaylist", (string)Ini.Get(Ini.Vars.Playlist));
+                        if ((int)Ini.Get(Ini.Vars.Playlist) > 0)
+                            AppendParameter(ref svParameters, "+launchplaylist", ControlReferences.gamemodes[(int)Ini.Get(Ini.Vars.Playlist)]);
 
                         if ((bool)Ini.Get(Ini.Vars.Enable_Developer))
                         {

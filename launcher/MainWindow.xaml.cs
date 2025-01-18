@@ -114,7 +114,7 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.IsOnline || Utilities.IsBranchInstalled())
+            if (!AppState.IsOnline || Utilities.IsBranchInstalled() || Utilities.GetCurrentBranch().is_local_branch)
             {
                 Utilities.LaunchGame();
                 return;
@@ -157,6 +157,7 @@ namespace launcher
                 AppState.IsLocalBranch = true;
                 GameSettings_Control.RepairGame_Button.IsEnabled = false;
                 GameSettings_Control.UninstallGame_Button.IsEnabled = false;
+                Utilities.SetupAdvancedMenu();
                 return;
             }
 
@@ -332,6 +333,12 @@ namespace launcher
 
         public void SetButtonState()
         {
+            if (Utilities.GetCurrentBranch().is_local_branch)
+            {
+                Play_Button.Content = "PLAY";
+                return;
+            }
+
             Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
             if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
                 Play_Button.Content = "REPAIR";

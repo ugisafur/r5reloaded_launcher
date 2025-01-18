@@ -29,8 +29,8 @@ namespace launcher
             SetupControlReferences(mainWindow);
             StartStatusChecker();
             GlobalInitializer.Setup();
-            SetupMenus();
             SetupLibaryPath();
+            SetupMenus();
             SetupBranchComboBox();
             GetSelfUpdater();
             EULA_Control.SetupEULA();
@@ -38,19 +38,21 @@ namespace launcher
 
         public static void SetupAdvancedMenu()
         {
-            if (!IsBranchInstalled())
+            if (!IsBranchInstalled() && !GetCurrentBranch().is_local_branch)
                 return;
 
-            if (!File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
+            if (!File.Exists(Path.Combine(GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
                 return;
 
             try
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    PlaylistRoot data = PlaylistFile.Parse(Path.Combine(Utilities.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
-                    Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
-                    Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
+                    playlistRoot = PlaylistFile.Parse(Path.Combine(GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+                    gamemodes = PlaylistFile.GetPlaylists(playlistRoot);
+                    maps = PlaylistFile.GetMaps(playlistRoot);
+                    Advanced_Control.SetMapList(maps);
+                    Advanced_Control.SetPlaylistList(gamemodes);
                     LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
                 }));
             }
@@ -199,8 +201,8 @@ namespace launcher
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{Utilities.GetBranchDirectory()}\\{exeName}",
-                WorkingDirectory = Utilities.GetBranchDirectory(),
+                FileName = $"{GetBranchDirectory()}\\{exeName}",
+                WorkingDirectory = GetBranchDirectory(),
                 Arguments = gameArguments,
                 UseShellExecute = true,
                 CreateNoWindow = true
@@ -287,7 +289,7 @@ namespace launcher
 
         public static string GetBranchDirectory()
         {
-            string branchName = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
+            string branchName = Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch.ToUpper();
             string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
 

@@ -93,6 +93,10 @@ namespace launcher
         public static TaskbarIcon System_Tray;
         public static Rectangle POPUP_BG = new();
 
+        public static PlaylistRoot playlistRoot = new();
+        public static List<string> gamemodes = new();
+        public static List<string> maps = new();
+
         #endregion Other
 
         public static void SetupControlReferences(MainWindow mainWindow)

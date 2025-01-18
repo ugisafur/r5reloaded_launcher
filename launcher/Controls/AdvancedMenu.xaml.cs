@@ -99,30 +99,28 @@ namespace launcher
         {
             MapCmb.Items.Clear();
 
+            MapCmb.Items.Add("No Selection");
+
             foreach (string map in maps)
             {
                 MapCmb.Items.Add(map);
             }
 
-            if ((int)Ini.Get(Ini.Vars.Map) <= MapCmb.Items.Count)
-                MapCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Map);
-            else
-                MapCmb.SelectedIndex = 0;
+            MapCmb.SelectedIndex = 0;
         }
 
         public void SetPlaylistList(List<string> playlists)
         {
             PlaylistCmb.Items.Clear();
 
+            PlaylistCmb.Items.Add("No Selection");
+
             foreach (string playlist in playlists)
             {
                 PlaylistCmb.Items.Add(playlist);
             }
 
-            if ((int)Ini.Get(Ini.Vars.Playlist) <= PlaylistCmb.Items.Count)
-                PlaylistCmb.SelectedIndex = (int)Ini.Get(Ini.Vars.Playlist);
-            else
-                PlaylistCmb.SelectedIndex = 0;
+            PlaylistCmb.SelectedIndex = 0;
         }
 
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)

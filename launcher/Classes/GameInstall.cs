@@ -88,7 +88,10 @@ namespace launcher
             Utilities.SetupAdvancedMenu();
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been installed!", BalloonIcon.Info);
 
-            Utilities.ShowDownloadOptlFiles();
+            appDispatcher.Invoke(new Action(() =>
+            {
+                Utilities.ShowDownloadOptlFiles();
+            }));
         }
 
         public static async Task InstallOptionalFiles()
@@ -145,6 +148,14 @@ namespace launcher
             if (!Utilities.IsBranchInstalled())
                 return;
 
+            if (!Directory.Exists(Utilities.GetBranchDirectory()))
+            {
+                Ini.Set(Utilities.GetCurrentBranch().branch, "Is_Installed", false);
+                Ini.Set(Utilities.GetCurrentBranch().branch, "Download_HD_Textures", false);
+                Ini.Set(Utilities.GetCurrentBranch().branch, "Version", "");
+                return;
+            }
+
             DownloadManager.SetInstallState(true, "UNINSTALLING");
 
             string[] files = Directory.GetFiles(Utilities.GetBranchDirectory(), "*", SearchOption.AllDirectories);
@@ -187,6 +198,7 @@ namespace launcher
 
             string branch = Utilities.GetCurrentBranch().branch;
             Ini.Set(branch, "Is_Installed", false);
+            Ini.Set(branch, "Download_HD_Textures", false);
             Ini.Set(branch, "Version", "");
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been uninstalled!", BalloonIcon.Info);

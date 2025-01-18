@@ -234,7 +234,7 @@ namespace patch_creator
                 }
             });
 
-            var compressedresponse = await client.GetStringAsync(Path.Combine(serverConfig.branches[comboBox1.SelectedIndex].game_url, "checksums_zst.json"));
+            var compressedresponse = await client.GetStringAsync(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json"));
             GameChecksums conmpressed_checksums = JsonConvert.DeserializeObject<GameChecksums>(compressedresponse);
 
             //Find the changed files
@@ -264,12 +264,18 @@ namespace patch_creator
             var compressed_game_checksums_file = JsonSerializer.Serialize(new_compressed_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", compressed_game_checksums_file);
 
-            richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
-            richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
+            richTextBox1.Invoke(() =>
+            {
+                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
+                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
+            });
 
             foreach (var file in compressed_changedFiles)
             {
-                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
+                richTextBox1.Invoke(() =>
+                {
+                    richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
+                });
             }
 
             Log("---------- Patch creation finished ----------");
