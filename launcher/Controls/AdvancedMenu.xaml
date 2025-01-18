@@ -407,6 +407,7 @@
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="380" />
@@ -416,65 +417,70 @@
                 <Grid Grid.Row="0" Grid.Column="0">
                     <CheckBox x:Name="Cheats" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Enable Cheats" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,10,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Enables the ability to use cheats ingame" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,10,0" Height="16" />
+                    <TextBlock Text="Enables the ability to use cheats ingame" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,10,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="0">
                     <CheckBox x:Name="Dev" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Enable Developer" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,10,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Enables dev options and console commands" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,0,0" Height="16" />
+                    <TextBlock Text="Enables dev options and console commands" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,0,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="2" Grid.Column="0">
                     <CheckBox x:Name="ConsoleShow" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Show Console" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,10,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Show external game console" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,10,0" Height="16" />
+                    <TextBlock Text="Show external game console" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,10,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="3" Grid.Column="0">
                     <CheckBox x:Name="ColoredCon" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Color Console" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,10,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Enable Colored game console" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,10,0" Height="16" />
+                    <TextBlock Text="Enable Colored game console" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,10,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="4" Grid.Column="0">
                     <CheckBox x:Name="PacketsEncrypt" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Encrypt Packets" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Toggles encryption for game packets" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,0,0" Height="16" />
+                    <TextBlock Text="Toggles encryption for game packets" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,0,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="5" Grid.Column="0">
                     <CheckBox x:Name="PacketsQueued" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Queued Packets" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Sends packets using a priority thread" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,10,0" Height="16" />
+                    <TextBlock Text="Sends packets using a priority thread" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,10,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="6" Grid.Column="0">
                     <CheckBox x:Name="RandomNetKey" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Random Netkey" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Generate a new random net key on launch" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,5,0" Height="16" />
+                    <TextBlock Text="Generate a new random net key on launch" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,5,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="7" Grid.Column="0">
                     <CheckBox x:Name="NoTimeout" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="No Timeout" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Prevents disconnection for lost connections" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,6,0" Height="16" />
+                    <TextBlock Text="Prevents disconnection for lost connections" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,6,0" Height="16" />
                 </Grid>
                 <Grid Grid.Row="8" Grid.Column="0">
                     <CheckBox x:Name="NoAsync" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
                     <TextBlock Text="No Async" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
-                    <TextBlock Text="Disables all asynchronous game processes" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,40,7,0" Height="16" />
+                    <TextBlock Text="Disables all asynchronous game processes" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,7,0" Height="16" />
                 </Grid>
-                <Grid Grid.Row="0" Grid.Column="1">
+                <Grid Grid.Row="9" Grid.Column="0">
+                    <CheckBox x:Name="Offline" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="52,0,0,0" Cursor="Hand" />
+                    <TextBlock Text="Offline Mode" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="111,0,87,0" Height="20" ></TextBlock>
+                    <TextBlock Text="Disables access to any online features" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="111,38,7,0" Height="16" />
+                </Grid>
+                <Grid Grid.Row="2" Grid.Column="1">
                     <ComboBox x:Name="MapCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand" />
                     <TextBlock Text="Map" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="0" Grid.Column="2">
+                <Grid Grid.Row="2" Grid.Column="2">
                     <ComboBox x:Name="PlaylistCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand" MaxDropDownHeight="1" />
                     <TextBlock Text="Playlist" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="1">
-                    <TextBox x:Name="PlaylistsFile" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="playlists_r5_patch.txt" Foreground="White" FontSize="16" Cursor="IBeam" />
+                <Grid Grid.Row="3" Grid.Column="1">
+                    <TextBox x:Name="PlaylistsFile" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="playlists_r5_patch.txt" Foreground="White" FontSize="16" Cursor="IBeam" KeyDown="TextBox_PreviewKeyDown" />
                     <TextBlock Text="Playlists file" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,29,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="2">
-                    <TextBox x:Name="HostName" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" Cursor="IBeam" />
+                <Grid Grid.Row="3" Grid.Column="2">
+                    <TextBox x:Name="HostName" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" Cursor="IBeam" KeyDown="TextBox_PreviewKeyDown" />
                     <TextBlock Text="Host Name" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,61,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="2" Grid.Column="1">
+                <Grid Grid.Row="1" Grid.Column="1">
                     <ComboBox x:Name="Mode" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand">
                         <ComboBoxItem Content="Host" />
                         <ComboBoxItem Content="Server" />
@@ -482,7 +488,7 @@
                     </ComboBox>
                     <TextBlock Text="Mode" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="2" Grid.Column="2">
+                <Grid Grid.Row="1" Grid.Column="2">
                     <ComboBox x:Name="VisibilityCmb" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="32,0,0,0" ShouldPreserveUserEnteredPrefix="True" Height="30" Width="275" Foreground="White" Cursor="Hand">
                         <ComboBoxItem Content="Offline" />
                         <ComboBoxItem Content="Hidden" />
@@ -490,45 +496,46 @@
                     </ComboBox>
                     <TextBlock Text="Visibility" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="5" Grid.Column="1">
-                    <TextBox x:Name="MaxFPS" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="-1" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <Grid Grid.Row="6" Grid.Column="2">
+                    <TextBox x:Name="MaxFPS" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="0" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Max FPS" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,90,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="5" Grid.Column="2">
-                    <TextBox x:Name="ReservedCores" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="0" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <Grid Grid.Row="6" Grid.Column="1">
+                    <TextBox x:Name="ReservedCores" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="-1" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Reserved Cores" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,10,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="4" Grid.Column="2">
-                    <TextBox x:Name="AffinityProc" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="0" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <Grid Grid.Row="5" Grid.Column="2">
+                    <TextBox x:Name="AffinityProc" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="0" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Processor Affinity" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,10,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="4" Grid.Column="1">
+                <Grid Grid.Row="5" Grid.Column="1">
                     <TextBox x:Name="ThreadsWorker" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="-1" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Worker Threads" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,22,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="6" Grid.Column="1">
-                    <TextBox x:Name="WidthRes" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <Grid Grid.Row="8" Grid.Column="1">
+                    <TextBox x:Name="WidthRes" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Resolution Width" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,10,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="6" Grid.Column="2">
-                    <TextBox x:Name="HeightRes" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <Grid Grid.Row="8" Grid.Column="2">
+                    <TextBox x:Name="HeightRes" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="275" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Foreground="White" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
                     <TextBlock Text="Resolution Height" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="312,0,10,0" Height="20" ></TextBlock>
                 </Grid>
-                <Grid Grid.Row="7" Grid.Column="1">
+                <Grid Grid.Row="9" Grid.Column="1">
                     <CheckBox x:Name="Windowed" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="36,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Windowed" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="99,0,99,0" Height="20" ></TextBlock>
                     <TextBlock Text="Enabled windowed mode" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="99,40,22,0" Height="16" />
                 </Grid>
-                <Grid Grid.Row="7" Grid.Column="2">
+                <Grid Grid.Row="9" Grid.Column="2">
                     <CheckBox x:Name="Borderless" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="36,0,0,0" Cursor="Hand" />
                     <TextBlock Text="Borderless" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="99,0,99,0" Height="20" ></TextBlock>
                     <TextBlock Text="Enable borderless windowed mode" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="99,40,22,0" Height="16" />
                 </Grid>
-                <Grid Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2">
-                    <TextBox x:Name="CommandLine" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="816" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="32,0,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" Cursor="IBeam" />
-                    <TextBlock Text="Command Line" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="853,0,16,0" Height="20" ></TextBlock>
+                <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                    <TextBox x:Name="CommandLine" Style="{DynamicResource AdvancedTextBox}" Height="30" Width="755" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="31,0,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" Cursor="IBeam" KeyDown="TextBox_PreviewKeyDown" />
+                    <TextBlock Text="Command Line" TextWrapping="Wrap" Foreground="White" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="791,0,16,0" Height="20" ></TextBlock>
                 </Grid>
             </Grid>
+            <Button Content="Focusable Button" Visibility="Collapsed" x:Name="HiddenFocusableButton" />
         </Grid>
     </Border>
 </UserControl>

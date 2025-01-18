@@ -45,7 +45,9 @@ namespace launcher
             Max_FPS,
             Map,
             Playlist,
-            SelectedBranch
+            SelectedBranch,
+            Offline_Mode,
+            Keep_All_Logs
         }
 
         public static void CreateConfig()
@@ -57,6 +59,7 @@ namespace launcher
             {
                 IniFile file = new();
 
+                file.SetSetting("Settings", "Keep_All_Logs", true);
                 file.SetSetting("Settings", "Enable_Quit_On_Close", false);
                 file.SetSetting("Settings", "Enable_Notifications", true);
                 file.SetSetting("Settings", "Disable_Background_Video", false);
@@ -90,6 +93,7 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "Windowed", false);
                 file.SetSetting("Advanced_Options", "Borderless", false);
                 file.SetSetting("Advanced_Options", "Max_FPS", "");
+                file.SetSetting("Advanced_Options", "Offline_Mode", false);
 
                 file.SetSetting("Launcher", "SelectedBranch", "");
 
@@ -251,8 +255,9 @@ namespace launcher
                 Vars.Max_FPS => "",
                 Vars.SelectedBranch => "",
 
+                Vars.Keep_All_Logs => true,
                 Vars.Enable_Quit_On_Close => false,
-                Vars.Enable_Notifications => false,
+                Vars.Enable_Notifications => true,
                 Vars.Disable_Background_Video => false,
                 Vars.Disable_Animations => false,
                 Vars.Disable_Transitions => false,
@@ -267,6 +272,7 @@ namespace launcher
                 Vars.No_Timeout => false,
                 Vars.Windowed => false,
                 Vars.Borderless => false,
+                Vars.Offline_Mode => false,
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
@@ -291,6 +297,7 @@ namespace launcher
                 Vars.Concurrent_Downloads => "Settings",
                 Vars.Download_Speed_Limit => "Settings",
                 Vars.Library_Location => "Settings",
+                Vars.Keep_All_Logs => "Settings",
 
                 Vars.Enable_Cheats => "Advanced_Options",
                 Vars.Enable_Developer => "Advanced_Options",
@@ -316,6 +323,7 @@ namespace launcher
                 Vars.Windowed => "Advanced_Options",
                 Vars.Borderless => "Advanced_Options",
                 Vars.Max_FPS => "Advanced_Options",
+                Vars.Offline_Mode => "Offline_Mode",
 
                 Vars.SelectedBranch => "Launcher",
                 _ => throw new NotImplementedException()
@@ -359,6 +367,8 @@ namespace launcher
                 Vars.Max_FPS => "Max_FPS",
                 Vars.SelectedBranch => "SelectedBranch",
                 Vars.Library_Location => "Library_Location",
+                Vars.Offline_Mode => "Offline_Mode",
+                Vars.Keep_All_Logs => "Keep_All_Logs",
                 _ => throw new NotImplementedException()
             };
         }

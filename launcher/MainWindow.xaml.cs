@@ -145,86 +145,72 @@ namespace launcher
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
-
-            ComboBranch comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
+            var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
-                Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
-                Update_Button.Visibility = Visibility.Hidden;
-                Play_Button.Content = "PLAY";
-                Play_Button.IsEnabled = true;
-                AppState.IsLocalBranch = true;
-                GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                Utilities.SetupAdvancedMenu();
+                HandleLocalBranch(comboBranch.title);
                 return;
             }
 
             AppState.IsLocalBranch = false;
-
             Ini.Set(Ini.Vars.SelectedBranch, Configuration.ServerConfig.branches[selectedBranch].branch);
 
             if (Utilities.IsBranchInstalled())
             {
-                Utilities.SetupAdvancedMenu();
-
-                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                    return;
-                }
-
-                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
-                else
-                {
-                    Update_Button.Visibility = Visibility.Visible;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
+                HandleInstalledBranch(selectedBranch);
             }
             else
             {
-                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "DISABLED";
-                    Play_Button.IsEnabled = false;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                    return;
-                }
-
-                if (File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "REPAIR";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
-                else
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "INSTALL";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                }
+                HandleUninstalledBranch(selectedBranch);
             }
+        }
+
+        private void HandleLocalBranch(string branchTitle)
+        {
+            Ini.Set(Ini.Vars.SelectedBranch, branchTitle);
+            Update_Button.Visibility = Visibility.Hidden;
+            SetPlayState("PLAY", true, false, true);
+            AppState.IsLocalBranch = true;
+            Utilities.SetupAdvancedMenu();
+        }
+
+        private void HandleInstalledBranch(int selectedBranch)
+        {
+            Utilities.SetupAdvancedMenu();
+            var branch = Configuration.ServerConfig.branches[selectedBranch];
+
+            if (!branch.enabled)
+            {
+                SetPlayState("PLAY", false, false, true);
+                return;
+            }
+
+            bool isUpToDate = Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version;
+            Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
+            SetPlayState("PLAY", true, true, true);
+        }
+
+        private void HandleUninstalledBranch(int selectedBranch)
+        {
+            var branch = Configuration.ServerConfig.branches[selectedBranch];
+
+            if (!branch.enabled)
+            {
+                SetPlayState("DISABLED", false, false, false);
+                return;
+            }
+
+            bool executableExists = File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe"));
+            SetPlayState(executableExists ? "REPAIR" : "INSTALL", executableExists, executableExists, executableExists);
+        }
+
+        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled)
+        {
+            Play_Button.Content = playContent;
+            Play_Button.IsEnabled = playEnabled;
+            GameSettings_Control.RepairGame_Button.IsEnabled = repairEnabled;
+            GameSettings_Control.UninstallGame_Button.IsEnabled = uninstallEnabled;
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)

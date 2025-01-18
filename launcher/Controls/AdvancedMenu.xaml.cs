@@ -54,16 +54,17 @@ namespace launcher
             ConsoleShow.IsChecked = (bool)Ini.Get(Ini.Vars.Show_Console);
             Dev.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Developer);
             Cheats.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Cheats);
+            Offline.IsChecked = (bool)Ini.Get(Ini.Vars.Offline_Mode);
 
-            CommandLine.TextChanged += CommandLine_TextChanged;
-            HeightRes.TextChanged += Height_TextChanged;
-            WidthRes.TextChanged += Width_TextChanged;
-            ThreadsWorker.TextChanged += Threads_TextChanged;
-            AffinityProc.TextChanged += Affinity_TextChanged;
-            ReservedCores.TextChanged += ReservedCores_TextChanged;
-            MaxFPS.TextChanged += MaxFPS_TextChanged;
-            HostName.TextChanged += HostName_TextChanged;
-            PlaylistsFile.TextChanged += PlaylistsFile_TextChanged;
+            CommandLine.LostKeyboardFocus += CommandLine_LostFocus;
+            HeightRes.LostKeyboardFocus += Height_LostFocus;
+            WidthRes.LostKeyboardFocus += Width_LostFocus;
+            ThreadsWorker.LostKeyboardFocus += Threads_LostFocus;
+            AffinityProc.LostKeyboardFocus += Affinity_LostFocus;
+            ReservedCores.LostKeyboardFocus += ReservedCores_LostFocus;
+            MaxFPS.LostKeyboardFocus += MaxFPS_LostFocus;
+            HostName.LostKeyboardFocus += HostName_LostFocus;
+            PlaylistsFile.LostKeyboardFocus += PlaylistsFile_LostFocus;
 
             MapCmb.SelectionChanged += Map_SelectionChanged;
             PlaylistCmb.SelectionChanged += Playlist_SelectionChanged;
@@ -81,6 +82,7 @@ namespace launcher
             ConsoleShow.Unchecked += Console_Unchecked;
             Dev.Unchecked += Dev_Unchecked;
             Cheats.Unchecked += Cheats_Unchecked;
+            Offline.Unchecked += Offline_Unchecked;
 
             Borderless.Checked += Borderless_Unchecked;
             Windowed.Checked += Windowed_Unchecked;
@@ -93,6 +95,7 @@ namespace launcher
             ConsoleShow.Checked += Console_Unchecked;
             Dev.Checked += Dev_Unchecked;
             Cheats.Checked += Cheats_Unchecked;
+            Offline.Checked += Offline_Unchecked;
         }
 
         public void SetMapList(List<string> maps)
@@ -123,6 +126,15 @@ namespace launcher
             PlaylistCmb.SelectedIndex = 0;
         }
 
+        private void NumericTextBox2_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+
+            // Regular expression for numeric input
+            string text = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+            e.Handled = !Regex.IsMatch(text, @"^\d*$");
+        }
+
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -138,75 +150,92 @@ namespace launcher
             {
                 e.Handled = true; // Prevent spaces
             }
+
+            if (e.Key == Key.Enter)
+            {
+                Keyboard.ClearFocus();
+                e.Handled = true; // Prevents the beep sound on Enter key
+            }
         }
 
-        private void CommandLine_TextChanged(object sender, TextChangedEventArgs e)
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Keyboard.ClearFocus();
+                e.Handled = true; // Prevents the beep sound on Enter key
+            }
+        }
+
+        private void CommandLine_LostFocus(object sender, RoutedEventArgs e)
         {
             if ((string)Ini.Get(Ini.Vars.Command_Line) != CommandLine.Text)
                 Ini.Set(Ini.Vars.Command_Line, CommandLine.Text);
         }
 
-        private void Height_TextChanged(object sender, TextChangedEventArgs e)
+        private void Height_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (HeightRes.Text == "-")
-                return;
-
             if ((string)Ini.Get(Ini.Vars.Resolution_Height) != HeightRes.Text)
                 Ini.Set(Ini.Vars.Resolution_Height, HeightRes.Text);
         }
 
-        private void Width_TextChanged(object sender, TextChangedEventArgs e)
+        private void Width_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (WidthRes.Text == "-")
-                return;
-
             if ((string)Ini.Get(Ini.Vars.Resolution_Width) != WidthRes.Text)
                 Ini.Set(Ini.Vars.Resolution_Width, WidthRes.Text);
         }
 
-        private void Threads_TextChanged(object sender, TextChangedEventArgs e)
+        private void Threads_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ThreadsWorker.Text) || ThreadsWorker.Text == "-")
-                return;
+            if (int.TryParse(ThreadsWorker.Text, out int workers))
+            {
+                if (workers < -1)
+                    ThreadsWorker.Text = "-1";
+            }
+            else
+            {
+                ThreadsWorker.Text = "-1";
+            }
 
             if ((string)Ini.Get(Ini.Vars.Worker_Threads) != ThreadsWorker.Text)
                 Ini.Set(Ini.Vars.Worker_Threads, ThreadsWorker.Text);
         }
 
-        private void Affinity_TextChanged(object sender, TextChangedEventArgs e)
+        private void Affinity_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(AffinityProc.Text) || AffinityProc.Text == "-")
-                return;
-
             if ((string)Ini.Get(Ini.Vars.Processor_Affinity) != AffinityProc.Text)
                 Ini.Set(Ini.Vars.Processor_Affinity, AffinityProc.Text);
         }
 
-        private void ReservedCores_TextChanged(object sender, TextChangedEventArgs e)
+        private void ReservedCores_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ReservedCores.Text) || ReservedCores.Text == "-")
-                return;
+            if (int.TryParse(ReservedCores.Text, out int cores))
+            {
+                if (cores < -1)
+                    ReservedCores.Text = "-1";
+            }
+            else
+            {
+                ReservedCores.Text = "-1";
+            }
 
             if ((string)Ini.Get(Ini.Vars.Reserved_Cores) != ReservedCores.Text)
                 Ini.Set(Ini.Vars.Reserved_Cores, ReservedCores.Text);
         }
 
-        private void MaxFPS_TextChanged(object sender, TextChangedEventArgs e)
+        private void MaxFPS_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(MaxFPS.Text) || MaxFPS.Text == "-")
-                return;
-
             if ((string)Ini.Get(Ini.Vars.Max_FPS) != MaxFPS.Text)
                 Ini.Set(Ini.Vars.Max_FPS, MaxFPS.Text);
         }
 
-        private void HostName_TextChanged(object sender, TextChangedEventArgs e)
+        private void HostName_LostFocus(object sender, RoutedEventArgs e)
         {
             if ((string)Ini.Get(Ini.Vars.HostName) != HostName.Text)
                 Ini.Set(Ini.Vars.HostName, HostName.Text);
         }
 
-        private void PlaylistsFile_TextChanged(object sender, TextChangedEventArgs e)
+        private void PlaylistsFile_LostFocus(object sender, RoutedEventArgs e)
         {
             if ((string)Ini.Get(Ini.Vars.Playlists_File) != PlaylistsFile.Text)
                 Ini.Set(Ini.Vars.Playlists_File, PlaylistsFile.Text);
@@ -300,6 +329,12 @@ namespace launcher
         {
             if ((bool)Ini.Get(Ini.Vars.Enable_Cheats) != Cheats.IsChecked.Value)
                 Ini.Set(Ini.Vars.Enable_Cheats, Cheats.IsChecked.Value);
+        }
+
+        private void Offline_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Ini.Get(Ini.Vars.Offline_Mode) != Offline.IsChecked.Value)
+                Ini.Set(Ini.Vars.Offline_Mode, Offline.IsChecked.Value);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

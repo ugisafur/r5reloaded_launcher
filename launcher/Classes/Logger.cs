@@ -33,6 +33,16 @@ namespace launcher
 
         static Logger()
         {
+            // Clear logs if the setting is disabled
+            if (!(bool)Ini.Get(Ini.Vars.Keep_All_Logs))
+            {
+                string[] folders = Directory.GetDirectories(Path.Combine(Constants.Paths.LauncherPath, $"launcher_data\\logs\\"), "*");
+                foreach (string folder in folders)
+                {
+                    Directory.Delete(folder, true);
+                }
+            }
+
             // Ensure the directory exists
             string folderUUID = GenerateFolderUUID();
             LogFilePath = Path.Combine(Constants.Paths.LauncherPath, $"launcher_data\\logs\\{folderUUID}", LogFileName);

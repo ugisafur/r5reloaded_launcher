@@ -42,24 +42,31 @@ namespace launcher
             else
                 AppendParameter(ref svParameters, "-forceborder");
 
-            AppendParameter(ref svParameters, "+fps_max", (string)Ini.Get(Ini.Vars.Max_FPS));
+            if (int.TryParse((string)Ini.Get(Ini.Vars.Max_FPS), out int nMaxFps))
+                AppendParameter(ref svParameters, "+fps_max", nMaxFps.ToString());
+            else
+                AppendParameter(ref svParameters, "+fps_max", "0");
 
-            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Resolution_Width)))
-                AppendParameter(ref svParameters, "-w", (string)Ini.Get(Ini.Vars.Resolution_Width));
+            if (int.TryParse((string)Ini.Get(Ini.Vars.Resolution_Width), out int nResWidth))
+                AppendParameter(ref svParameters, "-w", nResWidth.ToString());
 
-            if (!string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Resolution_Height)))
-                AppendParameter(ref svParameters, "-h", (string)Ini.Get(Ini.Vars.Resolution_Height));
+            if (int.TryParse((string)Ini.Get(Ini.Vars.Resolution_Height), out int nResHeight))
+                AppendParameter(ref svParameters, "-h", nResHeight.ToString());
         }
 
         private static void AppendProcessorParameters(ref string svParameters)
         {
-            int nReservedCores = int.Parse((string)Ini.Get(Ini.Vars.Reserved_Cores));
-            if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
-                AppendParameter(ref svParameters, "-numreservedcores", (string)Ini.Get(Ini.Vars.Reserved_Cores));
+            if (int.TryParse((string)Ini.Get(Ini.Vars.Reserved_Cores), out int nReservedCores))
+            {
+                if (nReservedCores > -1) // A reserved core count of 0 seems to crash the game on some systems.
+                    AppendParameter(ref svParameters, "-numreservedcores", (string)Ini.Get(Ini.Vars.Reserved_Cores));
+            }
 
-            int nWorkerThreads = int.Parse((string)Ini.Get(Ini.Vars.Worker_Threads));
-            if (nWorkerThreads > -1)
-                AppendParameter(ref svParameters, "-numworkerthreads", (string)Ini.Get(Ini.Vars.Worker_Threads));
+            if (int.TryParse((string)Ini.Get(Ini.Vars.Worker_Threads), out int nWorkerThreads))
+            {
+                if (nWorkerThreads > -1)
+                    AppendParameter(ref svParameters, "-numworkerthreads", (string)Ini.Get(Ini.Vars.Worker_Threads));
+            }
         }
 
         private static void AppendNetParameters(ref string svParameters)
