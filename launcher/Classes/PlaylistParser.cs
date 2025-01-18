@@ -21,7 +21,7 @@ namespace launcher
             {
                 FileStream stream = File.OpenRead(filePath); // or any other Stream
 
-                KVSerializerOptions options = new KVSerializerOptions
+                KVSerializerOptions options = new()
                 {
                     HasEscapeSequences = false,
                 };

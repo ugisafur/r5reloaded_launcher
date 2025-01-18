@@ -144,7 +144,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Check for deleted files
             await CheckForDeletedFiles(false);
@@ -207,7 +207,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Check for deleted files
             await CheckForDeletedFiles(true);
@@ -251,7 +251,7 @@ namespace launcher
 
         private static async Task CheckForDeletedFiles(bool optfiles)
         {
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
             string[] files = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
             GameFiles gameFiles = optfiles ? await DataFetcher.FetchOptionalGameFiles(false) : await DataFetcher.FetchBaseGameFiles(false);
 

@@ -41,14 +41,14 @@ namespace launcher
             if (!IsBranchInstalled())
                 return;
 
-            if (!File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
+            if (!File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "platform\\playlists_r5_patch.txt")))
                 return;
 
             try
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    PlaylistRoot data = PlaylistFile.Parse(Path.Combine(FileManager.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
+                    PlaylistRoot data = PlaylistFile.Parse(Path.Combine(Utilities.GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
                     Advanced_Control.SetMapList(PlaylistFile.GetMaps(data));
                     Advanced_Control.SetPlaylistList(PlaylistFile.GetPlaylists(data));
                     LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
@@ -115,7 +115,7 @@ namespace launcher
 
         public static List<ComboBranch> GetGameBranches()
         {
-            string libraryPath = FileManager.GetLibraryPathDirectory();
+            string libraryPath = GetLibraryPathDirectory();
             string[] directories = Directory.GetDirectories(libraryPath);
             string[] folderNames = directories.Select(Path.GetFileName).ToArray();
 
@@ -199,8 +199,8 @@ namespace launcher
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = $"{FileManager.GetBranchDirectory()}\\{exeName}",
-                WorkingDirectory = FileManager.GetBranchDirectory(),
+                FileName = $"{Utilities.GetBranchDirectory()}\\{exeName}",
+                WorkingDirectory = Utilities.GetBranchDirectory(),
                 Arguments = gameArguments,
                 UseShellExecute = true,
                 CreateNoWindow = true
@@ -285,9 +285,31 @@ namespace launcher
             return cmbSelectedIndex;
         }
 
+        public static string GetBranchDirectory()
+        {
+            string branchName = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
+            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
+            string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
+
+            return finalDirectory;
+        }
+
+        public static string GetLibraryPathDirectory()
+        {
+            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
+            string finalDirectory = Path.Combine(libraryPath, "R5R Library");
+
+            Directory.CreateDirectory(finalDirectory);
+
+            return finalDirectory;
+        }
+
         #endregion Branch Functions
 
         #region Settings Functions
+
+        //TODO: Refactor these functions to use a single function with parameters
+        //      cuz this is just a mess
 
         public static void ShowSettingsControl()
         {

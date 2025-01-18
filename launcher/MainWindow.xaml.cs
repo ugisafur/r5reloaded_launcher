@@ -26,10 +26,17 @@ namespace launcher
             InitializeComponent();
         }
 
+        private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Setup global exception handlers
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            System.Threading.Tasks.TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // Hide the window on startup
             this.Opacity = 0;
@@ -59,6 +66,252 @@ namespace launcher
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
         }
 
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            System_Tray.Dispose();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            Background_Video.Position = TimeSpan.FromSeconds(0);
+            Background_Video.Play();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                Logger.LogCrashToFile(ex);
+            }
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(object sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
+        {
+            Logger.LogCrashToFile(e.Exception);
+            e.SetObserved();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close))
+                Application.Current.Shutdown();
+            else
+            {
+                Utilities.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+                OnClose();
+            }
+        }
+
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (!AppState.IsOnline || Utilities.IsBranchInstalled())
+            {
+                Utilities.LaunchGame();
+                return;
+            }
+
+            if (!AppState.IsInstalling)
+            {
+                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
+                {
+                    Task.Run(() => GameRepair.Start());
+                }
+                else
+                {
+                    if (Utilities.IsBranchEULAAccepted())
+                    {
+                        Task.Run(() => GameInstall.Start());
+                    }
+                    else
+                    {
+                        Utilities.ShowEULA();
+                    }
+                }
+            }
+        }
+
+        private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox comboBox) return;
+
+            var selectedBranch = comboBox.SelectedIndex;
+
+            ComboBranch comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
+
+            if (comboBranch.isLocalBranch || !AppState.IsOnline)
+            {
+                Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
+                Update_Button.Visibility = Visibility.Hidden;
+                Play_Button.Content = "PLAY";
+                Play_Button.IsEnabled = true;
+                AppState.IsLocalBranch = true;
+                GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                GameSettings_Control.UninstallGame_Button.IsEnabled = false;
+                return;
+            }
+
+            AppState.IsLocalBranch = false;
+
+            Ini.Set(Ini.Vars.SelectedBranch, Configuration.ServerConfig.branches[selectedBranch].branch);
+
+            if (Utilities.IsBranchInstalled())
+            {
+                Utilities.SetupAdvancedMenu();
+
+                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
+                {
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
+                    return;
+                }
+
+                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version)
+                {
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
+                }
+                else
+                {
+                    Update_Button.Visibility = Visibility.Visible;
+                    Play_Button.Content = "PLAY";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
+                }
+            }
+            else
+            {
+                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
+                {
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "DISABLED";
+                    Play_Button.IsEnabled = false;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
+                    return;
+                }
+
+                if (File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
+                {
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "REPAIR";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
+                }
+                else
+                {
+                    Update_Button.Visibility = Visibility.Hidden;
+                    Play_Button.Content = "INSTALL";
+                    Play_Button.IsEnabled = true;
+                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
+                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
+                }
+            }
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
+            {
+                Task.Run(() => GameUpdate.Start());
+                Update_Button.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void VisitWebsite_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start https://r5reloaded.com") { CreateNoWindow = true });
+        }
+
+        private void JoinDiscord_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start https://discord.com/invite/jqMkUdXrBr") { CreateNoWindow = true });
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameSettings_Popup.IsOpen = true;
+        }
+
+        private void StatusBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Status_Popup.IsOpen = true;
+        }
+
+        private void SubMenuBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Menu_Popup.IsOpen = true;
+        }
+
+        private void DownloadsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Downloads_Popup.IsOpen = true;
+        }
+
+        private void StatusPopup_Unloaded(object sender, EventArgs e)
+        {
+            Status_Button.IsEnabled = true;
+        }
+
+        private void StatusPopup_Loaded(object sender, EventArgs e)
+        {
+            Status_Button.IsEnabled = false;
+        }
+
+        private void MenuPopup_Loaded(object sender, EventArgs e)
+        {
+            Menu_Button.IsEnabled = false;
+        }
+
+        private void MenuPopup_Unloaded(object sender, EventArgs e)
+        {
+            Menu_Button.IsEnabled = true;
+        }
+
+        private void GameSettings_Popup_Opened(object sender, EventArgs e)
+        {
+            GameSettings_Button.IsEnabled = false;
+        }
+
+        private void GameSettings_Popup_Closed(object sender, EventArgs e)
+        {
+            GameSettings_Button.IsEnabled = true;
+        }
+
+        private void DownloadsPopup_Unloaded(object sender, EventArgs e)
+        {
+            Downloads_Button.IsEnabled = true;
+        }
+
+        private void DownloadsPopup_Loaded(object sender, EventArgs e)
+        {
+            Downloads_Button.IsEnabled = false;
+        }
+
+        #region functions
+
         private void SetupSystemTray()
         {
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
@@ -80,13 +333,8 @@ namespace launcher
         public void SetButtonState()
         {
             Play_Button.Content = Utilities.IsBranchInstalled() ? "PLAY" : "INSTALL";
-            if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
+            if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
                 Play_Button.Content = "REPAIR";
-        }
-
-        private void Current_Exit(object sender, ExitEventArgs e)
-        {
-            System_Tray.Dispose();
         }
 
         public async Task OnOpen()
@@ -230,168 +478,6 @@ namespace launcher
             WindowScale.ScaleY = 1;
         }
 
-        private void btnClose_Click(object sender, RoutedEventArgs e)
-        {
-            if ((bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close))
-                Application.Current.Shutdown();
-            else
-            {
-                Utilities.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
-                OnClose();
-            }
-        }
-
-        private void btnMinimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            if (!AppState.IsOnline || Utilities.IsBranchInstalled())
-            {
-                Utilities.LaunchGame();
-                return;
-            }
-
-            if (!AppState.IsInstalling)
-            {
-                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
-                {
-                    Task.Run(() => GameRepair.Start());
-                }
-                else
-                {
-                    if (Utilities.IsBranchEULAAccepted())
-                    {
-                        Task.Run(() => GameInstall.Start());
-                    }
-                    else
-                    {
-                        Utilities.ShowEULA();
-                    }
-                }
-            }
-        }
-
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            Background_Video.Position = TimeSpan.FromSeconds(0);
-            Background_Video.Play();
-        }
-
-        private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                DragMove();
-            }
-        }
-
-        private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is not ComboBox comboBox) return;
-
-            var selectedBranch = comboBox.SelectedIndex;
-
-            ComboBranch comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
-
-            if (comboBranch.isLocalBranch || !AppState.IsOnline)
-            {
-                Ini.Set(Ini.Vars.SelectedBranch, comboBranch.title);
-                Update_Button.Visibility = Visibility.Hidden;
-                Play_Button.Content = "PLAY";
-                Play_Button.IsEnabled = true;
-                AppState.IsLocalBranch = true;
-                GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                return;
-            }
-
-            AppState.IsLocalBranch = false;
-
-            Ini.Set(Ini.Vars.SelectedBranch, Configuration.ServerConfig.branches[selectedBranch].branch);
-
-            if (Utilities.IsBranchInstalled())
-            {
-                Utilities.SetupAdvancedMenu();
-
-                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                    return;
-                }
-
-                if (Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
-                else
-                {
-                    Update_Button.Visibility = Visibility.Visible;
-                    Play_Button.Content = "PLAY";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
-            }
-            else
-            {
-                if (!Configuration.ServerConfig.branches[selectedBranch].enabled)
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "DISABLED";
-                    Play_Button.IsEnabled = false;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                    return;
-                }
-
-                if (File.Exists(Path.Combine(FileManager.GetBranchDirectory(), "r5apex.exe")))
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "REPAIR";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = true;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = true;
-                }
-                else
-                {
-                    Update_Button.Visibility = Visibility.Hidden;
-                    Play_Button.Content = "INSTALL";
-                    Play_Button.IsEnabled = true;
-                    GameSettings_Control.RepairGame_Button.IsEnabled = false;
-                    GameSettings_Control.UninstallGame_Button.IsEnabled = false;
-                }
-            }
-        }
-
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Environment.Exit(0);
-        }
-
-        private void btnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
-            {
-                Task.Run(() => GameUpdate.Start());
-                Update_Button.Visibility = Visibility.Hidden;
-            }
-        }
-
         private void ExecuteShowWindow()
         {
             // Show the main window
@@ -410,7 +496,6 @@ namespace launcher
 
         private bool CanExecuteShowWindow()
         {
-            // Logic to determine if the command can execute
             return true;
         }
 
@@ -419,94 +504,7 @@ namespace launcher
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void VisitWebsite_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start https://r5reloaded.com") { CreateNoWindow = true });
-        }
-
-        private void JoinDiscord_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start https://discord.com/invite/jqMkUdXrBr") { CreateNoWindow = true });
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            if (e.ExceptionObject is Exception ex)
-            {
-                Logger.LogCrashToFile(ex);
-            }
-        }
-
-        private static void TaskScheduler_UnobservedTaskException(object sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
-        {
-            Logger.LogCrashToFile(e.Exception);
-            e.SetObserved();
-        }
-
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            GameSettings_Popup.IsOpen = true;
-        }
-
-        private void StatusBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Status_Popup.IsOpen = true;
-        }
-
-        private void SubMenuBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Menu_Popup.IsOpen = true;
-        }
-
-        private void DownloadsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Downloads_Popup.IsOpen = true;
-        }
-
-        private void StatusPopup_Unloaded(object sender, EventArgs e)
-        {
-            Status_Button.IsEnabled = true;
-        }
-
-        private void StatusPopup_Loaded(object sender, EventArgs e)
-        {
-            Status_Button.IsEnabled = false;
-        }
-
-        private void MenuPopup_Loaded(object sender, EventArgs e)
-        {
-            Menu_Button.IsEnabled = false;
-        }
-
-        private void MenuPopup_Unloaded(object sender, EventArgs e)
-        {
-            Menu_Button.IsEnabled = true;
-        }
-
-        private void GameSettings_Popup_Opened(object sender, EventArgs e)
-        {
-            GameSettings_Button.IsEnabled = false;
-        }
-
-        private void GameSettings_Popup_Closed(object sender, EventArgs e)
-        {
-            GameSettings_Button.IsEnabled = true;
-        }
-
-        private void DownloadsPopup_Unloaded(object sender, EventArgs e)
-        {
-            Downloads_Button.IsEnabled = true;
-        }
-
-        private void DownloadsPopup_Loaded(object sender, EventArgs e)
-        {
-            Downloads_Button.IsEnabled = false;
-        }
+        #endregion functions
     }
 
     public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand

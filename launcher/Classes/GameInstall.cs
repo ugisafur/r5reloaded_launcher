@@ -47,7 +47,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching game files list", Source.Installer);
@@ -100,7 +100,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Installer);
@@ -147,7 +147,7 @@ namespace launcher
 
             DownloadManager.SetInstallState(true, "UNINSTALLING");
 
-            string[] files = Directory.GetFiles(FileManager.GetBranchDirectory(), "*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(Utilities.GetBranchDirectory(), "*", SearchOption.AllDirectories);
 
             DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
             AppState.FilesLeft = files.Length;
@@ -181,7 +181,7 @@ namespace launcher
                 });
             });
 
-            Directory.Delete(FileManager.GetBranchDirectory(), true);
+            Directory.Delete(Utilities.GetBranchDirectory(), true);
 
             DownloadManager.SetInstallState(false);
 

@@ -51,25 +51,6 @@ namespace launcher
             return DataCollections.BadFiles.Count;
         }
 
-        public static string GetBranchDirectory()
-        {
-            string branchName = Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch.ToUpper();
-            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
-            string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
-
-            return finalDirectory;
-        }
-
-        public static string GetLibraryPathDirectory()
-        {
-            string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
-            string finalDirectory = Path.Combine(libraryPath, "R5R Library");
-
-            Directory.CreateDirectory(finalDirectory);
-
-            return finalDirectory;
-        }
-
         public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks(string branchFolder)
         {
             var checksumTasks = new List<Task<FileChecksum>>();
@@ -146,15 +127,6 @@ namespace launcher
             using var sha256 = SHA256.Create();
             var hash = sha256.ComputeHash(stream);
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-        }
-
-        public static void SaveLauncherConfig()
-        {
-            string configPath = Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\cfg\\launcherConfig.json");
-            string config_json = JsonConvert.SerializeObject(Configuration.LauncherConfig);
-            File.WriteAllText(configPath, config_json);
-
-            LogInfo(Source.FileManager, "Saved launcher config");
         }
     }
 }

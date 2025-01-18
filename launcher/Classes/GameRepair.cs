@@ -38,7 +38,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Prepare checksum tasks
             DownloadManager.UpdateStatusLabel("Preparing checksum tasks", Source.Repair);
@@ -105,7 +105,7 @@ namespace launcher
             DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
-            string branchDirectory = FileManager.GetBranchDirectory();
+            string branchDirectory = Utilities.GetBranchDirectory();
 
             //Prepare checksum tasks
             DownloadManager.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
