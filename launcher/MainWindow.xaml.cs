@@ -301,7 +301,7 @@ namespace launcher
             }
 
             bool executableExists = File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe"));
-            SetPlayState(executableExists ? "REPAIR" : "INSTALL", executableExists, executableExists, executableExists);
+            SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists);
         }
 
         private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled)
