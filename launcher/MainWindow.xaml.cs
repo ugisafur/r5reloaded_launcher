@@ -405,6 +405,9 @@ namespace launcher
 
         private async Task AnimateWindow(bool isOpening)
         {
+            if (isOpening && this.Opacity == 1)
+                return;
+
             if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
             {
                 if (isOpening)
@@ -529,6 +532,11 @@ namespace launcher
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion functions
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            WindowClip.Rect = new Rect(0, 0, e.NewSize.Width, e.NewSize.Height);
+        }
     }
 
     public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing">
+        Title="R5Reloaded Launcher" Height="768" Width="1340" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing" ResizeMode="NoResize" SizeChanged="Window_SizeChanged" AllowsTransparency="True">
 
     <Window.RenderTransform>
         <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
@@ -16,7 +16,7 @@
     </Window.RenderTransformOrigin>
 
     <Window.Clip>
-        <RectangleGeometry Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
+        <RectangleGeometry x:Name="WindowClip" Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
     </Window.Clip>
 
     <Window.Resources>
@@ -581,7 +581,7 @@
         <Border BorderBrush="{StaticResource PrimaryColor}" BorderThickness="3" CornerRadius="5">
             <Grid x:Name="MainUI" Opacity="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
+                    <RowDefinition Height="58" />
                     <RowDefinition Height="12*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="1">
@@ -597,24 +597,25 @@
                     </Rectangle>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="262*" />
-                            <RowDefinition Height="303*" />
-                            <RowDefinition Height="33*" />
+                            <RowDefinition Height="260" />
+                            <RowDefinition Height="50*" />
+                            <RowDefinition Height="330" />
+                            <RowDefinition Height="40" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Image Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" />
                         </Grid>
-                        <Grid Grid.Row="1" Margin="0,6,0,0">
+                        <Grid Grid.Row="2" Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="7*" />
-                                <ColumnDefinition Width="70*" />
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="425" />
                                 <ColumnDefinition Width="136*" />
-                                <ColumnDefinition Width="7*" />
+                                <ColumnDefinition Width="45" />
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="25*" />
-                                    <RowDefinition Height="68*" />
+                                    <RowDefinition Height="90" />
+                                    <RowDefinition Height="261" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
                                 <Grid Grid.Row="1" Margin="25,0,25,0">
@@ -654,11 +655,11 @@
                             <Grid Grid.Column="2">
                             </Grid>
                         </Grid>
-                        <Grid Grid.Row="2" Margin="0,6,0,0">
+                        <Grid Grid.Row="3" Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="7*" />
-                                <ColumnDefinition Width="136*" />
-                                <ColumnDefinition Width="7*" />
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="45" />
                             </Grid.ColumnDefinitions>
                             <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
                         </Grid>
@@ -678,16 +679,16 @@
                 </Rectangle>
 
                 <Grid Grid.Row="0">
-                    <Rectangle Fill="{StaticResource PrimaryColor}" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" />
+                    <Rectangle Fill="{StaticResource PrimaryColor}" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" Height="58.6153846153845" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="101*" />
+                            <ColumnDefinition Width="101" />
                             <ColumnDefinition Width="786*" />
-                            <ColumnDefinition Width="206*" />
-                            <ColumnDefinition Width="241*" />
+                            <ColumnDefinition Width="206" />
+                            <ColumnDefinition Width="241" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="{StaticResource MenuButtonColorNormal}" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource PrimaryTextColor}" Click="SubMenuBtn_Click" Cursor="Hand">
+                        <Grid Grid.Column="0" HorizontalAlignment="Left">
+                            <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="{StaticResource MenuButtonColorNormal}" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource PrimaryTextColor}" Click="SubMenuBtn_Click" Cursor="Hand" Margin="5,0,0,0">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent">
                                     <Image Source="/assets/logo-50.png" Width="55" Height="55" VerticalAlignment="Center" />
                                     <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
@@ -698,15 +699,15 @@
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="1" />
-                        <Grid Grid.Column="2">
+                        <Grid Grid.Column="2" HorizontalAlignment="Right">
                             <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="32,10,18,10" Foreground="{StaticResource MenuButtonTextColor}" Click="StatusBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
-                            <Rectangle Fill="#3F54ADF7" Margin="198,6,6,6" IsHitTestVisible="False" />
+                            <Rectangle Fill="#3F54ADF7" Width="2" HorizontalAlignment="Right"  IsHitTestVisible="False" Margin="0,10,7,10" />
                             <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
                                 <local:StatusPopup x:Name="Status_Control" />
                             </Popup>
                         </Grid>
-                        <Grid Grid.Column="3" Margin="3,0,0,0">
+                        <Grid Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Right">
                             <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,103,10" Foreground="{StaticResource MenuButtonTextColor}" Click="DownloadsBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
                             <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
