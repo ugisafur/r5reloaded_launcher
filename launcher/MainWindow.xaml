@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="#FF0F2C3E" Closing="Window_Closing">
+        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="{StaticResource SecondaryColor}" Closing="Window_Closing">
 
     <Window.RenderTransform>
         <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
@@ -128,12 +128,12 @@
         <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
             <Viewbox Stretch="Fill">
                 <Grid HorizontalAlignment="Left" Margin="-5 0">
-                    <Path Stretch="None" x:Name="PART_Track" Fill="#FF0A1D29" RenderTransformOrigin="0,0.5" StrokeMiterLimit="1" Data="M 0,0 l 150,0 10,10 -150,0 z">
+                    <Path Stretch="None" x:Name="PART_Track" Fill="{StaticResource SecondaryColor}" RenderTransformOrigin="0,0.5" StrokeMiterLimit="1" Data="M 0,0 l 150,0 10,10 -150,0 z">
                         <Path.RenderTransform>
                             <SkewTransform AngleX="-45" />
                         </Path.RenderTransform>
                     </Path>
-                    <Path Stretch="None" x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="#29AAE1" RenderTransformOrigin="0,0.5" StrokeMiterLimit="1" Data="M 0,0 l 150,0 10,10 -150,0 z">
+                    <Path Stretch="None" x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="{StaticResource AccentColor}" RenderTransformOrigin="0,0.5" StrokeMiterLimit="1" Data="M 0,0 l 150,0 10,10 -150,0 z">
                         <Path.RenderTransform>
                             <SkewTransform AngleX="-45" />
                         </Path.RenderTransform>
@@ -146,8 +146,8 @@
         <Style x:Key="SettingsButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="30" />
             <Setter Property="Height" Value="30" />
-            <Setter Property="Background" Value="#151B28" />
-            <Setter Property="BorderBrush" Value="#54adf7" />
+            <Setter Property="Background" Value="{StaticResource GameSettingsButtonColorNormal}" />
+            <Setter Property="BorderBrush" Value="{StaticResource GameSettingsButtonBorderColor}" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -162,7 +162,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="SettingsButtonBorder" Property="BorderBrush" Value="#9CCDF6" />
+                                <Setter TargetName="SettingsButtonBorder" Property="BorderBrush" Value="{StaticResource GameSettingsButtonBorderHoverColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -231,7 +231,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border x:Name="ComboBoxBorder" Background="#151B28" BorderThickness="2" CornerRadius="4" BorderBrush="#54adf7">
+                            <Border x:Name="ComboBoxBorder" Background="{StaticResource BranchComboBorderColor}" BorderThickness="2" CornerRadius="4" BorderBrush="{StaticResource BranchComboSelectedBorderColor}">
                                 <DockPanel LastChildFill="True">
                                     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                                               VerticalAlignment="Center"
@@ -242,7 +242,7 @@
                                     <ToggleButton Style="{DynamicResource ToggleButtonCombo}" DockPanel.Dock="Right" Width="249" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                           BorderThickness="0" Background="Transparent" HorizontalAlignment="Right" Padding="210,0,0,0">
                                         <Path Data="M 0 0 L 10 10 L 20 0 Z"
-                                      Fill="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                      Fill="{StaticResource PrimaryTextColor}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </ToggleButton>
                                 </DockPanel>
                             </Border>
@@ -254,7 +254,7 @@
                            AllowsTransparency="True"
                            PopupAnimation="Fade"
                            VerticalOffset="58">
-                                <Border Background="#FF143A52" BorderBrush="#FF143A52" BorderThickness="0" CornerRadius="5" Width="300">
+                                <Border Background="{StaticResource BranchComboPopupColor}" BorderBrush="{StaticResource BranchComboPopupColor}" BorderThickness="0" CornerRadius="5" Width="300">
                                     <ScrollViewer>
                                         <ItemsPresenter />
                                     </ScrollViewer>
@@ -263,7 +263,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="#9CCDF6" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchComboHoverColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -374,16 +374,16 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#8C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#8C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -428,17 +428,16 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FF0A1D29" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#9CCDF6" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MainButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MainButtonBorderColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FF0A1D29" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#9CCDF6" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MainButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MainButtonBorderColorHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#FF0A1D29" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#2E6894" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#2E6894" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MainButtonColorDisabled}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MainButtonBorderColorDisabled}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -468,17 +467,12 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FFFD453C" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FFFD453C" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource UpdateButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UpdateButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FFFD453C" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FFFD453C" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#2E6894" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#2E6894" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="White" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource UpdateButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UpdateButtonColorPressed}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -517,7 +511,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border x:Name="Bd" Background="#143a52" BorderBrush="#143a52" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
+                        <Border x:Name="Bd" Background="#143a52" BorderBrush="{StaticResource SecondaryColor2}" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -530,8 +524,8 @@
                                     <Condition Property="IsMouseOver" Value="True" />
                                     <Condition Property="IsKeyboardFocused" Value="False" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#194967" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#194967" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboMouseOverColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -539,16 +533,16 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#2772A0" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#2772A0" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsSelected" Value="True" />
                                     <Condition Property="IsMouseOver" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#1D5579" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#1D5579" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -556,8 +550,8 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="False" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#2772A0" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#2772A0" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -565,7 +559,7 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ComboBoxItem.ItemsviewFocus.Border}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedBorderColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -573,8 +567,8 @@
                                     <Condition Property="IsMouseOver" Value="True" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#1D5579" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#1D5579" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
                             </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -584,7 +578,7 @@
     </Window.Resources>
 
     <Grid>
-        <Border BorderBrush="#FF0F2C3E" BorderThickness="3" CornerRadius="5">
+        <Border BorderBrush="{StaticResource PrimaryColor}" BorderThickness="3" CornerRadius="5">
             <Grid x:Name="MainUI" Opacity="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -622,15 +616,15 @@
                                     <RowDefinition Height="25*" />
                                     <RowDefinition Height="68*" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="White" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
+                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
                                 <Grid Grid.Row="1" Margin="25,0,25,0">
-                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
+                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
                                         <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="Branch_Combobox" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
-                                                        <TextBlock Text="{Binding title, Converter={StaticResource UpperCaseConverter}}" Foreground="White" FontFamily="Bahnschrift SemiLight" FontSize="16" />
+                                                        <TextBlock Text="{Binding title, Converter={StaticResource UpperCaseConverter}}" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiLight" FontSize="16" />
                                                         <TextBlock Text="{Binding subtext}" Foreground="Gray" FontFamily="Bahnschrift Light" FontSize="14" />
                                                     </StackPanel>
                                                 </DataTemplate>
@@ -641,8 +635,8 @@
                                             <local:SettingsPopup x:Name="GameSettings_Control" />
                                         </Popup>
                                     </StackPanel>
-                                    <Button Style="{DynamicResource PlatButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="#FF0A1D29" Foreground="#FF54ADF7" BorderBrush="#FF4A99DB" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
-                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="#FF6FB2DC" Background="#FF0F2C3E" BorderBrush="#FF0F2C3E">
+                                    <Button Style="{DynamicResource PlatButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="{StaticResource MainButtonColorNormal}" Foreground="{StaticResource MainButtonTextColor}" BorderBrush="{StaticResource MainButtonButtonBorderColor}" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
+                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource AccentColor}" Background="{StaticResource SecondaryColor}" BorderBrush="{StaticResource SecondaryColor}">
                                         <ProgressBar.RenderTransform>
                                             <TransformGroup>
                                                 <ScaleTransform ScaleY="-1" />
@@ -652,9 +646,9 @@
                                             </TransformGroup>
                                         </ProgressBar.RenderTransform>
                                     </ProgressBar>
-                                    <TextBlock x:Name="Status_Label" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                    <TextBlock x:Name="Files_Label" FontSize="10" Foreground="White" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
-                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="#FFDB514A" Foreground="White" BorderBrush="#FFDB514A" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                    <TextBlock x:Name="Status_Label" FontSize="10" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
+                                    <TextBlock x:Name="Files_Label" FontSize="10" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{StaticResource UpdateButtonColorNormal}" Foreground="{StaticResource SecondaryButtonTextColor}" BorderBrush="{StaticResource UpdateButtonColorNormal}" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2">
@@ -666,7 +660,7 @@
                                 <ColumnDefinition Width="136*" />
                                 <ColumnDefinition Width="7*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
+                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -674,7 +668,7 @@
                 <local:SettingsControl x:Name="Settings_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
                 <local:AdvancedMenu x:Name="Advanced_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
 
-                <Rectangle x:Name="Transition_Rect" Fill="#0B202D" Margin="-497,57,-1030,0" Grid.RowSpan="2">
+                <Rectangle x:Name="Transition_Rect" Fill="{StaticResource TranisitonBoxColor}" Margin="-497,57,-1030,0" Grid.RowSpan="2">
                     <Rectangle.RenderTransform>
                         <TransformGroup>
                             <TranslateTransform X="-2400" Y="0" />
@@ -684,7 +678,7 @@
                 </Rectangle>
 
                 <Grid Grid.Row="0">
-                    <Rectangle Fill="#FF0F2C3E" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" />
+                    <Rectangle Fill="{StaticResource PrimaryColor}" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="101*" />
@@ -693,7 +687,7 @@
                             <ColumnDefinition Width="241*" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="White" Click="SubMenuBtn_Click" Cursor="Hand">
+                            <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="{StaticResource MenuButtonColorNormal}" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource PrimaryTextColor}" Click="SubMenuBtn_Click" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent">
                                     <Image Source="/assets/logo-50.png" Width="55" Height="55" VerticalAlignment="Center" />
                                     <TextBlock Text="▼" FontSize="16" VerticalAlignment="Center" />
@@ -705,7 +699,7 @@
                         </Grid>
                         <Grid Grid.Column="1" />
                         <Grid Grid.Column="2">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="#FF54ADF7" Click="StatusBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="32,10,18,10" Foreground="{StaticResource MenuButtonTextColor}" Click="StatusBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
                             <Rectangle Fill="#3F54ADF7" Margin="198,6,6,6" IsHitTestVisible="False" />
                             <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
@@ -713,19 +707,19 @@
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="3" Margin="3,0,0,0">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="#00000000" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="#FF54ADF7" Click="DownloadsBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,103,10" Foreground="{StaticResource MenuButtonTextColor}" Click="DownloadsBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
                             <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
                                 <local:DownloadsPopup x:Name="Downloads_Control" />
                             </Popup>
-                            <Button x:Name="Close_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
-                            <Button x:Name="Minimize_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="#FF54ADF7" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
+                            <Button x:Name="Close_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
+                            <Button x:Name="Minimize_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
         </Border>
-        <Rectangle x:Name="POPUP_BG" Fill="#66000000" Opacity="0" Visibility="Hidden" />
+        <Rectangle x:Name="POPUP_BG" Fill="{StaticResource PopupBGColor}" Opacity="0" Visibility="Hidden" />
         <local:EULAPopup x:Name="EULA_Control" Width="561" Height="720" Opacity="0" Visibility="Hidden" />
         <local:InstallOptFilesPopup x:Name="OptFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:CheckExisitngFilesPopup x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />

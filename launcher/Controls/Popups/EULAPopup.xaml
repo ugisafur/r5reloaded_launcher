@@ -42,20 +42,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="#85C6A2" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#B3DCC5" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#B3DCC5" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#B3DCC5" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#B3DCC5" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#B3DCC5" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#B3DCC5" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="Black" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource AcceptEulaButtonColor}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource AcceptEulaButtonTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -79,20 +79,19 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonColor}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#CC000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#CC000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#CC000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#CC000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#CC000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#CC000000" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="Black" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -101,19 +100,19 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#0f2c3e" CornerRadius="10">
+    <Border Background="{StaticResource PrimaryColor}" CornerRadius="10">
         <Grid>
             <ScrollViewer Margin="5,65,0,95">
-                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="White" FontFamily="Bahnschrift Light" Background="#0f2c3e" BorderThickness="0" IsReadOnly="True" />
+                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" Background="{StaticResource PrimaryColor}" BorderThickness="0" IsReadOnly="True" />
             </ScrollViewer>
 
-            <Border Background="#143a52" Height="60" VerticalAlignment="Top" CornerRadius="10, 10, 0, 0">
+            <Border Background="{StaticResource SecondaryColor2}" Height="60" VerticalAlignment="Top" CornerRadius="10, 10, 0, 0">
                 <Border.Effect>
                     <DropShadowEffect Direction="270" ShadowDepth="11" Opacity="0.1" BlurRadius="8" />
                 </Border.Effect>
                 <Grid>
-                    <TextBlock Text="End-User License Agreement" Foreground="White" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="20,0,77,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="White" Click="close_Click" />
+                    <TextBlock Text="End-User License Agreement" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="20,0,77,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="{StaticResource CloseButtonColor}" BorderBrush="{StaticResource CloseButtonColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{StaticResource PrimaryTextColor}" Click="close_Click" />
                 </Grid>
             </Border>
 
@@ -123,8 +122,8 @@
                 </Border.Effect>
 
                 <Grid>
-                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="#85C6A2" BorderBrush="#85C6A2" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
-                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="White" Click="close_Click" />
+                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="{StaticResource AcceptEulaButtonColor}" BorderBrush="{StaticResource AcceptEulaButtonColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
+                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="{StaticResource CloseButtonColor}" BorderBrush="{StaticResource CloseButtonColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{StaticResource CloseButtonTextColor}" Click="close_Click" />
                 </Grid>
             </Border>
         </Grid>

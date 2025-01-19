@@ -71,9 +71,9 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="2" Width="547" Height="30" Padding="15">
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="547" Height="30" Padding="15">
         <Grid Margin="-11,-10,13,-11">
-            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="White" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="0,0,133,7" RenderTransformOrigin="0.5,0.5">
+            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{StaticResource PrimaryTextColor}" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="0,0,133,7" RenderTransformOrigin="0.5,0.5">
                 <TextBlock.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform />
@@ -83,8 +83,8 @@
                     </TransformGroup>
                 </TextBlock.RenderTransform>
             </TextBlock>
-            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="White" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="385,0,0,7" TextAlignment="Right" />
-            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="5" Margin="0,14,0,2" Foreground="#FF6FB2DC" BorderBrush="#FF0F2C3E" Background="#FF0F2C3E" />
+            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{StaticResource PrimaryTextColor}" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="385,0,0,7" TextAlignment="Right" />
+            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="5" Margin="0,14,0,2" Foreground="{StaticResource AccentColor}" BorderBrush="{StaticResource PrimaryColor}" Background="{StaticResource PrimaryColor}" />
         </Grid>
     </Border>
 </UserControl>

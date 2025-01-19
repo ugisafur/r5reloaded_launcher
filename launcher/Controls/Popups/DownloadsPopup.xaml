@@ -45,17 +45,17 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF2e6893" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource MenuButtonDisabledTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -64,22 +64,22 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="2" Width="577" Height="300" Padding="15">
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="300" Padding="15">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="16*" />
                 <RowDefinition Height="105*" />
                 <RowDefinition Height="14*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="Downloads" Foreground="White" FontSize="26" FontWeight="Bold" Margin="4,2,0,2" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock Text="Downloads" Foreground="{StaticResource PrimaryTextColor}" FontSize="26" FontWeight="Bold" Margin="4,2,0,2" FontFamily="Bahnschrift SemiBold" />
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="210">
                     <StackPanel x:Name="DownloadsStackPanel" Orientation="Vertical">
                     </StackPanel>
                 </ScrollViewer>
             </StackPanel>
-            <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads in the queue." Foreground="#FF6E94AB" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
-            <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="4,3,0,0" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" HorizontalAlignment="Left" Click="gotoDownloads_Click" Cursor="Hand">
+            <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads in the queue." Foreground="{StaticResource AccentTextColor}" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
+            <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="4,3,0,0" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" Click="gotoDownloads_Click" Cursor="Hand">
                 <Grid Width="170">
                     <TextBlock Text="Download Settings" HorizontalAlignment="Left" FontSize="16" Margin="29,1,0,-1" />
                     <Image Source="/assets/icons8-settings-100.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="5,0,0,0" />

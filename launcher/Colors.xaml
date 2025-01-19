@@ -1,0 +1,111 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="TranisitonBoxColor" Color="#FF0B202D" />
+    <SolidColorBrush x:Key="PopupBGColor" Color="#66000000" />
+    <SolidColorBrush x:Key="SeperatorColor" Color="#3354ADF7" />
+    <SolidColorBrush x:Key="BranchDisabledTextColor" Color="#DD7477" />
+    <SolidColorBrush x:Key="HDTexturesInstalledColor" Color="#85C6A2" />
+
+    <SolidColorBrush x:Key="StatusTextColor" Color="Black" />
+    <SolidColorBrush x:Key="StatusPlayerServerBG" Color="#FF8AD2FF" />
+
+    <SolidColorBrush x:Key="PrimaryTextColor" Color="White" />
+    <SolidColorBrush x:Key="SecondaryTextColor" Color="Black" />
+    <SolidColorBrush x:Key="AccentTextColor" Color="#FF6E94AB" />
+
+    <SolidColorBrush x:Key="PrimaryColor" Color="#FF0F2C3E" />
+    <SolidColorBrush x:Key="SecondaryColor" Color="#FF0A1D29" />
+    <SolidColorBrush x:Key="SecondaryColor2" Color="#FF143A52" />
+    <SolidColorBrush x:Key="AccentColor" Color="#FF96CAEA" />
+
+    <SolidColorBrush x:Key="MainButtonButtonBorderColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="MainButtonTextColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="MainButtonColorNormal" Color="#FF151B28" />
+    <SolidColorBrush x:Key="MainButtonColorHover" Color="#FF9CCDF6" />
+    <SolidColorBrush x:Key="MainButtonColorPressed" Color="#FF151B28" />
+    <SolidColorBrush x:Key="MainButtonBorderColorHover" Color="#FF9CCDF6" />
+    <SolidColorBrush x:Key="MainButtonColorDisabled" Color="#FF0A1D29" />
+    <SolidColorBrush x:Key="MainButtonBorderColorDisabled" Color="#FF2E6894" />
+
+    <SolidColorBrush x:Key="SecondaryButtonTextColor" Color="White" />
+    <SolidColorBrush x:Key="UpdateButtonColorNormal" Color="#FFDB514A" />
+    <SolidColorBrush x:Key="UpdateButtonColorHover" Color="#FFFD453C" />
+    <SolidColorBrush x:Key="UpdateButtonColorPressed" Color="#FFDB514A" />
+
+    <SolidColorBrush x:Key="GameSettingsButtonBorderColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="GameSettingsButtonBorderHoverColor" Color="#FF9CCDF6" />
+    <SolidColorBrush x:Key="GameSettingsButtonColorNormal" Color="#151B28" />
+
+    <SolidColorBrush x:Key="MenuButtonDisabledTextColor" Color="#FF2e6893" />
+    <SolidColorBrush x:Key="MenuButtonTextColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="MenuButtonColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="MenuButtonColorHover" Color="#4C000000" />
+    <SolidColorBrush x:Key="MenuButtonColorPressed" Color="#8C000000" />
+
+    <SolidColorBrush x:Key="BranchComboMouseOverColor" Color="#194967" />
+    <SolidColorBrush x:Key="BranchComboSelectedColor" Color="#2772A0" />
+    <SolidColorBrush x:Key="BranchComboSelectedMouseOverColor" Color="#1D5579" />
+    <SolidColorBrush x:Key="BranchComboSelectedBorderColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="BranchComboHoverColor" Color="#9CCDF6" />
+    <SolidColorBrush x:Key="BranchComboPopupColor" Color="#FF143A52" />
+    <SolidColorBrush x:Key="BranchComboBorderColor" Color="#151B28" />
+
+    <SolidColorBrush x:Key="ComboTextColor" Color="White" />
+    <SolidColorBrush x:Key="ComboMouseOverColor" Color="#194967" />
+    <SolidColorBrush x:Key="ComboSelectedColor" Color="#2772A0" />
+    <SolidColorBrush x:Key="ComboSelectedMouseOverColor" Color="#1D5579" />
+    <SolidColorBrush x:Key="ComboSelectedBorderColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="ComboHoverColor" Color="#9CCDF6" />
+    <SolidColorBrush x:Key="ComboPopupColor" Color="#FF143A52" />
+    <SolidColorBrush x:Key="ComboBorderColor" Color="#151B28" />
+
+    <SolidColorBrush x:Key="SettingsNavButtonTextColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="SettingsNavButtonTextDisabledColor" Color="#FF2e6893" />
+    <SolidColorBrush x:Key="SettingsNavButtonColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="SettingsNavButtonColorHover" Color="#4C000000" />
+
+    <SolidColorBrush x:Key="SettingButtonTextColor" Color="Black" />
+    <SolidColorBrush x:Key="SettingButtonColorNormal" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="SettingButtonColorHover" Color="#95CCFA" />
+    <SolidColorBrush x:Key="SettingButtonColorPressed" Color="#FF54ADF7" />
+
+    <SolidColorBrush x:Key="UninstallButtonTextColor" Color="#DD7477" />
+    <SolidColorBrush x:Key="UninstallButtonColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="UninstallButtonColorHover" Color="#CC000000" />
+    <SolidColorBrush x:Key="UninstallButtonColorPressed" Color="#CC000000" />
+
+    <SolidColorBrush x:Key="BranchTopButtonColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="BranchTopButtonColorHover" Color="#194967" />
+
+    <SolidColorBrush x:Key="TextBoxTextColor" Color="White" />
+    <SolidColorBrush x:Key="TextBoxColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="TextBoxColorHover" Color="#9CCDF6" />
+    <SolidColorBrush x:Key="TextBoxBorderColor" Color="#FF54ADF7" />
+
+    <SolidColorBrush x:Key="SwitchColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="SwitchBackgroundColor" Color="#0a1d29" />
+
+    <SolidColorBrush x:Key="PopupSettingButtonTextColor" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="PopupSettingButtonDisabledTextColor" Color="#FF2e6893" />
+    <SolidColorBrush x:Key="PopupUninstallSettingButtonTextColor" Color="#DD7477" />
+    <SolidColorBrush x:Key="PopupSettingButtonColorNormal" Color="Transparent" />
+    <SolidColorBrush x:Key="PopupSettingButtonColorHover" Color="#4C000000" />
+    <SolidColorBrush x:Key="PopupSettingButtonColorPressed" Color="#4C000000" />
+
+    <SolidColorBrush x:Key="CloseButtonTextColor" Color="White" />
+    <SolidColorBrush x:Key="CloseButtonColor" Color="Transparent" />
+    <SolidColorBrush x:Key="CloseButtonHoverColor" Color="#CC000000" />
+
+    <SolidColorBrush x:Key="LaterOptButtonTextColor" Color="Black" />
+    <SolidColorBrush x:Key="LaterOptButtonColor" Color="#DD7477" />
+    <SolidColorBrush x:Key="LaterOptButtonHoverColor" Color="#FFE07477" />
+
+    <SolidColorBrush x:Key="DownloadOptButtonTextColor" Color="Black" />
+    <SolidColorBrush x:Key="DownloadOptButtonColor" Color="#85C6A2" />
+    <SolidColorBrush x:Key="DownloadOptButtonHoverColor" Color="#B3DCC5" />
+
+    <SolidColorBrush x:Key="AcceptEulaButtonTextColor" Color="Black" />
+    <SolidColorBrush x:Key="AcceptEulaButtonColor" Color="#85C6A2" />
+    <SolidColorBrush x:Key="AcceptEulaButtonHoverColor" Color="#B3DCC5" />
+</ResourceDictionary>

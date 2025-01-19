@@ -45,20 +45,20 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingsNavButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingsNavButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingsNavButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingsNavButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextBlock.Foreground" Value="#FF2e6893" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingsNavButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingsNavButtonColorNormal}" />
+                                <Setter Property="TextBlock.Foreground" Value="{StaticResource SettingsNavButtonTextDisabledColor}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="true">
-                                <Setter Property="TextBlock.Foreground" Value="#FF52aaf2" />
+                                <Setter Property="TextBlock.Foreground" Value="{StaticResource SettingsNavButtonTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -66,13 +66,13 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#0a1d29">
+    <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="401*" />
                 <ColumnDefinition Width="939*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Background="#0f2c3e" BorderThickness="0" CornerRadius="2" Width="401" Height="707" Padding="10" />
+            <Border Grid.Column="0" Background="{StaticResource PrimaryColor}" BorderThickness="0" CornerRadius="2" Width="401" Height="707" Padding="10" />
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="33*" />
@@ -82,29 +82,29 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="1">
-                    <Button x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
+                    <Button x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
                         <Grid Width="60" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image Source="/assets/icons8-left-arrow-100.png" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                     </Button>
-                    <Rectangle Fill="#3354ADF7" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
-                    <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontFamily="Bahnschrift SemiBold" FontSize="36" Width="134" />
+                    <Rectangle Fill="{StaticResource SeperatorColor}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
+                    <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiBold" FontSize="36" Width="134" />
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">
-                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="{StaticResource SettingsNavButtonColorNormal}" BorderBrush="{StaticResource SettingsNavButtonColorNormal}" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Application" Width="300" />
                     </Button>
-                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="{StaticResource SettingsNavButtonColorNormal}" BorderBrush="{StaticResource SettingsNavButtonColorNormal}" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Accessibility" Width="300" />
                     </Button>
-                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="{StaticResource SettingsNavButtonColorNormal}" BorderBrush="{StaticResource SettingsNavButtonColorNormal}" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Game Branches" Width="300" />
                     </Button>
-                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="{StaticResource SettingsNavButtonColorNormal}" BorderBrush="{StaticResource SettingsNavButtonColorNormal}" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Download" Width="300" />
                     </Button>
-                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="{StaticResource SettingsNavButtonColorNormal}" BorderBrush="{StaticResource SettingsNavButtonColorNormal}" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="About" Width="300" />
                     </Button>
                 </StackPanel>

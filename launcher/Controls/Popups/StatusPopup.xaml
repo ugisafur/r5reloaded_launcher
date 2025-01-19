@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="242" d:DesignWidth="577">
 
-    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="2" Width="577" Height="242" Padding="10" Loaded="Border_Loaded">
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="242" Padding="10" Loaded="Border_Loaded">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="5*" />
@@ -21,37 +21,37 @@
                 <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="R5Reloaded Status" FontSize="20" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="R5Reloaded Status" FontSize="20" Foreground="{StaticResource PrimaryTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift SemiBold" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Website" FontSize="14" Foreground="#FF96CAEA" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Master Server" FontSize="14" Foreground="#FF96CAEA" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Content Download Network" FontSize="14" Foreground="#FF96CAEA" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Website" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Master Server" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Content Download Network" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
 
             <Border x:Name="WebsiteStatusBG" Grid.Row="1" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblWebsiteStatus" Text="Operational" FontSize="12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblWebsiteStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
             <Border x:Name="MSStatusBG" Grid.Row="2" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblMSStatus" Text="Operational" FontSize="12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblMSStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
             <Border x:Name="CDNStatusBG" Grid.Row="3" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblCNDStatus" Text="Operational" FontSize="12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblCNDStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Players Online" FontSize="14" Foreground="#FF96CAEA" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
-            <Border Grid.Row="4" Grid.Column="1" Background="#FF8AD2FF" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
-                <TextBlock x:Name="lblPlayersCount" Text="0" FontSize="12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Players Online" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
+            <Border Grid.Row="4" Grid.Column="1" Background="{StaticResource StatusPlayerServerBG}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
+                <TextBlock x:Name="lblPlayersCount" Text="0" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
             </Border>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Servers Online" FontSize="14" Foreground="#FF96CAEA" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
-            <Border Grid.Row="5" Grid.Column="1" Background="#FF8AD2FF" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
-                <TextBlock x:Name="lblServerCount" Text="0" FontSize="12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Servers Online" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
+            <Border Grid.Row="5" Grid.Column="1" Background="{StaticResource StatusPlayerServerBG}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
+                <TextBlock x:Name="lblServerCount" Text="0" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
             </Border>
 
-            <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="#3396CAEA" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
+            <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="{StaticResource SeperatorColor}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
 
-            <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="#FF96CAEA" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
+            <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
         </Grid>
     </Border>
 </UserControl>

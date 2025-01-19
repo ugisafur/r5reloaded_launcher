@@ -45,17 +45,17 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource PopupSettingButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PopupSettingButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#4C000000" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#4C000000" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource PopupSettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PopupSettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF2e6893" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource PopupSettingButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PopupSettingButtonColorNormal}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource PopupSettingButtonDisabledTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -63,12 +63,12 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#FF143A52" BorderThickness="0" CornerRadius="5" Width="170" Height="180" Padding="5">
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="5" Width="170" Height="180" Padding="5">
         <StackPanel VerticalAlignment="Center">
-            <Button x:Name="AdvancedMenu_Button" Style="{DynamicResource SettingsButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
-            <Button x:Name="RepairGame_Button" Style="{DynamicResource SettingsButton}" Content="Verify Game Files" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Click="btnRepair_Click" Cursor="Hand" />
-            <Button x:Name="OpenDir_Button" Style="{DynamicResource SettingsButton}" Content="Open Branch Folder" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="#FF52aaf2" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="OpenDir_Button_Click" />
-            <Button x:Name="UninstallGame_Button" Style="{DynamicResource SettingsButton}" Content="Uninstall Branch" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="#DD7477" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="Uninstall_Click" />
+            <Button x:Name="AdvancedMenu_Button" Style="{DynamicResource SettingsButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="{StaticResource PopupSettingButtonColorNormal}" Foreground="{StaticResource PopupSettingButtonTextColor}" BorderBrush="{StaticResource PopupSettingButtonColorNormal}" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
+            <Button x:Name="RepairGame_Button" Style="{DynamicResource SettingsButton}" Content="Verify Game Files" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="{StaticResource PopupSettingButtonColorNormal}" Foreground="{StaticResource PopupSettingButtonTextColor}" BorderBrush="{StaticResource PopupSettingButtonColorNormal}" Height="40" Click="btnRepair_Click" Cursor="Hand" />
+            <Button x:Name="OpenDir_Button" Style="{DynamicResource SettingsButton}" Content="Open Branch Folder" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="{StaticResource PopupSettingButtonColorNormal}" Foreground="{StaticResource PopupSettingButtonTextColor}" BorderBrush="{StaticResource PopupSettingButtonColorNormal}" Height="40" Cursor="Hand" Click="OpenDir_Button_Click" />
+            <Button x:Name="UninstallGame_Button" Style="{DynamicResource SettingsButton}" Content="Uninstall Branch" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="{StaticResource PopupSettingButtonColorNormal}" Foreground="{StaticResource PopupUninstallSettingButtonTextColor}" BorderBrush="{StaticResource PopupSettingButtonColorNormal}" Height="40" Cursor="Hand" Click="Uninstall_Click" />
         </StackPanel>
     </Border>
 </UserControl>

@@ -12,7 +12,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="AdvancedTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}" />
+            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -21,7 +21,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="White" />
+            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -29,18 +29,17 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="#FF6E94AB" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
                         </Grid>
-
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -101,20 +100,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#95CCFA" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#95CCFA" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="Black" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -123,16 +122,16 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#0a1d29">
+    <Border Background="{StaticResource SecondaryColor}">
         <ScrollViewer>
             <Grid>
-                <TextBlock Text="Game Branches" Foreground="White" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Game location" Foreground="White" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="33,156,10,0" Height="24" />
-                <TextBlock Text="This is the path of your game folder location" TextWrapping="Wrap" Foreground="#FF6E94AB" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,190,10,0" Height="37" />
+                <TextBlock Text="Game Branches" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Game location" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="33,156,10,0" Height="24" />
+                <TextBlock Text="This is the path of your game folder location" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,190,10,0" Height="37" />
 
-                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
-                <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" />
-                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,269,402" Click="ChangePath_Click" />
+                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
+                <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" />
+                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,269,402" Click="ChangePath_Click" />
 
                 <StackPanel x:Name="BranchPanel" Margin="0,340,0,0">
                 </StackPanel>

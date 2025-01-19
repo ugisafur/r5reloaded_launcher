@@ -67,7 +67,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border x:Name="ComboBoxBorder" Background="#151B28" BorderThickness="1" CornerRadius="4" BorderBrush="#54adf7" Width="495">
+                            <Border x:Name="ComboBoxBorder" Background="{StaticResource BranchComboBorderColor}" BorderThickness="1" CornerRadius="4" BorderBrush="#54adf7" Width="495">
                                 <DockPanel LastChildFill="True">
                                     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                               VerticalAlignment="Center"
@@ -78,11 +78,11 @@
                                     <ToggleButton Style="{DynamicResource ToggleButtonCombo}" DockPanel.Dock="Right" Width="493" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                           BorderThickness="0" Background="Transparent" HorizontalAlignment="Right" Padding="440,0,0,0">
                                         <Path Data="M 0 0 L 10 10 L 20 0 Z"
-                      Fill="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                      Fill="{StaticResource PrimaryTextColor}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </ToggleButton>
                                 </DockPanel>
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="Concurrent Downloads" Foreground="#FF6E94AB" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="7,4,-7,30" />
+                            <TextBlock IsHitTestVisible="False" Text="Concurrent Downloads" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="7,4,-7,30" />
 
                             <Popup Name="PART_Popup"
            IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -91,7 +91,7 @@
            AllowsTransparency="True"
            PopupAnimation="Fade"
            VerticalOffset="55">
-                                <Border Background="#FF143A52" BorderBrush="#FF143A52" BorderThickness="0" CornerRadius="5" Width="498">
+                                <Border Background="{StaticResource BranchComboPopupColor}" BorderBrush="{StaticResource BranchComboPopupColor}" BorderThickness="0" CornerRadius="5" Width="498">
                                     <ScrollViewer>
                                         <ItemsPresenter />
                                     </ScrollViewer>
@@ -100,7 +100,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="#9CCDF6" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchComboHoverColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -152,8 +152,8 @@
                                     <Condition Property="IsMouseOver" Value="True" />
                                     <Condition Property="IsKeyboardFocused" Value="False" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#194967" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#194967" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboMouseOverColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -161,16 +161,16 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#2772A0" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#2772A0" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsSelected" Value="True" />
                                     <Condition Property="IsMouseOver" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#1D5579" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#1D5579" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -178,8 +178,8 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="False" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#2772A0" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#2772A0" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -187,7 +187,7 @@
                                     <Condition Property="IsMouseOver" Value="False" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ComboBoxItem.ItemsviewFocus.Border}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedBorderColor}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -195,8 +195,8 @@
                                     <Condition Property="IsMouseOver" Value="True" />
                                     <Condition Property="IsKeyboardFocused" Value="True" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#1D5579" />
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="#1D5579" />
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource BranchComboSelectedMouseOverColor}" />
                             </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -208,7 +208,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="AdvancedTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}" />
+            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -217,7 +217,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="White" />
+            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -225,19 +225,18 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="Download Speed Limit" Foreground="#FF6E94AB" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                            <TextBlock IsHitTestVisible="False" Text="KB/s" Foreground="#FF6E94AB" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                            <TextBlock IsHitTestVisible="False" Text="Download Speed Limit" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="KB/s" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
                         </Grid>
-
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -280,19 +279,19 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#0a1d29">
+    <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="121*" />
                 <RowDefinition Height="86*" />
                 <RowDefinition Height="497*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="Download" Foreground="White" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
-            <TextBlock Text="Bandwidth usage" Foreground="White" FontSize="20" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,5,0,0" Grid.Row="1" Height="24" />
-            <TextBlock Text="Adjust the bandwidth usage of the download to optimize your internet speed" TextWrapping="Wrap" Foreground="#FF6E94AB" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,37,388,0" Grid.Row="1" Height="41" />
+            <TextBlock Text="Download" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
+            <TextBlock Text="Bandwidth usage" Foreground="{StaticResource PrimaryTextColor}" FontSize="20" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,5,0,0" Grid.Row="1" Height="24" />
+            <TextBlock Text="Adjust the bandwidth usage of the download to optimize your internet speed" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,37,388,0" Grid.Row="1" Height="41" />
             <Grid Grid.Row="2">
-                <TextBlock Text="Adjust the maximum number of simultaneous downloads allowed at once, optimizing your download experience to match your preferences and network capabilities." TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,74,395,0" Height="37" />
-                <ComboBox x:Name="ConDownloads" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="42,23,0,425" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Width="498" Foreground="White" FontSize="16">
+                <TextBlock Text="Adjust the maximum number of simultaneous downloads allowed at once, optimizing your download experience to match your preferences and network capabilities." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,74,395,0" Height="37" />
+                <ComboBox x:Name="ConDownloads" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="42,23,0,425" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Width="498" Foreground="{StaticResource ComboTextColor}" FontSize="16">
                     <ComboBoxItem Content="Max" />
                     <ComboBoxItem Content="100" />
                     <ComboBoxItem Content="50" />
@@ -301,8 +300,8 @@
                     <ComboBoxItem Content="10" />
                     <ComboBoxItem Content="5" />
                 </ComboBox>
-                <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="Transparent" Text="" Foreground="White" FontSize="16" />
-                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="#FF6E94AB" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" />
+                <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" />
+                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" />
             </Grid>
         </Grid>
     </Border>

@@ -28,7 +28,7 @@
                         <DockPanel x:Name="dockPanel">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
-                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="#FF52AAF2" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
+                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource SwitchColor}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
                                 <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -50,9 +50,9 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard" />
                                 </Trigger.EnterActions>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="#FF52AAF2" />
-                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="#FF52AAF2" />
-                                <Setter TargetName="slider" Property="Background" Value="#0a1d29" />
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource SwitchColor}" />
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource SwitchColor}" />
+                                <Setter TargetName="slider" Property="Background" Value="{StaticResource SwitchBackgroundColor}" />
                                 <Setter TargetName="checkImage" Property="Source" Value="/assets/icons8-check-48.png" />
                                 <Setter TargetName="checkImage" Property="Width" Value="15" />
                             </Trigger>
@@ -99,20 +99,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#95CCFA" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#95CCFA" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF54ADF7" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="Black" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -120,25 +120,25 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="#0a1d29">
+    <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="5*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <TextBlock Text="Application" Foreground="White" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Window Behavior" Foreground="White" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,152,0,0" Height="24" />
-                <TextBlock Text="This option will allow you to quit the app when the window is closed." TextWrapping="Wrap" Foreground="#FF6E94AB" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,186,0,0" Height="37" />
+                <TextBlock Text="Application" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Window Behavior" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,152,0,0" Height="24" />
+                <TextBlock Text="This option will allow you to quit the app when the window is closed." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,186,0,0" Height="37" />
                 <CheckBox x:Name="CloseToQuit" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,240,842,437" Unchecked="CloseToQuit_Unchecked" RenderTransformOrigin="0.545,1.288" Checked="CloseToQuit_Unchecked" />
-                <TextBlock Text="Enable close-to-quit" TextWrapping="Wrap" Foreground="White" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,243,460,0" Height="20" Cursor="Hand" />
-                <Rectangle Fill="#CC0F2C3E" Margin="43,342,45,359" />
-                <TextBlock Text="Launcher debug tools" Foreground="White" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,377,0,0" Height="24" />
-                <TextBlock Text="If you have trouble with the launcher, clearing the cache may solve the issue. You may also need to locate your log file, this can be useful for reporting a bug for the launcher in the discord." TextWrapping="Wrap" Foreground="#FF6E94AB" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,411,347,0" Height="69" />
-                <Button x:Name="GetLogs" Style="{DynamicResource SettingsBtnStyle}" Margin="43,539,670,118" Content="GET CURRENT LOG FILE" Background="#FF54ADF7" BorderBrush="#FF54ADF7" FontSize="18" FontFamily="Bahnschrift SemiBold" Click="GetLogs_Click" Cursor="Hand" />
+                <TextBlock Text="Enable close-to-quit" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,243,460,0" Height="20" Cursor="Hand" />
+                <Rectangle Fill="{StaticResource SeperatorColor}" Margin="43,342,45,359" />
+                <TextBlock Text="Launcher debug tools" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,377,0,0" Height="24" />
+                <TextBlock Text="If you have trouble with the launcher, clearing the cache may solve the issue. You may also need to locate your log file, this can be useful for reporting a bug for the launcher in the discord." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,411,347,0" Height="69" />
+                <Button x:Name="GetLogs" Style="{DynamicResource SettingsBtnStyle}" Margin="43,539,670,118" Content="GET CURRENT LOG FILE" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" Click="GetLogs_Click" Cursor="Hand" />
                 <CheckBox x:Name="Notifications" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,286,842,391" Unchecked="Notifications_Unchecked" RenderTransformOrigin="0.545,1.288" Checked="Notifications_Unchecked" />
-                <TextBlock Text="Enable system notifications" TextWrapping="Wrap" Foreground="White" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,290,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Enable system notifications" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,290,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="KeepAllLogs" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,495,842,182" RenderTransformOrigin="0.545,1.288" Unchecked="KeepAllLogs_Unchecked" Checked="KeepAllLogs_Unchecked" />
-                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="White" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,499,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,499,460,0" Height="20" Cursor="Hand" />
             </Grid>
         </Grid>
     </Border>
