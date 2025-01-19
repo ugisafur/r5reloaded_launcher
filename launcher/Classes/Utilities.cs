@@ -20,7 +20,7 @@ namespace launcher
     {
         #region Setup Functions
 
-        public static void SetupApp(MainWindow mainWindow)
+        public static async void SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
             EnableDebugConsole();

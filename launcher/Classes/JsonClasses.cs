@@ -24,6 +24,7 @@
     {
         public string launcherVersion { get; set; }
         public string launcherSelfUpdater { get; set; }
+        public string launcherBackgroundVideo { get; set; }
         public bool allowUpdates { get; set; }
         public List<Branch> branches { get; set; }
     }

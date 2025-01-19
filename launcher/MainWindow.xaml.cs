@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -34,12 +35,15 @@ namespace launcher
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Hide the window on startup
+            this.Opacity = 0;
+
+            PreLoad preLoad = new();
+            preLoad.Show();
+
             // Setup global exception handlers
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-
-            // Hide the window on startup
-            this.Opacity = 0;
 
             // Create the configuration file if it doesn't exist
             Ini.CreateConfig();
@@ -49,6 +53,22 @@ namespace launcher
 
             // Setup the application
             Utilities.SetupApp(this);
+
+            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
+            if (!useStaticImage)
+            {
+                await LoadVideoBackground();
+            }
+            else
+            {
+                if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")))
+                    Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")));
+            }
+
+            Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
+            Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+
+            preLoad.Close();
 
             // Show window open animation
             await OnOpen();
@@ -60,21 +80,41 @@ namespace launcher
             }
             else
                 Play_Button.Content = "PLAY";
+        }
 
-            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
-            Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
-            Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
-
-            if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
+        private async Task LoadVideoBackground()
+        {
+            if (!File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
             {
-                Background_Video.Source = new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4"));
+                string videoUrl = Constants.Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
+                string localVideoPath = Path.Combine(Path.GetTempPath(), "background_video.mp4");
+
+                using (HttpClient client = new HttpClient())
+                {
+                    byte[] videoData = await client.GetByteArrayAsync(videoUrl);
+                    await File.WriteAllBytesAsync(localVideoPath, videoData);
+                }
+
+                Background_Video.Source = new Uri(localVideoPath, UriKind.Absolute);
+            }
+            else
+            {
+                Background_Video.Source = new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
+            }
+
+            Background_Video.MediaOpened += (sender, e) =>
+            {
                 Background_Video.Play();
-            }
+            };
 
-            if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")))
+            await Task.Delay(1000);
+
+            Background_Video.MediaFailed += (sender, e) =>
             {
-                Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")));
-            }
+                Console.WriteLine($"Failed to load video: {e.ErrorException?.Message}");
+                Background_Image.Visibility = Visibility.Visible;
+                Background_Video.Visibility = Visibility.Hidden;
+            };
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)

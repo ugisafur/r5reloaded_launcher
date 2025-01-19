@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="{StaticResource SecondaryColor}" Closing="Window_Closing">
+        Title="R5Reloaded Launcher" Height="768" AllowsTransparency="True" Width="1340" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing">
 
     <Window.RenderTransform>
         <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
