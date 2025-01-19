@@ -138,7 +138,7 @@ namespace launcher
 
         private static void UpdateLauncher()
         {
-            if (!File.Exists($"{Constants.Paths.LauncherPath}\\launcher_data\\selfupdater.exe"))
+            if (!File.Exists($"{Constants.Paths.LauncherPath}\\launcher_data\\updater.exe"))
             {
                 LogError(Source.UpdateChecker, "Self updater not found");
                 return;
@@ -147,7 +147,7 @@ namespace launcher
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{Constants.Paths.LauncherPath}\\launcher_data\\selfupdater.exe\""
+                Arguments = $"/c start \"\" \"{Constants.Paths.LauncherPath}\\launcher_data\\updater.exe\""
             };
 
             // Start the new process via cmd

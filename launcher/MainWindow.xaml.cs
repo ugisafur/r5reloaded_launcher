@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using static launcher.Logger;
 using Color = System.Windows.Media.Color;
 
 namespace launcher
@@ -54,6 +55,7 @@ namespace launcher
             // Setup the application
             Utilities.SetupApp(this);
 
+            // Setup Background
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             if (!useStaticImage)
             {
@@ -84,22 +86,24 @@ namespace launcher
 
         private async Task LoadVideoBackground()
         {
-            if (!File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
+            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
             {
                 string videoUrl = Constants.Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
-                string localVideoPath = Path.Combine(Path.GetTempPath(), "background_video.mp4");
+                Background_Video.Source = new Uri(videoUrl, UriKind.Absolute);
 
-                using (HttpClient client = new HttpClient())
+                double bufferingProgress = Background_Video.BufferingProgress;
+                while (bufferingProgress < 0.3)
                 {
-                    byte[] videoData = await client.GetByteArrayAsync(videoUrl);
-                    await File.WriteAllBytesAsync(localVideoPath, videoData);
+                    bufferingProgress = Background_Video.BufferingProgress;
+                    await Task.Delay(100);
                 }
 
-                Background_Video.Source = new Uri(localVideoPath, UriKind.Absolute);
+                LogInfo(Source.Launcher, $"Streaming video background from: {videoUrl}");
             }
-            else
+            else if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
             {
                 Background_Video.Source = new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
+                LogInfo(Source.Launcher, "Loading local video background");
             }
 
             Background_Video.MediaOpened += (sender, e) =>
@@ -111,7 +115,7 @@ namespace launcher
 
             Background_Video.MediaFailed += (sender, e) =>
             {
-                Console.WriteLine($"Failed to load video: {e.ErrorException?.Message}");
+                LogInfo(Source.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
                 Background_Image.Visibility = Visibility.Visible;
                 Background_Video.Visibility = Visibility.Hidden;
             };

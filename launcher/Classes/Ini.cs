@@ -47,7 +47,8 @@ namespace launcher
             Playlist,
             SelectedBranch,
             Offline_Mode,
-            Keep_All_Logs
+            Keep_All_Logs,
+            Stream_Video
         }
 
         public static void CreateConfig()
@@ -68,6 +69,7 @@ namespace launcher
                 file.SetSetting("Settings", "Concurrent_Downloads", 1000);
                 file.SetSetting("Settings", "Download_Speed_Limit", 0);
                 file.SetSetting("Settings", "Library_Location", "");
+                file.SetSetting("Settings", "Stream_Video", true);
 
                 file.SetSetting("Advanced_Options", "Enable_Cheats", false);
                 file.SetSetting("Advanced_Options", "Enable_Developer", false);
@@ -273,6 +275,7 @@ namespace launcher
                 Vars.Windowed => false,
                 Vars.Borderless => false,
                 Vars.Offline_Mode => false,
+                Vars.Stream_Video => true,
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
@@ -298,6 +301,7 @@ namespace launcher
                 Vars.Download_Speed_Limit => "Settings",
                 Vars.Library_Location => "Settings",
                 Vars.Keep_All_Logs => "Settings",
+                Vars.Stream_Video => "Settings",
 
                 Vars.Enable_Cheats => "Advanced_Options",
                 Vars.Enable_Developer => "Advanced_Options",
@@ -369,6 +373,7 @@ namespace launcher
                 Vars.Library_Location => "Library_Location",
                 Vars.Offline_Mode => "Offline_Mode",
                 Vars.Keep_All_Logs => "Keep_All_Logs",
+                Vars.Stream_Video => "Stream_Video",
                 _ => throw new NotImplementedException()
             };
         }

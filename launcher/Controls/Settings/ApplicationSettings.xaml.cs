@@ -20,6 +20,7 @@ namespace launcher
             CloseToQuit.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close);
             Notifications.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Notifications);
             KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
+            StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
         }
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)
@@ -45,6 +46,11 @@ namespace launcher
         private void KeepAllLogs_Unchecked(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Keep_All_Logs, KeepAllLogs.IsChecked.Value);
+        }
+
+        private void StreamVideo_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Ini.Set(Ini.Vars.Stream_Video, StreamVideo.IsChecked.Value);
         }
     }
 }
