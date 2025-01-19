@@ -485,11 +485,16 @@ namespace launcher
                     lastUpdate = DateTime.Now;
                     if (downloadItem != null && totalBytes > 0)
                     {
-                        double progress = (double)downloadedBytes / totalBytes * 100;
+                        double totalSize = totalBytes >= (1024L * 1024 * 1024) ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
+                        string totalText = totalBytes >= (1024L * 1024 * 1024) ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                        double downloadedSize = downloadedBytes >= (1024L * 1024 * 1024) ? downloadedBytes / (1024.0 * 1024 * 1024) : downloadedBytes / (1024.0 * 1024.0);
+                        string downloadedText = downloadedBytes >= (1024L * 1024 * 1024) ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
                         await appDispatcher.InvokeAsync(() =>
                         {
-                            downloadItem.downloadFilePercent.Text = $"{progress:F2}%";
-                            downloadItem.downloadFileProgress.Value = progress;
+                            downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
+                            downloadItem.downloadFileProgress.Value = (double)downloadedBytes / totalBytes * 100;
                         });
                     }
                 }

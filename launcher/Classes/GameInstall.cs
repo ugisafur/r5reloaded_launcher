@@ -139,6 +139,13 @@ namespace launcher
 
             DownloadManager.SetOptionalInstallState(false);
 
+            Ini.Set(Utilities.GetCurrentBranch().branch, "Download_HD_Textures", true);
+
+            appDispatcher.Invoke(new Action(() =>
+            {
+                Settings_Control.gameInstalls.UpdateGameItems();
+            }));
+
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) optional files have been installed!", BalloonIcon.Info);
         }
 

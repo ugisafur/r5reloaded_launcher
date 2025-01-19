@@ -591,13 +591,13 @@
                     <RowDefinition Height="12*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="1">
-                    <MediaElement x:Name="Background_Video" Grid.Row="0" Source="assets/launcher_bg_kc.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" />
+                    <MediaElement x:Name="Background_Video" Grid.Row="0" Source="assets/launcher_bg_autum.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" Stretch="UniformToFill" Margin="0,-1,0,0" />
                     <Image x:Name="Background_Image" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
                     <Rectangle Grid.Row="0" Margin="0,0,0,0">
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#33061119" />
-                                <GradientStop Color="#FF061119" Offset="0.8" />
+                                <GradientStop Color="#FF061119" Offset="0.9" />
                             </LinearGradientBrush>
                         </Rectangle.Fill>
                     </Rectangle>

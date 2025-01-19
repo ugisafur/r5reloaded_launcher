@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-
+using System.Windows.Media.Imaging;
 using Color = System.Windows.Media.Color;
 
 namespace launcher
@@ -64,6 +64,17 @@ namespace launcher
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
+
+            if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
+            {
+                Background_Video.Source = new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4"));
+                Background_Video.Play();
+            }
+
+            if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")))
+            {
+                Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")));
+            }
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)

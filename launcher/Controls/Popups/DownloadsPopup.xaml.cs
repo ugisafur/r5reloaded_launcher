@@ -21,7 +21,7 @@ namespace launcher
         {
             DownloadItem downloadItem = new DownloadItem();
             downloadItem.downloadFileName.Text = fileName;
-            downloadItem.downloadFilePercent.Text = "0%";
+            downloadItem.downloadFilePercent.Text = "waiting...";
             downloadItem.downloadFileProgress.Value = 0;
             downloadItems.Add(downloadItem);
             DownloadsStackPanel.Children.Add(downloadItem);

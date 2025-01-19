@@ -42,9 +42,7 @@ namespace launcher
             }
 
             Task.Run(() => GameInstall.InstallOptionalFiles());
-            Ini.Set(Utilities.GetCurrentBranch().branch, "Download_HD_Textures", true);
             Utilities.HideDownloadOptlFiles();
-            Settings_Control.gameInstalls.UpdateGameItems();
         }
 
         private void Later_Click(object sender, RoutedEventArgs e)
