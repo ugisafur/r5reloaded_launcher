@@ -52,7 +52,7 @@ namespace launcher
         #region User Controls
 
         public static SettingsControl Settings_Control = new();
-        public static AdvancedMenu Advanced_Control = new();
+        public static AdvancedControl Advanced_Control = new();
 
         #endregion User Controls
 

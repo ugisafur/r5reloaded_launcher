@@ -102,7 +102,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\AdvancedSettings\NetworkSettings.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\AdvancedSettings\GeneralSettings.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\Popups\CheckExisitngFilesPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\AdvancedControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

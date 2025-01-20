@@ -673,7 +673,7 @@
                 </Grid>
 
                 <local:SettingsControl x:Name="Settings_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
-                <local:AdvancedMenu x:Name="Advanced_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
+                <local:AdvancedControl x:Name="Advanced_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
 
                 <Rectangle x:Name="Transition_Rect" Fill="{StaticResource TranisitonBoxColor}" Width="2340" Height="704" VerticalAlignment="Bottom" Grid.RowSpan="2" Margin="-10,0,-1000,0">
                     <Rectangle.RenderTransform>

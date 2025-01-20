@@ -94,7 +94,7 @@ namespace launcher
                 file.SetSetting("Advanced_Options", "No_Timeout", false);
                 file.SetSetting("Advanced_Options", "Windowed", false);
                 file.SetSetting("Advanced_Options", "Borderless", false);
-                file.SetSetting("Advanced_Options", "Max_FPS", "");
+                file.SetSetting("Advanced_Options", "Max_FPS", "0");
                 file.SetSetting("Advanced_Options", "Offline_Mode", false);
 
                 file.SetSetting("Launcher", "SelectedBranch", "");
@@ -254,7 +254,7 @@ namespace launcher
                 Vars.Reserved_Cores => "-1",
                 Vars.Worker_Threads => "-1",
                 Vars.Processor_Affinity => "0",
-                Vars.Max_FPS => "",
+                Vars.Max_FPS => "0",
                 Vars.SelectedBranch => "",
 
                 Vars.Keep_All_Logs => true,

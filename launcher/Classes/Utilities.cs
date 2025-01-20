@@ -42,8 +42,8 @@ namespace launcher
             {
                 maps = new List<string> { "No Selection" };
                 gamemodes = new List<string> { "No Selection" };
-                Advanced_Control.SetMapList(maps);
-                Advanced_Control.SetPlaylistList(gamemodes);
+                Advanced_Control.serverPage.SetMapList(maps);
+                Advanced_Control.serverPage.SetPlaylistList(gamemodes);
                 LogInfo(Source.Launcher, "Branch not installed, skipping playlist file");
                 return;
             }
@@ -55,8 +55,8 @@ namespace launcher
                     playlistRoot = PlaylistFile.Parse(Path.Combine(GetBranchDirectory(), "platform\\playlists_r5_patch.txt"));
                     gamemodes = PlaylistFile.GetPlaylists(playlistRoot);
                     maps = PlaylistFile.GetMaps(playlistRoot);
-                    Advanced_Control.SetMapList(maps);
-                    Advanced_Control.SetPlaylistList(gamemodes);
+                    Advanced_Control.serverPage.SetMapList(maps);
+                    Advanced_Control.serverPage.SetPlaylistList(gamemodes);
                     LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetCurrentBranch().branch}");
                 }));
             }
@@ -340,13 +340,8 @@ namespace launcher
             transitionInStoryboard.Completed += (s, e) =>
             {
                 Settings_Control.Visibility = Visibility.Visible;
-                var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
-                fadeInStoryboard.Completed += (s, e) =>
-                {
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeInStoryboard.Begin();
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
+                transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
             Menu_Control.Settings.IsEnabled = false;
@@ -375,14 +370,9 @@ namespace launcher
             var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
-                var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
-                fadeOutStoryboard.Completed += (s, e) =>
-                {
-                    Settings_Control.Visibility = Visibility.Hidden;
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
-                    transitionOutStoryboard.Begin();
-                };
-                fadeOutStoryboard.Begin();
+                Settings_Control.Visibility = Visibility.Hidden;
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
+                transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
             Menu_Control.Settings.IsEnabled = true;

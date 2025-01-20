@@ -33,6 +33,16 @@ namespace launcher
                 Download = 3,
                 About = 4
             }
+
+            public enum AdvancedSettingsPage
+            {
+                General = 0,
+                Graphics = 1,
+                Network = 2,
+                Server = 3,
+                Performance = 4,
+                Advanced = 5
+            }
         }
     }
 
