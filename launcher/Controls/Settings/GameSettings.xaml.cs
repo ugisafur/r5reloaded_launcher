@@ -54,7 +54,6 @@ namespace launcher
 
                 GameItem gameItem = new();
                 gameItem.SetupGameItem(branches[i]);
-                gameItem.Width = 860;
                 gameItem.isFirstItem = i == 0;
                 gameItem.isLastItem = i == branches.Count - 1;
                 gameItem.index = index;

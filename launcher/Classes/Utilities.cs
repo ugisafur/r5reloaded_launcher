@@ -329,14 +329,21 @@ namespace launcher
                 return;
             }
 
-            var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
+            double windowWidth = Main_Window.Width;
+            if (Main_Window.WindowState == WindowState.Maximized)
+                windowWidth = SystemParameters.PrimaryScreenWidth;
+
+            double start = -(windowWidth * 2) - 60;
+            double end = (windowWidth * 2) + 60;
+
+            var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
                 Settings_Control.Visibility = Visibility.Visible;
                 var fadeInStoryboard = CreateFadeStoryboard(0, 1, 0.2);
                 fadeInStoryboard.Completed += (s, e) =>
                 {
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                     transitionOutStoryboard.Begin();
                 };
                 fadeInStoryboard.Begin();
@@ -358,14 +365,21 @@ namespace launcher
                 return;
             }
 
-            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.25);
+            double windowWidth = Main_Window.Width;
+            if (Main_Window.WindowState == WindowState.Maximized)
+                windowWidth = SystemParameters.PrimaryScreenWidth;
+
+            double end = -(windowWidth * 2) - 60;
+            double start = (windowWidth * 2) + 60;
+
+            var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
                 var fadeOutStoryboard = CreateFadeStoryboard(1, 0, 0.2);
                 fadeOutStoryboard.Completed += (s, e) =>
                 {
                     Settings_Control.Visibility = Visibility.Hidden;
-                    var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
+                    var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                     transitionOutStoryboard.Begin();
                 };
                 fadeOutStoryboard.Begin();
@@ -387,11 +401,18 @@ namespace launcher
                 return;
             }
 
-            var transitionInStoryboard = CreateTransitionStoryboard(-2400, 0, 0.25);
+            double windowWidth = Main_Window.Width;
+            if (Main_Window.WindowState == WindowState.Maximized)
+                windowWidth = SystemParameters.PrimaryScreenWidth;
+
+            double start = -(windowWidth * 2) - 60;
+            double end = (windowWidth * 2) + 60;
+
+            var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
                 Advanced_Control.Visibility = Visibility.Visible;
-                var transitionOutStoryboard = CreateTransitionStoryboard(0, 2400, 0.25);
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();
@@ -411,11 +432,18 @@ namespace launcher
                 return;
             }
 
-            var transitionInStoryboard = CreateTransitionStoryboard(2400, 0, 0.25);
+            double windowWidth = Main_Window.Width;
+            if (Main_Window.WindowState == WindowState.Maximized)
+                windowWidth = SystemParameters.PrimaryScreenWidth;
+
+            double end = -(windowWidth * 2) - 60;
+            double start = (windowWidth * 2) + 60;
+
+            var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
                 Advanced_Control.Visibility = Visibility.Hidden;
-                var transitionOutStoryboard = CreateTransitionStoryboard(0, -2400, 0.25);
+                var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();
             };
             transitionInStoryboard.Begin();

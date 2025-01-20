@@ -380,16 +380,17 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="100" />
+                <RowDefinition Height="607" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
 
-            <Button Grid.Row="0" x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="23,23,1257,17" Cursor="Hand">
+            <Button Grid.Row="0" x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="23,23,1257,17" Cursor="Hand"  HorizontalAlignment="Left">
                 <Grid Width="60" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image Source="/assets/icons8-left-arrow-100.png" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
             </Button>
-            <Rectangle Grid.Row="0" Fill="{StaticResource SeperatorColor}" Margin="94,23,1240,17" IsHitTestVisible="False" Height="60" />
-            <TextBlock Grid.Row="0" Text="Advanced Settings" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiBold" FontSize="36" Width="302" Margin="111,31,0,0" />
+            <Rectangle Grid.Row="0" Fill="{StaticResource SeperatorColor}" Margin="96,23,0,17" IsHitTestVisible="False" Height="60" Width="3" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="0" Text="Advanced Settings" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiBold" FontSize="36" Width="302" Margin="118,31,0,0" />
 
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -407,7 +408,8 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="380" />
-                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="480" />
+                    <ColumnDefinition Width="480" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Row="0" Grid.Column="0">

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" Height="768" Width="1340" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing" ResizeMode="NoResize" SizeChanged="Window_SizeChanged" AllowsTransparency="True">
+        Title="R5Reloaded Launcher" MinHeight="768" Height="768" MinWidth="1340" Width="1340" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing" ResizeMode="CanResize" SizeChanged="Window_SizeChanged" AllowsTransparency="True" StateChanged="Window_StateChanged" LocationChanged="Window_LocationChanged">
 
     <Window.RenderTransform>
         <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
@@ -14,6 +14,12 @@
     <Window.RenderTransformOrigin>
         <Point X="0.5" Y="0.5" />
     </Window.RenderTransformOrigin>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+        CaptionHeight="0"
+        ResizeBorderThickness="5" />
+    </WindowChrome.WindowChrome>
 
     <Window.Clip>
         <RectangleGeometry x:Name="WindowClip" Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
@@ -600,7 +606,7 @@
                             <RowDefinition Height="260" />
                             <RowDefinition Height="50*" />
                             <RowDefinition Height="330" />
-                            <RowDefinition Height="40" />
+                            <RowDefinition Height="60" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Image Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" />
@@ -661,7 +667,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="45" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" />
+                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -669,10 +675,10 @@
                 <local:SettingsControl x:Name="Settings_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
                 <local:AdvancedMenu x:Name="Advanced_Control" Grid.Row="1" Visibility="Hidden" Margin="0,-2,0,0" />
 
-                <Rectangle x:Name="Transition_Rect" Fill="{StaticResource TranisitonBoxColor}" Margin="-497,57,-1030,0" Grid.RowSpan="2">
+                <Rectangle x:Name="Transition_Rect" Fill="{StaticResource TranisitonBoxColor}" Width="2340" Height="704" VerticalAlignment="Bottom" Grid.RowSpan="2" Margin="-10,0,-1000,0">
                     <Rectangle.RenderTransform>
                         <TransformGroup>
-                            <TranslateTransform X="-2400" Y="0" />
+                            <TranslateTransform x:Name="Transition_Rect_Translate" X="-2400" Y="0" />
                             <SkewTransform AngleX="-30" AngleY="0" />
                         </TransformGroup>
                     </Rectangle.RenderTransform>

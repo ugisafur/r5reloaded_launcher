@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -19,6 +20,12 @@ namespace launcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        private double _previousWidth;
+        private double _previousHeight;
+        private double _previousTop;
+        private double _previousLeft;
+        private bool _isMaximized = false;
+
         public TaskbarIcon System_Tray { get; set; }
         public ICommand ShowWindowCommand { get; }
 
@@ -31,11 +38,34 @@ namespace launcher
         private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
+            {
+                if (_isMaximized)
+                {
+                    // Calculate the mouse position relative to the window
+                    var mousePosition = PointToScreen(e.GetPosition(this));
+
+                    // Restore the window to normal state
+                    WindowState = WindowState.Normal;
+                    Top = _previousTop;
+                    Left = _previousLeft;
+                    Width = _previousWidth;
+                    Height = _previousHeight;
+
+                    // Adjust the window position to ensure the cursor stays aligned
+                    Left = mousePosition.X - (RestoreBounds.Width / 2);
+                    Top = mousePosition.Y - 20; // Offset for the title bar height
+
+                    _isMaximized = false;
+                }
+
                 DragMove();
+            }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            RenderOptions.ProcessRenderMode = RenderMode.Default;
+
             // Hide the window on startup
             this.Opacity = 0;
 
@@ -535,25 +565,56 @@ namespace launcher
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            WindowClip.Rect = new Rect(0, 0, e.NewSize.Width, e.NewSize.Height);
+            Transition_Rect_Translate.BeginAnimation(TranslateTransform.XProperty, null);
+
+            WindowClip.Rect = new Rect(0, 0, ActualWidth, ActualHeight);
+            Transition_Rect.Width = ActualWidth * 4;
+            Transition_Rect.Height = ActualHeight - 64;
+            Transition_Rect_Translate.X = -(ActualWidth * 4) - 60;
         }
-    }
 
-    public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
-    {
-        private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        private readonly Func<bool> _canExecute = canExecute;
-
-        public bool CanExecute(object parameter) =>
-            _canExecute == null || _canExecute();
-
-        public void Execute(object parameter) =>
-            _execute();
-
-        public event EventHandler CanExecuteChanged
+        private void Window_StateChanged(object sender, EventArgs e)
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            if (WindowState == WindowState.Maximized)
+            {
+                // Store current size and position before maximizing
+                _previousWidth = Width;
+                _previousHeight = Height;
+                _previousTop = Top;
+                _previousLeft = Left;
+
+                // Adjust the window to fit the screen's working area
+                var screen = System.Windows.SystemParameters.WorkArea;
+                WindowState = WindowState.Normal;
+                Top = screen.Top;
+                Left = screen.Left;
+                Width = screen.Width;
+                Height = screen.Height;
+
+                _isMaximized = true;
+            }
+        }
+
+        public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
+        {
+            private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            private readonly Func<bool> _canExecute = canExecute;
+
+            public bool CanExecute(object parameter) =>
+                _canExecute == null || _canExecute();
+
+            public void Execute(object parameter) =>
+                _execute();
+
+            public event EventHandler CanExecuteChanged
+            {
+                add { CommandManager.RequerySuggested += value; }
+                remove { CommandManager.RequerySuggested -= value; }
+            }
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
         }
     }
 }

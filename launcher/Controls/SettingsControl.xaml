@@ -69,19 +69,19 @@
     <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="401*" />
+                <ColumnDefinition Width="401" />
                 <ColumnDefinition Width="939*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Background="{StaticResource PrimaryColor}" BorderThickness="0" CornerRadius="2" Width="401" Height="707" Padding="10" />
+            <Border Grid.Column="0" Background="{StaticResource PrimaryColor}" BorderThickness="0" CornerRadius="2" Width="401" Padding="10" />
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="33*" />
-                    <RowDefinition Height="122*" />
-                    <RowDefinition Height="514*" />
-                    <RowDefinition Height="38*" />
+                    <RowDefinition Height="33" />
+                    <RowDefinition Height="122" />
+                    <RowDefinition Height="514" />
+                    <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" HorizontalAlignment="Left">
                     <Button x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
                         <Grid Width="60" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image Source="/assets/icons8-left-arrow-100.png" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />

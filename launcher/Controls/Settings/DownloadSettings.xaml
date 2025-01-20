@@ -282,15 +282,16 @@
     <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="121*" />
-                <RowDefinition Height="86*" />
-                <RowDefinition Height="497*" />
+                <RowDefinition Height="121" />
+                <RowDefinition Height="86" />
+                <RowDefinition Height="497" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="Download" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
-            <TextBlock Text="Bandwidth usage" Foreground="{StaticResource PrimaryTextColor}" FontSize="20" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,5,0,0" Grid.Row="1" Height="24" />
-            <TextBlock Text="Adjust the bandwidth usage of the download to optimize your internet speed" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,37,388,0" Grid.Row="1" Height="41" />
-            <Grid Grid.Row="2">
-                <TextBlock Text="Adjust the maximum number of simultaneous downloads allowed at once, optimizing your download experience to match your preferences and network capabilities." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,74,395,0" Height="37" />
+            <TextBlock Text="Download" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" HorizontalAlignment="Left" />
+            <TextBlock Text="Bandwidth usage" Foreground="{StaticResource PrimaryTextColor}" FontSize="20" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,5,0,0" Grid.Row="1" Height="24" HorizontalAlignment="Left" />
+            <TextBlock Text="Adjust the bandwidth usage of the download to optimize your internet speed" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,37,388,0" Grid.Row="1" Height="41" Width="496.57" HorizontalAlignment="Left" />
+            <Grid Grid.Row="2" Width="935" HorizontalAlignment="Left">
+                <TextBlock Text="Adjust the maximum number of simultaneous downloads allowed at once, optimizing your download experience to match your preferences and network capabilities." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,74,395,0" Height="37" Width="498" />
                 <ComboBox x:Name="ConDownloads" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="42,23,0,425" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Width="498" Foreground="{StaticResource ComboTextColor}" FontSize="16">
                     <ComboBoxItem Content="Max" />
                     <ComboBoxItem Content="100" />
@@ -301,7 +302,7 @@
                     <ComboBoxItem Content="5" />
                 </ComboBox>
                 <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" />
-                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" />
+                <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" Width="498" />
             </Grid>
         </Grid>
     </Border>

@@ -11,30 +11,31 @@
     <Border Background="{StaticResource SecondaryColor}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="121*" />
-                <RowDefinition Height="173*" />
-                <RowDefinition Height="410*" />
+                <RowDefinition Height="121" />
+                <RowDefinition Height="173" />
+                <RowDefinition Height="410" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <TextBlock Text="About" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
             <Image Grid.Row="1" Source="/assets/R5R-Logo-White.gif" HorizontalAlignment="Left" VerticalAlignment="Center" Height="150" Width="150" Margin="10,0,0,0" />
             <Rectangle Grid.Row="2" Fill="{StaticResource SeperatorColor}" Height="1" VerticalAlignment="Top" Margin="40,0,40,0" />
-            <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" />
-            <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="162,27,380,367" />
-            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{StaticResource PrimaryTextColor}" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" />
-            <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,53,778,341" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,53,377,341">
+            <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="162,27,380,367" Width="393" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{StaticResource PrimaryTextColor}" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,53,778,341" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,53,377,341" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://github.com/AyeZeeBB/r5reloaded_launcher" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://github.com/AyeZeeBB/r5reloaded_launcher" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Website:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,778,315" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,377,315">
+            <TextBlock Grid.Row="2" Text="Website:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,778,315" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,377,315" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://r5reloaded.com" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://r5reloaded.com" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,778,289" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,377,289">
+            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,778,289" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,377,289" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://discord.com/invite/jqMkUdXrBr" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://discord.com/invite/jqMkUdXrBr" />
                 </Hyperlink>
