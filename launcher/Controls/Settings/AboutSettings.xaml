@@ -28,18 +28,22 @@
                     <Run Text="https://github.com/AyeZeeBB/r5reloaded_launcher" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Website:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,778,315" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,377,315" Width="393" Height="17" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="2" Text="Website:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,130,0,263" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,130,0,263" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://r5reloaded.com" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://r5reloaded.com" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,778,289" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,377,289" Width="393" Height="17" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,156,0,237" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,156,0,237" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://discord.com/invite/jqMkUdXrBr" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://discord.com/invite/jqMkUdXrBr" />
                 </Hyperlink>
             </TextBlock>
+            <TextBlock Grid.Row="2" Text="SDK source:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,0,314" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,0,314" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/Mauler125/r5sdk" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/Mauler125/r5sdk" /></Hyperlink></TextBlock>
+            <TextBlock Grid.Row="2" Text="Scripts source:" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,0,288" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,0,288" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/CafeFPS/r5_flowstate" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/CafeFPS/r5_flowstate" /></Hyperlink></TextBlock>
         </Grid>
     </Border>
 </UserControl>
