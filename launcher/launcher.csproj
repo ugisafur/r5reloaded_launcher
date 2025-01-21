@@ -104,12 +104,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="assets\preload.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Controls\AdvancedSettings\NetworkSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

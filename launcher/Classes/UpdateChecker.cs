@@ -110,13 +110,16 @@ namespace launcher
 
         private static bool ShouldUpdateLauncher(ServerConfig newServerConfig)
         {
-            return !iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewVersion(Constants.Launcher.VERSION, newServerConfig.launcherVersion);
+            return !iqnoredLauncherUpdate &&
+                !AppState.IsInstalling &&
+                newServerConfig.launcherallowUpdates &&
+                IsNewVersion(Constants.Launcher.VERSION, newServerConfig.launcherVersion);
         }
 
         private static bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
             return !AppState.IsInstalling &&
-                   newServerConfig.allowUpdates &&
+                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].allow_updates &&
                    Configuration.LauncherConfig != null &&
                    !Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
                    Ini.Get(Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&

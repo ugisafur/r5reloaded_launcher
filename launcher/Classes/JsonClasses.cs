@@ -16,6 +16,7 @@
         public string patch_url { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
+        public bool allow_updates { get; set; }
         public bool is_local_branch = false;
         public bool update_available = false;
     }
@@ -25,7 +26,7 @@
         public string launcherVersion { get; set; }
         public string launcherSelfUpdater { get; set; }
         public string launcherBackgroundVideo { get; set; }
-        public bool allowUpdates { get; set; }
+        public bool launcherallowUpdates { get; set; }
         public List<Branch> branches { get; set; }
     }
 
