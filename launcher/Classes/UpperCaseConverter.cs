@@ -9,7 +9,7 @@ namespace launcher
         {
             if (value != null)
             {
-                return value.ToString().ToUpper();
+                return value.ToString().ToUpper(new CultureInfo("en-US"));
             }
             return value;
         }

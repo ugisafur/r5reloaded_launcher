@@ -63,7 +63,12 @@ StackTrace: {ex.StackTrace}
 InnerException: {ex.InnerException?.Message}
 -------------------";
 
-            File.AppendAllText(filePath, log + Environment.NewLine);
+            try
+            {
+                File.AppendAllText(filePath, log + Environment.NewLine);
+            }
+            catch { }
+
             Logger.LogError(Logger.Source.Launcher, "An error occurred. Check crash.log for details.");
         }
 
@@ -86,9 +91,9 @@ InnerException: {ex.InnerException?.Message}
             {
                 File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception($"Failed to write to log file: {ex.Message}");
+                //throw new Exception($"Failed to write to log file: {ex.Message}");
             }
         }
 

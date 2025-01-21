@@ -16,11 +16,9 @@ namespace launcher
         public static PlaylistRoot Parse(string filePath)
         {
             PlaylistRoot data = new();
-
+            FileStream stream = File.OpenRead(filePath); // or any other Stream
             try
             {
-                FileStream stream = File.OpenRead(filePath); // or any other Stream
-
                 KVSerializerOptions options = new()
                 {
                     HasEscapeSequences = false,
@@ -33,6 +31,10 @@ namespace launcher
             catch (Exception ex)
             {
                 LogError(Source.VDF, ex.Message);
+            }
+            finally
+            {
+                stream.Close();
             }
 
             return data;

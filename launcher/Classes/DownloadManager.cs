@@ -217,6 +217,16 @@ namespace launcher
             {
                 LogError(Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
                 AppState.BadFilesDetected = true;
+
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
+
+                await RemoveDownloadItemAsync(downloadItem);
+                _downloadSemaphore.Release();
+
                 return string.Empty;
             }
             finally

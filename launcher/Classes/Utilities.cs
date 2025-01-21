@@ -6,6 +6,7 @@ using static launcher.Logger;
 using static launcher.ControlReferences;
 using static launcher.LaunchParameters;
 using Hardcodet.Wpf.TaskbarNotification;
+using System.Globalization;
 
 namespace launcher
 {
@@ -296,7 +297,7 @@ namespace launcher
 
         public static string GetBranchDirectory()
         {
-            string branchName = Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch.ToUpper();
+            string branchName = Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch.ToUpper(new CultureInfo("en-US"));
             string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library", branchName);
 

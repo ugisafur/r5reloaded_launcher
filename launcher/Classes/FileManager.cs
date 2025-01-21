@@ -126,6 +126,7 @@ namespace launcher
             using var stream = File.OpenRead(filePath);
             using var sha256 = SHA256.Create();
             var hash = sha256.ComputeHash(stream);
+            stream.Close();
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,8 +45,8 @@ namespace launcher
 
         public void SetupGameItem(Branch branch)
         {
-            BranchName.Text = $"R5Reloaded - {branch.branch.ToUpper()}";
-            InstallPath.Text = $"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper()}";
+            BranchName.Text = $"R5Reloaded - {branch.branch.ToUpper(new CultureInfo("en-US"))}";
+            InstallPath.Text = $"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}";
             UninstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Visible : Visibility.Hidden;
             InstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Hidden : Visibility.Visible;
             branchName = branch.branch;
