@@ -29,6 +29,7 @@
     <None Remove="assets\logo-50.png" />
     <None Remove="assets\logo-main-white.png" />
     <None Remove="assets\logo-main.png" />
+    <None Remove="assets\preload.gif" />
     <None Remove="assets\R5R-Logo-White.gif" />
   </ItemGroup>
 
@@ -40,6 +41,7 @@
     <PackageReference Include="SoftCircuits.IniFileParser" Version="2.6.0" />
     <PackageReference Include="ValveKeyValue" Version="0.12.0.391" />
     <PackageReference Include="WindowsAPICodePack" Version="8.0.6" />
+    <PackageReference Include="XamlAnimatedGif" Version="2.3.0" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.4" />
   </ItemGroup>
 
@@ -97,6 +99,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\R5R-Logo-White.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\preload.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

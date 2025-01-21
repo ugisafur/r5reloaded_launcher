@@ -603,17 +603,22 @@
                     </Rectangle>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="260" />
-                            <RowDefinition Height="50*" />
+                            <RowDefinition Height="260*" />
+                            <RowDefinition Height="1*" />
                             <RowDefinition Height="330" />
-                            <RowDefinition Height="60" />
+                            <RowDefinition Height="160" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <Image Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" />
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100*" />
+                                <ColumnDefinition Width="60*" />
+                                <ColumnDefinition Width="100*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="1" Source="assets/logo-main-white.png" VerticalAlignment="Center" HorizontalAlignment="Center" MaxHeight="220" />
                         </Grid>
                         <Grid Grid.Row="2" Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="70" />
                                 <ColumnDefinition Width="425" />
                                 <ColumnDefinition Width="136*" />
                                 <ColumnDefinition Width="45" />
