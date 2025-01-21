@@ -127,6 +127,9 @@ namespace launcher
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
+                        if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
+                            AppendParameter(ref svParameters, "-offline");
+
                         // ENGINE ###############################################################
                         if ((bool)Ini.Get(Ini.Vars.No_Async))
                         {
@@ -176,6 +179,9 @@ namespace launcher
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
+                        if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
+                            AppendParameter(ref svParameters, "-offline");
+
                         // ENGINE ###############################################################
                         if ((bool)Ini.Get(Ini.Vars.No_Async))
                         {
@@ -211,6 +217,9 @@ namespace launcher
                             AppendParameter(ref svParameters, "-dev");
                             AppendParameter(ref svParameters, "-showdevmenu");
                         }
+
+                        if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
+                            AppendParameter(ref svParameters, "-offline");
 
                         // ENGINE ###############################################################
                         if ((bool)Ini.Get(Ini.Vars.No_Async))
