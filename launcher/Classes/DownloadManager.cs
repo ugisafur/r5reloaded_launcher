@@ -466,7 +466,10 @@ namespace launcher
 
             long totalBytes = response.ContentLength;
             long downloadedBytes = 0;
+            long lastDownloadedBytes = 0; // Tracks bytes downloaded in the last interval
             DateTime lastUpdate = DateTime.Now;
+            DateTime timeoutlastUpdate = DateTime.Now;
+            TimeSpan timeoutThreshold = TimeSpan.FromSeconds(30);
 
             using var responseStream = response.GetResponseStream();
             using var throttledStream = new ThrottledStream(responseStream, _downloadSpeedLimit);
@@ -479,6 +482,19 @@ namespace launcher
             {
                 await fileStream.WriteAsync(buffer, 0, bytesRead);
                 downloadedBytes += bytesRead;
+
+                // Update the lastUpdate time if new data is downloaded
+                if (downloadedBytes > lastDownloadedBytes)
+                {
+                    lastDownloadedBytes = downloadedBytes;
+                    timeoutlastUpdate = DateTime.Now;
+                }
+
+                // Check for timeout
+                if ((DateTime.Now - timeoutlastUpdate) > timeoutThreshold)
+                {
+                    throw new TimeoutException($"Download stalled for {timeoutThreshold.TotalSeconds} seconds. Retrying...");
+                }
 
                 if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                 {
