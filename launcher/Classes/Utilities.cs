@@ -191,8 +191,6 @@ namespace launcher
 
         public static void LaunchGame()
         {
-            string gameArguments = BuildParameter();
-
             eMode mode = (eMode)(int)Ini.Get(Ini.Vars.Mode);
 
             string exeName = mode switch
@@ -202,6 +200,11 @@ namespace launcher
                 eMode.CLIENT => "r5apex.exe",
                 _ => "r5apex.exe"
             };
+
+            if (!File.Exists($"{GetBranchDirectory()}\\{exeName}"))
+                return;
+
+            string gameArguments = BuildParameter();
 
             var startInfo = new ProcessStartInfo
             {

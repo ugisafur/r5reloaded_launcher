@@ -39,6 +39,9 @@
             label3 = new Label();
             richTextBox1 = new RichTextBox();
             label4 = new Label();
+            progressBar1 = new ProgressBar();
+            progressLabel = new Label();
+            totalFilesLeft = new Label();
             SuspendLayout();
             // 
             // textBox1
@@ -129,6 +132,7 @@
             richTextBox1.Size = new Size(632, 193);
             richTextBox1.TabIndex = 9;
             richTextBox1.Text = "";
+            richTextBox1.WordWrap = false;
             // 
             // label4
             // 
@@ -139,11 +143,39 @@
             label4.TabIndex = 10;
             label4.Text = "Clear Cache Files";
             // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(12, 408);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(632, 23);
+            progressBar1.TabIndex = 11;
+            // 
+            // progressLabel
+            // 
+            progressLabel.Location = new Point(12, 434);
+            progressLabel.Name = "progressLabel";
+            progressLabel.Size = new Size(468, 20);
+            progressLabel.TabIndex = 12;
+            progressLabel.Text = "waiting";
+            progressLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // totalFilesLeft
+            // 
+            totalFilesLeft.Location = new Point(510, 434);
+            totalFilesLeft.Name = "totalFilesLeft";
+            totalFilesLeft.Size = new Size(134, 20);
+            totalFilesLeft.TabIndex = 13;
+            totalFilesLeft.Text = "0/0";
+            totalFilesLeft.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(656, 414);
+            ClientSize = new Size(656, 453);
+            Controls.Add(totalFilesLeft);
+            Controls.Add(progressLabel);
+            Controls.Add(progressBar1);
             Controls.Add(label4);
             Controls.Add(richTextBox1);
             Controls.Add(label3);
@@ -176,5 +208,8 @@
         private Label label3;
         private RichTextBox richTextBox1;
         private Label label4;
+        private ProgressBar progressBar1;
+        private Label progressLabel;
+        private Label totalFilesLeft;
     }
 }

@@ -7,6 +7,8 @@ using ZstdSharp;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Runtime.CompilerServices;
 
 namespace patch_creator
 {
@@ -14,11 +16,6 @@ namespace patch_creator
     {
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
-
-        private List<string> patchFiles = new List<string>();
-        private HttpClient client = new HttpClient();
-
-        private ServerConfig serverConfig;
 
         private readonly string[] whitelistPatchPaths = new string[] {
             "vpk",
@@ -36,11 +33,11 @@ namespace patch_creator
         {
             AllocConsole();
 
-            var response = client.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var response = Global.HTTP_CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
-            serverConfig = JsonConvert.DeserializeObject<ServerConfig>(responseString);
+            Global.SERVER_CONFIG = JsonConvert.DeserializeObject<ServerConfig>(responseString);
 
-            foreach (Branch branch in serverConfig.branches)
+            foreach (Branch branch in Global.SERVER_CONFIG.branches)
             {
                 comboBox1.Items.Add(branch.branch);
             }
@@ -63,7 +60,7 @@ namespace patch_creator
                 if (string.IsNullOrEmpty(textBox2.Text))
                 {
                     DirectoryInfo parentDir = Directory.GetParent(directoryDialog.FileName.TrimEnd(Path.DirectorySeparatorChar));
-                    textBox2.Text = Path.Combine(parentDir.FullName, $"{serverConfig.branches[comboBox1.SelectedIndex].branch}_update");
+                    textBox2.Text = Path.Combine(parentDir.FullName, $"{Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].branch}_update");
                 }
             }
         }
@@ -89,42 +86,119 @@ namespace patch_creator
 
         private async void CreatePatch()
         {
+            SetAppState(true);
             Log("---------- Patch creation started ----------");
-            Patch patch = new Patch();
-            patch.files = new List<PatchFile>();
 
+            // Get the selected branch index
             int selected_index = 0;
+            comboBox1.Invoke(() => { selected_index = comboBox1.SelectedIndex; });
 
-            comboBox1.Invoke(() =>
-            {
-                selected_index = comboBox1.SelectedIndex;
-            });
-
-            //Setup final directories for the base game and current patch
-            //var final_patch_dir = textBox2.Text + "\\patch";
+            // Create the final game directory
+            UpdateProgressLabel("Creating directory");
             var final_game_dir = textBox2.Text;
-
-            // Create the final directories if they don't exist
-            //Directory.CreateDirectory(final_patch_dir);
             Directory.CreateDirectory(final_game_dir);
 
             //Get current checksums.json file
-            var response = await client.GetStringAsync(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json"));
-            GameChecksums checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
+            UpdateProgressLabel("Getting server checksums");
+            var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
+            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
 
             //Get updated checksums.json file
-            var updated_checksums = Task.Run(() => GenerateMetadata(textBox1.Text));
-            GameChecksums updated_checksums_result = await updated_checksums;
+            UpdateProgressLabel("Generating local checksums");
+            GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text);
 
             //Find the changed files
-            var changedFiles = updated_checksums_result.files.Where(updatedFile => !checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum)).ToList();
+            UpdateProgressLabel("Finding changed files");
+            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum)).ToList();
+            GameChecksums new_checksums = UpdateGameChecksums(server_checksums, local_checksums);
+
+            //Compress and move the changed files to the game directory
+            UpdateProgressLabel("Compressing files");
+            await CompressNewFilesAsync(final_game_dir, changedFiles);
+
+            //Get server checksums.json file
+            UpdateProgressLabel("Creating new checksums.json");
+            var game_checksums_file = JsonSerializer.Serialize(new_checksums, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
+
+            //Get local compressed files checksums
+            UpdateProgressLabel("Generating local zst checksums");
+            GameChecksums local_zst_checksums = await GetCompressedChecksums(final_game_dir);
+
+            //Get checksums_zst.json file from the server
+            UpdateProgressLabel("Getting server zst checksums");
+            string checksums_zst_response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums_zst.json"));
+            GameChecksums server_zst_checksums = JsonConvert.DeserializeObject<GameChecksums>(checksums_zst_response);
+
+            //Find the changed files
+            UpdateProgressLabel("Finding changed zst files");
+            List<GameFile> compressed_changedFiles = local_zst_checksums.files.Where(updatedFile => !server_zst_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum)).ToList();
+
+            // Update the server checksums
+            UpdateProgressLabel("Creating new checksums_zst.json");
+            GameChecksums new_zst_checksums = UpdateZSTChecksums(local_zst_checksums, server_zst_checksums);
+            var new_zst_checksums_file = JsonSerializer.Serialize(new_zst_checksums, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", new_zst_checksums_file);
+
+            //Update the clear cache list
+            UpdateProgressLabel("Updating clear cache list");
+            UpdateClearCacheList(selected_index, compressed_changedFiles);
+
+            UpdateProgressLabel("Patch creation complete");
+            Log("---------- Patch creation finished ----------");
+            SetAppState(false);
+        }
+
+        private void SetAppState(bool running)
+        {
+            this.Invoke(() =>
+            {
+                textBox1.Enabled = !running;
+                textBox2.Enabled = !running;
+                button1.Enabled = !running;
+                button2.Enabled = !running;
+                button3.Enabled = !running;
+                comboBox1.Enabled = !running;
+            });
+        }
+
+        private void SetProgressBarValue(int value)
+        {
+            progressBar1.Invoke(() =>
+            {
+                progressBar1.Value = value;
+                totalFilesLeft.Text = $"{value}/{progressBar1.Maximum}";
+            });
+        }
+
+        private void SetProgressBarMax(int value)
+        {
+            progressBar1.Invoke(() =>
+            {
+                progressBar1.Maximum = value;
+            });
+        }
+
+        private void UpdateProgressLabel(string text)
+        {
+            progressLabel.Invoke(() =>
+            {
+                progressLabel.Text = text;
+            });
+        }
+
+        private GameChecksums UpdateGameChecksums(GameChecksums server_checksums, GameChecksums local_checksums)
+        {
+            SetProgressBarMax(local_checksums.files.Count);
+            SetProgressBarValue(0);
 
             // Find removed files (present in the current checksums but not in the updated one)
-            var removedFiles = checksums.files.Where(currentFile => !updated_checksums_result.files.Any(updatedFile => updatedFile.name == currentFile.name)).ToList();
+            List<GameFile> removedFiles = server_checksums.files.Where(currentFile => !local_checksums.files.Any(updatedFile => updatedFile.name == currentFile.name)).ToList();
 
-            var finalFiles = checksums.files.Where(file => !removedFiles.Any(removed => removed.name == file.name)).ToList();
+            List<GameFile> finalFiles = server_checksums.files.Where(file => !removedFiles.Any(removed => removed.name == file.name)).ToList();
 
-            foreach (var updatedFile in updated_checksums_result.files)
+            int i = 0;
+            foreach (var updatedFile in local_checksums.files)
             {
                 // Check if the file already exists in the final list
                 var existingFile = finalFiles.FirstOrDefault(f => f.name == updatedFile.name);
@@ -135,117 +209,71 @@ namespace patch_creator
                 }
                 // Add the updated file
                 finalFiles.Add(updatedFile);
+
+                SetProgressBarValue(i++);
             }
 
-            GameChecksums new_checksums = new();
-            new_checksums.files = finalFiles;
-
-            //Compress and move the changed files to the game directory
-            foreach (var file in changedFiles)
+            GameChecksums new_checksums = new()
             {
-                // Normalize the path separators to ensure consistent comparison
-                string normalizedPath = file.name.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
-
-                // Copy the file to the base game directory
-                var sourceFile = Path.Combine(textBox1.Text, file.name);
-                var destFile = Path.Combine(final_game_dir, file.name + ".zst");
-
-                if (!File.Exists(sourceFile))
-                {
-                    Log($"File not found: {sourceFile}");
-                    continue;
-                }
-
-                Directory.CreateDirectory(Path.GetDirectoryName(destFile));
-
-                //compress and move the file
-                CompressFile(sourceFile, destFile);
-
-                //Copy destFile to patch directory
-                //Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(final_patch_dir, file.name + ".zst")));
-                // File.Copy(destFile, Path.Combine(final_patch_dir, file.name + ".zst"), overwrite: true);
-
-                Log("Compressed file: " + sourceFile);
-            }
-
-            //Add the changed files to the patch
-            /*foreach (var file in changedFiles)
-            {
-                PatchFile patchFile = new PatchFile
-                {
-                    Name = file.name,
-                    Action = "update"
-                };
-
-                patch.files.Add(patchFile);
-            }*/
-
-            //Add the removed files to the patch
-            /*foreach (var file in removedFiles)
-            {
-                PatchFile patchFile = new PatchFile();
-                patchFile.Name = file.name;
-                patchFile.Action = "delete";
-
-                patch.files.Add(patchFile);
-            }*/
-
-            //Create a json file with the list of patched files
-            //var json_patch_file = JsonSerializer.Serialize(patch, new JsonSerializerOptions { WriteIndented = true });
-            //await File.WriteAllTextAsync(final_patch_dir + "\\patch.json", json_patch_file);
-
-            var game_checksums_file = JsonSerializer.Serialize(new_checksums, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
-
-            //Get Compressed File Checksums
-            var ignoredFiles = new List<string>
-            {
-                "checksums.json",
-                "checksums_zst.json"
+                files = finalFiles
             };
 
-            var compressedFiles = Directory.GetFiles(final_game_dir, "*.zst", SearchOption.AllDirectories)
-            .Where(file => !ignoredFiles.Any(ignored =>
-                Path.GetFileName(file).Equals(ignored, StringComparison.OrdinalIgnoreCase)))
-            .ToArray();
+            return new_checksums;
+        }
 
-            GameChecksums new_compressed_checksums_resault = new();
-            new_compressed_checksums_resault.files = new List<GameFile>();
+        private async Task CompressNewFilesAsync(string final_game_dir, List<GameFile> changedFiles)
+        {
+            SetProgressBarMax(changedFiles.Count);
+            SetProgressBarValue(0);
 
-            Parallel.ForEach(compressedFiles, filePath =>
+            int i = 0;
+            var tasks = changedFiles.Select(file => Task.Run(async () =>
             {
                 try
                 {
-                    // Compute checksum
-                    string relativePath = Path.GetRelativePath(final_game_dir, filePath);
-                    string checksum = CalculateChecksum(filePath);
+                    // Normalize the path separators to ensure consistent comparison
+                    string normalizedPath = file.name.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
 
-                    Log($"Processed file: {relativePath} ({checksum})");
+                    // Copy the file to the base game directory
+                    var sourceFile = Path.Combine(textBox1.Text, file.name);
+                    var destFile = Path.Combine(final_game_dir, file.name + ".zst");
 
-                    GameFile gameFile = new GameFile();
-                    gameFile.name = relativePath;
-                    gameFile.checksum = checksum;
+                    if (!File.Exists(sourceFile))
+                    {
+                        Log($"File not found: {sourceFile}");
+                        return;
+                    }
 
-                    new_compressed_checksums_resault.files.Add(gameFile);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
+
+                    // Compress and move the file asynchronously
+                    await CompressFileAsync(sourceFile, destFile);
+
+                    SetProgressBarValue(i++);
+                    Log($"Compressed file: {sourceFile}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
+                    SetProgressBarValue(i++);
+                    Log($"Error compressing file {file.name}: {ex.Message}");
                 }
-            });
+            }));
 
-            var compressedresponse = await client.GetStringAsync(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json"));
-            GameChecksums conmpressed_checksums = JsonConvert.DeserializeObject<GameChecksums>(compressedresponse);
+            // Wait for all tasks to complete
+            await Task.WhenAll(tasks);
+        }
 
-            //Find the changed files
-            var compressed_changedFiles = new_compressed_checksums_resault.files.Where(updatedFile => !conmpressed_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum)).ToList();
+        private GameChecksums UpdateZSTChecksums(GameChecksums local_zst_checksums, GameChecksums server_zst_checksums)
+        {
+            SetProgressBarMax(local_zst_checksums.files.Count);
+            SetProgressBarValue(0);
 
-            // Find removed files (present in the current checksums but not in the updated one)
-            var compressed_removedFiles = conmpressed_checksums.files.Where(currentFile => !new_compressed_checksums_resault.files.Any(updatedFile => updatedFile.name == currentFile.name)).ToList();
+            List<GameFile> compressed_removedFiles = server_zst_checksums.files.Where(currentFile => !local_zst_checksums.files.Any(updatedFile => updatedFile.name == currentFile.name)).ToList();
 
-            var compressed_finalFiles = conmpressed_checksums.files.Where(file => !removedFiles.Any(removed => removed.name + ".zst" == file.name)).ToList();
+            List<GameFile> compressed_finalFiles = server_zst_checksums.files.Where(file => !compressed_removedFiles.Any(removed => removed.name + ".zst" == file.name)).ToList();
 
-            foreach (var updatedFile in new_compressed_checksums_resault.files)
+            int i = 0;
+            foreach (var updatedFile in local_zst_checksums.files)
             {
                 // Check if the file already exists in the final list
                 var existingFile = compressed_finalFiles.FirstOrDefault(f => f.name == updatedFile.name);
@@ -256,210 +284,154 @@ namespace patch_creator
                 }
                 // Add the updated file
                 compressed_finalFiles.Add(updatedFile);
+                SetProgressBarValue(i++);
             }
 
-            GameChecksums new_compressed_checksums = new();
-            new_compressed_checksums.files = compressed_finalFiles;
-
-            var compressed_game_checksums_file = JsonSerializer.Serialize(new_compressed_checksums, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", compressed_game_checksums_file);
-
-            richTextBox1.Invoke(() =>
+            GameChecksums new_compressed_checksums = new()
             {
-                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
-                richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
-            });
+                files = compressed_finalFiles
+            };
 
-            foreach (var file in compressed_changedFiles)
-            {
-                richTextBox1.Invoke(() =>
-                {
-                    richTextBox1.AppendText(Path.Combine(serverConfig.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
-                });
-            }
-
-            Log("---------- Patch creation finished ----------");
+            return new_compressed_checksums;
         }
 
-        /*public void ProcessDeltasWithProgress(List<string> changedFiles, string patch_files)
+        private async Task<GameChecksums> GetCompressedChecksums(string final_game_dir)
         {
-            // Use Parallel.ForEach for multithreading
-            Parallel.ForEach(changedFiles, (changedFile) =>
-            {
-                // Create the delta for the current file
-                CreateFileDelta(
-                    Path.Combine(textBox1.Text, changedFile),
-                    Path.Combine(textBox2.Text, changedFile),
-                    Path.Combine(patch_files, changedFile + ".delta")
-                );
-            });
-        }*/
+            var compressedFiles = Directory.GetFiles(final_game_dir, "*.zst", SearchOption.AllDirectories)
+                .Where(file => !Global.ignoredFiles.Any(ignored =>
+                    Path.GetFileName(file).Equals(ignored, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
 
-        public void Log(string message)
-        {
-            /*logBox.Invoke((Action)(() =>
-            {
-                logBox.AppendText(message + Environment.NewLine);
-                logBox.SelectionStart = logBox.Text.Length;
-                logBox.ScrollToCaret();
-            }));*/
+            SetProgressBarMax(compressedFiles.Length);
+            SetProgressBarValue(0);
 
-            Console.WriteLine(message);
-        }
-
-        public GameChecksums GenerateMetadata(string directory)
-        {
-            var metadata = new ConcurrentDictionary<string, string>();
-
-            var normalizedIgnorePaths = whitelistPatchPaths
-                .Select(p => Path.GetFullPath(Path.Combine(directory, p)).TrimEnd(Path.DirectorySeparatorChar))
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
-    .Where(file => !file.Contains(Path.Combine("platform", "logs")))
-    .Where(file => !file.Contains(Path.Combine("platform", "cfg", "user")))
-    .Where(file => !file.Contains("layout.ini"))
-    .Where(file => !file.Contains("startup.bin"))
-    .Where(file => !file.Contains("launcher.vdf"))
-    .Where(file => !file.Contains("launcherConfig.ini"))
-    .ToArray();
-
-            GameChecksums gameChecksums = new GameChecksums();
-            gameChecksums.files = new List<GameFile>();
-
-            Parallel.ForEach(files, filePath =>
+            int i = 0;
+            // Process files asynchronously
+            var tasks = compressedFiles.Select(filePath => Task.Run(async () =>
             {
                 try
                 {
-                    // Compute checksum
-                    string relativePath = Path.GetRelativePath(directory, filePath);
-                    string checksum = CalculateChecksum(filePath);
+                    // Compute checksum asynchronously
+                    string relativePath = Path.GetRelativePath(final_game_dir, filePath);
+                    string checksum = await CalculateChecksumAsync(filePath);
 
                     Log($"Processed file: {relativePath} ({checksum})");
+                    SetProgressBarValue(i++);
 
-                    GameFile gameFile = new GameFile();
-                    gameFile.name = relativePath;
-                    gameFile.checksum = checksum;
-
-                    gameChecksums.files.Add(gameFile);
+                    return new GameFile
+                    {
+                        name = relativePath,
+                        checksum = checksum
+                    };
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
+                    SetProgressBarValue(i++);
+                    return null; // Return null if processing fails
+                }
+            }));
+
+            // Wait for all tasks to complete and add results to the checksum list
+            var processedFiles = await Task.WhenAll(tasks);
+
+            GameChecksums new_compressed_checksums_resault = new()
+            {
+                files = processedFiles.ToList()
+            };
+
+            return new_compressed_checksums_resault;
+        }
+
+        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files)
+        {
+            SetProgressBarMax(changed_files.Count);
+            SetProgressBarValue(0);
+
+            richTextBox1.Invoke(() =>
+            {
+                richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
+                richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
+
+                int i = 0;
+                foreach (var file in changed_files)
+                {
+                    richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
+                    SetProgressBarValue(i++);
                 }
             });
+        }
+
+        public void Log(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        public async Task<GameChecksums> GenerateMetadataAsync(string directory)
+        {
+            string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
+                .Where(file => !Global.BLACKLIST.Any(blacklistItem =>
+                    file.Contains(blacklistItem, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+
+            SetProgressBarMax(files.Length);
+            SetProgressBarValue(0);
+
+            // Create tasks to process files concurrently
+            int i = 0;
+            var tasks = files.Select(filePath => Task.Run(async () =>
+            {
+                try
+                {
+                    // Compute checksum asynchronously
+                    string relativePath = Path.GetRelativePath(directory, filePath);
+                    string checksum = await CalculateChecksumAsync(filePath);
+
+                    Log($"Processed file: {relativePath} ({checksum})");
+                    SetProgressBarValue(i++);
+
+                    return new GameFile
+                    {
+                        name = relativePath,
+                        checksum = checksum
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
+                    SetProgressBarValue(i++);
+                    return null; // Return null in case of an error
+                }
+            }));
+
+            // Wait for all tasks to complete
+            var results = await Task.WhenAll(tasks);
+
+            // Filter out null results and construct the GameChecksums object
+            var gameChecksums = new GameChecksums
+            {
+                files = results.ToList()
+            };
 
             return gameChecksums;
         }
 
-        private static string CalculateChecksum(string filePath)
+        private static async Task<string> CalculateChecksumAsync(string filePath)
         {
-            using (var stream = File.OpenRead(filePath))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
             using (var sha256 = SHA256.Create())
             {
-                var hash = sha256.ComputeHash(stream);
+                var hash = await sha256.ComputeHashAsync(stream);
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
 
-        public void CompressFile(string input_file, string output_file)
+        public async Task CompressFileAsync(string input_file, string output_file)
         {
             using var delta_temp_input = File.OpenRead(input_file);
             using var delta_compressed_output = File.OpenWrite(output_file);
             using var compressionStream = new CompressionStream(delta_compressed_output, 12);
-            delta_temp_input.CopyTo(compressionStream);
+            await delta_temp_input.CopyToAsync(compressionStream);
         }
-
-        /*public void CreateFileDelta(string originalFile, string updatedFile, string deltaFile)
-        {
-            // Ensure the delta directory exists
-            if (!Directory.Exists(Path.GetDirectoryName(deltaFile)))
-                Directory.CreateDirectory(Path.GetDirectoryName(deltaFile));
-
-            // Check if the original file exists
-            if (!File.Exists(originalFile))
-            {
-                // If the original file does not exist, it's a new file
-                Log($"New file detected: {updatedFile}. Copying instead of creating delta.");
-                CompressFile(updatedFile, deltaFile);
-                return;
-            }
-
-            // Create a temporary signature file
-            var signatureFile = Path.GetTempFileName();
-
-            // Step 1: Generate the signature file from the original file
-            var signatureBuilder = new SignatureBuilder();
-            using (var basisStream = new FileStream(originalFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var signatureStream = new FileStream(signatureFile, FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                signatureBuilder.Build(basisStream, new SignatureWriter(signatureStream));
-            }
-
-            Log($"Created signature file: {signatureFile}");
-
-            // Step 2: Create the delta file
-            var deltaBuilder = new DeltaBuilder();
-            using (var newFileStream = new FileStream(updatedFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var signatureFileStream = new FileStream(signatureFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var deltaStream = new FileStream(deltaFile + "_temp", FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                var deltaWriter = new BinaryDeltaWriter(deltaStream);
-                var compressedWriter = new AggregateCopyOperationsDecorator(deltaWriter);
-                deltaBuilder.BuildDelta(newFileStream, new SignatureReader(signatureFileStream, new ConsoleProgressReporter()), compressedWriter);
-            }
-
-            Log($"Created delta file: {deltaFile}");
-
-            // Step 3: Compress the delta file
-            CompressFile(deltaFile + "_temp", deltaFile);
-
-            Log($"Compressed delta file: {deltaFile}");
-
-            // Clean up the temporary delta file
-            File.Delete(deltaFile + "_temp");
-
-            // Clean up the temporary signature file
-            File.Delete(signatureFile);
-        }*/
-    }
-
-    internal class Patch
-    {
-        public List<PatchFile> files { get; set; }
-    }
-
-    internal class PatchFile
-    {
-        public string Name { get; set; }
-        public string Action { get; set; }
-    }
-
-    public class GameChecksums
-    {
-        public List<GameFile> files { get; set; }
-    }
-
-    public class GameFile
-    {
-        public string name { get; set; }
-        public string checksum { get; set; }
-    }
-
-    public class Branch
-    {
-        public string branch { get; set; }
-        public string version { get; set; }
-        public string game_url { get; set; }
-        public bool enabled { get; set; }
-        public bool show_in_launcher { get; set; }
-    }
-
-    public class ServerConfig
-    {
-        public string launcherVersion { get; set; }
-        public string launcherSelfUpdater { get; set; }
-        public bool allowUpdates { get; set; }
-        public List<Branch> branches { get; set; }
     }
 }
