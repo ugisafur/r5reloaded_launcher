@@ -21,7 +21,7 @@ namespace launcher
     {
         #region Setup Functions
 
-        public static async void SetupApp(MainWindow mainWindow)
+        public static void SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
             EnableDebugConsole();
@@ -140,10 +140,7 @@ namespace launcher
                     Branch branch = new()
                     {
                         branch = folder,
-                        version = "Local Install",
-                        lastVersion = "",
                         game_url = "",
-                        patch_url = "",
                         enabled = true,
                         show_in_launcher = true,
                         is_local_branch = true
@@ -163,7 +160,7 @@ namespace launcher
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch,
-                    subtext = branch.version,
+                    subtext = GetServerBranchVersion(branch),
                     isLocalBranch = branch.is_local_branch
                 })
                 .ToList();
@@ -276,6 +273,15 @@ namespace launcher
         public static string GetBranchVersion()
         {
             return Ini.Get(Configuration.ServerConfig.branches[GetCmbBranchIndex()].branch, "Version", "");
+        }
+
+        public static string GetServerBranchVersion(Branch branch)
+        {
+            if (branch.is_local_branch)
+                return "Local Install";
+
+            string version = DataFetcher.FetchBranchVersion(branch.game_url);
+            return version;
         }
 
         public static Branch GetCurrentBranch()

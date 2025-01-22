@@ -142,7 +142,7 @@ namespace patch_creator
 
             //Update the clear cache list
             UpdateProgressLabel("Updating clear cache list");
-            UpdateClearCacheList(selected_index, compressed_changedFiles);
+            UpdateClearCacheList(selected_index, compressed_changedFiles, final_game_dir);
 
             UpdateProgressLabel("Patch creation complete");
             Log("---------- Patch creation finished ----------");
@@ -343,10 +343,18 @@ namespace patch_creator
             return new_compressed_checksums_resault;
         }
 
-        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files)
+        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files, string final_dir)
         {
             SetProgressBarMax(changed_files.Count);
             SetProgressBarValue(0);
+
+            List<string> changed_files_txt = [];
+            foreach (var file in changed_files)
+            {
+                changed_files_txt.Add(file.name);
+            }
+
+            File.WriteAllLines(final_dir + "\\clearcache.txt", changed_files_txt);
 
             richTextBox1.Invoke(() =>
             {

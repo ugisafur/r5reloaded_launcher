@@ -359,8 +359,9 @@ namespace launcher
                 return;
             }
 
-            bool isUpToDate = Utilities.GetBranchVersion() == Configuration.ServerConfig.branches[0].version;
+            bool isUpToDate = Utilities.GetBranchVersion() == Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch());
             Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
+            Utilities.GetCurrentBranch().update_available = !isUpToDate;
             SetPlayState("PLAY", true, true, true);
         }
 

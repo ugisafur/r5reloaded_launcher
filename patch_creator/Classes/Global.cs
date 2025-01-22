@@ -24,7 +24,8 @@ namespace patch_creator
         public static List<string> ignoredFiles = new()
         {
             "checksums.json",
-            "checksums_zst.json"
+            "checksums_zst.json",
+            "clearcache.txt"
         };
     }
 }

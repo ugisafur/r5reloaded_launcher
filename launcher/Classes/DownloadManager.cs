@@ -115,45 +115,6 @@ namespace launcher
         }
 
         /// <summary>
-        /// Initializes and starts download tasks for updating game patches.
-        /// </summary>
-        /// <param name="patchFiles">The patch files to download.</param>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A list of download tasks.</returns>
-        public static List<Task<string>> InitializeUpdateTasks(GamePatch patchFiles, string branchDirectory)
-        {
-            if (patchFiles == null) throw new ArgumentNullException(nameof(patchFiles));
-            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
-
-            var downloadTasks = new List<Task<string>>(patchFiles.files.Count);
-            ConfigureProgress(patchFiles.files.Count);
-
-            string patchUrl = Utilities.GetCurrentBranch().patch_url;
-
-            foreach (var file in patchFiles.files)
-            {
-                if (string.Equals(file.Action, "delete", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                string fileUrl = $"{patchUrl}/{file.Name}";
-                string destinationPath = Path.Combine(branchDirectory, file.Name);
-
-                EnsureDirectoryExists(destinationPath);
-
-                downloadTasks.Add(
-                    DownloadFileAsync(
-                        fileUrl,
-                        destinationPath,
-                        file.Name,
-                        checkForExistingFiles: false
-                    )
-                );
-            }
-
-            return downloadTasks;
-        }
-
-        /// <summary>
         /// Initializes and starts file update tasks based on the provided patch files.
         /// </summary>
         /// <param name="patchFiles">The patch files containing update actions.</param>
@@ -543,8 +504,10 @@ namespace launcher
                 Status_Label.Text = "";
                 Files_Label.Text = "";
 
-                GameSettings_Control.RepairGame_Button.IsEnabled = !installing;
-                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing;
+                GameSettings_Control.RepairGame_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
+                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
+                GameSettings_Control.OpenDir_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
+                GameSettings_Control.AdvancedMenu_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
             });
 
             ShowProgressBar(installing);
@@ -559,6 +522,9 @@ namespace launcher
                 AppState.IsInstalling = installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
+
+                GameSettings_Control.RepairGame_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
+                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && Utilities.IsBranchInstalled();
             });
 
             ShowProgressBar(installing);

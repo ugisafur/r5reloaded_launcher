@@ -37,7 +37,7 @@ namespace launcher
                 return;
 
             // Check if the game is already up to date
-            if (Utilities.GetBranchVersion() == Utilities.GetCurrentBranch().version)
+            if (Utilities.GetBranchVersion() == Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch()))
                 return;
 
             // Check if user is to outdated to update normally
@@ -188,7 +188,7 @@ namespace launcher
 
             //Update launcher config
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
+            Ini.Set(branch, "Version", Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch()));
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been updated!", BalloonIcon.Info);
 
@@ -255,24 +255,37 @@ namespace launcher
         private static async Task CheckForDeletedFiles(bool optfiles)
         {
             string branchDirectory = Utilities.GetBranchDirectory();
+
+            // Get all files in the branch directory
             string[] files = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
-            GameFiles gameFiles = optfiles ? await DataFetcher.FetchOptionalGameFiles(false) : await DataFetcher.FetchBaseGameFiles(false);
+
+            // Fetch the appropriate game files based on optfiles
+            GameFiles gameFiles = optfiles
+                ? await DataFetcher.FetchOptionalGameFiles(false)
+                : await DataFetcher.FetchBaseGameFiles(false);
 
             foreach (var file in files)
             {
                 string relativePath = Path.GetRelativePath(branchDirectory, file);
 
-                try
+                // Handle the optfiles logic
+                bool isOptFile = relativePath.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase);
+
+                if ((optfiles && isOptFile) || (!optfiles && !isOptFile))
                 {
-                    if (!gameFiles.files.Exists(f => f.name.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                    try
                     {
-                        if (File.Exists(file))
-                            File.Delete(file);
+                        // Check if the file exists in the fetched game files
+                        if (!gameFiles.files.Exists(f => f.name.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            if (File.Exists(file))
+                                File.Delete(file);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    LogError(Source.Update, $"Error deleting file ({relativePath}): {ex.Message}");
+                    catch (Exception ex)
+                    {
+                        LogError(Source.Update, $"Error deleting file ({relativePath}): {ex.Message}");
+                    }
                 }
             }
         }

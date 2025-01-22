@@ -20,34 +20,11 @@ namespace launcher
             return JsonConvert.DeserializeObject<ServerConfig>(responseString);
         }
 
-        public static async Task<GamePatch> FetchPatchFiles()
+        public static string FetchBranchVersion(string branch_url)
         {
-            int selectedBranchIndex = Utilities.GetCmbBranchIndex();
-
-            string patchURL = Configuration.ServerConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
-            string patchFile = await FetchJson(patchURL);
-
-            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
-            patchFiles.files = patchFiles.files
-                .Where(file => !file.Name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return patchFiles;
-        }
-
-        public static async Task<GamePatch> FetchOptionalPatchFiles()
-        {
-            int selectedBranchIndex = Utilities.GetCmbBranchIndex();
-
-            string patchURL = Configuration.ServerConfig.branches[selectedBranchIndex].patch_url + "\\patch.json";
-            string patchFile = await FetchJson(patchURL);
-
-            var patchFiles = JsonConvert.DeserializeObject<GamePatch>(patchFile);
-            patchFiles.files = patchFiles.files
-                .Where(file => file.Name.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return patchFiles;
+            var response = Networking.HttpClient.GetAsync($"{branch_url}\\version.txt").Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+            return responseString;
         }
 
         public static async Task<GameFiles> FetchBaseGameFiles(bool compressed)

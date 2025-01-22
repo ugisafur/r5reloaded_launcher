@@ -123,7 +123,7 @@ namespace launcher
                    Configuration.LauncherConfig != null &&
                    !Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].is_local_branch &&
                    Ini.Get(Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch, "Is_Installed", false) &&
-                   newServerConfig.branches[Utilities.GetCmbBranchIndex()].version != Utilities.GetBranchVersion();
+                   Utilities.GetBranchVersion() != Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch());
         }
 
         private static void HandleLauncherUpdate()
@@ -169,8 +169,6 @@ namespace launcher
 
             appDispatcher.Invoke(() =>
             {
-                Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].version = newServerConfig.branches[Utilities.GetCmbBranchIndex()].version;
-                //Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion = newServerConfig.branches[Utilities.GetCmbBranchIndex()].lastVersion;
                 Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available = true;
                 Update_Button.Visibility = Visibility.Visible;
             });

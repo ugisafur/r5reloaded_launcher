@@ -79,17 +79,17 @@ namespace launcher
                 await AttemptGameRepair();
             }
 
-            //Install finished
-            DownloadManager.SetInstallState(false);
-
             string branch = Utilities.GetCurrentBranch().branch;
 
             //Set branch as installed
             Ini.Set(branch, "Is_Installed", true);
-            Ini.Set(branch, "Version", Utilities.GetCurrentBranch().version);
+            Ini.Set(branch, "Version", Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch()));
 
             Utilities.SetupAdvancedMenu();
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been installed!", BalloonIcon.Info);
+
+            //Install finished
+            DownloadManager.SetInstallState(false);
 
             appDispatcher.Invoke(new Action(() =>
             {
@@ -213,12 +213,12 @@ namespace launcher
 
             Directory.Delete(Utilities.GetBranchDirectory(), true);
 
-            DownloadManager.SetInstallState(false);
-
             string branch = Utilities.GetCurrentBranch().branch;
             Ini.Set(branch, "Is_Installed", false);
             Ini.Set(branch, "Download_HD_Textures", false);
             Ini.Set(branch, "Version", "");
+
+            DownloadManager.SetInstallState(false);
 
             Utilities.SendNotification($"R5Reloaded ({Utilities.GetCurrentBranch().branch}) has been uninstalled!", BalloonIcon.Info);
         }

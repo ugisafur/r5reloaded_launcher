@@ -10,10 +10,7 @@
     public class Branch
     {
         public string branch { get; set; }
-        public string version { get; set; }
-        public string lastVersion { get; set; }
         public string game_url { get; set; }
-        public string patch_url { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
         public bool allow_updates { get; set; }
