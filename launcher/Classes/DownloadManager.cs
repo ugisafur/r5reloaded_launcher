@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using static launcher.ControlReferences;
 using static launcher.Logger;
 using System.Windows;
+using System.Net.Http;
 
 namespace launcher
 {
@@ -115,28 +116,6 @@ namespace launcher
         }
 
         /// <summary>
-        /// Initializes and starts file update tasks based on the provided patch files.
-        /// </summary>
-        /// <param name="patchFiles">The patch files containing update actions.</param>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A list of update tasks.</returns>
-        public static List<Task> InitializeFileUpdateTasks(GamePatch patchFiles, string branchDirectory)
-        {
-            if (patchFiles == null) throw new ArgumentNullException(nameof(patchFiles));
-            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
-
-            var updateTasks = new List<Task>(patchFiles.files.Count);
-            AppState.FilesLeft = patchFiles.files.Count;
-
-            foreach (var file in patchFiles.files)
-            {
-                updateTasks.Add(ProcessFileUpdateAsync(file, branchDirectory));
-            }
-
-            return updateTasks;
-        }
-
-        /// <summary>
         /// Downloads a file with optional checksum verification and updates the UI accordingly.
         /// </summary>
         /// <param name="fileUrl">The URL of the file to download.</param>
@@ -149,24 +128,13 @@ namespace launcher
         {
             await _downloadSemaphore.WaitAsync();
 
-            // Check if the file already exists and matches the checksum
-            if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
-            {
-                appDispatcher.Invoke(() =>
-                {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
-
-                _downloadSemaphore.Release();
-
-                return destinationPath;
-            }
-
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
 
             try
             {
+                if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
+                    return destinationPath;
+
                 await CreateRetryPolicy(fileUrl).ExecuteAsync(async () =>
                 {
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
@@ -178,16 +146,6 @@ namespace launcher
             {
                 LogError(Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
                 AppState.BadFilesDetected = true;
-
-                appDispatcher.Invoke(() =>
-                {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
-
-                await RemoveDownloadItemAsync(downloadItem);
-                _downloadSemaphore.Release();
-
                 return string.Empty;
             }
             finally
@@ -200,121 +158,6 @@ namespace launcher
 
                 await RemoveDownloadItemAsync(downloadItem);
                 _downloadSemaphore.Release();
-            }
-        }
-
-        /// <summary>
-        /// Processes file updates based on the specified action (delete, update, patch).
-        /// </summary>
-        /// <param name="file">The patch file containing the action.</param>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private static async Task ProcessFileUpdateAsync(PatchFile file, string branchDirectory)
-        {
-            try
-            {
-                switch (file.Action.ToLower())
-                {
-                    case "delete":
-                        DeleteFile(file.Name);
-                        break;
-
-                    case "update":
-                        await ReplaceFileAsync(file.Name, branchDirectory);
-                        break;
-
-                    case "patch":
-                        await PatchFileAsync(file.Name, branchDirectory);
-                        break;
-
-                    default:
-                        LogWarning(Source.DownloadManager, $"Unknown action '{file.Action}' for file '{file.Name}'.");
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(Source.DownloadManager, $"Error processing file '{file.Name}': {ex.Message}");
-            }
-            finally
-            {
-                appDispatcher.Invoke(() =>
-                {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
-            }
-        }
-
-        /// <summary>
-        /// Replaces an existing file with a new version by decompressing it.
-        /// </summary>
-        /// <param name="fileName">The name of the file to replace.</param>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private static async Task ReplaceFileAsync(string fileName, string branchDirectory)
-        {
-            string sourceCompressedFile = Path.Combine(branchDirectory, fileName);
-            string destinationFile = Path.Combine(Constants.Paths.LauncherPath, Path.GetFileNameWithoutExtension(fileName));
-
-            await DecompressionManager.DecompressFileAsync(sourceCompressedFile, destinationFile);
-        }
-
-        /// <summary>
-        /// Applies a patch to an existing file using delta compression.
-        /// </summary>
-        /// <param name="fileName">The name of the patch file.</param>
-        /// <param name="branchDirectory">Temporary directory containing the patch file.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private static async Task PatchFileAsync(string fileName, string branchDirectory)
-        {
-            string sourceCompressedDeltaFile = Path.Combine(branchDirectory, fileName);
-            string deltaFile = Path.Combine(branchDirectory, Path.GetFileNameWithoutExtension(fileName));
-            string originalFile = Path.Combine(Constants.Paths.LauncherPath, fileName.Replace(".delta.zst", ""));
-
-            await DecompressionManager.DecompressFileAsync(sourceCompressedDeltaFile, deltaFile);
-
-            string signatureFile = Path.GetTempFileName();
-
-            var signatureBuilder = new SignatureBuilder();
-            using (var basisStream = new FileStream(originalFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var signatureStream = new FileStream(signatureFile, FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                signatureBuilder.Build(basisStream, new SignatureWriter(signatureStream));
-            }
-
-            if (File.Exists(originalFile))
-                File.Delete(originalFile);
-
-            var deltaApplier = new DeltaApplier { SkipHashCheck = false };
-            using (var basisStream = new FileStream(signatureFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var deltaStream = new FileStream(deltaFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var newFileStream = new FileStream(originalFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-            {
-                var progressReporter = new ConsoleProgressReporter(); // Consider implementing a more sophisticated reporter
-                deltaApplier.Apply(basisStream, new BinaryDeltaReader(deltaStream, progressReporter), newFileStream);
-            }
-
-            // Clean up temporary files
-            File.Delete(signatureFile);
-            File.Delete(deltaFile);
-        }
-
-        /// <summary>
-        /// Deletes a specified file from the launcher directory.
-        /// </summary>
-        /// <param name="fileName">The name of the file to delete.</param>
-        private static void DeleteFile(string fileName)
-        {
-            string fullPath = Path.Combine(Constants.Paths.LauncherPath, fileName);
-            try
-            {
-                if (File.Exists(fullPath))
-                    File.Delete(fullPath);
-            }
-            catch (Exception ex)
-            {
-                LogWarning(Source.DownloadManager, $"Failed to delete '{fullPath}': {ex.Message}");
             }
         }
 
@@ -372,7 +215,7 @@ namespace launcher
         /// <returns>An asynchronous retry policy.</returns>
         private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl)
         {
-            const int maxRetryAttempts = 5;
+            const int maxRetryAttempts = 30;
             const double exponentialBackoffFactor = 2.0;
 
             return Policy
@@ -425,24 +268,19 @@ namespace launcher
         /// <returns>A task representing the asynchronous operation.</returns>
         private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
-            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
-            request.Method = "GET";
-            request.Timeout = 30000;
-            request.AllowAutoRedirect = true;
-
-            using var response = (HttpWebResponse)await request.GetResponseAsync();
+            using var response = await Networking.HttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new WebException($"Failed to download: {response.StatusCode}");
 
-            long totalBytes = response.ContentLength;
+            long totalBytes = response.Content.Headers.ContentLength ?? -1;
             long downloadedBytes = 0;
             long lastDownloadedBytes = 0; // Tracks bytes downloaded in the last interval
             DateTime lastUpdate = DateTime.Now;
             DateTime timeoutlastUpdate = DateTime.Now;
             TimeSpan timeoutThreshold = TimeSpan.FromSeconds(30);
 
-            using var responseStream = response.GetResponseStream();
+            using var responseStream = await response.Content.ReadAsStreamAsync();
             using var throttledStream = new ThrottledStream(responseStream, _downloadSpeedLimit);
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 

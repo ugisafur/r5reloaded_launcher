@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-             d:DesignHeight="30" d:DesignWidth="547">
+             d:DesignHeight="40" d:DesignWidth="547">
     <UserControl.Resources>
         <SolidColorBrush x:Key="ProgressBar.Progress" Color="#FF06B025" />
         <SolidColorBrush x:Key="ProgressBar.Background" Color="#FFE6E6E6" />
@@ -71,20 +71,11 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="547" Height="30" Padding="15">
-        <Grid Margin="-11,-10,13,-11">
-            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{StaticResource PrimaryTextColor}" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="0,0,133,7" RenderTransformOrigin="0.5,0.5">
-                <TextBlock.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform />
-                        <SkewTransform AngleY="0.052" />
-                        <RotateTransform />
-                        <TranslateTransform Y="0.219" />
-                    </TransformGroup>
-                </TextBlock.RenderTransform>
-            </TextBlock>
-            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{StaticResource PrimaryTextColor}" FontSize="12" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="385,0,0,7" TextAlignment="Right" />
-            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="5" Margin="0,14,0,2" Foreground="{StaticResource AccentColor}" BorderBrush="{StaticResource PrimaryColor}" Background="{StaticResource PrimaryColor}" />
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" Height="40">
+        <Grid>
+            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="6,4,125,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="385,4,5,0" Height="17" Width="120" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="8" Margin="6,12,5,2" Foreground="{StaticResource AccentColor}" BorderBrush="{StaticResource PrimaryColor}" Background="{StaticResource PrimaryColor}" HorizontalAlignment="Stretch" />
         </Grid>
     </Border>
 </UserControl>

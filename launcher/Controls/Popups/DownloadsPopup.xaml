@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-                          d:DesignHeight="300" d:DesignWidth="577">
+                          d:DesignHeight="320" d:DesignWidth="677">
     <UserControl.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -64,22 +64,22 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="300" Padding="15">
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="677" Height="320" Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="16*" />
                 <RowDefinition Height="105*" />
                 <RowDefinition Height="14*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="Downloads" Foreground="{StaticResource PrimaryTextColor}" FontSize="26" FontWeight="Bold" Margin="4,2,0,2" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock Text="Downloads &amp; Tasks" Foreground="{StaticResource PrimaryTextColor}" FontSize="26" FontWeight="Bold" Margin="4,2,0,2" FontFamily="Bahnschrift SemiBold" />
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="210">
                     <StackPanel x:Name="DownloadsStackPanel" Orientation="Vertical">
                     </StackPanel>
                 </ScrollViewer>
             </StackPanel>
-            <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads in the queue." Foreground="{StaticResource AccentTextColor}" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
-            <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="4,3,0,0" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" Click="gotoDownloads_Click" Cursor="Hand">
+            <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads or tasks in the queue." Foreground="{StaticResource AccentTextColor}" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
+            <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="1,0,0,1" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" Click="gotoDownloads_Click" Cursor="Hand" Height="30">
                 <Grid Width="170">
                     <TextBlock Text="Download Settings" HorizontalAlignment="Left" FontSize="16" Margin="29,1,0,-1" />
                     <Image Source="/assets/icons8-settings-100.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="5,0,0,0" />

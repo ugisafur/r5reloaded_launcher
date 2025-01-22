@@ -50,15 +50,46 @@ namespace launcher
 
         public static async Task DecompressFileAsync(string compressedFilePath, string decompressedFilePath)
         {
+            DownloadItem downloadItem = await AddDownloadItemAsync(Path.GetFileName(compressedFilePath));
+
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
+
+                // Get the total size of the compressed file
+                long totalBytes = new FileInfo(compressedFilePath).Length;
+                long processedBytes = 0;
+                DateTime lastUpdate = DateTime.Now;
 
                 using var input = File.OpenRead(compressedFilePath);
                 using var output = File.OpenWrite(decompressedFilePath);
                 using var decompressionStream = new DecompressionStream(input);
 
-                await decompressionStream.CopyToAsync(output);
+                // Wrap the output stream with a progress handler
+                byte[] buffer = new byte[8192]; // 8KB buffer size
+                int bytesRead;
+                while ((bytesRead = await decompressionStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await output.WriteAsync(buffer, 0, bytesRead);
+                    processedBytes += bytesRead;
+
+                    if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
+                    {
+                        lastUpdate = DateTime.Now;
+
+                        double totalSize = totalBytes >= (1024L * 1024 * 1024) ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
+                        string totalText = totalBytes >= (1024L * 1024 * 1024) ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                        double downloadedSize = processedBytes >= (1024L * 1024 * 1024) ? processedBytes / (1024.0 * 1024 * 1024) : processedBytes / (1024.0 * 1024.0);
+                        string downloadedText = processedBytes >= (1024L * 1024 * 1024) ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                        await appDispatcher.InvokeAsync(() =>
+                        {
+                            downloadItem.downloadFilePercent.Text = $"decompressing...";
+                            downloadItem.downloadFileProgress.Value = (double)processedBytes / totalBytes * 100;
+                        });
+                    }
+                }
 
                 decompressionStream.Close();
                 output.Close();
@@ -78,7 +109,22 @@ namespace launcher
                     Progress_Bar.Value++;
                     Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
+
+                await RemoveDownloadItemAsync(downloadItem);
             }
+        }
+
+        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
+        {
+            if (downloadItem != null)
+            {
+                await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
+            }
+        }
+
+        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
+        {
+            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
         }
     }
 }
