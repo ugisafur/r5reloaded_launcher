@@ -1,22 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using launcher.Classes.BranchUtils;
+using Newtonsoft.Json;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static launcher.ControlReferences;
+using launcher.Classes.Global;
+using launcher.Classes.Game;
+using launcher.Classes.Utilities;
+using launcher.Classes.Managers;
 
 namespace launcher
 {
@@ -59,36 +50,16 @@ namespace launcher
             }
         }
 
-        public string SendPostRequestAsync(string url, string jsonContent)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                // Set headers if needed (optional)
-                // Create the content to send in the POST request (in JSON format)
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-                // Send the POST request and get the response
-                HttpResponseMessage response = client.PostAsync(url, content).Result;
-
-                // Ensure successful response
-                response.EnsureSuccessStatusCode();
-
-                // Read the JSON response as a string
-                string responseJson = response.Content.ReadAsStringAsync().Result;
-                return responseJson;
-            }
-        }
-
         private void acknowledge_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].branch, "EULA_Accepted", true);
-            Task.Run(() => GameInstall.Start());
-            Utilities.HideEULA();
+            Ini.Set(GetBranch.Name(false), "EULA_Accepted", true);
+            Task.Run(() => Install.Start());
+            AppManager.HideEULA();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideEULA();
+            AppManager.HideEULA();
         }
     }
 

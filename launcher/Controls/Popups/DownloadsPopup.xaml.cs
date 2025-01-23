@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
-using static launcher.ControlReferences;
+using static launcher.Classes.Global.References;
+using launcher.Classes.Global;
 
 namespace launcher
 {
@@ -10,7 +10,7 @@ namespace launcher
     /// </summary>
     public partial class DownloadsPopup : UserControl
     {
-        private List<DownloadItem> downloadItems = new List<DownloadItem>();
+        private List<DownloadItem> downloadItems = [];
 
         public DownloadsPopup()
         {
@@ -19,7 +19,7 @@ namespace launcher
 
         public DownloadItem AddDownloadItem(string fileName)
         {
-            DownloadItem downloadItem = new DownloadItem();
+            DownloadItem downloadItem = new();
             downloadItem.downloadFileName.Text = fileName;
             downloadItem.downloadFilePercent.Text = "waiting...";
             downloadItem.downloadFileProgress.Value = 0;

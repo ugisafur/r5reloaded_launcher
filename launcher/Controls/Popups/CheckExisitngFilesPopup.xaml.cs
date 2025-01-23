@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using launcher.Classes.Game;
+using launcher.Classes.Managers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static launcher.ControlReferences;
 
 namespace launcher
 {
@@ -29,13 +17,13 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideCheckExistingFiles();
+            AppManager.HideCheckExistingFiles();
         }
 
         private void CheckFiles_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideCheckExistingFiles();
-            Task.Run(() => GameRepair.Start());
+            AppManager.HideCheckExistingFiles();
+            Task.Run(() => Repair.Start());
         }
     }
 }

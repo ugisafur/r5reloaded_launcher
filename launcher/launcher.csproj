@@ -104,25 +104,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\AdvancedSettings\NetworkSettings.xaml.cs">
+    <Compile Update="Controls\Menus\Pages\AdvancedSettings\NetworkSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\AdvancedSettings\GeneralSettings.xaml.cs">
+    <Compile Update="Controls\Menus\Pages\AdvancedSettings\GeneralSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\Popups\CheckExisitngFilesPopup.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\AdvancedControl.xaml.cs">
+    <Compile Update="Controls\Menus\AdvancedControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Classes\UpperCaseConverter.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
 

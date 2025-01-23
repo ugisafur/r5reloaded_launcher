@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-
-using static launcher.ControlReferences;
+using static launcher.Classes.Global.References;
+using launcher.Classes.Global;
+using launcher.Classes.Managers;
 
 namespace launcher
 {
@@ -39,7 +40,7 @@ namespace launcher
             if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
-                Utilities.ShowSettingsControl();
+                AppManager.ShowSettingsControl();
 
                 //i hate this
                 Settings_Control.gameInstalls.FirstTime();

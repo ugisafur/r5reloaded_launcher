@@ -1,4 +1,9 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using launcher.Classes.BranchUtils;
+using launcher.Classes.Game;
+using launcher.Classes.Global;
+using launcher.Classes.Managers;
+using launcher.Classes.Utilities;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -10,7 +15,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using static launcher.Logger;
+using static launcher.Classes.Utilities.Logger;
 using Color = System.Windows.Media.Color;
 
 namespace launcher
@@ -83,7 +88,7 @@ namespace launcher
             SetupSystemTray();
 
             // Setup the application
-            Utilities.SetupApp(this);
+            AppManager.SetupApp(this);
 
             // Setup Background
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
@@ -93,8 +98,8 @@ namespace launcher
             }
             else
             {
-                if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")))
-                    Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.png")));
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.png")))
+                    Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.png")));
             }
 
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
@@ -116,9 +121,9 @@ namespace launcher
 
         private async Task LoadVideoBackground()
         {
-            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
+            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
             {
-                string videoUrl = Constants.Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
+                string videoUrl = Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
                 Background_Video.Source = new Uri(videoUrl, UriKind.Absolute);
 
                 double bufferingProgress = Background_Video.BufferingProgress;
@@ -130,9 +135,9 @@ namespace launcher
 
                 LogInfo(Source.Launcher, $"Streaming video background from: {videoUrl}");
             }
-            else if (File.Exists(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4")))
+            else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
             {
-                Background_Video.Source = new Uri(Path.Combine(Constants.Paths.LauncherPath, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
+                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
                 LogInfo(Source.Launcher, "Loading local video background");
             }
 
@@ -187,7 +192,7 @@ namespace launcher
                 Application.Current.Shutdown();
             else
             {
-                Utilities.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+                AppManager.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
             }
         }
@@ -199,27 +204,27 @@ namespace launcher
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.IsOnline || Utilities.IsBranchInstalled() || Utilities.GetCurrentBranch().is_local_branch)
+            if (!AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch())
             {
-                Utilities.LaunchGame();
+                Game.Launch();
                 return;
             }
 
             if (!AppState.IsInstalling)
             {
-                if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
+                if (!GetBranch.Installed() && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
                 {
-                    Utilities.ShowCheckExistingFiles();
+                    AppManager.ShowCheckExistingFiles();
                 }
                 else
                 {
-                    if (Utilities.IsBranchEULAAccepted())
+                    if (GetBranch.EULAAccepted())
                     {
-                        Task.Run(() => GameInstall.Start());
+                        Task.Run(() => Install.Start());
                     }
                     else
                     {
-                        Utilities.ShowEULA();
+                        AppManager.ShowEULA();
                     }
                 }
             }
@@ -232,9 +237,9 @@ namespace launcher
             var selectedBranch = comboBox.SelectedIndex;
             var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
-            Utilities.SetupAdvancedMenu();
-            GameSettings_Control.OpenDir_Button.IsEnabled = Utilities.IsBranchInstalled() || comboBranch.isLocalBranch;
-            GameSettings_Control.AdvancedMenu_Button.IsEnabled = Utilities.IsBranchInstalled() || comboBranch.isLocalBranch;
+            AppManager.SetupAdvancedMenu();
+            GameSettings_Control.OpenDir_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
 
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
@@ -243,9 +248,9 @@ namespace launcher
             }
 
             AppState.IsLocalBranch = false;
-            Ini.Set(Ini.Vars.SelectedBranch, Configuration.ServerConfig.branches[selectedBranch].branch);
+            Ini.Set(Ini.Vars.SelectedBranch, GetBranch.Name(false));
 
-            if (Utilities.IsBranchInstalled())
+            if (GetBranch.Installed())
             {
                 HandleInstalledBranch(selectedBranch);
             }
@@ -257,9 +262,9 @@ namespace launcher
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (Configuration.ServerConfig.branches[Utilities.GetCmbBranchIndex()].update_available && Utilities.IsBranchInstalled())
+            if (GetBranch.UpdateAvailable() && GetBranch.Installed())
             {
-                Task.Run(() => GameUpdate.Start());
+                Task.Run(() => Update.Start());
                 Update_Button.Visibility = Visibility.Hidden;
             }
         }
@@ -359,9 +364,9 @@ namespace launcher
                 return;
             }
 
-            bool isUpToDate = Utilities.GetBranchVersion() == Utilities.GetServerBranchVersion(Utilities.GetCurrentBranch());
+            bool isUpToDate = GetBranch.LocalVersion() == GetBranch.ServerVersion();
             Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
-            Utilities.GetCurrentBranch().update_available = !isUpToDate;
+            SetBranch.UpdateAvailable(!isUpToDate);
             SetPlayState("PLAY", true, true, true);
         }
 
@@ -375,7 +380,7 @@ namespace launcher
                 return;
             }
 
-            bool executableExists = File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe"));
+            bool executableExists = File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe"));
             SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists);
         }
 
@@ -392,7 +397,7 @@ namespace launcher
             ContextMenu contextMenu = (ContextMenu)FindResource("tbiContextMenu");
             MenuItem versionMenuItem = contextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Name == "VersionContext");
             if (versionMenuItem != null)
-                versionMenuItem.Header = "R5RLauncher " + Constants.Launcher.VERSION;
+                versionMenuItem.Header = "R5RLauncher " + Launcher.VERSION;
 
             System_Tray = new TaskbarIcon
             {
@@ -407,25 +412,25 @@ namespace launcher
 
         public void SetButtonState()
         {
-            if (Utilities.GetCurrentBranch().is_local_branch)
+            if (GetBranch.IsLocalBranch())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!Utilities.GetCurrentBranch().enabled)
+            if (!GetBranch.Enabled())
             {
                 Play_Button.Content = "DISABLED";
                 return;
             }
 
-            if (Utilities.IsBranchInstalled())
+            if (GetBranch.Installed())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!Utilities.IsBranchInstalled() && File.Exists(Path.Combine(Utilities.GetBranchDirectory(), "r5apex.exe")))
+            if (!GetBranch.Installed() && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
             {
                 Play_Button.Content = "CHECK FILES";
                 return;

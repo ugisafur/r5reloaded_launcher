@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using launcher.Classes.BranchUtils;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static launcher.ControlReferences;
+using launcher.Classes.Global;
+using launcher.Classes.Game;
+using launcher.Classes.Utilities;
+using launcher.Classes.Managers;
 
 namespace launcher
 {
@@ -29,26 +20,26 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideDownloadOptlFiles();
-            Ini.Set(Utilities.GetCurrentBranch().branch, "Download_HD_Textures", false);
+            AppManager.HideDownloadOptlFiles();
+            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
         }
 
         private void Download_Click(object sender, RoutedEventArgs e)
         {
             if (AppState.IsInstalling)
             {
-                Utilities.HideDownloadOptlFiles();
+                AppManager.HideDownloadOptlFiles();
                 return;
             }
 
-            Task.Run(() => GameInstall.InstallOptionalFiles());
-            Utilities.HideDownloadOptlFiles();
+            Task.Run(() => Install.InstallOptionalFiles());
+            AppManager.HideDownloadOptlFiles();
         }
 
         private void Later_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.HideDownloadOptlFiles();
-            Ini.Set(Utilities.GetCurrentBranch().branch, "Download_HD_Textures", false);
+            AppManager.HideDownloadOptlFiles();
+            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
         }
     }
 }

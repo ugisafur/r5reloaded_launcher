@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using launcher.Classes.BranchUtils;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
-using static launcher.ControlReferences;
+using launcher.Classes.Global;
+using launcher.Classes.Game;
+using static launcher.Classes.Global.References;
+using launcher.Classes.Managers;
 
 namespace launcher
 {
@@ -24,7 +21,7 @@ namespace launcher
 
         private void btnRepair_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => GameRepair.Start());
+            Task.Run(() => Repair.Start());
         }
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
@@ -32,20 +29,20 @@ namespace launcher
             if (!AppState.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
-                Utilities.ShowAdvancedControl();
+                AppManager.ShowAdvancedControl();
             }
         }
 
         private void Uninstall_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => GameInstall.Uninstall());
+            Task.Run(() => Uninstall.Start());
         }
 
         private void OpenDir_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Utilities.IsBranchInstalled() || Utilities.GetCurrentBranch().is_local_branch)
+            if (GetBranch.Installed() || GetBranch.IsLocalBranch())
             {
-                string dir = Utilities.GetBranchDirectory();
+                string dir = GetBranch.Directory();
 
                 if (Directory.Exists(dir))
                     System.Diagnostics.Process.Start("explorer.exe", dir);
