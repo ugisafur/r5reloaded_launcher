@@ -59,7 +59,7 @@ namespace launcher.Classes.News
         {
             NewLegends.Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", "Welcome To R5R"));
             NewLegends.Add(new NewsItemSmall("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "View Blog"));
-            NewLegends.Add(new NewsItemSmall("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.gg/r5reloaded", "Join Discord"));
+            NewLegends.Add(new NewsItemSmall("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "Join Discord"));
             NewLegends.Add(new NewsItemSmall("Follow Us On Twitter", "Follow us on twitter to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://twitter.com/r5reloaded", "Follow Twitter"));
         }
 

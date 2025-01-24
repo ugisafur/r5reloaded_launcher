@@ -63,6 +63,7 @@
                          [Left Button] [Track/Thumb] [Right Button] -->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="50" />
                             </Grid.ColumnDefinitions>
 
                             <!-- Track with Thumb and PageLeft/PageRight areas -->
@@ -717,9 +718,9 @@
                         <Grid Grid.Row="2" Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="70" />
-                                <ColumnDefinition Width="425" />
+                                <ColumnDefinition Width="400" />
                                 <ColumnDefinition Width="136*" />
-                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="0" />
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
@@ -786,10 +787,23 @@
                                     </Rectangle>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged">
                                         <StackPanel x:Name="NewsPanel" Orientation="Horizontal">
                                         </StackPanel>
                                     </ScrollViewer>
+                                    <Rectangle x:Name="LeftNewsRect" HorizontalAlignment="Left" VerticalAlignment="Center" Width="2" Height="360" Margin="-2,-25,0,0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="#54ADF7" />
+                                        </Rectangle.Fill>
+                                        <Rectangle.OpacityMask>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#00FFFFFF" Offset="0.0" />
+                                                <GradientStop Color="#FFFFFFFF" Offset="0.25" />
+                                                <GradientStop Color="#FFFFFFFF" Offset="0.75" />
+                                                <GradientStop Color="#00FFFFFF" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
                                 </Grid>
                             </Grid>
                         </Grid>

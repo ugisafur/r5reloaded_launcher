@@ -101,7 +101,10 @@ namespace launcher
             NewsButtons.Add(PatchNotes_Button);
 
             if (AppState.IsOnline && Classes.News.Connection.Test())
+            {
                 AppManager.MoveNewsRect(0);
+                HideNewsRect();
+            }
 
             // Setup Background
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
@@ -641,6 +644,68 @@ namespace launcher
             Button button = (Button)sender;
             int index = NewsButtons.IndexOf(button);
             AppManager.MoveNewsRect(index);
+        }
+
+        private bool _isNewsRectShown = false;
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.HorizontalOffset > 1)
+            {
+                if (_isNewsRectShown)
+                    return;
+
+                ShowNewsRect();
+            }
+            else
+            {
+                if (!_isNewsRectShown)
+                    return;
+
+                HideNewsRect();
+            }
+        }
+
+        private void ShowNewsRect()
+        {
+            _isNewsRectShown = true;
+
+            Storyboard storyboard = new Storyboard();
+
+            // Fade-in animation
+            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
+            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
+            storyboard.Children.Add(fadeInAnimation);
+
+            storyboard.Begin();
+        }
+
+        private void HideNewsRect()
+        {
+            _isNewsRectShown = false;
+
+            Storyboard storyboard = new Storyboard();
+
+            // Fade-in animation
+            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
+            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
+            storyboard.Children.Add(fadeInAnimation);
+
+            storyboard.Begin();
         }
     }
 }
