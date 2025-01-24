@@ -26,6 +26,69 @@
     </Window.Clip>
 
     <Window.Resources>
+        <Style x:Key="RoundedThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="DarkGray" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="6" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource StatusTextColor2}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HorizontalScrollBarStyle" TargetType="ScrollBar">
+            <!-- Set properties specifically for a horizontal bar -->
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Background" Value="{StaticResource SecondaryColor2}" />
+            <Setter Property="Foreground" Value="{StaticResource SecondaryColor2}" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <!-- Define three columns for a horizontal scrollbar:
+                         [Left Button] [Track/Thumb] [Right Button] -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Track with Thumb and PageLeft/PageRight areas -->
+                            <Track
+                        x:Name="PART_Track"
+                        Grid.Column="0"
+                        Orientation="Horizontal">
+
+                                <Track.Thumb>
+                                    <!-- The draggable Thumb -->
+                                    <Thumb
+                                        Style="{StaticResource RoundedThumbStyle}"
+                                Background="{StaticResource SecondaryColor2}"
+                                BorderBrush="{StaticResource SecondaryColor2}"
+                                BorderThickness="1" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style that applies to all ScrollBars by default (optional) -->
+        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource HorizontalScrollBarStyle}" />
+
         <Style x:Key="CustomContextMenuStyle" TargetType="ContextMenu">
             <Setter Property="Background" Value="#292A2D" />
             <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -394,6 +457,43 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="NewsBtnStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" CornerRadius="5">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource AccentColor}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="FocusVisual1">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -603,8 +703,8 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="260*" />
                             <RowDefinition Height="1*" />
-                            <RowDefinition Height="330" />
-                            <RowDefinition Height="160" />
+                            <RowDefinition Height="460" />
+                            <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
@@ -661,7 +761,36 @@
                                     <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{StaticResource UpdateButtonColorNormal}" Foreground="{StaticResource SecondaryButtonTextColor}" BorderBrush="{StaticResource UpdateButtonColorNormal}" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
                                 </Grid>
                             </Grid>
-                            <Grid Grid.Column="2">
+                            <Grid Grid.Column="2" x:Name="NewsContainer">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="80" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="430" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="Community_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Community" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,18,10" Foreground="{StaticResource PrimaryTextColor}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="NewLegends_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="New Legends" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,18,10" Foreground="{StaticResource PrimaryTextColor}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="Comms_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Comms" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,18,10" Foreground="{StaticResource PrimaryTextColor}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="PatchNotes_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Patch Notes" FontSize="18" Background="{StaticResource MenuButtonColorNormal}" FontFamily="Bahnschrift SemiBold" BorderBrush="{StaticResource MenuButtonColorNormal}" Margin="0,10,18,10" Foreground="{StaticResource PrimaryTextColor}" Click="NewsButton_Click" Cursor="Hand" />
+                                    </StackPanel>
+                                    <Rectangle x:Name="NewsRect" Fill="{StaticResource PrimaryTextColor}" Width="101" HorizontalAlignment="Center"  IsHitTestVisible="False" Margin="0,51,0,13" RenderTransformOrigin="0.5,0.5" Height="3">
+                                        <Rectangle.RenderTransform>
+                                            <TransformGroup>
+                                                <TranslateTransform x:Name="News_Rect_Translate" X="163" Y="0" />
+                                            </TransformGroup>
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                        <StackPanel x:Name="NewsPanel" Orientation="Horizontal">
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid Grid.Row="3" Margin="0,6,0,0">
@@ -670,7 +799,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="45" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="Version_Label" Grid.Column="0" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" Margin="10,10,988,10" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                            <TextBlock x:Name="Version_Label" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Width="35" Height="16" Margin="8,0,0,0" />
                         </Grid>
                     </Grid>
                 </Grid>

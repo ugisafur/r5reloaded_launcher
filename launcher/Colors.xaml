@@ -8,6 +8,7 @@
     <SolidColorBrush x:Key="HDTexturesInstalledColor" Color="#85C6A2" />
 
     <SolidColorBrush x:Key="StatusTextColor" Color="Black" />
+    <SolidColorBrush x:Key="StatusTextColor2" Color="#FF54ADF7" />
     <SolidColorBrush x:Key="StatusPlayerServerBG" Color="#FF8AD2FF" />
 
     <SolidColorBrush x:Key="PrimaryTextColor" Color="White" />

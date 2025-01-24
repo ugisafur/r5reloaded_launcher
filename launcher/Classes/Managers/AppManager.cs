@@ -31,6 +31,11 @@ namespace launcher.Classes.Managers
             SetupBranchComboBox();
             GetSelfUpdater();
             EULA_Control.SetupEULA();
+
+            if (AppState.IsOnline)
+                News.Items.Populate();
+            else
+                Main_Window.NewsContainer.Visibility = Visibility.Collapsed;
         }
 
         public static void SetupAdvancedMenu()
@@ -319,6 +324,49 @@ namespace launcher.Classes.Managers
             transitionInStoryboard.Begin();
             Menu_Control.Settings.IsEnabled = true;
             Downloads_Control.gotoDownloads.IsEnabled = true;
+        }
+
+        public static void MoveNewsRect(int index)
+        {
+            if (!AppState.IsOnline)
+                return;
+
+            double speed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 400;
+
+            double startx = Main_Window.News_Rect_Translate.X;
+            double endx = Main_Window.NewsButtonsX[index];
+
+            var storyboard = new Storyboard();
+
+            var moveAnimation = new DoubleAnimation
+            {
+                From = startx,
+                To = endx,
+                Duration = new Duration(TimeSpan.FromMilliseconds(speed)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            Storyboard.SetTarget(moveAnimation, Main_Window.NewsRect);
+            Storyboard.SetTargetProperty(moveAnimation, new PropertyPath("RenderTransform.Children[0].X"));
+
+            double startw = Main_Window.NewsRect.Width;
+            double endw = Main_Window.NewsButtonsWidth[index];
+
+            var widthAnimation = new DoubleAnimation
+            {
+                From = startw,
+                To = endw,
+                Duration = new Duration(TimeSpan.FromMilliseconds(speed)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            Storyboard.SetTarget(widthAnimation, Main_Window.NewsRect);
+            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
+
+            storyboard.Children.Add(moveAnimation);
+            storyboard.Children.Add(widthAnimation);
+
+            storyboard.Begin();
+
+            News.Items.SetPage(index);
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)

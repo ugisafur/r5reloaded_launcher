@@ -22,6 +22,14 @@ namespace launcher
             DisableTransitionsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Transitions);
             DisableAnimationsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Animations);
             DisableBackgroundVideoBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
+
+            DisableAnimationsBtn.Checked += DisableAnimationsBtn_CheckedChanged;
+            DisableTransitionsBtn.Checked += DisableTransitionsBtn_CheckedChanged;
+            DisableBackgroundVideoBtn.Checked += DisableBackgroundVideoBtn_CheckedChanged;
+
+            DisableAnimationsBtn.Unchecked += DisableAnimationsBtn_CheckedChanged;
+            DisableTransitionsBtn.Unchecked += DisableTransitionsBtn_CheckedChanged;
+            DisableBackgroundVideoBtn.Unchecked += DisableBackgroundVideoBtn_CheckedChanged;
         }
 
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)

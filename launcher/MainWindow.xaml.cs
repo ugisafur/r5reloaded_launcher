@@ -34,6 +34,10 @@ namespace launcher
         public TaskbarIcon System_Tray { get; set; }
         public ICommand ShowWindowCommand { get; }
 
+        public List<Button> NewsButtons = [];
+        public List<double> NewsButtonsX = [-167.4, -45.5, 61.8, 163];
+        public List<double> NewsButtonsWidth = [95, 113, 65, 101];
+
         public MainWindow()
         {
             ShowWindowCommand = new RelayCommand(ExecuteShowWindow, CanExecuteShowWindow);
@@ -89,6 +93,13 @@ namespace launcher
 
             // Setup the application
             AppManager.SetupApp(this);
+
+            NewsButtons.Add(Community_Button);
+            NewsButtons.Add(NewLegends_Button);
+            NewsButtons.Add(Comms_Button);
+            NewsButtons.Add(PatchNotes_Button);
+
+            AppManager.MoveNewsRect(0);
 
             // Setup Background
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
@@ -621,6 +632,13 @@ namespace launcher
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
+        }
+
+        private void NewsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+            int index = NewsButtons.IndexOf(button);
+            AppManager.MoveNewsRect(index);
         }
     }
 }

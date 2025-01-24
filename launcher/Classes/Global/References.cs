@@ -85,6 +85,7 @@ namespace launcher.Classes.Global
         public static Image Background_Image = new();
         public static TaskbarIcon System_Tray;
         public static Rectangle POPUP_BG = new();
+        public static StackPanel NewsPanel = new();
 
         public static PlaylistRoot playlistRoot = new();
         public static List<string> gamemodes = [];
@@ -122,6 +123,7 @@ namespace launcher.Classes.Global
             POPUP_BG = mainWindow.POPUP_BG;
             OptFiles_Control = mainWindow.OptFiles_Control;
             CheckFiles_Control = mainWindow.CheckFiles_Control;
+            NewsPanel = mainWindow.NewsPanel;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

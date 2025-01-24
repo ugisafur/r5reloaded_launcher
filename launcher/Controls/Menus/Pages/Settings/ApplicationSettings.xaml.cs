@@ -22,6 +22,16 @@ namespace launcher
             Notifications.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Notifications);
             KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
             StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
+
+            CloseToQuit.Checked += CloseToQuit_Unchecked;
+            Notifications.Checked += Notifications_Unchecked;
+            KeepAllLogs.Checked += KeepAllLogs_Unchecked;
+            StreamVideo.Checked += StreamVideo_Unchecked;
+
+            CloseToQuit.Unchecked += CloseToQuit_Unchecked;
+            Notifications.Unchecked += Notifications_Unchecked;
+            KeepAllLogs.Unchecked += KeepAllLogs_Unchecked;
+            StreamVideo.Unchecked += StreamVideo_Unchecked;
         }
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)
