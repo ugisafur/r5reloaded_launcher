@@ -99,7 +99,9 @@ namespace launcher
             NewsButtons.Add(NewLegends_Button);
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
-            AppManager.MoveNewsRect(0);
+
+            if (AppState.IsOnline && Classes.News.Connection.Test())
+                AppManager.MoveNewsRect(0);
 
             // Setup Background
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);

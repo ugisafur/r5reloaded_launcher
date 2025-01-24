@@ -146,6 +146,23 @@ namespace launcher.Classes.News
         }
     }
 
+    public static class Connection
+    {
+        public static bool Test()
+        {
+            try
+            {
+                using var client = new System.Net.WebClient();
+                using var stream = client.OpenRead($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
     public class Author
     {
         public string id { get; set; }

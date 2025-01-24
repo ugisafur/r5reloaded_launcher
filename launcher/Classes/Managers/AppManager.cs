@@ -32,10 +32,14 @@ namespace launcher.Classes.Managers
             GetSelfUpdater();
             EULA_Control.SetupEULA();
 
-            if (AppState.IsOnline)
+            if (AppState.IsOnline && News.Connection.Test())
                 News.Items.Populate();
             else
+            {
                 Main_Window.NewsContainer.Visibility = Visibility.Collapsed;
+                foreach (var button in Main_Window.NewsButtons)
+                    button.IsEnabled = false;
+            }
         }
 
         public static void SetupAdvancedMenu()
@@ -328,9 +332,6 @@ namespace launcher.Classes.Managers
 
         public static void MoveNewsRect(int index)
         {
-            if (!AppState.IsOnline)
-                return;
-
             double speed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 400;
 
             double startx = Main_Window.News_Rect_Translate.X;
