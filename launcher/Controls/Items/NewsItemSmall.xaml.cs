@@ -29,13 +29,16 @@ namespace launcher
             InitializeComponent();
         }
 
-        public NewsItemSmall(string title, string excerpt, string author, string published, string url)
+        public NewsItemSmall(string title, string excerpt, string author, string published, string url, string overrideReadme = "")
         {
             InitializeComponent();
 
             Title.Text = title;
             Excerpt.Text = excerpt;
             link = url;
+
+            if (!string.IsNullOrEmpty(overrideReadme))
+                ReadMore.Text = overrideReadme;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

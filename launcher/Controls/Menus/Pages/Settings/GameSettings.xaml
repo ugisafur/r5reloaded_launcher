@@ -7,6 +7,67 @@
              mc:Ignorable="d"
                       d:DesignHeight="704" d:DesignWidth="935">
     <UserControl.Resources>
+        <Style x:Key="RoundedThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="DarkGray" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="border"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="5" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource StatusTextColor2}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="VerticalScrollBarStyle" TargetType="ScrollBar">
+            <!-- Set properties specifically for a horizontal bar -->
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Width" Value="6" />
+            <Setter Property="Background" Value="{StaticResource SecondaryColor2}" />
+            <Setter Property="Foreground" Value="{StaticResource SecondaryColor2}" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="15" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="15" />
+                            </Grid.RowDefinitions>
+                            <Track
+                x:Name="PART_Track"
+                Grid.Row="1"
+                Orientation="Vertical"
+                IsDirectionReversed="true"
+                                Width="10">
+                                <Track.Thumb>
+                                    <Thumb
+                                Style="{StaticResource RoundedThumbStyle}"
+                        Background="{StaticResource SecondaryColor2}"
+                        BorderBrush="{StaticResource SecondaryColor2}"
+                        BorderThickness="1" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style that applies to all ScrollBars by default (optional) -->
+        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource VerticalScrollBarStyle}" />
+
         <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FF52AAF2" />
         <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#95CCFA" />
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
@@ -123,7 +184,7 @@
     </UserControl.Resources>
 
     <Border Background="{StaticResource SecondaryColor}">
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="340" />

@@ -32,28 +32,35 @@ namespace launcher.Classes.News
 
                 if (post.tags[0].name == "Community")
                 {
-                    Community.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
-                }
-                else if (post.tags[0].name == "New Legends")
-                {
-                    NewLegends.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
+                    if (Community.Count < 8)
+                        Community.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
                 }
                 else if (post.tags[0].name == "Comms")
                 {
-                    Comms.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
+                    if (Comms.Count < 8)
+                        Comms.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
                 }
                 else if (post.tags[0].name == "Patch Notes")
                 {
-                    PatchNotes.Add(new NewsItemSmall(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url));
+                    if (PatchNotes.Count < 8)
+                        PatchNotes.Add(new NewsItemSmall(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url));
                 }
             }
+
+            CreatePremadeNewLegends();
 
             Pages.Add(Community);
             Pages.Add(NewLegends);
             Pages.Add(Comms);
             Pages.Add(PatchNotes);
+        }
 
-            SetPage(0);
+        private static void CreatePremadeNewLegends()
+        {
+            NewLegends.Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", "Welcome To R5R"));
+            NewLegends.Add(new NewsItemSmall("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "View Blog"));
+            NewLegends.Add(new NewsItemSmall("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.gg/r5reloaded", "Join Discord"));
+            NewLegends.Add(new NewsItemSmall("Follow Us On Twitter", "Follow us on twitter to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://twitter.com/r5reloaded", "Follow Twitter"));
         }
 
         public static async void SetPage(int index)

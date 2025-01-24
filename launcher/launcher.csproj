@@ -30,6 +30,7 @@
     <None Remove="assets\logo-50.png" />
     <None Remove="assets\logo-main-white.png" />
     <None Remove="assets\logo-main.png" />
+    <None Remove="assets\news_default_bg.jpg" />
     <None Remove="assets\preload.gif" />
     <None Remove="assets\R5R-Logo-White.gif" />
   </ItemGroup>
@@ -88,6 +89,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\logo-50.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\news_default_bg.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="launcher_x64.ico">

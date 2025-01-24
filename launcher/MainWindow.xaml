@@ -780,7 +780,7 @@
                                     <Rectangle x:Name="NewsRect" Fill="{StaticResource PrimaryTextColor}" Width="101" HorizontalAlignment="Center"  IsHitTestVisible="False" Margin="0,51,0,13" RenderTransformOrigin="0.5,0.5" Height="3">
                                         <Rectangle.RenderTransform>
                                             <TransformGroup>
-                                                <TranslateTransform x:Name="News_Rect_Translate" X="163" Y="0" />
+                                                <TranslateTransform x:Name="News_Rect_Translate" X="-167.4" Y="0" />
                                             </TransformGroup>
                                         </Rectangle.RenderTransform>
                                     </Rectangle>

@@ -29,14 +29,21 @@ namespace launcher
             InitializeComponent();
         }
 
-        public NewsItem(string title, string excerpt, string author, string published, string url, string image)
+        public NewsItem(string title, string excerpt, string author, string published, string url, string image, string overrideReadme = "")
         {
             InitializeComponent();
 
             Title.Text = title;
             Excerpt.Text = excerpt;
             link = url;
-            FeatImage.Source = new BitmapImage(new Uri(image));
+            Date.Text = published;
+            Author.Text = "Author: " + author;
+
+            if (!string.IsNullOrEmpty(overrideReadme))
+                ReadMore.Text = overrideReadme;
+
+            if (!string.IsNullOrEmpty(image))
+                FeatImage.Source = new BitmapImage(new Uri(image));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

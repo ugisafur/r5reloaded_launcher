@@ -94,11 +94,11 @@ namespace launcher
             // Setup the application
             AppManager.SetupApp(this);
 
+            // Setup the news buttons
             NewsButtons.Add(Community_Button);
             NewsButtons.Add(NewLegends_Button);
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
-
             AppManager.MoveNewsRect(0);
 
             // Setup Background

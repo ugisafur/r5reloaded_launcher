@@ -87,11 +87,11 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <TextBlock x:Name="Title" Text="Title" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" Margin="15,15,15,0" />
-                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" />
-                <TextBlock Text="Read More" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift Light" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
+                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="144" VerticalAlignment="Bottom" />
+                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift Light" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
                 <Image Source="/assets/icons8-linking-48.png" Height="15" Width="15" Margin="15,12,177,12" Grid.Row="2" />
             </Grid>
-            <Button Style="{DynamicResource NewsButtonStyle}" x:Name="LinkButton" Background="Transparent" BorderBrush="Transparent" Click="Button_Click" />
+            <Button Style="{DynamicResource NewsButtonStyle}" x:Name="LinkButton" Background="Transparent" BorderBrush="Transparent" Click="Button_Click" Cursor="Hand" />
         </Grid>
     </Border>
 </UserControl>

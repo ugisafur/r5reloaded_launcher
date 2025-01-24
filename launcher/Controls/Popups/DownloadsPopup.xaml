@@ -7,6 +7,67 @@
              mc:Ignorable="d"
                           d:DesignHeight="320" d:DesignWidth="677">
     <UserControl.Resources>
+        <Style x:Key="RoundedThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="DarkGray" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="border"
+    Background="{TemplateBinding Background}"
+    BorderBrush="{TemplateBinding BorderBrush}"
+    BorderThickness="{TemplateBinding BorderThickness}"
+    CornerRadius="5" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource StatusTextColor2}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="VerticalScrollBarStyle" TargetType="ScrollBar">
+            <!-- Set properties specifically for a horizontal bar -->
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Width" Value="6" />
+            <Setter Property="Background" Value="{StaticResource SecondaryColor}" />
+            <Setter Property="Foreground" Value="{StaticResource SecondaryColor}" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="0" />
+                            </Grid.RowDefinitions>
+                            <Track
+        x:Name="PART_Track"
+        Grid.Row="1"
+        Orientation="Vertical"
+        IsDirectionReversed="true"
+                        Width="10">
+                                <Track.Thumb>
+                                    <Thumb
+                        Style="{StaticResource RoundedThumbStyle}"
+                Background="{StaticResource PrimaryColor}"
+                BorderBrush="{StaticResource PrimaryColor}"
+                BorderThickness="1" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style that applies to all ScrollBars by default (optional) -->
+        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource VerticalScrollBarStyle}" />
+
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -72,12 +133,10 @@
                 <RowDefinition Height="14*" />
             </Grid.RowDefinitions>
             <TextBlock Text="Downloads &amp; Tasks" Foreground="{StaticResource PrimaryTextColor}" FontSize="26" FontWeight="Bold" Margin="4,2,0,2" FontFamily="Bahnschrift SemiBold" />
-            <StackPanel Grid.Row="1" Orientation="Vertical">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="233">
-                    <StackPanel x:Name="DownloadsStackPanel" Orientation="Vertical">
-                    </StackPanel>
-                </ScrollViewer>
-            </StackPanel>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="233">
+                <StackPanel x:Name="DownloadsStackPanel" Orientation="Vertical">
+                </StackPanel>
+            </ScrollViewer>
             <TextBlock x:Name="NoDownloadsLbl" Grid.Row="1" Text="There are no downloads or tasks in the queue." Foreground="{StaticResource AccentTextColor}" FontSize="16" Margin="10,6,-6,185" FontFamily="Bahnschrift Light" />
             <Button x:Name="gotoDownloads" Grid.Row="2" Style="{DynamicResource SettingsButton}" Width="170" Margin="1,0,0,1" FontFamily="Bahnschrift SemiBold" FontSize="14" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" Click="gotoDownloads_Click" Cursor="Hand" Height="30">
                 <Grid Width="170">

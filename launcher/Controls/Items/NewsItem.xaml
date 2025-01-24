@@ -83,30 +83,41 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="125" />
-                    <RowDefinition Height="125" />
+                    <RowDefinition Height="86" />
+                    <RowDefinition Height="158" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBlock x:Name="Title" Text="Title" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" Margin="15,15,15,0" />
-                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" />
-                <TextBlock Text="Read More" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift Light" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
-                <Image Source="/assets/icons8-linking-48.png" Height="15" Width="15" Margin="15,12,177,8" Grid.Row="2" />
+                <TextBlock x:Name="Title" Text="Test" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="15,15,15,0" Grid.Column="0" />
+                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="137" VerticalAlignment="Bottom" />
+                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
+                <Image Source="/assets/icons8-linking-48.png" Height="15" Width="15" Margin="15,4,177,8" Grid.Row="2" />
             </Grid>
             <Grid Grid.Column="1" ClipToBounds="True">
                 <!-- Clip the image to a rectangle with rounded corners only on the right side -->
                 <Grid.Clip>
-                    <RectangleGeometry Rect="0,0,374.2,287" RadiusX="15" RadiusY="15">
+                    <RectangleGeometry Rect="0,0,377,285" RadiusX="14" RadiusY="14">
                         <RectangleGeometry.Transform>
-                            <TranslateTransform X="-15" Y="0" />
+                            <TranslateTransform X="-20" Y="0" />
                         </RectangleGeometry.Transform>
                     </RectangleGeometry>
                 </Grid.Clip>
-                <Image x:Name="FeatImage" Source="/assets/launcher_bg.jpg"
-                       HorizontalAlignment="Stretch"
+                <Image x:Name="FeatImage" Source="/assets/news_default_bg.jpg"
+                       HorizontalAlignment="Center"
                        VerticalAlignment="Stretch"
                        Stretch="UniformToFill" />
+
+                <TextBlock x:Name="Date" Text="Date" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,5" Visibility="Hidden">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" Direction="315" ShadowDepth="2" Opacity="1" BlurRadius="2" />
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock x:Name="Author" Text="Author" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,5" Visibility="Hidden">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" Direction="315" ShadowDepth="2" Opacity="1" BlurRadius="2" />
+                    </TextBlock.Effect>
+                </TextBlock>
             </Grid>
-            <Button Style="{DynamicResource NewsButtonStyle}" x:Name="LinkButton" Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" BorderBrush="Transparent" Click="Button_Click" />
+            <Button Style="{DynamicResource NewsButtonStyle}" x:Name="LinkButton" Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" BorderBrush="Transparent" Click="Button_Click" Cursor="Hand" />
         </Grid>
     </Border>
 </UserControl>
