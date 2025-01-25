@@ -32,6 +32,8 @@ namespace launcher.Classes.Game
 
             bool repairSuccess = true;
 
+            DownloadManager.CreateDownloadMontior();
+
             //Install started
             DownloadManager.SetInstallState(true, "REPAIRING");
 

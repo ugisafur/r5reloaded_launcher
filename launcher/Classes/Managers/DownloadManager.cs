@@ -22,6 +22,49 @@ namespace launcher.Classes.Managers
     {
         private static long _downloadSpeedLimit = 0;
         private static SemaphoreSlim _downloadSemaphore;
+        private static DownloadSpeedMonitor _speedMonitor;
+
+        public static void CreateDownloadMontior()
+        {
+            if (_speedMonitor != null)
+            {
+                _speedMonitor.OnSpeedUpdated -= UpdateDownloadSpeedUI;
+                _speedMonitor.Dispose();
+                _speedMonitor = null;
+            }
+
+            _speedMonitor = new DownloadSpeedMonitor();
+            _speedMonitor.OnSpeedUpdated += UpdateDownloadSpeedUI;
+        }
+
+        private static void UpdateDownloadSpeedUI(double speedBytesPerSecond)
+        {
+            // Convert bytes per second to a more readable format (e.g., KB/s or MB/s)
+            string speedText;
+            double speed = speedBytesPerSecond;
+
+            if (speed >= 1024 * 1024)
+            {
+                speed /= (1024 * 1024);
+                speedText = $"{speed:F2} MB/s";
+            }
+            else if (speed >= 1024)
+            {
+                speed /= 1024;
+                speedText = $"{speed:F2} KB/s";
+            }
+            else
+            {
+                speedText = $"{speed} B/s";
+            }
+
+            // Update your UI element (e.g., a label)
+            appDispatcher.Invoke(() =>
+            {
+                Speed_Label.Text = $"{speedText}";
+                Downloads_Control.Speed_Label.Text = $"{speedText}";
+            });
+        }
 
         /// <summary>
         /// Configures the maximum number of concurrent downloads based on configuration settings.
@@ -29,6 +72,7 @@ namespace launcher.Classes.Managers
         public static void ConfigureConcurrency()
         {
             int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
+            _downloadSemaphore?.Dispose();
             _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
         }
 
@@ -310,8 +354,11 @@ namespace launcher.Classes.Managers
                 await fileStream.WriteAsync(buffer, 0, bytesRead);
                 downloadedBytes += bytesRead;
 
+                // Update the global downloaded bytes counter
+                DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+
                 // Update the lastUpdate time if new data is downloaded
-                if (downloadedBytes > (downloadedBytes - bytesRead))
+                if (bytesRead > 0)
                 {
                     timeoutLastUpdate = DateTime.Now;
                 }
@@ -358,6 +405,8 @@ namespace launcher.Classes.Managers
                 Play_Button.IsEnabled = !installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
+                Speed_Label.Text = "";
+                Downloads_Control.Speed_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -377,6 +426,8 @@ namespace launcher.Classes.Managers
                 AppState.IsInstalling = installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
+                Speed_Label.Text = "";
+                Downloads_Control.Speed_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -401,6 +452,8 @@ namespace launcher.Classes.Managers
                 Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Downloads_Control.Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
             });
         }
 

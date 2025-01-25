@@ -62,7 +62,7 @@ namespace launcher.Classes.Utilities
                 file.SetSetting("Settings", "Disable_Background_Video", false);
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
-                file.SetSetting("Settings", "Concurrent_Downloads", 200);
+                file.SetSetting("Settings", "Concurrent_Downloads", 100);
                 file.SetSetting("Settings", "Download_Speed_Limit", 0);
                 file.SetSetting("Settings", "Library_Location", "");
                 file.SetSetting("Settings", "Stream_Video", true);
@@ -275,7 +275,7 @@ namespace launcher.Classes.Utilities
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
-                Vars.Concurrent_Downloads => 200,
+                Vars.Concurrent_Downloads => 100,
                 Vars.Download_Speed_Limit => 0,
                 Vars.Map => 0,
                 Vars.Playlist => 0,

@@ -24,7 +24,6 @@ namespace launcher
     {
         private readonly int[] downloadSpeeds =
         [
-            200,
             100,
             50,
             20,
@@ -41,8 +40,8 @@ namespace launcher
         public void SetupDownloadSettings()
         {
             int conDownloadsLimit = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
-            if (conDownloadsLimit > 200)
-                Ini.Set(Ini.Vars.Concurrent_Downloads, 200);
+            if (conDownloadsLimit > 100)
+                Ini.Set(Ini.Vars.Concurrent_Downloads, 100);
 
             MaxSpeed.Text = $"{(int)Ini.Get(Ini.Vars.Download_Speed_Limit)}";
             ConDownloads.SelectedIndex = Array.IndexOf(downloadSpeeds, (int)Ini.Get(Ini.Vars.Concurrent_Downloads));

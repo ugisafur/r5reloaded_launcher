@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace launcher.Classes.CDN
 {
@@ -20,7 +19,6 @@ namespace launcher.Classes.CDN
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            // Acquire permission from the global limiter
             bool acquired = await GlobalBandwidthLimiter.Instance.AcquireAsync(count, cancellationToken);
             if (acquired)
             {
@@ -32,7 +30,6 @@ namespace launcher.Classes.CDN
             }
         }
 
-        // Implement other required members...
         public override bool CanRead => _baseStream.CanRead;
 
         public override bool CanSeek => _baseStream.CanSeek;
@@ -77,7 +74,6 @@ namespace launcher.Classes.CDN
             _maxBytesPerSecond = initialMaxBytesPerSecond;
             _availableBytes = initialMaxBytesPerSecond;
 
-            // Replenish tokens every second
             _timer = new Timer(ReplenishTokens, null, 1000, 1000);
         }
 
@@ -86,10 +82,6 @@ namespace launcher.Classes.CDN
             Interlocked.Exchange(ref _availableBytes, _maxBytesPerSecond);
         }
 
-        /// <summary>
-        /// Updates the global download speed limit.
-        /// </summary>
-        /// <param name="newMaxBytesPerSecond">New speed limit in bytes per second.</param>
         public void UpdateLimit(long newMaxBytesPerSecond)
         {
             if (newMaxBytesPerSecond < 0)
@@ -99,29 +91,17 @@ namespace launcher.Classes.CDN
             {
                 _maxBytesPerSecond = newMaxBytesPerSecond;
                 if (_maxBytesPerSecond > 0)
-                {
                     Interlocked.Exchange(ref _availableBytes, _maxBytesPerSecond);
-                }
                 else
-                {
-                    // When limit is 0, set a flag to indicate unlimited
-                    // This requires modifying the AcquireAsync method accordingly
                     _availableBytes = long.MaxValue;
-                }
             }
         }
 
-        /// <summary>
-        /// Attempts to acquire permission to read a specified number of bytes.
-        /// </summary>
-        /// <param name="bytes">Number of bytes to acquire.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task<bool> AcquireAsync(long bytes, CancellationToken cancellationToken)
         {
             if (_maxBytesPerSecond == 0)
             {
-                // Unlimited: Allow all bytes without throttling
+                // Unlimited
                 return true;
             }
 
@@ -141,9 +121,76 @@ namespace launcher.Classes.CDN
                     _semaphore.Release();
                 }
 
-                // Wait a short time before retrying
                 await Task.Delay(100, cancellationToken);
             }
+        }
+    }
+
+    public static class DownloadSpeedTracker
+    {
+        private static long _totalDownloadedBytes = 0;
+        private static readonly object _lock = new object();
+
+        public static void AddDownloadedBytes(long bytes)
+        {
+            Interlocked.Add(ref _totalDownloadedBytes, bytes);
+        }
+
+        public static void Reset()
+        {
+            Interlocked.Exchange(ref _totalDownloadedBytes, 0);
+        }
+
+        public static long GetTotalDownloadedBytes()
+        {
+            return Interlocked.Read(ref _totalDownloadedBytes);
+        }
+    }
+
+    public class DownloadSpeedMonitor
+    {
+        private readonly TimeSpan _monitorInterval = TimeSpan.FromSeconds(1);
+        private long _previousTotalBytes = 0;
+        private double _currentSpeedBytesPerSecond = 0;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
+        public event Action<double> OnSpeedUpdated;
+
+        public DownloadSpeedMonitor()
+        {
+            Task.Run(() => MonitorSpeedAsync(_cts.Token));
+        }
+
+        private async Task MonitorSpeedAsync(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                long currentTotal = DownloadSpeedTracker.GetTotalDownloadedBytes();
+                long bytesThisInterval = currentTotal - _previousTotalBytes;
+                _previousTotalBytes = currentTotal;
+
+                _currentSpeedBytesPerSecond = bytesThisInterval / _monitorInterval.TotalSeconds;
+
+                OnSpeedUpdated?.Invoke(_currentSpeedBytesPerSecond);
+
+                await Task.Delay(_monitorInterval, cancellationToken);
+            }
+        }
+
+        public double GetCurrentSpeedBytesPerSecond()
+        {
+            return _currentSpeedBytesPerSecond;
+        }
+
+        public void Stop()
+        {
+            _cts.Cancel();
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
     }
 }

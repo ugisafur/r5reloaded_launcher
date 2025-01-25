@@ -147,6 +147,7 @@
                     <Image Source="/assets/icons8-settings-100.png" Width="20" Height="20" HorizontalAlignment="Left" Margin="5,0,0,0" />
                 </Grid>
             </Button>
+            <TextBlock x:Name="Speed_Label" Grid.Row="2" Text="" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontFamily="Bahnschrift Light" />
         </Grid>
     </Border>
 </UserControl>

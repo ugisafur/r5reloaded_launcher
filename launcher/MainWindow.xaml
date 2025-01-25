@@ -775,7 +775,7 @@
                                         </Popup>
                                     </StackPanel>
                                     <Button Style="{DynamicResource PlatButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="{StaticResource MainButtonColorNormal}" Foreground="{StaticResource MainButtonTextColor}" BorderBrush="{StaticResource MainButtonButtonBorderColor}" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
-                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Margin="0,151,76,97" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource AccentColor}" Background="{StaticResource SecondaryColor}" BorderBrush="{StaticResource SecondaryColor}">
+                                    <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Height="12" Width="298" RenderTransformOrigin="0.5,0.5" Foreground="{StaticResource AccentColor}" Background="{StaticResource SecondaryColor}" BorderBrush="{StaticResource SecondaryColor}" Margin="0,176,52,73">
                                         <ProgressBar.RenderTransform>
                                             <TransformGroup>
                                                 <ScaleTransform ScaleY="-1" />
@@ -785,9 +785,10 @@
                                             </TransformGroup>
                                         </ProgressBar.RenderTransform>
                                     </ProgressBar>
-                                    <TextBlock x:Name="Status_Label" FontSize="10" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,164,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                    <TextBlock x:Name="Files_Label" FontSize="10" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,164,76,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
-                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{StaticResource UpdateButtonColorNormal}" Foreground="{StaticResource SecondaryButtonTextColor}" BorderBrush="{StaticResource UpdateButtonColorNormal}" Click="btnUpdate_Click" Margin="0,151,0,65" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                    <TextBlock x:Name="Status_Label" FontSize="12" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,162,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
+                                    <TextBlock x:Name="Files_Label" FontSize="12" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,162,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                    <Button Style="{DynamicResource UpdateButtonStyle}" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{StaticResource UpdateButtonColorNormal}" Foreground="{StaticResource SecondaryButtonTextColor}" BorderBrush="{StaticResource UpdateButtonColorNormal}" Click="btnUpdate_Click" Margin="0,157,0,60" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                    <TextBlock x:Name="Speed_Label" FontSize="12" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,188,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="194" Text="" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2" x:Name="NewsContainer">

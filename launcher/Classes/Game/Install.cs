@@ -42,6 +42,8 @@ namespace launcher.Classes.Game
             if (GetBranch.IsLocalBranch())
                 return;
 
+            DownloadManager.CreateDownloadMontior();
+
             //Install started
             DownloadManager.SetInstallState(true, "INSTALLING");
 

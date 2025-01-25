@@ -26,6 +26,7 @@ namespace launcher.Classes.Global
         public static TextBlock Status_Label = new();
         public static TextBlock Files_Label = new();
         public static TextBlock Version_Label = new();
+        public static TextBlock Speed_Label = new();
 
         #endregion Labels
 
@@ -102,6 +103,7 @@ namespace launcher.Classes.Global
             Progress_Bar = mainWindow.ProgressBar;
             Status_Label = mainWindow.Status_Label;
             Files_Label = mainWindow.Files_Label;
+            Speed_Label = mainWindow.Speed_Label;
             Version_Label = mainWindow.Version_Label;
             Branch_Combobox = mainWindow.Branch_Combobox;
             Play_Button = mainWindow.Play_Button;

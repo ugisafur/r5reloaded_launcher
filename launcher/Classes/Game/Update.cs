@@ -29,6 +29,8 @@ namespace launcher.Classes.Game
             if (GetBranch.LocalVersion() == GetBranch.ServerVersion())
                 return;
 
+            DownloadManager.CreateDownloadMontior();
+
             SetBranch.UpdateAvailable(false);
 
             //Install started
