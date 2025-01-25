@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using System.Windows;
 using System.Windows.Shapes;
 using launcher.Classes.Utilities;
+using System.Windows.Media;
 
 namespace launcher.Classes.Global
 {
@@ -77,6 +78,8 @@ namespace launcher.Classes.Global
         public static CheckExisitngFilesPopup CheckFiles_Control = new();
         public static InstallLocation InstallLocation_Control = new();
         public static AskToQuitPopup AskToQuit_Control = new();
+        public static OnBoardPopup OnBoard_Control = new();
+        public static OnBoardAskPopup OnBoardAsk_Control = new();
 
         #endregion Popup Controls
 
@@ -89,6 +92,8 @@ namespace launcher.Classes.Global
         public static TaskbarIcon System_Tray;
         public static Rectangle POPUP_BG = new();
         public static StackPanel NewsPanel = new();
+        public static Rectangle OnBoardingRect = new();
+        public static RectangleGeometry OnBoardingClip = new();
 
         public static PlaylistRoot playlistRoot = new();
         public static List<string> gamemodes = [];
@@ -130,6 +135,10 @@ namespace launcher.Classes.Global
             NewsPanel = mainWindow.NewsPanel;
             InstallLocation_Control = mainWindow.InstallLocation_Control;
             AskToQuit_Control = mainWindow.AskToQuit_Control;
+            OnBoard_Control = mainWindow.OnBoard_Control;
+            OnBoardingRect = mainWindow.OnBoardingRect;
+            OnBoardingClip = mainWindow.OnBoardingClip;
+            OnBoardAsk_Control = mainWindow.OnBoardAsk_Control;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

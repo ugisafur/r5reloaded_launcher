@@ -68,7 +68,8 @@ namespace launcher
                     _isMaximized = false;
                 }
 
-                DragMove();
+                if (!AppState.OnBoarding)
+                    DragMove();
             }
         }
 
@@ -134,6 +135,11 @@ namespace launcher
             }
             else
                 Play_Button.Content = "PLAY";
+
+            if ((bool)Ini.Get(Ini.Vars.Ask_For_Tour))
+            {
+                AppManager.ShowOnBoardAskPopup();
+            }
         }
 
         private async Task LoadVideoBackground()

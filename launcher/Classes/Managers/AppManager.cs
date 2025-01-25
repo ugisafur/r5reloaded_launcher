@@ -472,6 +472,12 @@ namespace launcher.Classes.Managers
         public static Task HideAskToQuit() =>
             AnimateElement(AskToQuit_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
+        public static Task ShowOnBoardAskPopup() =>
+            AnimateElement(OnBoardAsk_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task HideOnBoardAskPopup() =>
+            AnimateElement(OnBoardAsk_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
         public static Task ShowInstallLocation()
         {
             InstallLocation_Control.SetupInstallLocation();
@@ -480,6 +486,17 @@ namespace launcher.Classes.Managers
 
         public static Task HideInstallLocation() =>
             AnimateElement(InstallLocation_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static void StartTour()
+        {
+            Main_Window.ResizeMode = ResizeMode.NoResize;
+            Main_Window.Width = Main_Window.MinWidth;
+            Main_Window.Height = Main_Window.MinHeight;
+
+            OnBoard_Control.SetItem(0);
+            Main_Window.OnBoard_Control.Visibility = Visibility.Visible;
+            Main_Window.OnBoardingRect.Visibility = Visibility.Visible;
+        }
 
 #if DEBUG
 

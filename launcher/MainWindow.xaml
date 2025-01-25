@@ -907,5 +907,36 @@
         <local:CheckExisitngFilesPopup x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:InstallLocation x:Name="InstallLocation_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:AskToQuitPopup x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:OnBoardAskPopup x:Name="OnBoardAsk_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
+
+        <Rectangle x:Name="OnBoardingRect" Fill="#B2000000" Margin="0,0,0,0" Visibility="Hidden">
+            <Rectangle.OpacityMask>
+                <DrawingBrush>
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="Black">
+                            <GeometryDrawing.Geometry>
+                                <!-- Inner Rectangle to be excluded (transparent) -->
+                                <CombinedGeometry GeometryCombineMode="Exclude">
+                                    <CombinedGeometry.Geometry1>
+                                        <RectangleGeometry Rect="0,0,300,200" />
+                                    </CombinedGeometry.Geometry1>
+                                    <CombinedGeometry.Geometry2>
+                                        <RectangleGeometry x:Name="OnBoardingClip" Rect="1,1,24,14" RadiusX="2" RadiusY="2" />
+                                    </CombinedGeometry.Geometry2>
+                                </CombinedGeometry>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+
+        <local:OnBoardPopup x:Name="OnBoard_Control" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
+            <local:OnBoardPopup.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform X="6" Y="64" />
+                </TransformGroup>
+            </local:OnBoardPopup.RenderTransform>
+        </local:OnBoardPopup>
     </Grid>
 </Window>

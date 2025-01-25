@@ -56,5 +56,11 @@ namespace launcher
         {
             Process.Start(new ProcessStartInfo("cmd", $"/c start https://www.youtube.com/channel/UCNIbjhwX7HrVCOtFZab_Jqg") { CreateNoWindow = true });
         }
+
+        private void Tour_Click(object sender, RoutedEventArgs e)
+        {
+            Menu_Popup.IsOpen = false;
+            AppManager.ShowOnBoardAskPopup();
+        }
     }
 }

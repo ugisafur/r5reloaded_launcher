@@ -121,6 +121,12 @@
     <Compile Update="Controls\Menus\Pages\AdvancedSettings\GeneralSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Popups\OnBoardAskPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Popups\OnBoardPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\Popups\CheckExisitngFilesPopup.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -148,6 +154,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\Popups\OnBoardPopup.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Controls\Popups\CheckExisitngFilesPopup.xaml">
       <SubType>Designer</SubType>
     </Page>

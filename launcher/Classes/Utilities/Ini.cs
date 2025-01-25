@@ -44,7 +44,8 @@ namespace launcher.Classes.Utilities
             SelectedBranch,
             Offline_Mode,
             Keep_All_Logs,
-            Stream_Video
+            Stream_Video,
+            Ask_For_Tour
         }
 
         public static void CreateConfig()
@@ -94,6 +95,7 @@ namespace launcher.Classes.Utilities
                 file.SetSetting("Advanced_Options", "Offline_Mode", false);
 
                 file.SetSetting("Launcher", "SelectedBranch", "");
+                file.SetSetting("Launcher", "Ask_For_Tour", true);
 
                 file.Save(iniPath);
             }
@@ -272,6 +274,7 @@ namespace launcher.Classes.Utilities
                 Vars.Borderless => false,
                 Vars.Offline_Mode => false,
                 Vars.Stream_Video => true,
+                Vars.Ask_For_Tour => true,
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
@@ -326,6 +329,7 @@ namespace launcher.Classes.Utilities
                 Vars.Offline_Mode => "Advanced_Options",
 
                 Vars.SelectedBranch => "Launcher",
+                Vars.Ask_For_Tour => "Launcher",
                 _ => throw new NotImplementedException()
             };
         }
@@ -370,6 +374,7 @@ namespace launcher.Classes.Utilities
                 Vars.Offline_Mode => "Offline_Mode",
                 Vars.Keep_All_Logs => "Keep_All_Logs",
                 Vars.Stream_Video => "Stream_Video",
+                Vars.Ask_For_Tour => "Ask_For_Tour",
                 _ => throw new NotImplementedException()
             };
         }
