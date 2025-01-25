@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -153,6 +154,11 @@ namespace launcher
                 string responseJson = await response.Content.ReadAsStringAsync();
                 return responseJson;
             }
+        }
+
+        private void moreInfo_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start https://status.r5reloaded.com") { CreateNoWindow = true });
         }
     }
 }

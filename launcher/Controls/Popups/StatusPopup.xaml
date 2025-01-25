@@ -5,11 +5,70 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-             d:DesignHeight="242" d:DesignWidth="577">
+             d:DesignHeight="292" d:DesignWidth="577">
 
-    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="242" Padding="10" Loaded="Border_Loaded">
+    <UserControl.Resources>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
+        <Style x:Key="SettingsButton" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" CornerRadius="5">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource MenuButtonDisabledTextColor}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="292" Padding="10" Loaded="Border_Loaded">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="5*" />
                 <RowDefinition Height="5*" />
                 <RowDefinition Height="5*" />
                 <RowDefinition Height="5*" />
@@ -52,6 +111,13 @@
             <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="{StaticResource SeperatorColor}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
 
             <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
+
+            <Button x:Name="gotoDownloads" Grid.Row="6" Style="{DynamicResource SettingsButton}" Width="150" Margin="1,0,0,1" FontFamily="Bahnschrift SemiBold" FontSize="12" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="moreInfo_Click" Cursor="Hand" Height="25">
+                <Grid Width="150">
+                    <TextBlock Text="More Information" HorizontalAlignment="Left" FontSize="14" Margin="29,3,0,3" />
+                    <Image Source="/assets/icons8-linking-48.png" Width="18" Height="18" HorizontalAlignment="Left" Margin="5,0,0,0" />
+                </Grid>
+            </Button>
         </Grid>
     </Border>
 </UserControl>
