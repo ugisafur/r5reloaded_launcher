@@ -909,13 +909,12 @@
         <local:AskToQuitPopup x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:OnBoardAskPopup x:Name="OnBoardAsk_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
 
-        <Rectangle x:Name="OnBoardingRect" Fill="#B2000000" Margin="0,0,0,0" Visibility="Hidden">
+        <Rectangle x:Name="OnBoardingRect" Fill="#BF000000" Margin="0,0,0,0" Visibility="Hidden">
             <Rectangle.OpacityMask>
                 <DrawingBrush>
                     <DrawingBrush.Drawing>
                         <GeometryDrawing Brush="Black">
                             <GeometryDrawing.Geometry>
-                                <!-- Inner Rectangle to be excluded (transparent) -->
                                 <CombinedGeometry GeometryCombineMode="Exclude">
                                     <CombinedGeometry.Geometry1>
                                         <RectangleGeometry Rect="0,0,300,200" />

@@ -27,13 +27,9 @@ namespace launcher
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            if (currentIndex + 1 >= DataCollections.OnBoardControlPos.Count)
+            if (currentIndex + 1 >= DataCollections.OnBoardingItems.Count)
             {
-                OnBoard_Control.Visibility = Visibility.Hidden;
-                OnBoardingRect.Visibility = Visibility.Hidden;
-                AppState.OnBoarding = false;
-                Main_Window.ResizeMode = ResizeMode.CanResize;
-                SetItem(0);
+                AppManager.EndTour();
                 return;
             }
 
@@ -47,25 +43,27 @@ namespace launcher
             Next.Content = "Next";
             Skip.Visibility = Visibility.Visible;
 
-            if (currentIndex == DataCollections.OnBoardControlPos.Count - 1)
+            if (currentIndex == DataCollections.OnBoardingItems.Count - 1)
             {
                 Next.Content = "Finish";
                 Skip.Visibility = Visibility.Hidden;
             }
 
-            Title.Text = DataCollections.OnBoardTitles[index];
-            Desc.Text = DataCollections.OnBoardDescs[index];
-            Page.Text = $"{index + 1} of {DataCollections.OnBoardControlPos.Count}";
+            OnBoardingItem item = DataCollections.OnBoardingItems[index];
+
+            Title.Text = item.Title;
+            Desc.Text = item.Description;
+            Page.Text = $"{index + 1} of {DataCollections.OnBoardingItems.Count}";
 
             if (OnBoard_Control.RenderTransform is TransformGroup transformGroup)
             {
                 var translateTransform = transformGroup.Children.OfType<TranslateTransform>().FirstOrDefault();
-                AnimateTranslate(translateTransform, DataCollections.OnBoardControlPos[index]);
-                AnimateGeoRect(OnBoardingClip, DataCollections.OnboardGeoRects[index]);
+                AnimateTranslate(translateTransform, item.translatePos);
+                AnimateGeoRect(OnBoardingClip, item.geoRect);
             }
         }
 
-        private void AnimateTranslate(TranslateTransform translateTransform, Vector2 xy)
+        private static void AnimateTranslate(TranslateTransform translateTransform, Vector2 xy)
         {
             if (translateTransform == null)
             {
@@ -99,7 +97,7 @@ namespace launcher
             translateTransform.BeginAnimation(TranslateTransform.YProperty, moveYAnimation);
         }
 
-        private void AnimateGeoRect(RectangleGeometry geo, Rect newRect)
+        private static void AnimateGeoRect(RectangleGeometry geo, Rect newRect)
         {
             if (geo == null)
             {
@@ -130,11 +128,7 @@ namespace launcher
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            OnBoard_Control.Visibility = Visibility.Hidden;
-            OnBoardingRect.Visibility = Visibility.Hidden;
-            AppState.OnBoarding = false;
-            Main_Window.ResizeMode = ResizeMode.CanResize;
-            SetItem(0);
+            AppManager.EndTour();
         }
     }
 }

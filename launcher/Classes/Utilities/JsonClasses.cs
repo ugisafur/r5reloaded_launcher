@@ -1,4 +1,7 @@
-﻿namespace launcher.Classes.Utilities
+﻿using System.Numerics;
+using System.Windows;
+
+namespace launcher.Classes.Utilities
 {
     public class ComboBranch
     {
@@ -81,5 +84,13 @@
         public string key { get; set; }
         public string region { get; set; }
         public string map { get; set; }
+    }
+
+    public class OnBoardingItem(string title, string description, Rect geoRect, Vector2 translatePos)
+    {
+        public string Title { get; set; } = title;
+        public string Description { get; set; } = description;
+        public Rect geoRect { get; set; } = geoRect;
+        public Vector2 translatePos { get; set; } = translatePos;
     }
 }

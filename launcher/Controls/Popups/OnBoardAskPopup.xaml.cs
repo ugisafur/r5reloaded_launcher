@@ -21,8 +21,6 @@ namespace launcher
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            Main_Window.ResizeMode = ResizeMode.NoResize;
-            AppState.OnBoarding = true;
             Ini.Set(Ini.Vars.Ask_For_Tour, false);
             AppManager.HideOnBoardAskPopup();
             AppManager.StartTour();
@@ -30,10 +28,9 @@ namespace launcher
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            Main_Window.ResizeMode = ResizeMode.CanResize;
-            AppState.OnBoarding = false;
             Ini.Set(Ini.Vars.Ask_For_Tour, false);
             AppManager.HideOnBoardAskPopup();
+            AppManager.EndTour();
         }
     }
 }

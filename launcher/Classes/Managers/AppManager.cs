@@ -489,13 +489,28 @@ namespace launcher.Classes.Managers
 
         public static void StartTour()
         {
+            AppState.OnBoarding = true;
+
             Main_Window.ResizeMode = ResizeMode.NoResize;
             Main_Window.Width = Main_Window.MinWidth;
             Main_Window.Height = Main_Window.MinHeight;
 
             OnBoard_Control.SetItem(0);
+
             Main_Window.OnBoard_Control.Visibility = Visibility.Visible;
             Main_Window.OnBoardingRect.Visibility = Visibility.Visible;
+        }
+
+        public static void EndTour()
+        {
+            AppState.OnBoarding = false;
+
+            OnBoard_Control.Visibility = Visibility.Hidden;
+            OnBoardingRect.Visibility = Visibility.Hidden;
+
+            Main_Window.ResizeMode = ResizeMode.CanResize;
+
+            OnBoard_Control.SetItem(0);
         }
 
 #if DEBUG

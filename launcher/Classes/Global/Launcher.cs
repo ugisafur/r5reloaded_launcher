@@ -8,7 +8,7 @@ namespace launcher.Classes.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.6.3";
+        public const string VERSION = "0.9.6.4";
         public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
         public const string BACKGROUND_VIDEO_URL = "https://cdn.r5r.org/launcher/video_backgrounds/";
         public const int MAX_REPAIR_ATTEMPTS = 5;
