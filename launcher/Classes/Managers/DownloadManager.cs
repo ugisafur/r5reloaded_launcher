@@ -20,7 +20,7 @@ namespace launcher.Classes.Managers
     /// </summary>
     public static class DownloadManager
     {
-        private static long _downloadSpeedLimit = ThrottledStream.Infinite;
+        private static long _downloadSpeedLimit = 0;
         private static SemaphoreSlim _downloadSemaphore;
 
         /// <summary>
@@ -38,7 +38,8 @@ namespace launcher.Classes.Managers
         public static void ConfigureDownloadSpeed()
         {
             int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
-            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : ThrottledStream.Infinite;
+            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
+            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
         }
 
         /// <summary>
@@ -288,13 +289,17 @@ namespace launcher.Classes.Managers
 
             long totalBytes = response.Content.Headers.ContentLength ?? -1;
             long downloadedBytes = 0;
-            long lastDownloadedBytes = 0; // Tracks bytes downloaded in the last interval
             DateTime lastUpdate = DateTime.Now;
-            DateTime timeoutlastUpdate = DateTime.Now;
+            DateTime timeoutLastUpdate = DateTime.Now;
             TimeSpan timeoutThreshold = TimeSpan.FromSeconds(30);
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            using var throttledStream = new ThrottledStream(responseStream, _downloadSpeedLimit);
+
+            // Use the global rate limiter
+            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+            // For custom limiter, use:
+            // using var throttledStream = new ThrottledStream(responseStream);
+
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             byte[] buffer = new byte[64 * 1024]; // 64KB buffer
@@ -306,14 +311,13 @@ namespace launcher.Classes.Managers
                 downloadedBytes += bytesRead;
 
                 // Update the lastUpdate time if new data is downloaded
-                if (downloadedBytes > lastDownloadedBytes)
+                if (downloadedBytes > (downloadedBytes - bytesRead))
                 {
-                    lastDownloadedBytes = downloadedBytes;
-                    timeoutlastUpdate = DateTime.Now;
+                    timeoutLastUpdate = DateTime.Now;
                 }
 
                 // Check for timeout
-                if (DateTime.Now - timeoutlastUpdate > timeoutThreshold)
+                if (DateTime.Now - timeoutLastUpdate > timeoutThreshold)
                 {
                     throw new TimeoutException($"Download stalled for {timeoutThreshold.TotalSeconds} seconds. Retrying...");
                 }

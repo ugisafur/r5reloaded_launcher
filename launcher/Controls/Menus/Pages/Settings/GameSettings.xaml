@@ -45,6 +45,9 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="15" />
                             </Grid.RowDefinitions>
+
+                            <Border Grid.Row="1" Background="{StaticResource PrimaryColor}" CornerRadius="6" Width="10" />
+
                             <Track
                 x:Name="PART_Track"
                 Grid.Row="1"

@@ -26,7 +26,7 @@ namespace launcher.Classes.Managers
             SetupControlReferences(mainWindow);
             StartStatusChecker();
             Configuration.Init();
-            SetupLibaryPath();
+            //SetupLibaryPath();
             SetupMenus();
             SetupBranchComboBox();
             GetSelfUpdater();
@@ -100,15 +100,6 @@ namespace launcher.Classes.Managers
             LogInfo(Source.Launcher, $"Advanced settings initialized");
         }
 
-        private static void SetupLibaryPath()
-        {
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
-            {
-                DirectoryInfo parentDir = Directory.GetParent(Launcher.PATH.TrimEnd(Path.DirectorySeparatorChar));
-                Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
-            }
-        }
-
         private static void SetupBranchComboBox()
         {
             Branch_Combobox.ItemsSource = GetGameBranches();
@@ -128,31 +119,34 @@ namespace launcher.Classes.Managers
 
         public static List<ComboBranch> GetGameBranches()
         {
-            string libraryPath = GetBaseLibraryPath();
-            string[] directories = Directory.GetDirectories(libraryPath);
-            string[] folderNames = directories.Select(Path.GetFileName).ToArray();
-
             DataCollections.FolderBranches.Clear();
 
-            foreach (string folder in folderNames)
+            if (Directory.Exists(GetBaseLibraryPath()))
             {
-                bool shouldAdd = true;
+                string libraryPath = GetBaseLibraryPath();
+                string[] directories = Directory.GetDirectories(libraryPath);
+                string[] folderNames = directories.Select(Path.GetFileName).ToArray();
 
-                if (AppState.IsOnline)
-                    shouldAdd = !Configuration.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
-
-                if (shouldAdd)
+                foreach (string folder in folderNames)
                 {
-                    Branch branch = new()
+                    bool shouldAdd = true;
+
+                    if (AppState.IsOnline)
+                        shouldAdd = !Configuration.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
+
+                    if (shouldAdd)
                     {
-                        branch = folder.ToUpper(new CultureInfo("en-US")),
-                        game_url = "",
-                        enabled = true,
-                        show_in_launcher = true,
-                        is_local_branch = true
-                    };
-                    DataCollections.FolderBranches.Add(branch);
-                    LogInfo(Source.Launcher, $"Local branch found: {folder}");
+                        Branch branch = new()
+                        {
+                            branch = folder.ToUpper(new CultureInfo("en-US")),
+                            game_url = "",
+                            enabled = true,
+                            show_in_launcher = true,
+                            is_local_branch = true
+                        };
+                        DataCollections.FolderBranches.Add(branch);
+                        LogInfo(Source.Launcher, $"Local branch found: {folder}");
+                    }
                 }
             }
 
@@ -195,9 +189,6 @@ namespace launcher.Classes.Managers
         {
             string libraryPath = (string)Ini.Get(Ini.Vars.Library_Location);
             string finalDirectory = Path.Combine(libraryPath, "R5R Library");
-
-            Directory.CreateDirectory(finalDirectory);
-
             return finalDirectory;
         }
 
@@ -474,6 +465,21 @@ namespace launcher.Classes.Managers
 
         public static Task HideCheckExistingFiles() =>
             AnimateElement(CheckFiles_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task ShowAskToQuit() =>
+            AnimateElement(AskToQuit_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task HideAskToQuit() =>
+            AnimateElement(AskToQuit_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task ShowInstallLocation()
+        {
+            InstallLocation_Control.SetupInstallLocation();
+            return AnimateElement(InstallLocation_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+        }
+
+        public static Task HideInstallLocation() =>
+            AnimateElement(InstallLocation_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
 #if DEBUG
 

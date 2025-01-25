@@ -66,6 +66,34 @@
                                 <ColumnDefinition Width="50" />
                             </Grid.ColumnDefinitions>
 
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryColor}" CornerRadius="6">
+                                <Grid>
+                                    <!-- Define two columns for left and right arrows -->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Left Arrow -->
+                                    <Path Grid.Column="0"
+                              Data="M10,0 L0,5 L10,10"
+                              Fill="White"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              Width="10"
+                              Height="10" Margin="5,0,0,0" />
+
+                                    <!-- Right Arrow -->
+                                    <Path Grid.Column="1"
+                              Data="M0,0 L10,5 L0,10"
+                              Fill="White"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Width="10"
+                              Height="10" Margin="0,0,5,0" />
+                                </Grid>
+                            </Border>
+
                             <!-- Track with Thumb and PageLeft/PageRight areas -->
                             <Track
                         x:Name="PART_Track"
@@ -787,7 +815,7 @@
                                     </Rectangle>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged">
+                                    <ScrollViewer x:Name="NewsScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                                         <StackPanel x:Name="NewsPanel" Orientation="Horizontal">
                                         </StackPanel>
                                     </ScrollViewer>
@@ -876,5 +904,7 @@
         <local:EULAPopup x:Name="EULA_Control" Width="561" Height="720" Opacity="0" Visibility="Hidden" />
         <local:InstallOptFilesPopup x:Name="OptFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:CheckExisitngFilesPopup x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:InstallLocation x:Name="InstallLocation_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:AskToQuitPopup x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
     </Grid>
 </Window>

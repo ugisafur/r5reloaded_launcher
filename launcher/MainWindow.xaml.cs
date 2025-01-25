@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -204,9 +205,18 @@ namespace launcher
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close))
+            if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) != "quit" && (string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) != "tray")
+                Ini.Set(Ini.Vars.Enable_Quit_On_Close, "");
+
+            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close)))
+            {
+                AppManager.ShowAskToQuit();
+                return;
+            }
+
+            if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "quit")
                 Application.Current.Shutdown();
-            else
+            else if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "tray")
             {
                 AppManager.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
@@ -228,20 +238,13 @@ namespace launcher
 
             if (!AppState.IsInstalling)
             {
-                if (!GetBranch.Installed() && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
+                if (!GetBranch.Installed() && !string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)) && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
                 {
                     AppManager.ShowCheckExistingFiles();
                 }
                 else
                 {
-                    if (GetBranch.EULAAccepted())
-                    {
-                        Task.Run(() => Install.Start());
-                    }
-                    else
-                    {
-                        AppManager.ShowEULA();
-                    }
+                    Task.Run(() => Install.Start());
                 }
             }
         }
@@ -706,6 +709,17 @@ namespace launcher
             storyboard.Children.Add(fadeInAnimation);
 
             storyboard.Begin();
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (NewsScrollViewer.ScrollableWidth > 0)
+            {
+                e.Handled = true;
+                double newOffset = NewsScrollViewer.HorizontalOffset - (e.Delta > 0 ? 30 : -30);
+                newOffset = Math.Max(0, Math.Min(newOffset, NewsScrollViewer.ScrollableWidth));
+                NewsScrollViewer.ScrollToHorizontalOffset(newOffset);
+            }
         }
     }
 }

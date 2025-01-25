@@ -125,6 +125,18 @@ namespace launcher
             Main_Window.SetButtonState();
         }
 
+        public void SetLibaryPath(string path)
+        {
+            LibraryPath.Text = path;
+
+            foreach (var item in gameItems)
+            {
+                item.InstallPath.Text = $"{LibraryPath.Text}\\R5R Library\\{item.branchName.ToUpper(new CultureInfo("en-US"))}";
+            }
+
+            Main_Window.SetButtonState();
+        }
+
         public void UpdateGameItems()
         {
             List<Branch> branches = Configuration.ServerConfig.branches;

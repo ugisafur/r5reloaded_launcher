@@ -74,6 +74,8 @@ namespace launcher.Classes.Global
         public static EULAPopup EULA_Control = new();
         public static InstallOptFilesPopup OptFiles_Control = new();
         public static CheckExisitngFilesPopup CheckFiles_Control = new();
+        public static InstallLocation InstallLocation_Control = new();
+        public static AskToQuitPopup AskToQuit_Control = new();
 
         #endregion Popup Controls
 
@@ -124,6 +126,8 @@ namespace launcher.Classes.Global
             OptFiles_Control = mainWindow.OptFiles_Control;
             CheckFiles_Control = mainWindow.CheckFiles_Control;
             NewsPanel = mainWindow.NewsPanel;
+            InstallLocation_Control = mainWindow.InstallLocation_Control;
+            AskToQuit_Control = mainWindow.AskToQuit_Control;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

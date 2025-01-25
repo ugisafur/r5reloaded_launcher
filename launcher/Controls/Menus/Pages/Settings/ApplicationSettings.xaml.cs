@@ -18,7 +18,7 @@ namespace launcher
 
         public void SetupApplicationSettings()
         {
-            CloseToQuit.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Quit_On_Close);
+            CloseToQuit.IsChecked = (string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "quit" ? true : false;
             Notifications.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Notifications);
             KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
             StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
@@ -46,7 +46,8 @@ namespace launcher
 
         private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Enable_Quit_On_Close, CloseToQuit.IsChecked.Value);
+            string value = CloseToQuit.IsChecked.Value ? "quit" : "tray";
+            Ini.Set(Ini.Vars.Enable_Quit_On_Close, value);
         }
 
         private void Notifications_Unchecked(object sender, RoutedEventArgs e)

@@ -15,6 +15,24 @@ namespace launcher.Classes.Game
     {
         public static async void Start()
         {
+            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            {
+                appDispatcher.Invoke(new Action(() =>
+                {
+                    AppManager.ShowInstallLocation();
+                }));
+                return;
+            }
+
+            if (!GetBranch.EULAAccepted())
+            {
+                appDispatcher.Invoke(new Action(() =>
+                {
+                    AppManager.ShowEULA();
+                }));
+                return;
+            }
+
             if (AppState.IsInstalling)
                 return;
 

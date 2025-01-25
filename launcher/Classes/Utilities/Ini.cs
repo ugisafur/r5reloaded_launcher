@@ -57,12 +57,12 @@ namespace launcher.Classes.Utilities
                 IniFile file = new();
 
                 file.SetSetting("Settings", "Keep_All_Logs", true);
-                file.SetSetting("Settings", "Enable_Quit_On_Close", false);
+                file.SetSetting("Settings", "Enable_Quit_On_Close", "");
                 file.SetSetting("Settings", "Enable_Notifications", true);
                 file.SetSetting("Settings", "Disable_Background_Video", false);
                 file.SetSetting("Settings", "Disable_Animations", false);
                 file.SetSetting("Settings", "Disable_Transitions", false);
-                file.SetSetting("Settings", "Concurrent_Downloads", 300);
+                file.SetSetting("Settings", "Concurrent_Downloads", 200);
                 file.SetSetting("Settings", "Download_Speed_Limit", 0);
                 file.SetSetting("Settings", "Library_Location", "");
                 file.SetSetting("Settings", "Stream_Video", true);
@@ -252,9 +252,9 @@ namespace launcher.Classes.Utilities
                 Vars.Processor_Affinity => "0",
                 Vars.Max_FPS => "0",
                 Vars.SelectedBranch => "",
+                Vars.Enable_Quit_On_Close => "",
 
                 Vars.Keep_All_Logs => true,
-                Vars.Enable_Quit_On_Close => false,
                 Vars.Enable_Notifications => true,
                 Vars.Disable_Background_Video => false,
                 Vars.Disable_Animations => false,
@@ -275,7 +275,7 @@ namespace launcher.Classes.Utilities
 
                 Vars.Mode => 0,
                 Vars.Visibility => 0,
-                Vars.Concurrent_Downloads => 300,
+                Vars.Concurrent_Downloads => 200,
                 Vars.Download_Speed_Limit => 0,
                 Vars.Map => 0,
                 Vars.Playlist => 0,
