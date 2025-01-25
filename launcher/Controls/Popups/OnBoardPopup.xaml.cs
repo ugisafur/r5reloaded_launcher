@@ -130,10 +130,11 @@ namespace launcher
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            AppState.OnBoarding = false;
             OnBoard_Control.Visibility = Visibility.Hidden;
             OnBoardingRect.Visibility = Visibility.Hidden;
+            AppState.OnBoarding = false;
             Main_Window.ResizeMode = ResizeMode.CanResize;
+            SetItem(0);
         }
     }
 }
