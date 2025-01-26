@@ -294,7 +294,7 @@
                 <TextBlock Text="Adjust the maximum number of simultaneous downloads allowed at once, optimizing your download experience to match your preferences and network capabilities." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,74,395,0" Height="37" Width="498" />
                 <ComboBox x:Name="ConDownloads" ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" SelectedIndex="0" HorizontalAlignment="Left" Margin="42,23,0,425" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand" Width="498" Foreground="{StaticResource ComboTextColor}" FontSize="16">
                     <ComboBoxItem Content="Max" />
-                    <ComboBoxItem Content="100" />
+                    <ComboBoxItem Content="75" />
                     <ComboBoxItem Content="50" />
                     <ComboBoxItem Content="20" />
                     <ComboBoxItem Content="15" />

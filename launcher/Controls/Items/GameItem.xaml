@@ -229,7 +229,7 @@
                 </Grid>
             </Border>
 
-            <TextBlock Text="Game location complete path:" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,113,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock Text="Game location complete path:" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,113,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
             <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
 
             <Rectangle Height="2" Fill="{StaticResource SeperatorColor}"  VerticalAlignment="Top" Margin="50,210,50,0" />

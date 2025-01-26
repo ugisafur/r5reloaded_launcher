@@ -25,6 +25,7 @@ namespace launcher
         private readonly int[] downloadSpeeds =
         [
             100,
+            75,
             50,
             20,
             15,
