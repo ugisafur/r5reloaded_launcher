@@ -45,7 +45,7 @@ namespace launcher.Classes.CDN
             excludedLanguages.Remove("english");
 
             string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
-            Regex excludeLangRegex = new Regex($"_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
+            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
 
             if (!optional)
             {
@@ -69,28 +69,27 @@ namespace launcher.Classes.CDN
             return gameFiles;
         }
 
-        public static GameFiles LangFile(List<string> languages, bool compressed = true)
+        public static async Task<GameFiles> LangFile(List<string> languages, bool compressed = true)
         {
+            string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingstring = compressed ? "mstr.zst" : "mstr";
 
-            GameFiles langFiles = new();
-            langFiles.files = new();
-            foreach (string language in languages)
+            // Remove english from the list of languages as english is always included
+            languages.Remove("english");
+
+            string languagesPattern = string.Join("|", languages.Select(Regex.Escape));
+            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
+
+            JsonSerializerOptions jsonSerializerOptions = new()
             {
-                langFiles.files.Add(new GameFile
-                {
-                    name = $"audio\\ship\\general_{language}." + endingstring,
-                    checksum = ""
-                });
+                AllowTrailingCommas = true
+            };
 
-                langFiles.files.Add(new GameFile
-                {
-                    name = $"audio\\ship\\general_{language}_patch_1." + endingstring,
-                    checksum = ""
-                });
-            }
+            GameFiles gameFiles = await HttpClientJsonExtensions.GetFromJsonAsync<GameFiles>(Networking.HttpClient, $"{GetBranch.GameURL()}\\{fileName}", jsonSerializerOptions);
 
-            return langFiles;
+            gameFiles.files = gameFiles.files.Where(file => excludeLangRegex.IsMatch(file.name)).ToList();
+
+            return gameFiles;
         }
     }
 

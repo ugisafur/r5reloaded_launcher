@@ -95,6 +95,7 @@ namespace launcher.Classes.Global
         public static StackPanel NewsPanel = new();
         public static Rectangle OnBoardingRect = new();
         public static RectangleGeometry OnBoardingClip = new();
+        public static Rectangle DragBarDropShadow = new();
 
         public static PlaylistRoot playlistRoot = new();
         public static List<string> gamemodes = [];
@@ -141,6 +142,7 @@ namespace launcher.Classes.Global
             OnBoardingClip = mainWindow.OnBoardingClip;
             OnBoardAsk_Control = mainWindow.OnBoardAsk_Control;
             ReadMore_Label = mainWindow.ReadMore_Label;
+            DragBarDropShadow = mainWindow.DragBarDropShadow;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

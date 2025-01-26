@@ -5,6 +5,8 @@ using static launcher.Classes.Utilities.Logger;
 using static launcher.Classes.Global.References;
 using launcher.Classes.Global;
 using launcher.Classes.Utilities;
+using launcher.Classes.BranchUtils;
+using System.Text.RegularExpressions;
 
 namespace launcher.Classes.Managers
 {
@@ -58,6 +60,36 @@ namespace launcher.Classes.Managers
                         .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
                         !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
                         !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = allFiles.Length;
+                Progress_Bar.Value = 0;
+            });
+
+            AppState.FilesLeft = allFiles.Length;
+
+            foreach (var file in allFiles)
+            {
+                checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
+            }
+
+            return checksumTasks;
+        }
+
+        public static List<Task<FileChecksum>> PrepareLangChecksumTasks(string branchFolder, List<string> lang)
+        {
+            var checksumTasks = new List<Task<FileChecksum>>();
+
+            List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
+            excludedLanguages.Remove("english");
+
+            string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
+            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
+
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories).Where(
+                f => excludeLangRegex.IsMatch(f) &&
+                !f.Contains(".zst", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {

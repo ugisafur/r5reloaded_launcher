@@ -83,6 +83,8 @@ namespace launcher
                     Content = new CultureInfo("en-US").TextInfo.ToTitleCase(lang),
                     IsChecked = lang.ToLower(new CultureInfo("en-US")) == "english" ? true : DoesLangFileExist(branch, lang),
                     FontFamily = new System.Windows.Media.FontFamily("Bahnschrift SemiBold"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Left,
                     FontSize = 14,
                     Foreground = System.Windows.Media.Brushes.White,
                 };
@@ -100,6 +102,7 @@ namespace launcher
                 {
                     Branch_Combobox.SelectedIndex = index;
                     Task.Run(() => Install.LangFile(langCheckBox, [lang]));
+                    Downloads_Popup.IsOpen = true;
                 };
 
                 langCheckBox.Unchecked += (sender, e) =>

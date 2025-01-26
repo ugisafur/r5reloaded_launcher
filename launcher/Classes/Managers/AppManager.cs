@@ -219,6 +219,7 @@ namespace launcher.Classes.Managers
             var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
+                DragBarDropShadow.Visibility = Visibility.Visible;
                 Settings_Control.Visibility = Visibility.Visible;
                 var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();
@@ -250,6 +251,7 @@ namespace launcher.Classes.Managers
             var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
+                DragBarDropShadow.Visibility = Visibility.Hidden;
                 Settings_Control.Visibility = Visibility.Hidden;
                 var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();
@@ -281,6 +283,7 @@ namespace launcher.Classes.Managers
             var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
+                DragBarDropShadow.Visibility = Visibility.Visible;
                 Advanced_Control.Visibility = Visibility.Visible;
                 var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();
@@ -312,6 +315,7 @@ namespace launcher.Classes.Managers
             var transitionInStoryboard = CreateTransitionStoryboard(start, 0, 0.25);
             transitionInStoryboard.Completed += (s, e) =>
             {
+                DragBarDropShadow.Visibility = Visibility.Hidden;
                 Advanced_Control.Visibility = Visibility.Hidden;
                 var transitionOutStoryboard = CreateTransitionStoryboard(0, end, 0.25);
                 transitionOutStoryboard.Begin();

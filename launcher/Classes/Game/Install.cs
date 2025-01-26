@@ -43,6 +43,13 @@ namespace launcher.Classes.Game
             if (GetBranch.IsLocalBranch())
                 return;
 
+            //If this branch exists were just going to repair it
+            if (Directory.Exists(GetBranch.Directory()))
+            {
+                Task.Run(() => { Repair.Start(); });
+                return;
+            }
+
             DownloadManager.CreateDownloadMontior();
 
             //Install started
@@ -79,7 +86,7 @@ namespace launcher.Classes.Game
             if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
             {
                 LogInfo(Source.Installer, $"game language found ({Configuration.language_name}), installing language files");
-                await LangFile(null, [Configuration.language_name]);
+                await LangFile(null, [Configuration.language_name], true);
             }
 
             //Set branch as installed
@@ -155,9 +162,9 @@ namespace launcher.Classes.Game
             AppState.BadFilesDetected = !isRepaired;
         }
 
-        public static async Task LangFile(CheckBox checkBox, List<string> langs)
+        public static async Task LangFile(CheckBox checkBox, List<string> langs, bool bypass_block = false)
         {
-            if (AppState.BlockLanguageInstall)
+            if (AppState.BlockLanguageInstall && !bypass_block)
                 return;
 
             if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
@@ -183,7 +190,7 @@ namespace launcher.Classes.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            GameFiles langFiles = Fetch.LangFile(langs);
+            GameFiles langFiles = await Fetch.LangFile(langs);
 
             var langdownloadTasks = DownloadManager.InitializeDownloadTasks(langFiles, branchDirectory);
 

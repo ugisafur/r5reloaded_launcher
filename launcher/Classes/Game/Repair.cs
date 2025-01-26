@@ -72,6 +72,11 @@ namespace launcher.Classes.Game
                 await Task.WhenAll(downloadTasks);
             }
 
+            if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
+            {
+                await Task.Run(() => LangFile([Configuration.language_name], true));
+            }
+
             //Update launcher config
             Ini.Set(GetBranch.Name(false), "Is_Installed", true);
             Ini.Set(GetBranch.Name(false), "Version", GetBranch.ServerVersion());
@@ -132,6 +137,40 @@ namespace launcher.Classes.Game
             AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
 
             DownloadManager.SetOptionalInstallState(false);
+        }
+
+        private static async Task LangFile(List<string> langs, bool bypass_block = false)
+        {
+            if (AppState.BlockLanguageInstall && !bypass_block)
+                return;
+
+            if (!AppState.IsOnline)
+                return;
+
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
+
+            string branchDirectory = GetBranch.Directory();
+
+            DownloadManager.UpdateStatusLabel("Preparing language checksum tasks", Source.Repair);
+            var checksumTasks = FileManager.PrepareLangChecksumTasks(branchDirectory, langs);
+
+            DownloadManager.UpdateStatusLabel("Fetching language files", Source.Repair);
+            GameFiles langFiles = await Fetch.LangFile(langs, false);
+
+            //Identify bad files
+            DownloadManager.UpdateStatusLabel("Identifying bad language files", Source.Repair);
+            int badFileCount = FileManager.IdentifyBadFiles(langFiles, checksumTasks, branchDirectory);
+
+            //if bad files exist, download and repair
+            if (badFileCount > 0)
+            {
+                DownloadManager.UpdateStatusLabel("Preparing language tasks", Source.Repair);
+                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+
+                DownloadManager.UpdateStatusLabel("Downloading language files", Source.Repair);
+                await Task.WhenAll(downloadTasks);
+            }
         }
     }
 }
