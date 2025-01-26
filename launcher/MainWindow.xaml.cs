@@ -241,7 +241,7 @@ namespace launcher
         {
             if (!AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch())
             {
-                Game.Launch();
+                Task.Run(() => Game.Launch());
                 return;
             }
 

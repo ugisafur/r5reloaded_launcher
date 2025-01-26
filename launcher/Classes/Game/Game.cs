@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using static launcher.Classes.Game.LaunchParameters;
 using static launcher.Classes.Utilities.Logger;
+using static launcher.Classes.Global.References;
 
 namespace launcher.Classes.Game
 {
@@ -11,6 +12,12 @@ namespace launcher.Classes.Game
     {
         public static void Launch()
         {
+            appDispatcher.Invoke(new Action(() =>
+            {
+                Play_Button.IsEnabled = false;
+                Play_Button.Content = "LAUNCHING...";
+            }));
+
             eMode mode = (eMode)(int)Ini.Get(Ini.Vars.Mode);
 
             string exeName = mode switch
@@ -37,10 +44,18 @@ namespace launcher.Classes.Game
 
             Process gameProcess = Process.Start(startInfo);
 
+            gameProcess.WaitForInputIdle();
+
             if (gameProcess != null)
                 SetProcessorAffinity(gameProcess);
 
             LogInfo(Source.Launcher, $"Launched game with arguments: {gameArguments}");
+
+            appDispatcher.Invoke(new Action(() =>
+            {
+                Play_Button.IsEnabled = true;
+                Play_Button.Content = "PLAY";
+            }));
         }
 
         private static void SetProcessorAffinity(Process gameProcess)
