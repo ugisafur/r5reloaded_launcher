@@ -8,6 +8,7 @@ using launcher.Classes.CDN;
 using launcher.Classes.Game;
 using launcher.Classes.Utilities;
 using launcher.Classes.Managers;
+using System.Windows.Controls;
 
 namespace launcher.Classes.Game
 {
@@ -71,6 +72,14 @@ namespace launcher.Classes.Game
             {
                 DownloadManager.UpdateStatusLabel("Reparing game files", Source.Installer);
                 await AttemptGameRepair();
+            }
+
+            //Check if language files can to be installed
+            LogInfo(Source.Installer, $"Checking system language against available game languages");
+            if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
+            {
+                LogInfo(Source.Installer, $"game language found ({Configuration.language_name}), installing language files");
+                await LangFile(null, [Configuration.language_name]);
             }
 
             //Set branch as installed
@@ -144,6 +153,47 @@ namespace launcher.Classes.Game
             }
 
             AppState.BadFilesDetected = !isRepaired;
+        }
+
+        public static async Task LangFile(CheckBox checkBox, List<string> langs)
+        {
+            if (AppState.BlockLanguageInstall)
+                return;
+
+            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            {
+                appDispatcher.Invoke(new Action(() =>
+                {
+                    AppManager.ShowInstallLocation();
+                }));
+                return;
+            }
+
+            if (!AppState.IsOnline)
+                return;
+
+            appDispatcher.Invoke(() =>
+            {
+                if (checkBox != null)
+                    checkBox.IsEnabled = false;
+            });
+
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
+
+            string branchDirectory = GetBranch.Directory();
+
+            GameFiles langFiles = Fetch.LangFile(langs);
+
+            var langdownloadTasks = DownloadManager.InitializeDownloadTasks(langFiles, branchDirectory);
+
+            await Task.WhenAll(langdownloadTasks);
+
+            appDispatcher.Invoke(new Action(() =>
+            {
+                if (checkBox != null)
+                    checkBox.IsEnabled = true;
+            }));
         }
     }
 }

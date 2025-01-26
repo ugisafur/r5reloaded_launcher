@@ -38,7 +38,12 @@ namespace launcher.Classes.News
                 else if (post.tags[0].name == "Comms")
                 {
                     if (Comms.Count < 8)
-                        Comms.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
+                    {
+                        if (post.feature_image == null)
+                            Comms.Add(new NewsItemSmall(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url));
+                        else
+                            Comms.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
+                    }
                 }
                 else if (post.tags[0].name == "Patch Notes")
                 {

@@ -1,5 +1,6 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using launcher.Classes.BranchUtils;
+using launcher.Classes.CDN;
 using launcher.Classes.Game;
 using launcher.Classes.Global;
 using launcher.Classes.Managers;
@@ -11,11 +12,13 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using static launcher.Classes.Utilities.Logger;
 using Color = System.Windows.Media.Color;
 
@@ -268,12 +271,15 @@ namespace launcher
 
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
+                ReadMore_Label.Inlines.Clear();
                 HandleLocalBranch(comboBranch.title);
                 return;
             }
 
             AppState.IsLocalBranch = false;
             Ini.Set(Ini.Vars.SelectedBranch, GetBranch.Name(false));
+
+            SetTextBlockContent(comboBranch.subtext);
 
             if (GetBranch.Installed())
             {
@@ -283,6 +289,40 @@ namespace launcher
             {
                 HandleUninstalledBranch(selectedBranch);
             }
+        }
+
+        private void SetTextBlockContent(string version)
+        {
+            // Clear any existing inlines
+            ReadMore_Label.Inlines.Clear();
+
+            // Add plain text
+            ReadMore_Label.Inlines.Add(new Run($"Read about {version} features, "));
+
+            string url = string.IsNullOrEmpty(GetBranch.Branch().latest_patch_notes) ? "https://blog.r5reloaded.com" : GetBranch.Branch().latest_patch_notes;
+
+            // Create a hyperlink
+            Hyperlink link = new Hyperlink(new Run("see patch notes"))
+            {
+                NavigateUri = new Uri(url)
+            };
+            link.RequestNavigate += Hyperlink_RequestNavigate;
+
+            // Add hyperlink to inlines
+            ReadMore_Label.Inlines.Add(link);
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Unable to open link: {ex.Message}");
+            }
+            e.Handled = true;
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -375,7 +415,7 @@ namespace launcher
         {
             Ini.Set(Ini.Vars.SelectedBranch, branchTitle);
             Update_Button.Visibility = Visibility.Hidden;
-            SetPlayState("PLAY", true, false, true);
+            SetPlayState("PLAY", true, false, true, true, true);
             AppState.IsLocalBranch = true;
         }
 
@@ -385,14 +425,14 @@ namespace launcher
 
             if (!branch.enabled)
             {
-                SetPlayState("PLAY", false, false, true);
+                SetPlayState("PLAY", false, false, true, true, true);
                 return;
             }
 
             bool isUpToDate = GetBranch.LocalVersion() == GetBranch.ServerVersion();
             Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
             SetBranch.UpdateAvailable(!isUpToDate);
-            SetPlayState("PLAY", true, true, true);
+            SetPlayState("PLAY", true, true, true, true, true);
         }
 
         private void HandleUninstalledBranch(int selectedBranch)
@@ -401,20 +441,25 @@ namespace launcher
 
             if (!branch.enabled)
             {
-                SetPlayState("DISABLED", false, false, false);
+                SetPlayState("DISABLED", false, false, false, false, false);
                 return;
             }
 
+            Update_Button.Visibility = Visibility.Hidden;
+            SetBranch.UpdateAvailable(false);
+
             bool executableExists = File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe"));
-            SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists);
+            SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists, executableExists, executableExists);
         }
 
-        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled)
+        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled, bool openBranchFolder, bool advancedsettings)
         {
             Play_Button.Content = playContent;
             Play_Button.IsEnabled = playEnabled;
             GameSettings_Control.RepairGame_Button.IsEnabled = repairEnabled;
             GameSettings_Control.UninstallGame_Button.IsEnabled = uninstallEnabled;
+            GameSettings_Control.OpenDir_Button.IsEnabled = openBranchFolder;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = advancedsettings;
         }
 
         private void SetupSystemTray()

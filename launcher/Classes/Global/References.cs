@@ -28,6 +28,7 @@ namespace launcher.Classes.Global
         public static TextBlock Files_Label = new();
         public static TextBlock Version_Label = new();
         public static TextBlock Speed_Label = new();
+        public static TextBlock ReadMore_Label = new();
 
         #endregion Labels
 
@@ -139,6 +140,7 @@ namespace launcher.Classes.Global
             OnBoardingRect = mainWindow.OnBoardingRect;
             OnBoardingClip = mainWindow.OnBoardingClip;
             OnBoardAsk_Control = mainWindow.OnBoardAsk_Control;
+            ReadMore_Label = mainWindow.ReadMore_Label;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

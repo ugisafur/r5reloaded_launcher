@@ -14,9 +14,11 @@ namespace launcher.Classes.Utilities
     {
         public string branch { get; set; }
         public string game_url { get; set; }
+        public string latest_patch_notes { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
         public bool allow_updates { get; set; }
+        public List<string> mstr_languages { get; set; }
         public bool is_local_branch = false;
         public bool update_available = false;
     }

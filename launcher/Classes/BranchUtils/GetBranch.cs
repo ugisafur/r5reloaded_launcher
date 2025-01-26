@@ -62,8 +62,11 @@ namespace launcher.Classes.BranchUtils
             return Ini.Get(Branch().branch, "EULA_Accepted", false);
         }
 
-        public static bool Installed()
+        public static bool Installed(Branch branch = null)
         {
+            if (branch != null)
+                return Ini.Get(branch.branch, "Is_Installed", false);
+
             return Ini.Get(Branch().branch, "Is_Installed", false);
         }
 

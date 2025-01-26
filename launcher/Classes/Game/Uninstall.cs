@@ -6,6 +6,7 @@ using static launcher.Classes.Utilities.Logger;
 using static launcher.Classes.Global.References;
 using launcher.Classes.Utilities;
 using launcher.Classes.Managers;
+using System.Windows.Controls;
 
 namespace launcher.Classes.Game
 {
@@ -13,7 +14,7 @@ namespace launcher.Classes.Game
     {
         public static async void Start()
         {
-            if (!GetBranch.Installed())
+            if (!GetBranch.Installed() && !Directory.Exists(GetBranch.Directory()))
                 return;
 
             if (!Directory.Exists(GetBranch.Directory()))
@@ -66,9 +67,62 @@ namespace launcher.Classes.Game
             Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
             Ini.Set(GetBranch.Name(false), "Version", "");
 
-            DownloadManager.SetInstallState(false);
+            DownloadManager.SetInstallState(false, "INSTALL");
 
             AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
+        }
+
+        public static async void LangFile(CheckBox checkbox, List<string> lang)
+        {
+            if (!GetBranch.Installed())
+                return;
+
+            if (!Directory.Exists(GetBranch.Directory()))
+                return;
+
+            appDispatcher.Invoke(() =>
+            {
+                checkbox.IsEnabled = false;
+            });
+
+            DownloadManager.SetInstallState(true, "UNINSTALLING");
+
+            GameFiles langFiles = CDN.Fetch.LangFile(lang, false);
+
+            DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
+            AppState.FilesLeft = langFiles.files.Count;
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = langFiles.files.Count;
+                Files_Label.Text = $"{AppState.FilesLeft} files left";
+            });
+
+            foreach (var langFile in langFiles.files)
+            {
+                if (File.Exists($"{GetBranch.Directory()}\\{langFile.name}"))
+                {
+                    LogInfo(Source.Installer, $"Removing file: {GetBranch.Directory()}\\{langFile.name}");
+                    File.Delete($"{GetBranch.Directory()}\\{langFile.name}");
+                }
+                else
+                {
+                    LogInfo(Source.Installer, $"File not found: {GetBranch.Directory()}\\{langFile.name}");
+                }
+
+                appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Value++;
+                Files_Label.Text = $"{--AppState.FilesLeft} files left";
+            });
+            }
+
+            DownloadManager.SetInstallState(false);
+
+            appDispatcher.Invoke(() =>
+            {
+                checkbox.IsEnabled = true;
+            });
         }
     }
 }

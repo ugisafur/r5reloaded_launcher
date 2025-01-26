@@ -17,6 +17,7 @@ namespace launcher.Classes.Global
         public static bool InSettingsMenu { get; set; } = false;
         public static bool InAdvancedMenu { get; set; } = false;
         public static bool OnBoarding { get; set; } = false;
+        public static bool BlockLanguageInstall { get; set; } = false;
 
         public static int FilesLeft { get; set; } = 0;
     }

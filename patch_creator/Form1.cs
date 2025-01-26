@@ -441,5 +441,9 @@ namespace patch_creator
             using var compressionStream = new CompressionStream(delta_compressed_output, 12);
             await delta_temp_input.CopyToAsync(compressionStream);
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+        }
     }
 }

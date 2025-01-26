@@ -9,6 +9,9 @@ using launcher.Classes.Global;
 using static launcher.Classes.Utilities.Logger;
 using launcher.Classes.Utilities;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using ZstdSharp;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace launcher.Classes.CDN
 {
@@ -38,20 +41,56 @@ namespace launcher.Classes.CDN
 
             GameFiles gameFiles = await HttpClientJsonExtensions.GetFromJsonAsync<GameFiles>(Networking.HttpClient, $"{GetBranch.GameURL()}\\{fileName}", jsonSerializerOptions);
 
+            List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
+            excludedLanguages.Remove("english");
+
+            string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
+            Regex excludeLangRegex = new Regex($"_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
+
             if (!optional)
             {
                 gameFiles.files = gameFiles.files
-                .Where(file => !file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
+                .Where(file =>
+                    !file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase) &&
+                    !excludeLangRegex.IsMatch(file.name)
+                )
                 .ToList();
             }
             else
             {
                 gameFiles.files = gameFiles.files
-                .Where(file => file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+                .Where(file =>
+                    file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase) &&
+                    !excludeLangRegex.IsMatch(file.name)
+                )
+                .ToList(); ;
             }
 
             return gameFiles;
+        }
+
+        public static GameFiles LangFile(List<string> languages, bool compressed = true)
+        {
+            string endingstring = compressed ? "mstr.zst" : "mstr";
+
+            GameFiles langFiles = new();
+            langFiles.files = new();
+            foreach (string language in languages)
+            {
+                langFiles.files.Add(new GameFile
+                {
+                    name = $"audio\\ship\\general_{language}." + endingstring,
+                    checksum = ""
+                });
+
+                langFiles.files.Add(new GameFile
+                {
+                    name = $"audio\\ship\\general_{language}_patch_1." + endingstring,
+                    checksum = ""
+                });
+            }
+
+            return langFiles;
         }
     }
 

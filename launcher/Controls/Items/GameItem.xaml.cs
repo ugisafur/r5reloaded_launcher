@@ -7,6 +7,7 @@ using launcher.Classes.Global;
 using launcher.Classes.Game;
 using launcher.Classes.Utilities;
 using launcher.Classes.Managers;
+using System.IO;
 
 namespace launcher
 {
@@ -43,6 +44,11 @@ namespace launcher
             InstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Hidden : Visibility.Visible;
             branchName = branch.branch;
 
+            UninstallGame.IsEnabled = !AppState.IsInstalling;
+            InstallGame.IsEnabled = !AppState.IsInstalling;
+            VerifyGame.IsEnabled = !AppState.IsInstalling;
+            InstallOpt.IsEnabled = !AppState.IsInstalling;
+
             UninstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
             InstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
             VerifyGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
@@ -58,6 +64,67 @@ namespace launcher
                 InstallOpt.Visibility = Visibility.Hidden;
                 HDTexturesInstalledTxt.Visibility = Visibility.Hidden;
             }
+
+            int row = 0;
+            int column = 0;
+
+            LangBox.Children.Clear();
+
+            foreach (string lang in branch.mstr_languages)
+            {
+                if (column > 4)
+                {
+                    column = 0;
+                    row++;
+                }
+
+                CheckBox langCheckBox = new CheckBox
+                {
+                    Content = new CultureInfo("en-US").TextInfo.ToTitleCase(lang),
+                    IsChecked = lang.ToLower(new CultureInfo("en-US")) == "english" ? true : DoesLangFileExist(branch, lang),
+                    FontFamily = new System.Windows.Media.FontFamily("Bahnschrift SemiBold"),
+                    FontSize = 14,
+                    Foreground = System.Windows.Media.Brushes.White,
+                };
+
+                if (AppState.IsInstalling)
+                {
+                    langCheckBox.IsEnabled = false;
+                }
+                else
+                {
+                    langCheckBox.IsEnabled = lang.ToLower(new CultureInfo("en-US")) == "english" ? false : Classes.BranchUtils.GetBranch.Installed(branch);
+                }
+
+                langCheckBox.Checked += (sender, e) =>
+                {
+                    Branch_Combobox.SelectedIndex = index;
+                    Task.Run(() => Install.LangFile(langCheckBox, [lang]));
+                };
+
+                langCheckBox.Unchecked += (sender, e) =>
+                {
+                    Branch_Combobox.SelectedIndex = index;
+                    Task.Run(() => Uninstall.LangFile(langCheckBox, [lang]));
+                };
+
+                LangBox.Children.Add(langCheckBox);
+                langCheckBox.SetValue(Grid.RowProperty, row);
+                langCheckBox.SetValue(Grid.ColumnProperty, column);
+
+                column++;
+            }
+        }
+
+        private bool DoesLangFileExist(Branch branch, string lang)
+        {
+            if (!File.Exists($"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}.mstr"))
+                return false;
+
+            if (!File.Exists($"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}_patch_1.mstr"))
+                return false;
+
+            return true;
         }
 
         private void TopButton_Click(object sender, RoutedEventArgs e)
@@ -139,7 +206,7 @@ namespace launcher
             var heightAnimation = new DoubleAnimation
             {
                 From = (int)this.Height,
-                To = 443,
+                To = 603,
                 Duration = animationDuration,
                 EasingFunction = easing
             };

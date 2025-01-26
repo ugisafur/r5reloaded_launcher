@@ -40,7 +40,7 @@ namespace launcher
 
         private void OpenDir_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (GetBranch.Installed() || GetBranch.IsLocalBranch())
+            if (GetBranch.Installed() || GetBranch.IsLocalBranch() || Directory.Exists(GetBranch.Directory()))
             {
                 string dir = GetBranch.Directory();
 

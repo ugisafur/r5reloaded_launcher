@@ -14,7 +14,7 @@ namespace launcher
     /// </summary>
     public partial class GameSettings : UserControl
     {
-        private List<GameItem> gameItems = [];
+        public List<GameItem> gameItems = [];
         private bool firstTime = true;
 
         public GameSettings()

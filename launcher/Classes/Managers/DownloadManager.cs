@@ -399,6 +399,7 @@ namespace launcher.Classes.Managers
             appDispatcher.Invoke(() =>
             {
                 AppState.IsInstalling = installing;
+                AppState.BlockLanguageInstall = installing;
 
                 Play_Button.Content = buttonText;
                 Branch_Combobox.IsEnabled = !installing;
@@ -412,6 +413,8 @@ namespace launcher.Classes.Managers
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.OpenDir_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.AdvancedMenu_Button.IsEnabled = !installing && GetBranch.Installed();
+
+                Settings_Control.gameInstalls.UpdateGameItems();
             });
 
             ShowProgressBar(installing);
@@ -454,6 +457,7 @@ namespace launcher.Classes.Managers
                 Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Downloads_Control.Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                ReadMore_Label.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
             });
         }
 

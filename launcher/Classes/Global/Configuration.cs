@@ -4,6 +4,7 @@ using static launcher.Classes.Global.References;
 using launcher.Classes.CDN;
 using System.IO;
 using launcher.Classes.Utilities;
+using System.Globalization;
 
 namespace launcher.Classes.Global
 {
@@ -11,19 +12,24 @@ namespace launcher.Classes.Global
     {
         public static ServerConfig ServerConfig { get; set; }
         public static IniFile LauncherConfig { get; set; }
+        public static CultureInfo cultureInfo { get; set; }
+        public static string language_name { get; set; }
 
         public static void Init()
         {
             Version_Label.Text = Launcher.VERSION;
-            Logger.LogInfo(Source.Launcher, $"Launcher Version: {Launcher.VERSION}");
+            LogInfo(Source.Launcher, $"Launcher Version: {Launcher.VERSION}");
 
             Launcher.PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            Logger.LogInfo(Source.Launcher, $"Launcher path: {Launcher.PATH}");
+            LogInfo(Source.Launcher, $"Launcher path: {Launcher.PATH}");
 
-            Configuration.ServerConfig = AppState.IsOnline ? Fetch.Config() : null;
+            ServerConfig = AppState.IsOnline ? Fetch.Config() : null;
 
-            Configuration.LauncherConfig = Ini.GetConfig();
-            Logger.LogInfo(Source.Launcher, $"Launcher config found");
+            LauncherConfig = Ini.GetConfig();
+            LogInfo(Source.Launcher, $"Launcher config found");
+
+            cultureInfo = CultureInfo.CurrentCulture;
+            language_name = cultureInfo.Parent.EnglishName.ToLower(new CultureInfo("en-US"));
         }
     }
 }
