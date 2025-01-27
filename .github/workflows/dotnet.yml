@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Publish
-      run: dotnet publish ./launcher/launcher.csproj --os win-x64 --self-contained true --runtime win-x64 --framework net8.0
+      run: dotnet publish ./launcher/launcher.csproj --os win-x64 --self-contained true --framework net8.0-windows
