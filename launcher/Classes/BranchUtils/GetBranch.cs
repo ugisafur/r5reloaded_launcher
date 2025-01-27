@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using launcher.Classes.CDN;
+using launcher.Classes.Game;
 using launcher.Classes.Global;
 using launcher.Classes.Utilities;
 using static launcher.Classes.Global.References;

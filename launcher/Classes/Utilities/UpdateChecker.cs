@@ -7,6 +7,7 @@ using System.IO;
 using launcher.Classes.BranchUtils;
 using static launcher.Classes.Global.References;
 using launcher.Classes.Global;
+using launcher.Classes.Managers;
 
 namespace launcher.Classes.Utilities
 {

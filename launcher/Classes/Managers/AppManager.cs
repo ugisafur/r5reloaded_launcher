@@ -10,6 +10,7 @@ using launcher.Classes.BranchUtils;
 using launcher.Classes.Global;
 using launcher.Classes.CDN;
 using launcher.Classes.Utilities;
+using launcher.Classes.Game;
 
 namespace launcher.Classes.Managers
 {
@@ -529,5 +530,14 @@ namespace launcher.Classes.Managers
         }
 
 #endif
+    }
+
+    public class ServerConfig
+    {
+        public string launcherVersion { get; set; }
+        public string launcherSelfUpdater { get; set; }
+        public string launcherBackgroundVideo { get; set; }
+        public bool launcherallowUpdates { get; set; }
+        public List<Branch> branches { get; set; }
     }
 }

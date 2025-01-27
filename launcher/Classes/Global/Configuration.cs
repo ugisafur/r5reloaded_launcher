@@ -5,6 +5,7 @@ using launcher.Classes.CDN;
 using System.IO;
 using launcher.Classes.Utilities;
 using System.Globalization;
+using launcher.Classes.Managers;
 
 namespace launcher.Classes.Global
 {

@@ -54,7 +54,7 @@ namespace launcher.Classes.Game
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching base game files list", Source.Repair);
-            GameFiles gameFiles = await Fetch.BranchFiles(false, false);
+            GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying bad files", Source.Repair);
@@ -66,7 +66,7 @@ namespace launcher.Classes.Game
                 repairSuccess = false;
 
                 DownloadManager.UpdateStatusLabel("Preparing download tasks", Source.Repair);
-                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
 
                 DownloadManager.UpdateStatusLabel("Downloading repaired files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
@@ -118,7 +118,7 @@ namespace launcher.Classes.Game
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Repair);
-            GameFiles gameFiles = await Fetch.BranchFiles(false, true);
+            GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying bad optional files", Source.Repair);
@@ -128,7 +128,7 @@ namespace launcher.Classes.Game
             if (badFileCount > 0)
             {
                 DownloadManager.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
 
                 DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
@@ -156,7 +156,7 @@ namespace launcher.Classes.Game
             var checksumTasks = FileManager.PrepareLangChecksumTasks(branchDirectory, langs);
 
             DownloadManager.UpdateStatusLabel("Fetching language files", Source.Repair);
-            GameFiles langFiles = await Fetch.LangFile(langs, false);
+            GameFiles langFiles = await Fetch.LanguageFiles(langs, false);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying bad language files", Source.Repair);
@@ -166,7 +166,7 @@ namespace launcher.Classes.Game
             if (badFileCount > 0)
             {
                 DownloadManager.UpdateStatusLabel("Preparing language tasks", Source.Repair);
-                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
 
                 DownloadManager.UpdateStatusLabel("Downloading language files", Source.Repair);
                 await Task.WhenAll(downloadTasks);

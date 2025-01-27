@@ -1,17 +1,11 @@
 ﻿using launcher.Classes.BranchUtils;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
 using launcher.Classes.Global;
 using static launcher.Classes.Utilities.Logger;
-using launcher.Classes.Utilities;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using ZstdSharp;
-using static System.Windows.Forms.Design.AxImporter;
+using launcher.Classes.Managers;
+using launcher.Classes.Game;
 
 namespace launcher.Classes.CDN
 {
@@ -29,7 +23,7 @@ namespace launcher.Classes.CDN
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        public static async Task<GameFiles> BranchFiles(bool compressed, bool optional)
+        public static async Task<GameFiles> GameFiles(bool compressed, bool optional)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
@@ -69,7 +63,7 @@ namespace launcher.Classes.CDN
             return gameFiles;
         }
 
-        public static async Task<GameFiles> LangFile(List<string> languages, bool compressed = true)
+        public static async Task<GameFiles> LanguageFiles(List<string> languages, bool compressed = true)
         {
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingstring = compressed ? "mstr.zst" : "mstr";
@@ -90,23 +84,6 @@ namespace launcher.Classes.CDN
             gameFiles.files = gameFiles.files.Where(file => excludeLangRegex.IsMatch(file.name)).ToList();
 
             return gameFiles;
-        }
-    }
-
-    public static class Connection
-    {
-        public static bool Test()
-        {
-            try
-            {
-                using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead("https://cdn.r5r.org/launcher/config.json");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

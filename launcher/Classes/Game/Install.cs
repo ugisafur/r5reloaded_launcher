@@ -64,11 +64,11 @@ namespace launcher.Classes.Game
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching game files list", Source.Installer);
-            GameFiles gameFiles = await Fetch.BranchFiles(true, false);
+            GameFiles gameFiles = await Fetch.GameFiles(true, false);
 
             //Prepare download tasks
             DownloadManager.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = DownloadManager.InitializeDownloadTasks(gameFiles, branchDirectory);
+            var downloadTasks = DownloadManager.CreateDownloadTasks(gameFiles, branchDirectory);
 
             //Download base game files
             DownloadManager.UpdateStatusLabel("Downloading game files", Source.Installer);
@@ -127,11 +127,11 @@ namespace launcher.Classes.Game
 
             //Fetch compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Installer);
-            GameFiles optionalGameFiles = await Fetch.BranchFiles(true, true);
+            GameFiles optionalGameFiles = await Fetch.GameFiles(true, true);
 
             //Prepare download tasks
             DownloadManager.UpdateStatusLabel("Preparing optional download", Source.Installer);
-            var optionaldownloadTasks = DownloadManager.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
+            var optionaldownloadTasks = DownloadManager.CreateDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
             DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Installer);
@@ -190,9 +190,9 @@ namespace launcher.Classes.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            GameFiles langFiles = await Fetch.LangFile(langs);
+            GameFiles langFiles = await Fetch.LanguageFiles(langs);
 
-            var langdownloadTasks = DownloadManager.InitializeDownloadTasks(langFiles, branchDirectory);
+            var langdownloadTasks = DownloadManager.CreateDownloadTasks(langFiles, branchDirectory);
 
             await Task.WhenAll(langdownloadTasks);
 

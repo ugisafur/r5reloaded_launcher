@@ -97,49 +97,34 @@ namespace launcher.Classes.Utilities
             Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\"));
 
             string iniPath = Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini");
+
             if (!File.Exists(iniPath))
             {
                 IniFile file = new();
 
-                file.SetSetting("Settings", "Keep_All_Logs", true);
-                file.SetSetting("Settings", "Enable_Quit_On_Close", "");
-                file.SetSetting("Settings", "Enable_Notifications", true);
-                file.SetSetting("Settings", "Disable_Background_Video", false);
-                file.SetSetting("Settings", "Disable_Animations", false);
-                file.SetSetting("Settings", "Disable_Transitions", false);
-                file.SetSetting("Settings", "Concurrent_Downloads", 100);
-                file.SetSetting("Settings", "Download_Speed_Limit", 0);
-                file.SetSetting("Settings", "Library_Location", "");
-                file.SetSetting("Settings", "Stream_Video", true);
+                foreach (Vars setting in Enum.GetValues(typeof(Vars)))
+                {
+                    string settings_name = Enum.GetName(typeof(Vars), setting);
 
-                file.SetSetting("Advanced_Options", "Enable_Cheats", false);
-                file.SetSetting("Advanced_Options", "Enable_Developer", false);
-                file.SetSetting("Advanced_Options", "Show_Console", false);
-                file.SetSetting("Advanced_Options", "Color_Console", true);
-                file.SetSetting("Advanced_Options", "Playlists_File", "playlists_r5_patch.txt");
-                file.SetSetting("Advanced_Options", "Map", 0);
-                file.SetSetting("Advanced_Options", "Playlist", 0);
-                file.SetSetting("Advanced_Options", "Mode", 0);
-                file.SetSetting("Advanced_Options", "Visibility", 0);
-                file.SetSetting("Advanced_Options", "HostName", "");
-                file.SetSetting("Advanced_Options", "Command_Line", "");
-                file.SetSetting("Advanced_Options", "Resolution_Width", "");
-                file.SetSetting("Advanced_Options", "Resolution_Height", "");
-                file.SetSetting("Advanced_Options", "Reserved_Cores", "-1");
-                file.SetSetting("Advanced_Options", "Worker_Threads", "-1");
-                file.SetSetting("Advanced_Options", "Processor_Affinity", "0");
-                file.SetSetting("Advanced_Options", "No_Async", false);
-                file.SetSetting("Advanced_Options", "Encrypt_Packets", true);
-                file.SetSetting("Advanced_Options", "Queued_Packets", true);
-                file.SetSetting("Advanced_Options", "Random_Netkey", true);
-                file.SetSetting("Advanced_Options", "No_Timeout", false);
-                file.SetSetting("Advanced_Options", "Windowed", false);
-                file.SetSetting("Advanced_Options", "Borderless", false);
-                file.SetSetting("Advanced_Options", "Max_FPS", "0");
-                file.SetSetting("Advanced_Options", "Offline_Mode", false);
+                    switch (GetDefaultValue(setting))
+                    {
+                        case string s:
+                            file.SetSetting(VarSections[setting], settings_name, s);
+                            break;
 
-                file.SetSetting("Launcher", "SelectedBranch", "");
-                file.SetSetting("Launcher", "Ask_For_Tour", true);
+                        case bool b:
+                            file.SetSetting(VarSections[setting], settings_name, b);
+                            break;
+
+                        case int i:
+                            file.SetSetting(VarSections[setting], settings_name, i);
+                            break;
+
+                        default:
+                            file.SetSetting(VarSections[setting], settings_name, (string)GetDefaultValue(setting));
+                            break;
+                    }
+                }
 
                 file.Save(iniPath);
             }

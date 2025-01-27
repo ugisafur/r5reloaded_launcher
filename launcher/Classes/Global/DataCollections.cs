@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using System.Windows;
-using System.Windows.Media;
-using launcher.Classes.Utilities;
+using launcher.Classes.Game;
 
 namespace launcher.Classes.Global
 {
@@ -24,5 +18,13 @@ namespace launcher.Classes.Global
             new OnBoardingItem("News And Updates", "View latest updates, patch notes, guides, and anything else related to R5Reloaded straight from the R5R Team.", new Rect(102,77,190,116), new Vector2(455,128)),
             new OnBoardingItem("You're All Set", "You've successfully completed the Launcher Tour. If you have any questions or need further assistance, feel free to join our discord!", new Rect(135,95,0,0), new Vector2(430,305)),
             ];
+    }
+
+    public class OnBoardingItem(string title, string description, Rect geoRect, Vector2 translatePos)
+    {
+        public string Title { get; set; } = title;
+        public string Description { get; set; } = description;
+        public Rect geoRect { get; set; } = geoRect;
+        public Vector2 translatePos { get; set; } = translatePos;
     }
 }

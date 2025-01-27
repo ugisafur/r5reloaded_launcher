@@ -6,12 +6,10 @@ using static launcher.Classes.Global.References;
 using launcher.Classes.Global;
 using System.Globalization;
 using launcher.Classes.Utilities;
+using launcher.Classes.Game;
 
 namespace launcher
 {
-    /// <summary>
-    /// Interaction logic for GameSettings.xaml
-    /// </summary>
     public partial class GameSettings : UserControl
     {
         public List<GameItem> gameItems = [];

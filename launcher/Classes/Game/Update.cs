@@ -56,7 +56,7 @@ namespace launcher.Classes.Game
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching update files list", Source.Update);
-            GameFiles gameFiles = await Fetch.BranchFiles(false, false);
+            GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
             //Identify changed files
             DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Update);
@@ -66,7 +66,7 @@ namespace launcher.Classes.Game
             if (changedFileCount > 0)
             {
                 DownloadManager.UpdateStatusLabel("Preparing download tasks", Source.Update);
-                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
 
                 DownloadManager.UpdateStatusLabel("Downloading updated files", Source.Update);
                 await Task.WhenAll(downloadTasks);
@@ -111,7 +111,7 @@ namespace launcher.Classes.Game
 
             //Fetch non compressed base game file list
             DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Repair);
-            GameFiles gameFiles = await Fetch.BranchFiles(false, true);
+            GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
             //Identify bad files
             DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Repair);
@@ -121,7 +121,7 @@ namespace launcher.Classes.Game
             if (changedFileCount > 0)
             {
                 DownloadManager.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = DownloadManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
 
                 DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
@@ -141,7 +141,7 @@ namespace launcher.Classes.Game
 
             // Fetch the appropriate game files based on optfiles
 
-            GameFiles gameFiles = await Fetch.BranchFiles(false, optfiles);
+            GameFiles gameFiles = await Fetch.GameFiles(false, optfiles);
 
             foreach (var file in files)
             {

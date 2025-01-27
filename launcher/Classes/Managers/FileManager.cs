@@ -7,6 +7,7 @@ using launcher.Classes.Global;
 using launcher.Classes.Utilities;
 using launcher.Classes.BranchUtils;
 using System.Text.RegularExpressions;
+using launcher.Classes.Game;
 
 namespace launcher.Classes.Managers
 {

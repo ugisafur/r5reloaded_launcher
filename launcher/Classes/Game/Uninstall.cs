@@ -87,7 +87,7 @@ namespace launcher.Classes.Game
 
             DownloadManager.SetInstallState(true, "UNINSTALLING");
 
-            GameFiles langFiles = await CDN.Fetch.LangFile(lang, false);
+            GameFiles langFiles = await CDN.Fetch.LanguageFiles(lang, false);
 
             DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
             AppState.FilesLeft = langFiles.files.Count;

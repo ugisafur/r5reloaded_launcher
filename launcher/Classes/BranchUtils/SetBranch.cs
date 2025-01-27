@@ -1,4 +1,5 @@
-﻿using launcher.Classes.Utilities;
+﻿using launcher.Classes.Game;
+using launcher.Classes.Utilities;
 
 namespace launcher.Classes.BranchUtils
 {
