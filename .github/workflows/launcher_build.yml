@@ -26,17 +26,17 @@ jobs:
           path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
 
       - name: Get current date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $env:GITHUB_OUTPUT
-
+        id: uuid
+        run: echo "uuid=$(uuidgen) " >> $env:GITHUB_OUTPUT
+        
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: nightly-tag-${{ steps.date.outputs.date }}
-          release_name: nightly-release-${{ steps.date.outputs.date }}
+          tag_name: nightly-build-${{ steps.uuid.outputs.uuid }}
+          release_name: nightly-build-${{ steps.uuid.outputs.uuid }}
           draft: false
           prerelease: true
 
