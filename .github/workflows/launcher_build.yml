@@ -11,8 +11,7 @@ jobs:
   nightly:
     name: Deploy Nightly
     runs-on: windows-latest
-    permissions:
-      contents: write
+    permissions: write-all
 
     steps:
       # Checkout the repository
