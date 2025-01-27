@@ -18,12 +18,10 @@ jobs:
 
       # Step 1: Publish
       - name: Publish
-        if: steps.check_commits.outputs.commits_found == 'true'
         run: dotnet publish ./launcher/launcher.csproj --runtime win-x64 -p:PublishSingleFile=true --self-contained false --framework net8.0-windows7.0
 
       # Step 2: Upload Build Artifact
       - name: Upload Build Artifact
-        if: steps.check_commits.outputs.commits_found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Launcher_Artifact
@@ -31,7 +29,6 @@ jobs:
 
       # Step 3: Zip Release
       - name: Zip Release
-        if: steps.check_commits.outputs.commits_found == 'true'
         uses: vimtor/action-zip@v1.2
         with:
           files: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
@@ -39,7 +36,6 @@ jobs:
 
       # Step 4: Deploy Nightly Release
       - name: Deploy Nightly Release
-        if: steps.check_commits.outputs.commits_found == 'true'
         uses: WebFreak001/deploy-nightly@v3.1.0
         with:
           upload_url: https://uploads.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases/196333904/assets{?name,label} 
