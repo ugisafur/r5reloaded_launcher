@@ -37,4 +37,3 @@ jobs:
           asset_name: launcher-nightly-$$.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
           asset_content_type: application/zip
           max_releases: 4
-          ignore_hash: false
