@@ -18,3 +18,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Publish
       run: dotnet publish ./launcher/launcher.csproj --runtime win-x64 --self-contained true --framework net8.0-windows7.0
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+         name: Launcher_Artifact
+         path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/
