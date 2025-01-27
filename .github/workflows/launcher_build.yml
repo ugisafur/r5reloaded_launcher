@@ -25,9 +25,11 @@ jobs:
           name: Launcher_Artifact
           path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
 
-      - name: Get current date
-        id: uuid
-        run: echo "uuid=$(uuidgen) " >> $env:GITHUB_OUTPUT
+      - name: Generate build number
+        id: build_number
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
         
       - name: Create Release
         id: create_release
@@ -35,8 +37,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: nightly-build-${{ steps.uuid.outputs.uuid }}
-          release_name: nightly-build-${{ steps.uuid.outputs.uuid }}
+          tag_name: nightly-build-${{ steps.buildnumber.outputs.build_number }}
+          release_name: nightly-release-${{ steps.buildnumber.outputs.build_number }}
           draft: false
           prerelease: true
 
