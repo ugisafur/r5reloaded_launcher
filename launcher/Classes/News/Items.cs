@@ -68,7 +68,7 @@ namespace launcher.Classes.News
             NewLegends.Add(new NewsItemSmall("Follow Us On Twitter", "Follow us on twitter to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://twitter.com/r5reloaded", "Follow Twitter"));
         }
 
-        public static async void SetPage(int index)
+        public static void SetPage(int index)
         {
             List<UIElement> selected = Pages[index];
             NewsPanel.Children.Clear();

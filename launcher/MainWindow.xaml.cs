@@ -145,43 +145,6 @@ namespace launcher
             }
         }
 
-        private async Task LoadVideoBackground()
-        {
-            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
-            {
-                string videoUrl = Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
-                Background_Video.Source = new Uri(videoUrl, UriKind.Absolute);
-
-                double bufferingProgress = Background_Video.BufferingProgress;
-                while (bufferingProgress < 0.3)
-                {
-                    bufferingProgress = Background_Video.BufferingProgress;
-                    await Task.Delay(100);
-                }
-
-                LogInfo(Source.Launcher, $"Streaming video background from: {videoUrl}");
-            }
-            else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
-            {
-                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
-                LogInfo(Source.Launcher, "Loading local video background");
-            }
-
-            Background_Video.MediaOpened += (sender, e) =>
-            {
-                Background_Video.Play();
-            };
-
-            await Task.Delay(1000);
-
-            Background_Video.MediaFailed += (sender, e) =>
-            {
-                LogInfo(Source.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
-                Background_Image.Visibility = Visibility.Visible;
-                Background_Video.Visibility = Visibility.Hidden;
-            };
-        }
-
         private void Current_Exit(object sender, ExitEventArgs e)
         {
             System_Tray.Dispose();
@@ -409,7 +372,178 @@ namespace launcher
             Downloads_Button.IsEnabled = false;
         }
 
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Transition_Rect_Translate.BeginAnimation(TranslateTransform.XProperty, null);
+
+            WindowClip.Rect = new Rect(0, 0, ActualWidth, ActualHeight);
+            Transition_Rect.Width = ActualWidth * 4;
+            Transition_Rect.Height = ActualHeight - 64;
+            Transition_Rect_Translate.X = -(ActualWidth * 4) - 60;
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                // Store current size and position before maximizing
+                _previousWidth = Width;
+                _previousHeight = Height;
+                _previousTop = Top;
+                _previousLeft = Left;
+
+                // Adjust the window to fit the screen's working area
+                var screen = System.Windows.SystemParameters.WorkArea;
+                WindowState = WindowState.Normal;
+                Top = screen.Top;
+                Left = screen.Left;
+                Width = screen.Width;
+                Height = screen.Height;
+
+                _isMaximized = true;
+            }
+        }
+
+        public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
+        {
+            private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            private readonly Func<bool> _canExecute = canExecute;
+
+            public bool CanExecute(object parameter) =>
+                _canExecute == null || _canExecute();
+
+            public void Execute(object parameter) =>
+                _execute();
+
+            public event EventHandler CanExecuteChanged
+            {
+                add { CommandManager.RequerySuggested += value; }
+                remove { CommandManager.RequerySuggested -= value; }
+            }
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void NewsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+            int index = NewsButtons.IndexOf(button);
+            AppManager.MoveNewsRect(index);
+        }
+
+        private bool _isNewsRectShown = false;
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.HorizontalOffset > 1)
+            {
+                if (_isNewsRectShown)
+                    return;
+
+                ShowNewsRect();
+            }
+            else
+            {
+                if (!_isNewsRectShown)
+                    return;
+
+                HideNewsRect();
+            }
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (NewsScrollViewer.ScrollableWidth > 0)
+            {
+                e.Handled = true;
+                double newOffset = NewsScrollViewer.HorizontalOffset - (e.Delta > 0 ? 30 : -30);
+                newOffset = Math.Max(0, Math.Min(newOffset, NewsScrollViewer.ScrollableWidth));
+                NewsScrollViewer.ScrollToHorizontalOffset(newOffset);
+            }
+        }
+
         #region functions
+
+        private void ShowNewsRect()
+        {
+            _isNewsRectShown = true;
+
+            Storyboard storyboard = new Storyboard();
+
+            // Fade-in animation
+            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
+            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
+            storyboard.Children.Add(fadeInAnimation);
+
+            storyboard.Begin();
+        }
+
+        private void HideNewsRect()
+        {
+            _isNewsRectShown = false;
+
+            Storyboard storyboard = new Storyboard();
+
+            // Fade-in animation
+            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
+            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
+            storyboard.Children.Add(fadeInAnimation);
+
+            storyboard.Begin();
+        }
+
+        private async Task LoadVideoBackground()
+        {
+            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
+            {
+                string videoUrl = Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
+                Background_Video.Source = new Uri(videoUrl, UriKind.Absolute);
+
+                double bufferingProgress = Background_Video.BufferingProgress;
+                while (bufferingProgress < 0.3)
+                {
+                    bufferingProgress = Background_Video.BufferingProgress;
+                    await Task.Delay(100);
+                }
+
+                LogInfo(Source.Launcher, $"Streaming video background from: {videoUrl}");
+            }
+            else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
+            {
+                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
+                LogInfo(Source.Launcher, "Loading local video background");
+            }
+
+            Background_Video.MediaOpened += (sender, e) =>
+            {
+                Background_Video.Play();
+            };
+
+            await Task.Delay(1000);
+
+            Background_Video.MediaFailed += (sender, e) =>
+            {
+                LogInfo(Source.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
+                Background_Image.Visibility = Visibility.Visible;
+                Background_Video.Visibility = Visibility.Hidden;
+            };
+        }
 
         private void HandleLocalBranch(string branchTitle)
         {
@@ -638,139 +772,5 @@ namespace launcher
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion functions
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            Transition_Rect_Translate.BeginAnimation(TranslateTransform.XProperty, null);
-
-            WindowClip.Rect = new Rect(0, 0, ActualWidth, ActualHeight);
-            Transition_Rect.Width = ActualWidth * 4;
-            Transition_Rect.Height = ActualHeight - 64;
-            Transition_Rect_Translate.X = -(ActualWidth * 4) - 60;
-        }
-
-        private void Window_StateChanged(object sender, EventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                // Store current size and position before maximizing
-                _previousWidth = Width;
-                _previousHeight = Height;
-                _previousTop = Top;
-                _previousLeft = Left;
-
-                // Adjust the window to fit the screen's working area
-                var screen = System.Windows.SystemParameters.WorkArea;
-                WindowState = WindowState.Normal;
-                Top = screen.Top;
-                Left = screen.Left;
-                Width = screen.Width;
-                Height = screen.Height;
-
-                _isMaximized = true;
-            }
-        }
-
-        public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
-        {
-            private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            private readonly Func<bool> _canExecute = canExecute;
-
-            public bool CanExecute(object parameter) =>
-                _canExecute == null || _canExecute();
-
-            public void Execute(object parameter) =>
-                _execute();
-
-            public event EventHandler CanExecuteChanged
-            {
-                add { CommandManager.RequerySuggested += value; }
-                remove { CommandManager.RequerySuggested -= value; }
-            }
-        }
-
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void NewsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = (Button)sender;
-            int index = NewsButtons.IndexOf(button);
-            AppManager.MoveNewsRect(index);
-        }
-
-        private bool _isNewsRectShown = false;
-
-        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            if (e.HorizontalOffset > 1)
-            {
-                if (_isNewsRectShown)
-                    return;
-
-                ShowNewsRect();
-            }
-            else
-            {
-                if (!_isNewsRectShown)
-                    return;
-
-                HideNewsRect();
-            }
-        }
-
-        private void ShowNewsRect()
-        {
-            _isNewsRectShown = true;
-
-            Storyboard storyboard = new Storyboard();
-
-            // Fade-in animation
-            DoubleAnimation fadeInAnimation = new DoubleAnimation
-            {
-                From = 0,
-                To = 1,
-                Duration = TimeSpan.FromMilliseconds(300),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
-            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
-            storyboard.Children.Add(fadeInAnimation);
-
-            storyboard.Begin();
-        }
-
-        private void HideNewsRect()
-        {
-            _isNewsRectShown = false;
-
-            Storyboard storyboard = new Storyboard();
-
-            // Fade-in animation
-            DoubleAnimation fadeInAnimation = new DoubleAnimation
-            {
-                From = 1,
-                To = 0,
-                Duration = TimeSpan.FromMilliseconds(300),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-            Storyboard.SetTarget(fadeInAnimation, LeftNewsRect);
-            Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(OpacityProperty));
-            storyboard.Children.Add(fadeInAnimation);
-
-            storyboard.Begin();
-        }
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (NewsScrollViewer.ScrollableWidth > 0)
-            {
-                e.Handled = true;
-                double newOffset = NewsScrollViewer.HorizontalOffset - (e.Delta > 0 ? 30 : -30);
-                newOffset = Math.Max(0, Math.Min(newOffset, NewsScrollViewer.ScrollableWidth));
-                NewsScrollViewer.ScrollToHorizontalOffset(newOffset);
-            }
-        }
     }
 }

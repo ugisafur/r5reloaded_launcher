@@ -10,7 +10,7 @@ namespace launcher.Classes.Utilities
         public static PlaylistRoot Parse(string filePath)
         {
             PlaylistRoot data = new();
-            FileStream stream = File.OpenRead(filePath); // or any other Stream
+            FileStream stream = File.OpenRead(filePath);
             try
             {
                 KVSerializerOptions options = new()

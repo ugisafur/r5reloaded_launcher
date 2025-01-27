@@ -70,6 +70,7 @@
     <SolidColorBrush x:Key="SettingButtonColorNormal" Color="#FF54ADF7" />
     <SolidColorBrush x:Key="SettingButtonColorHover" Color="#95CCFA" />
     <SolidColorBrush x:Key="SettingButtonColorPressed" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="SettingButtonColorDisabled" Color="#FF3D607D" />
 
     <SolidColorBrush x:Key="UninstallButtonTextColor" Color="#DD7477" />
     <SolidColorBrush x:Key="UninstallButtonColorNormal" Color="Transparent" />

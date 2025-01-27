@@ -1,4 +1,5 @@
 ﻿using launcher.Classes.Global;
+using System.Globalization;
 using System.IO;
 
 namespace launcher.Classes.Utilities
@@ -34,7 +35,6 @@ namespace launcher.Classes.Utilities
 
         static Logger()
         {
-            // Clear logs if the setting is disabled
             if (!(bool)Ini.Get(Ini.Vars.Keep_All_Logs))
             {
                 string[] folders = Directory.GetDirectories(Path.Combine(Launcher.PATH, $"launcher_data\\logs\\"), "*");
@@ -44,7 +44,6 @@ namespace launcher.Classes.Utilities
                 }
             }
 
-            // Ensure the directory exists
             string folderUUID = GenerateFolderUUID();
             LogFilePath = Path.Combine(Launcher.PATH, $"launcher_data\\logs\\{folderUUID}", LogFileName);
 
@@ -79,7 +78,7 @@ Message: {ex.Message}
             }
             catch
             {
-                // Handle or log the failure to write to the file if needed
+                // failed
             }
         }
 
@@ -90,8 +89,8 @@ Message: {ex.Message}
 
         public static void Log(Type type, Source source, string message)
         {
-            string typeString = GetTypeString(type);
-            string sourceString = GetSourceString(source);
+            string typeString = Enum.GetName(typeof(Type), type).ToUpper(new CultureInfo("en-US"));
+            string sourceString = Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US"));
             string logMessage = $"{{ \"time\":\"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\", \"[{typeString}] \": \"[{sourceString}] - {message} }},";
 
 #if DEBUG
@@ -104,39 +103,8 @@ Message: {ex.Message}
             }
             catch
             {
-                //throw new Exception($"Failed to write to log file: {ex.Message}");
+                // failed
             }
-        }
-
-        private static string GetTypeString(Type type)
-        {
-            return type switch
-            {
-                Type.Info => "INFO",
-                Type.Warning => "WARNING",
-                Type.Error => "ERROR",
-                _ => "UNKNOWN"
-            };
-        }
-
-        private static string GetSourceString(Source source)
-        {
-            return source switch
-            {
-                Source.Launcher => "Launcher",
-                Source.DownloadManager => "DownloadManager",
-                Source.API => "API",
-                Source.Installer => "Installer",
-                Source.Update => "Update",
-                Source.UpdateChecker => "UpdateChecker",
-                Source.Repair => "Repair",
-                Source.Patcher => "Patcher",
-                Source.FileManager => "FileManager",
-                Source.Decompression => "Decompression",
-                Source.Ini => "INI",
-                Source.VDF => "VDF",
-                _ => "Unknown"
-            };
         }
 
         #region Logging Helpers

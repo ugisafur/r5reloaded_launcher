@@ -19,9 +19,9 @@ namespace launcher.Classes.Game
 
             if (!Directory.Exists(GetBranch.Directory()))
             {
-                Ini.Set(GetBranch.Name(false), "Is_Installed", false);
-                Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
-                Ini.Set(GetBranch.Name(false), "Version", "");
+                SetBranch.Installed(false);
+                SetBranch.DownloadHDTextures(false);
+                SetBranch.Version("");
                 return;
             }
 
@@ -63,9 +63,9 @@ namespace launcher.Classes.Game
 
             Directory.Delete(GetBranch.Directory(), true);
 
-            Ini.Set(GetBranch.Name(false), "Is_Installed", false);
-            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
-            Ini.Set(GetBranch.Name(false), "Version", "");
+            SetBranch.Installed(false);
+            SetBranch.DownloadHDTextures(false);
+            SetBranch.Version("");
 
             DownloadManager.SetInstallState(false, "INSTALL");
 
@@ -123,6 +123,57 @@ namespace launcher.Classes.Game
             {
                 checkbox.IsEnabled = true;
             });
+        }
+
+        public static async void HDTextures(Branch branch)
+        {
+            if (!GetBranch.Installed(branch) && !Directory.Exists(GetBranch.Directory(branch)))
+                return;
+
+            if (!Directory.Exists(GetBranch.Directory(branch)))
+                return;
+
+            DownloadManager.SetInstallState(true, "UNINSTALLING");
+
+            string[] opt_files = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
+
+            DownloadManager.UpdateStatusLabel("Removing HD Textures", Source.Installer);
+            AppState.FilesLeft = opt_files.Length;
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = opt_files.Length;
+                Files_Label.Text = $"{AppState.FilesLeft} files left";
+            });
+
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(opt_files, file =>
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch
+                    {
+                        LogError(Source.Installer, $"Failed to delete file: {file}");
+                    }
+                    finally
+                    {
+                        appDispatcher.Invoke(() =>
+                        {
+                            Progress_Bar.Value++;
+                            Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                        });
+                    }
+                });
+            });
+
+            SetBranch.DownloadHDTextures(false, branch);
+
+            DownloadManager.SetInstallState(false, "PLAY");
+
+            AppManager.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) has been uninstalled!", BalloonIcon.Info);
         }
     }
 }

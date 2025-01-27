@@ -54,8 +54,8 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorDisabled}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorDisabled}" />
                                 <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -240,8 +240,7 @@
             <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,344,457,0" Content="INSTALL BRANCH" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
             <TextBlock Text="Game Files" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
             <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{StaticResource BranchDisabledTextColor}" FontSize="24" Margin="50,350,580,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="InstallOpt" Width="215" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,217,0" Content="INSTALL HD TEXTURES" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
-            <TextBlock x:Name="HDTexturesInstalledTxt" Text="HD Textures Installed" Width="235" TextWrapping="Wrap" Foreground="{StaticResource HDTexturesInstalledColor}" FontSize="24" Margin="391,350,194,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,0,0" Content="UNINSTALL HD TEXTURES" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
             <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="14" Margin="48,448,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
             <TextBlock Text="Audio Languages" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,421,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
             <Grid Margin="50,473,50,31" x:Name="LangBox">

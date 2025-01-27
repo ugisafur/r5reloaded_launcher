@@ -47,11 +47,21 @@ namespace launcher
             MaxSpeed.Text = $"{(int)Ini.Get(Ini.Vars.Download_Speed_Limit)}";
             ConDownloads.SelectedIndex = Array.IndexOf(downloadSpeeds, (int)Ini.Get(Ini.Vars.Concurrent_Downloads));
 
-            MaxSpeed.TextChanged += MaxSpeed_TextChanged;
+            MaxSpeed.LostFocus += MaxSpeed_LostFocus;
             MaxSpeed.PreviewTextInput += NumericTextBox_PreviewTextInput;
             MaxSpeed.PreviewKeyDown += NumericTextBox_PreviewKeyDown;
+            MaxSpeed.KeyDown += MaxSpeed_KeyDown;
 
             ConDownloads.SelectionChanged += ConDownloads_SelectionChanged;
+        }
+
+        private void MaxSpeed_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (((int)Ini.Get(Ini.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
+                    Ini.Set(Ini.Vars.Download_Speed_Limit, MaxSpeed.Text);
+            }
         }
 
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -71,7 +81,7 @@ namespace launcher
             }
         }
 
-        private void MaxSpeed_TextChanged(object sender, TextChangedEventArgs e)
+        private void MaxSpeed_LostFocus(object sender, RoutedEventArgs e)
         {
             if (((int)Ini.Get(Ini.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
                 Ini.Set(Ini.Vars.Download_Speed_Limit, MaxSpeed.Text);

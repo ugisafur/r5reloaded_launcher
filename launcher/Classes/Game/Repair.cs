@@ -78,20 +78,20 @@ namespace launcher.Classes.Game
             }
 
             //Update launcher config
-            Ini.Set(GetBranch.Name(false), "Is_Installed", true);
-            Ini.Set(GetBranch.Name(false), "Version", GetBranch.ServerVersion());
+            SetBranch.Installed(true);
+            SetBranch.Version(GetBranch.ServerVersion());
 
             AppManager.SetupAdvancedMenu();
             AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been repaired!", BalloonIcon.Info);
 
             string[] find_opt_files = Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories);
             if (find_opt_files.Length > 0)
-                Ini.Set(GetBranch.Name(false), "Download_HD_Textures", true);
+                SetBranch.DownloadHDTextures(true);
 
             //Install finished
             DownloadManager.SetInstallState(false);
 
-            if (Ini.Get(GetBranch.Name(false), "Download_HD_Textures", false))
+            if (GetBranch.DownloadHDTextures())
                 Task.Run(() => RepairOptionalFiles());
 
             return repairSuccess;

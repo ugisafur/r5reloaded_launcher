@@ -18,6 +18,11 @@ namespace launcher
     /// </summary>
     public partial class StatusPopup : UserControl
     {
+        private const int refresh_interval = 30;
+        private const string website_url = "https://r5reloaded.com/";
+        private const string ms_url = "https://r5r.org/";
+        private const string cdn_url = "https://cdn.r5r.org/launcher/config.json";
+
         public StatusPopup()
         {
             InitializeComponent();
@@ -31,8 +36,8 @@ namespace launcher
         {
             Task.Run(() => GetStatusInfo());
 
-            int refresh_interval = 30;
             int current_time = 0;
+
             while (true)
             {
                 await Task.Delay(1000);
@@ -53,11 +58,9 @@ namespace launcher
 
         private async void GetStatusInfo()
         {
-            LogInfo(Source.API, "Checking status of services...");
-
-            bool isWebsiteUP = await IsUrlUp("https://r5reloaded.com/");
-            bool isMSUP = await IsUrlUp("https://r5r.org/");
-            bool isCDNUP = await IsUrlUp("https://cdn.r5r.org/launcher/config.json");
+            bool isWebsiteUP = await IsUrlUp(website_url);
+            bool isMSUP = await IsUrlUp(ms_url);
+            bool isCDNUP = await IsUrlUp(cdn_url);
 
             Dispatcher.Invoke(() =>
             {
@@ -79,7 +82,7 @@ namespace launcher
                 return;
             }
 
-            string serverlist = await SendPostRequestAsync("https://r5r.org/servers", "{}");
+            string serverlist = await SendPostRequestAsync($"{ms_url}servers", "{}");
 
             if (string.IsNullOrEmpty(serverlist))
             {
@@ -158,7 +161,7 @@ namespace launcher
 
         private void moreInfo_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start https://status.r5reloaded.com") { CreateNoWindow = true });
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {website_url}") { CreateNoWindow = true });
         }
     }
 }

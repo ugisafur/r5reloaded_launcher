@@ -73,8 +73,8 @@ namespace launcher.Classes.Game
             }
 
             //Update launcher config
-            Ini.Set(GetBranch.Name(false), "Is_Installed", true);
-            Ini.Set(GetBranch.Name(false), "Version", GetBranch.ServerVersion());
+            SetBranch.Installed(true);
+            SetBranch.Version(GetBranch.ServerVersion());
 
             AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
 
@@ -83,7 +83,7 @@ namespace launcher.Classes.Game
             //Install finished
             DownloadManager.SetInstallState(false);
 
-            if (Ini.Get(GetBranch.Name(false), "Download_HD_Textures", false))
+            if (GetBranch.DownloadHDTextures())
                 Task.Run(() => UpdateOptionalWithoutPatching());
         }
 

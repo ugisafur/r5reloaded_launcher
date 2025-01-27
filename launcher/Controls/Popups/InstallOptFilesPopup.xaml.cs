@@ -21,7 +21,7 @@ namespace launcher
         private void close_Click(object sender, RoutedEventArgs e)
         {
             AppManager.HideDownloadOptlFiles();
-            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
+            SetBranch.DownloadHDTextures(false);
         }
 
         private void Download_Click(object sender, RoutedEventArgs e)
@@ -32,14 +32,14 @@ namespace launcher
                 return;
             }
 
-            Task.Run(() => Install.InstallOptionalFiles());
+            Task.Run(() => Install.HDTextures());
             AppManager.HideDownloadOptlFiles();
         }
 
         private void Later_Click(object sender, RoutedEventArgs e)
         {
             AppManager.HideDownloadOptlFiles();
-            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", false);
+            SetBranch.DownloadHDTextures(false);
         }
     }
 }

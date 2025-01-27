@@ -341,8 +341,6 @@ namespace launcher.Classes.Managers
 
             // Use the global rate limiter
             using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
-            // For custom limiter, use:
-            // using var throttledStream = new ThrottledStream(responseStream);
 
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
@@ -434,6 +432,8 @@ namespace launcher.Classes.Managers
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
+
+                Settings_Control.gameInstalls.UpdateGameItems();
             });
 
             ShowProgressBar(installing);

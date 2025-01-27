@@ -52,7 +52,7 @@ namespace launcher
 
         private void acknowledge_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(GetBranch.Name(false), "EULA_Accepted", true);
+            SetBranch.EULAAccepted(true);
             Task.Run(() => Install.Start());
             AppManager.HideEULA();
         }

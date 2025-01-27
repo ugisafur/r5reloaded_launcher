@@ -10,11 +10,6 @@ using launcher.Classes.Global;
 
 namespace launcher.Classes.Utilities
 {
-    /// <summary>
-    /// The UpdateChecker class is responsible for periodically checking for updates to both the launcher and the game.
-    /// It fetches the latest configuration from a remote server, determines if an update is necessary, and handles the update process.
-    /// This class uses asynchronous operations to perform network requests and updates the UI using a Dispatcher.
-    /// </summary>
     public static class UpdateChecker
     {
         private static bool iqnoredLauncherUpdate = false;
@@ -83,7 +78,7 @@ namespace launcher.Classes.Utilities
             catch (HttpRequestException ex)
             {
                 LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
-                return null; //Indicate failure to the caller
+                return null;
             }
             finally
             {
@@ -107,7 +102,7 @@ namespace launcher.Classes.Utilities
                     return false;
             }
 
-            return false; // Versions are the same
+            return false;
         }
 
         private static bool ShouldUpdateLauncher(ServerConfig newServerConfig)
@@ -124,7 +119,7 @@ namespace launcher.Classes.Utilities
                    newServerConfig.branches[GetBranch.Index()].allow_updates &&
                    Configuration.LauncherConfig != null &&
                    !GetBranch.IsLocalBranch() &&
-                   Ini.Get(GetBranch.Name(), "Is_Installed", false) &&
+                   GetBranch.Installed() &&
                    GetBranch.LocalVersion() != GetBranch.ServerVersion();
         }
 
@@ -155,7 +150,6 @@ namespace launcher.Classes.Utilities
                 Arguments = $"/c start \"\" \"{Launcher.PATH}\\launcher_data\\updater.exe\""
             };
 
-            // Start the new process via cmd
             Process.Start(startInfo);
 
             Environment.Exit(0);

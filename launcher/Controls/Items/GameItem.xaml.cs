@@ -8,6 +8,7 @@ using launcher.Classes.Game;
 using launcher.Classes.Utilities;
 using launcher.Classes.Managers;
 using System.IO;
+using launcher.Classes.BranchUtils;
 
 namespace launcher
 {
@@ -30,6 +31,7 @@ namespace launcher
         public bool isLastItem = false;
         public string branchName = "";
         public int index = 0;
+        public Branch gameBranch { get; set; }
 
         public GameItem()
         {
@@ -38,10 +40,12 @@ namespace launcher
 
         public void SetupGameItem(Branch branch)
         {
-            BranchName.Text = $"R5Reloaded - {branch.branch.ToUpper(new CultureInfo("en-US"))}";
-            InstallPath.Text = $"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}";
-            UninstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Visible : Visibility.Hidden;
-            InstallGame.Visibility = Ini.Get(branch.branch, "Is_Installed", false) ? Visibility.Hidden : Visibility.Visible;
+            gameBranch = branch;
+
+            BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, branch)}";
+            InstallPath.Text = $"{GetBranch.Directory(branch)}";
+            UninstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Visible : Visibility.Hidden;
+            InstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Hidden : Visibility.Visible;
             branchName = branch.branch;
 
             UninstallGame.IsEnabled = !AppState.IsInstalling;
@@ -54,15 +58,11 @@ namespace launcher
             VerifyGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
             BranchDisabledTxt.Visibility = branch.enabled ? Visibility.Hidden : Visibility.Visible;
 
-            if (branch.enabled && Ini.Get(branch.branch, "Is_Installed", false))
+            InstallOpt.Visibility = Visibility.Hidden;
+            if (GetBranch.Enabled(branch) && GetBranch.Installed(branch))
             {
-                InstallOpt.Visibility = Ini.Get(branch.branch, "Download_HD_Textures", false) ? Visibility.Hidden : Visibility.Visible;
-                HDTexturesInstalledTxt.Visibility = Ini.Get(branch.branch, "Download_HD_Textures", false) ? Visibility.Visible : Visibility.Hidden;
-            }
-            else
-            {
-                InstallOpt.Visibility = Visibility.Hidden;
-                HDTexturesInstalledTxt.Visibility = Visibility.Hidden;
+                InstallOpt.Visibility = Visibility.Visible;
+                InstallOpt.Content = GetBranch.DownloadHDTextures(branch) ? "UINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
 
             int row = 0;
@@ -95,7 +95,7 @@ namespace launcher
                 }
                 else
                 {
-                    langCheckBox.IsEnabled = lang.ToLower(new CultureInfo("en-US")) == "english" ? false : Classes.BranchUtils.GetBranch.Installed(branch);
+                    langCheckBox.IsEnabled = lang.ToLower(new CultureInfo("en-US")) == "english" ? false : GetBranch.Installed(branch);
                 }
 
                 langCheckBox.Checked += (sender, e) =>
@@ -121,10 +121,10 @@ namespace launcher
 
         private bool DoesLangFileExist(Branch branch, string lang)
         {
-            if (!File.Exists($"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}.mstr"))
+            if (!File.Exists($"{GetBranch.Directory(gameBranch)}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}.mstr"))
                 return false;
 
-            if (!File.Exists($"{(string)Ini.Get(Ini.Vars.Library_Location)}\\R5R Library\\{branch.branch.ToUpper(new CultureInfo("en-US"))}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}_patch_1.mstr"))
+            if (!File.Exists($"{GetBranch.Directory(gameBranch)}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}_patch_1.mstr"))
                 return false;
 
             return true;
@@ -254,7 +254,10 @@ namespace launcher
                 return;
 
             Branch_Combobox.SelectedIndex = index;
-            Task.Run(() => Repair.Start());
+
+            if (GetBranch.Installed(gameBranch))
+                Task.Run(() => Repair.Start());
+
             AppManager.HideSettingsControl();
         }
 
@@ -264,7 +267,10 @@ namespace launcher
                 return;
 
             Branch_Combobox.SelectedIndex = index;
-            Task.Run(() => Uninstall.Start());
+
+            if (GetBranch.Installed(gameBranch))
+                Task.Run(() => Uninstall.Start());
+
             AppManager.HideSettingsControl();
         }
 
@@ -274,7 +280,10 @@ namespace launcher
                 return;
 
             Branch_Combobox.SelectedIndex = index;
-            Task.Run(() => Install.Start());
+
+            if (!GetBranch.Installed(gameBranch))
+                Task.Run(() => Install.Start());
+
             AppManager.HideSettingsControl();
         }
 
@@ -285,7 +294,11 @@ namespace launcher
 
             Branch_Combobox.SelectedIndex = index;
             AppManager.HideSettingsControl();
-            AppManager.ShowDownloadOptlFiles();
+
+            if (GetBranch.DownloadHDTextures(gameBranch))
+                Task.Run(() => Uninstall.HDTextures(gameBranch));
+            else
+                AppManager.ShowDownloadOptlFiles();
         }
     }
 }

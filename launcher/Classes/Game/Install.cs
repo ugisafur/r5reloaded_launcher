@@ -90,8 +90,8 @@ namespace launcher.Classes.Game
             }
 
             //Set branch as installed
-            Ini.Set(GetBranch.Name(false), "Is_Installed", true);
-            Ini.Set(GetBranch.Name(false), "Version", GetBranch.ServerVersion());
+            SetBranch.Installed(true);
+            SetBranch.Version(GetBranch.ServerVersion());
 
             AppManager.SetupAdvancedMenu();
             AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
@@ -105,7 +105,7 @@ namespace launcher.Classes.Game
             }));
         }
 
-        public static async Task InstallOptionalFiles()
+        public static async Task HDTextures()
         {
             if (AppState.IsInstalling)
                 return;
@@ -139,7 +139,7 @@ namespace launcher.Classes.Game
 
             DownloadManager.SetOptionalInstallState(false);
 
-            Ini.Set(GetBranch.Name(false), "Download_HD_Textures", true);
+            SetBranch.DownloadHDTextures(true);
 
             appDispatcher.Invoke(new Action(() =>
             {
