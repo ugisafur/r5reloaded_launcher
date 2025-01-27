@@ -16,29 +16,12 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
-      # Step 1: Check for commits in the last 24 hours
-      - name: Check for Recent Commits
-        id: check_commits
-        run: |
-          # Get the timestamp of the latest commit
-          LAST_COMMIT_TIMESTAMP=$(git log -1 --format=%ct)
-          # Get the current timestamp
-          CURRENT_TIMESTAMP=$(date +%s)
-          # Calculate the difference in seconds
-          TIME_DIFF=$((CURRENT_TIMESTAMP - LAST_COMMIT_TIMESTAMP))
-          # 86400 seconds = 24 hours
-          if [ $TIME_DIFF -le 86400 ]; then
-            echo "commits_found=true" >> $GITHUB_OUTPUT
-          else
-            echo "commits_found=false" >> $GITHUB_OUTPUT
-          fi
-
-      # Step 2: Publish (only if recent commits are found)
+      # Step 1: Publish
       - name: Publish
         if: steps.check_commits.outputs.commits_found == 'true'
         run: dotnet publish ./launcher/launcher.csproj --runtime win-x64 -p:PublishSingleFile=true --self-contained false --framework net8.0-windows7.0
 
-      # Step 3: Upload Build Artifact (only if recent commits are found)
+      # Step 2: Upload Build Artifact
       - name: Upload Build Artifact
         if: steps.check_commits.outputs.commits_found == 'true'
         uses: actions/upload-artifact@v4
@@ -46,7 +29,7 @@ jobs:
           name: Launcher_Artifact
           path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
 
-      # Step 4: Zip Release (only if recent commits are found)
+      # Step 3: Zip Release
       - name: Zip Release
         if: steps.check_commits.outputs.commits_found == 'true'
         uses: vimtor/action-zip@v1.2
@@ -54,7 +37,7 @@ jobs:
           files: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
           dest: launcher-nightly.zip
 
-      # Step 5: Deploy Nightly Release (only if recent commits are found)
+      # Step 4: Deploy Nightly Release
       - name: Deploy Nightly Release
         if: steps.check_commits.outputs.commits_found == 'true'
         uses: WebFreak001/deploy-nightly@v3.1.0
