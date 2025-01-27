@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using static launcher.Classes.Global.References;
-using launcher.Classes.Global;
+using static launcher.Global.References;
+using launcher.Global;
 
 namespace launcher
 {

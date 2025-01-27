@@ -1,4 +1,4 @@
-﻿using launcher.Classes.Global;
+﻿using launcher.Global;
 using System.Diagnostics;
 using System.Windows.Controls;
 

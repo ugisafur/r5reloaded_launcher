@@ -2,11 +2,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static launcher.Classes.Global.References;
-using launcher.Classes.Global;
+using static launcher.Global.References;
 using System.Globalization;
-using launcher.Classes.Utilities;
-using launcher.Classes.Game;
+using launcher.Game;
+using launcher.Global;
+using launcher.Utilities;
 
 namespace launcher
 {

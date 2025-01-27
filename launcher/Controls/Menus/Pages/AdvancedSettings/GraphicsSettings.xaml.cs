@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using launcher.Classes.Utilities;
-using static launcher.Classes.Utilities.Logger;
+using launcher.Utilities;
+using static launcher.Utilities.Logger;
 
 namespace launcher
 {

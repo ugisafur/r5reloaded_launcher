@@ -1,5 +1,5 @@
-﻿using launcher.Classes.Game;
-using launcher.Classes.Managers;
+﻿using launcher.Game;
+using launcher.Managers;
 using System.Windows;
 using System.Windows.Controls;
 

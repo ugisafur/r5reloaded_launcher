@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Classes.Global.References;
-using launcher.Classes.Global;
-using launcher.Classes.Managers;
+using static launcher.Global.References;
+using launcher.Global;
+using launcher.Managers;
 
 namespace launcher
 {

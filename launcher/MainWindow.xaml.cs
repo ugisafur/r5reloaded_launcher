@@ -1,10 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using launcher.Classes.BranchUtils;
-using launcher.Classes.CDN;
-using launcher.Classes.Game;
-using launcher.Classes.Global;
-using launcher.Classes.Managers;
-using launcher.Classes.Utilities;
+using launcher.BranchUtils;
+using launcher.CDN;
+using launcher.Game;
+using launcher.Global;
+using launcher.Managers;
+using launcher.News;
+using launcher.Utilities;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using static launcher.Classes.Utilities.Logger;
+using static launcher.Utilities.Logger;
 using Color = System.Windows.Media.Color;
 
 namespace launcher
@@ -105,7 +106,7 @@ namespace launcher
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
 
-            if (AppState.IsOnline && Classes.News.Connection.Test())
+            if (AppState.IsOnline && News.Connection.Test())
             {
                 AppManager.MoveNewsRect(0);
                 HideNewsRect();
@@ -204,7 +205,7 @@ namespace launcher
         {
             if (!AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch())
             {
-                Task.Run(() => Game.Launch());
+                Task.Run(() => GameUtils.Launch());
                 return;
             }
 

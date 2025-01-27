@@ -1,5 +1,4 @@
-﻿using launcher.Classes.Utilities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static launcher.Classes.Utilities.Logger;
+using static launcher.Utilities.Logger;
 
 namespace launcher
 {

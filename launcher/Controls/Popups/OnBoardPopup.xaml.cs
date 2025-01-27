@@ -1,18 +1,18 @@
-﻿using launcher.Classes.BranchUtils;
+﻿using launcher.BranchUtils;
 using System.Windows;
 using System.Windows.Controls;
-using launcher.Classes.Global;
-using launcher.Classes.Game;
-using launcher.Classes.Utilities;
-using launcher.Classes.Managers;
+using launcher.Game;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using Hardcodet.Wpf.TaskbarNotification;
-using static launcher.Classes.Global.References;
+using static launcher.Global.References;
 using System.Windows.Media;
 using System.Numerics;
 using System.Windows.Media.Animation;
 using System;
+using launcher.Global;
+using launcher.Utilities;
+using launcher.Managers;
 
 namespace launcher
 {

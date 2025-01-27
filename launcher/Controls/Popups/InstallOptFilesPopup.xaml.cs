@@ -1,10 +1,10 @@
-﻿using launcher.Classes.BranchUtils;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using launcher.Classes.Global;
-using launcher.Classes.Game;
-using launcher.Classes.Utilities;
-using launcher.Classes.Managers;
+using launcher.Utilities;
+using launcher.Game;
+using launcher.Global;
+using launcher.Managers;
+using launcher.BranchUtils;
 
 namespace launcher
 {

@@ -2,9 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using launcher.Classes.Global;
-using launcher.Classes.Managers;
-using launcher.Classes.Utilities;
+using launcher.Global;
+using launcher.Managers;
+using launcher.Utilities;
 
 namespace launcher
 {

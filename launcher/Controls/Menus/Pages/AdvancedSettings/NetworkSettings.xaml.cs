@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using launcher.Classes.Utilities;
-using static launcher.Classes.Utilities.Logger;
+using launcher.Utilities;
+using static launcher.Utilities.Logger;
 
 namespace launcher
 {

@@ -2,13 +2,13 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using static launcher.Classes.Global.References;
-using launcher.Classes.Global;
-using launcher.Classes.Game;
-using launcher.Classes.Utilities;
-using launcher.Classes.Managers;
+using static launcher.Global.References;
 using System.IO;
-using launcher.Classes.BranchUtils;
+using launcher.Game;
+using launcher.Global;
+using launcher.Utilities;
+using launcher.Managers;
+using launcher.BranchUtils;
 
 namespace launcher
 {
