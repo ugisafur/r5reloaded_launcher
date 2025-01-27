@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Publish
-      run: dotnet publish ./launcher/launcher.csproj --runtime win-x64 --self-contained true --framework net8.0-windows7.0
+      run: dotnet publish ./launcher/launcher.csproj --runtime win-x64 -p:PublishSingleFile=true --self-contained false --framework net8.0-windows7.0
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
