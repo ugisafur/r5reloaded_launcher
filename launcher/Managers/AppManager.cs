@@ -169,8 +169,11 @@ namespace launcher.Managers
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
+            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)Ini.Get(Ini.Vars.Updater_Version) != Configuration.ServerConfig.updaterVersion)
             {
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
+                    File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
+
                 LogInfo(Source.Launcher, "Downloading launcher updater");
                 Networking.HttpClient.GetAsync(Configuration.ServerConfig.launcherSelfUpdater)
                     .ContinueWith(response =>
@@ -179,6 +182,7 @@ namespace launcher.Managers
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
                             File.WriteAllBytes(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"), data);
+                            Ini.Set(Ini.Vars.Updater_Version, Configuration.ServerConfig.updaterVersion);
                         }
                     });
             }
@@ -530,14 +534,5 @@ namespace launcher.Managers
         }
 
 #endif
-    }
-
-    public class ServerConfig
-    {
-        public string launcherVersion { get; set; }
-        public string launcherSelfUpdater { get; set; }
-        public string launcherBackgroundVideo { get; set; }
-        public bool launcherallowUpdates { get; set; }
-        public List<Branch> branches { get; set; }
     }
 }

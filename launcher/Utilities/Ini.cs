@@ -46,7 +46,10 @@ namespace launcher.Utilities
             Offline_Mode,
             Keep_All_Logs,
             Stream_Video,
-            Ask_For_Tour
+            Ask_For_Tour,
+            Updater_Version,
+            Nightly_Builds,
+            Launcher_Version,
         }
 
         public static Dictionary<Vars, string> VarSections = new()
@@ -90,6 +93,9 @@ namespace launcher.Utilities
 
             { Vars.SelectedBranch, "Launcher" },
             { Vars.Ask_For_Tour, "Launcher" },
+            { Vars.Updater_Version, "Launcher" },
+            { Vars.Nightly_Builds, "Launcher" },
+            { Vars.Launcher_Version, "Launcher" },
         };
 
         public static Dictionary<Vars, object> VarDefaults = new()
@@ -106,6 +112,8 @@ namespace launcher.Utilities
             { Vars.Max_FPS, "0" },
             { Vars.SelectedBranch, "" },
             { Vars.Enable_Quit_On_Close, "" },
+            { Vars.Updater_Version, "" },
+            { Vars.Launcher_Version, "" },
 
             { Vars.Keep_All_Logs, true },
             { Vars.Enable_Notifications, true },
@@ -126,6 +134,7 @@ namespace launcher.Utilities
             { Vars.Offline_Mode, false },
             { Vars.Stream_Video, true },
             { Vars.Ask_For_Tour, true },
+            { Vars.Nightly_Builds, false },
 
             { Vars.Mode, 0 },
             { Vars.Visibility, 0 },

@@ -6,6 +6,7 @@ using System.Globalization;
 using launcher.Utilities;
 using launcher.Managers;
 using launcher.CDN;
+using launcher.Game;
 
 namespace launcher.Global
 {
@@ -18,8 +19,10 @@ namespace launcher.Global
 
         public static void Init()
         {
-            Version_Label.Text = Launcher.VERSION;
-            LogInfo(Source.Launcher, $"Launcher Version: {Launcher.VERSION}");
+            string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.VERSION;
+            Version_Label.Text = version;
+
+            LogInfo(Source.Launcher, $"Launcher Version: {version}");
 
             Launcher.PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
             LogInfo(Source.Launcher, $"Launcher path: {Launcher.PATH}");

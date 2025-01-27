@@ -111,6 +111,16 @@ namespace launcher.Game
         public string checksum { get; set; }
     }
 
+    public class ServerConfig
+    {
+        public string launcherVersion { get; set; }
+        public string updaterVersion { get; set; }
+        public string launcherSelfUpdater { get; set; }
+        public string launcherBackgroundVideo { get; set; }
+        public bool launcherallowUpdates { get; set; }
+        public List<Branch> branches { get; set; }
+    }
+
     public class Branch
     {
         public string branch { get; set; }
