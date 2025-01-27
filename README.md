@@ -3,6 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/AyeZeeBB/r5reloaded_launcher)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/AyeZeeBB/r5reloaded_launcher)
 ![GitHub issues](https://img.shields.io/github/issues/AyeZeeBB/r5reloaded_launcher)
+[![Launcher](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml/badge.svg)](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml)
 
 Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed to enhance your experience with R5Reloaded. This launcher provides a seamless way to download, install, repair, and update your game, all while offering advanced features like multi-branch support, optional HD texture downloads, and customizable launch parameters.
 
