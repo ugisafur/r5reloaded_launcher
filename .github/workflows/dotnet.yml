@@ -16,9 +16,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Restore dependencies
-      run: dotnet restore ./launcher/launcher.csproj
-    - name: Build
-      run: dotnet build ./launcher/launcher.csproj --no-restore
     - name: Publish
-      run: dotnet publish ./launcher/launcher.csproj -p:PublishProfile=FolderProfile --self-contained true --runtime win-x64 --framework net8.0
+      run: dotnet publish ./launcher/launcher.csproj -windows -p:PublishProfile=FolderProfile --self-contained true --runtime win-x64 --framework net8.0
