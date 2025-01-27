@@ -26,10 +26,8 @@ jobs:
           path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
 
       - name: Generate build number
-        id: build_number
-        uses: einaregilsson/build-number@v3
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
+        id: date
+        run: echo "date=$(date +%s)" >> $env:GITHUB_OUTPUT
         
       - name: Create Release
         id: create_release
@@ -37,8 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: nightly-build-${{ steps.buildnumber.outputs.build_number }}
-          release_name: nightly-release-${{ steps.buildnumber.outputs.build_number }}
+          tag_name: nightly-build-${{ steps.date.outputs.date }}
+          release_name: nightly-release-${{ steps.date.outputs.date }}
           draft: false
           prerelease: true
 
