@@ -1,14 +1,15 @@
 name: Launcher
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # This can be used to automatically publish nightlies at UTC nighttime
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+  # This can be used to allow manually triggering nightlies from the web interface
+  workflow_dispatch:
 
 jobs:
-  build:
-
+  nightly:
+    name: Deploy Nightly
     runs-on: windows-latest
 
     steps:
@@ -20,3 +21,20 @@ jobs:
       with:
          name: Launcher_Artifact
          path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
+         
+    - name: Zip Release
+      uses: vimtor/action-zip@v1.2
+      with:
+          files: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher.exe
+          dest: launcher-nightly.zip
+          
+    - name: Deploy Nightly Release
+      uses: WebFreak001/deploy-nightly@v3.1.0
+      with:
+          upload_url: https://uploads.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases/196333904/assets{?name,label} 
+          release_id: 196333904
+          asset_path: ./launcher/bin/Release/net8.0-windows7.0/win-x64/publish/launcher-nightly.zip # path to archive to upload
+          asset_name: launcher-nightly-$$.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
+          asset_content_type: application/zip
+          max_releases: 4
+          ignore_hash: false
