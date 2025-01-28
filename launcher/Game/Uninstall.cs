@@ -1,6 +1,6 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System.IO;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using static launcher.Global.References;
 using System.Windows.Controls;
 using launcher.Global;
@@ -24,11 +24,11 @@ namespace launcher.Game
                 return;
             }
 
-            DownloadManager.SetInstallState(true, "UNINSTALLING");
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
             string[] files = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
 
-            DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Removing Game Files", Source.Uninstaller);
             AppState.FilesLeft = files.Length;
 
             appDispatcher.Invoke(() =>
@@ -47,7 +47,7 @@ namespace launcher.Game
                     }
                     catch
                     {
-                        LogError(Source.Installer, $"Failed to delete file: {file}");
+                        LogError(Source.Uninstaller, $"Failed to delete file: {file}");
                     }
                     finally
                     {
@@ -66,9 +66,9 @@ namespace launcher.Game
             SetBranch.DownloadHDTextures(false);
             SetBranch.Version("");
 
-            DownloadManager.SetInstallState(false, "INSTALL");
+            Download.Tasks.SetInstallState(false, "INSTALL");
 
-            AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
         }
 
         public static async void LangFile(CheckBox checkbox, List<string> lang)
@@ -84,11 +84,11 @@ namespace launcher.Game
                 checkbox.IsEnabled = false;
             });
 
-            DownloadManager.SetInstallState(true, "UNINSTALLING");
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
             GameFiles langFiles = await CDN.Fetch.LanguageFiles(lang, false);
 
-            DownloadManager.UpdateStatusLabel("Removing Game Files", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Removing Game Files", Source.Uninstaller);
             AppState.FilesLeft = langFiles.files.Count;
 
             appDispatcher.Invoke(() =>
@@ -101,12 +101,12 @@ namespace launcher.Game
             {
                 if (File.Exists($"{GetBranch.Directory()}\\{langFile.name}"))
                 {
-                    LogInfo(Source.Installer, $"Removing file: {GetBranch.Directory()}\\{langFile.name}");
+                    LogInfo(Source.Uninstaller, $"Removing file: {GetBranch.Directory()}\\{langFile.name}");
                     File.Delete($"{GetBranch.Directory()}\\{langFile.name}");
                 }
                 else
                 {
-                    LogInfo(Source.Installer, $"File not found: {GetBranch.Directory()}\\{langFile.name}");
+                    LogInfo(Source.Uninstaller, $"File not found: {GetBranch.Directory()}\\{langFile.name}");
                 }
 
                 appDispatcher.Invoke(() =>
@@ -116,7 +116,7 @@ namespace launcher.Game
             });
             }
 
-            DownloadManager.SetInstallState(false);
+            Download.Tasks.SetInstallState(false);
 
             appDispatcher.Invoke(() =>
             {
@@ -132,11 +132,11 @@ namespace launcher.Game
             if (!Directory.Exists(GetBranch.Directory(branch)))
                 return;
 
-            DownloadManager.SetInstallState(true, "UNINSTALLING");
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
             string[] opt_files = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
 
-            DownloadManager.UpdateStatusLabel("Removing HD Textures", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Removing HD Textures", Source.Uninstaller);
             AppState.FilesLeft = opt_files.Length;
 
             appDispatcher.Invoke(() =>
@@ -155,7 +155,7 @@ namespace launcher.Game
                     }
                     catch
                     {
-                        LogError(Source.Installer, $"Failed to delete file: {file}");
+                        LogError(Source.Uninstaller, $"Failed to delete file: {file}");
                     }
                     finally
                     {
@@ -170,9 +170,9 @@ namespace launcher.Game
 
             SetBranch.DownloadHDTextures(false, branch);
 
-            DownloadManager.SetInstallState(false, "PLAY");
+            Download.Tasks.SetInstallState(false, "PLAY");
 
-            AppManager.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) has been uninstalled!", BalloonIcon.Info);
+            Managers.App.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) has been uninstalled!", BalloonIcon.Info);
         }
     }
 }

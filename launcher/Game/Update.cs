@@ -1,7 +1,7 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System.IO;
 using static launcher.Global.References;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
@@ -28,15 +28,15 @@ namespace launcher.Game
             if (GetBranch.LocalVersion() == GetBranch.ServerVersion())
                 return;
 
-            DownloadManager.CreateDownloadMontior();
+            Download.Tasks.CreateDownloadMontior();
 
             SetBranch.UpdateAvailable(false);
 
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
+            Download.Tasks.ConfigureConcurrency();
+            Download.Tasks.ConfigureDownloadSpeed();
 
             //Install started
-            DownloadManager.SetInstallState(true, "UPDATING");
+            Download.Tasks.SetInstallState(true, "UPDATING");
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
@@ -45,28 +45,28 @@ namespace launcher.Game
             await CheckForDeletedFiles(false);
 
             //Prepare checksum tasks
-            DownloadManager.UpdateStatusLabel("Preparing checksum tasks", Source.Update);
-            var checksumTasks = FileManager.PrepareBaseGameChecksumTasks(branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Preparing checksum tasks", Source.Update);
+            var checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
 
             //Generate checksums for local files
-            DownloadManager.UpdateStatusLabel("Generating local checksums", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Generating local checksums", Source.Update);
             await Task.WhenAll(checksumTasks);
 
             //Fetch non compressed base game file list
-            DownloadManager.UpdateStatusLabel("Fetching update files list", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Fetching update files list", Source.Update);
             GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
             //Identify changed files
-            DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Update);
-            int changedFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Update);
+            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if changed files exist, download and update
             if (changedFileCount > 0)
             {
-                DownloadManager.UpdateStatusLabel("Preparing download tasks", Source.Update);
-                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
+                Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Update);
+                var downloadTasks = Download.Tasks.CreateRepairTasks(branchDirectory);
 
-                DownloadManager.UpdateStatusLabel("Downloading updated files", Source.Update);
+                Download.Tasks.UpdateStatusLabel("Downloading updated files", Source.Update);
                 await Task.WhenAll(downloadTasks);
             }
 
@@ -74,12 +74,12 @@ namespace launcher.Game
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
-            AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
 
-            AppManager.SetupAdvancedMenu();
+            Managers.App.SetupAdvancedMenu();
 
             //Install finished
-            DownloadManager.SetInstallState(false);
+            Download.Tasks.SetInstallState(false);
 
             if (GetBranch.DownloadHDTextures())
                 Task.Run(() => UpdateOptionalWithoutPatching());
@@ -87,11 +87,11 @@ namespace launcher.Game
 
         private static async Task UpdateOptionalWithoutPatching()
         {
-            DownloadManager.SetOptionalInstallState(true);
+            Download.Tasks.SetOptionalInstallState(true);
 
             //Set download limits
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
+            Download.Tasks.ConfigureConcurrency();
+            Download.Tasks.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
@@ -100,34 +100,34 @@ namespace launcher.Game
             await CheckForDeletedFiles(true);
 
             //Prepare checksum tasks
-            DownloadManager.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
-            var checksumTasks = FileManager.PrepareOptionalGameChecksumTasks(branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
+            var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
 
             //Generate checksums for local files
-            DownloadManager.UpdateStatusLabel("Generating optional checksums", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Generating optional checksums", Source.Repair);
             await Task.WhenAll(checksumTasks);
 
             //Fetch non compressed base game file list
-            DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files list", Source.Repair);
             GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
             //Identify bad files
-            DownloadManager.UpdateStatusLabel("Identifying changed files", Source.Repair);
-            int changedFileCount = FileManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Repair);
+            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             //if bad files exist, download and repair
             if (changedFileCount > 0)
             {
-                DownloadManager.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = DownloadManager.CreateRepairTasks(branchDirectory);
+                Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
+                var downloadTasks = Download.Tasks.CreateRepairTasks(branchDirectory);
 
-                DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);
             }
 
-            DownloadManager.SetOptionalInstallState(false);
+            Download.Tasks.SetOptionalInstallState(false);
 
-            AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task CheckForDeletedFiles(bool optfiles)

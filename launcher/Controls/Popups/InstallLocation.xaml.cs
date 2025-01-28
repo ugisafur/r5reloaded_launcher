@@ -6,7 +6,6 @@ using System.IO;
 using static launcher.Global.References;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.Managers;
 
 namespace launcher
@@ -31,7 +30,7 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideInstallLocation();
+            Managers.App.HideInstallLocation();
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)
@@ -44,7 +43,7 @@ namespace launcher
 
             Directory.CreateDirectory(FolderLocation.Text);
             Task.Run(() => Install.Start());
-            AppManager.HideInstallLocation();
+            Managers.App.HideInstallLocation();
             Settings_Control.gamePage.SetLibaryPath(FolderLocation.Text);
         }
 

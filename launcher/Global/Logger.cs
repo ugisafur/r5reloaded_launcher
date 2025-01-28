@@ -1,8 +1,7 @@
-﻿using launcher.Global;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 
-namespace launcher.Utilities
+namespace launcher.Global
 {
     public static class Logger
     {
@@ -20,14 +19,15 @@ namespace launcher.Utilities
         public enum Source
         {
             Launcher,
-            DownloadManager,
+            Download,
             API,
             Installer,
+            Uninstaller,
             Update,
             UpdateChecker,
             Repair,
             Patcher,
-            FileManager,
+            Checksums,
             Decompression,
             Ini,
             VDF

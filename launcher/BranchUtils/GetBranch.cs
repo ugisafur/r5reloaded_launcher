@@ -5,7 +5,6 @@ using System.IO;
 using launcher.CDN;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 using static launcher.Global.References;
 
 namespace launcher.BranchUtils

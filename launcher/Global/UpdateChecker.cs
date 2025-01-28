@@ -2,16 +2,13 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using System.IO;
 using static launcher.Global.References;
-using launcher.Global;
-using launcher.Managers;
 using launcher.BranchUtils;
 using launcher.Game;
-using launcher.News;
 
-namespace launcher.Utilities
+namespace launcher.Global
 {
     public static class UpdateChecker
     {
@@ -289,7 +286,7 @@ namespace launcher.Utilities
         public string browser_download_url { get; set; }
     }
 
-    public class Author
+    public class GitAuthor
     {
         public string login { get; set; }
         public int id { get; set; }
@@ -319,7 +316,7 @@ namespace launcher.Utilities
         public string upload_url { get; set; }
         public string html_url { get; set; }
         public int id { get; set; }
-        public Author author { get; set; }
+        public GitAuthor author { get; set; }
         public string node_id { get; set; }
         public string tag_name { get; set; }
         public string target_commitish { get; set; }

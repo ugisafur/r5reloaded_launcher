@@ -1,5 +1,5 @@
 ﻿using launcher.Game;
-using launcher.Utilities;
+using launcher.Global;
 
 namespace launcher.BranchUtils
 {

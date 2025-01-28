@@ -4,7 +4,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using launcher.Global;
 using launcher.Managers;
-using launcher.Utilities;
 
 namespace launcher
 {
@@ -119,13 +118,13 @@ namespace launcher
         public void OpenDownloadsSettings()
         {
             SetSettingsTab(SettingsPage.Download);
-            AppManager.ShowSettingsControl();
+            Managers.App.ShowSettingsControl();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (AppState.InSettingsMenu)
-                AppManager.HideSettingsControl();
+                Managers.App.HideSettingsControl();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

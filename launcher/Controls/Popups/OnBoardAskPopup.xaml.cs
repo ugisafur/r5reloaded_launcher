@@ -6,8 +6,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using Hardcodet.Wpf.TaskbarNotification;
 using static launcher.Global.References;
-using launcher.Utilities;
 using launcher.Managers;
+using launcher.Global;
 
 namespace launcher
 {
@@ -21,15 +21,15 @@ namespace launcher
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Ask_For_Tour, false);
-            AppManager.HideOnBoardAskPopup();
-            AppManager.StartTour();
+            Managers.App.HideOnBoardAskPopup();
+            Managers.App.StartTour();
         }
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Ask_For_Tour, false);
-            AppManager.HideOnBoardAskPopup();
-            AppManager.EndTour();
+            Managers.App.HideOnBoardAskPopup();
+            Managers.App.EndTour();
         }
     }
 }

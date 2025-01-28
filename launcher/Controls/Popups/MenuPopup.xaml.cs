@@ -40,7 +40,7 @@ namespace launcher
             if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
-                AppManager.ShowSettingsControl();
+                Managers.App.ShowSettingsControl();
 
                 //i hate this
                 Settings_Control.gameInstalls.FirstTime();
@@ -60,7 +60,7 @@ namespace launcher
         private void Tour_Click(object sender, RoutedEventArgs e)
         {
             Menu_Popup.IsOpen = false;
-            AppManager.ShowOnBoardAskPopup();
+            Managers.App.ShowOnBoardAskPopup();
         }
     }
 }

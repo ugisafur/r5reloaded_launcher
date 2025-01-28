@@ -6,7 +6,6 @@ using static launcher.Global.References;
 using System.IO;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.Managers;
 using launcher.BranchUtils;
 
@@ -258,7 +257,7 @@ namespace launcher
             if (GetBranch.Installed(gameBranch))
                 Task.Run(() => Repair.Start());
 
-            AppManager.HideSettingsControl();
+            Managers.App.HideSettingsControl();
         }
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
@@ -271,7 +270,7 @@ namespace launcher
             if (GetBranch.Installed(gameBranch))
                 Task.Run(() => Uninstall.Start());
 
-            AppManager.HideSettingsControl();
+            Managers.App.HideSettingsControl();
         }
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
@@ -284,7 +283,7 @@ namespace launcher
             if (!GetBranch.Installed(gameBranch))
                 Task.Run(() => Install.Start());
 
-            AppManager.HideSettingsControl();
+            Managers.App.HideSettingsControl();
         }
 
         private void InstallOpt_Click(object sender, RoutedEventArgs e)
@@ -293,12 +292,12 @@ namespace launcher
                 return;
 
             Branch_Combobox.SelectedIndex = index;
-            AppManager.HideSettingsControl();
+            Managers.App.HideSettingsControl();
 
             if (GetBranch.DownloadHDTextures(gameBranch))
                 Task.Run(() => Uninstall.HDTextures(gameBranch));
             else
-                AppManager.ShowDownloadOptlFiles();
+                Managers.App.ShowDownloadOptlFiles();
         }
     }
 }

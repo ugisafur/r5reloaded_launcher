@@ -1,9 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using launcher.Utilities;
 using launcher.Game;
 using launcher.Global;
-using launcher.Managers;
 using launcher.BranchUtils;
 
 namespace launcher
@@ -20,7 +18,7 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideDownloadOptlFiles();
+            Managers.App.HideDownloadOptlFiles();
             SetBranch.DownloadHDTextures(false);
         }
 
@@ -28,17 +26,17 @@ namespace launcher
         {
             if (AppState.IsInstalling)
             {
-                AppManager.HideDownloadOptlFiles();
+                Managers.App.HideDownloadOptlFiles();
                 return;
             }
 
             Task.Run(() => Install.HDTextures());
-            AppManager.HideDownloadOptlFiles();
+            Managers.App.HideDownloadOptlFiles();
         }
 
         private void Later_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideDownloadOptlFiles();
+            Managers.App.HideDownloadOptlFiles();
             SetBranch.DownloadHDTextures(false);
         }
     }

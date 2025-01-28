@@ -1,10 +1,8 @@
 ﻿using SoftCircuits.IniFileParser;
 using System.IO;
-using static launcher.Utilities.Logger;
-using System.Windows.Input;
-using launcher.Global;
+using static launcher.Global.Logger;
 
-namespace launcher.Utilities
+namespace launcher.Global
 {
     public static class Ini
     {

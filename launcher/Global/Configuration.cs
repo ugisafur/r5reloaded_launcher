@@ -1,9 +1,8 @@
 ﻿using SoftCircuits.IniFileParser;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using static launcher.Global.References;
 using System.IO;
 using System.Globalization;
-using launcher.Utilities;
 using launcher.Managers;
 using launcher.CDN;
 using launcher.Game;

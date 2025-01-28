@@ -1,20 +1,17 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Media.Animation;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using static launcher.Global.References;
 using Hardcodet.Wpf.TaskbarNotification;
 using System.Globalization;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.BranchUtils;
-using launcher.CDN;
 
 namespace launcher.Managers
 {
-    public static class AppManager
+    public static class App
     {
         #region Setup Functions
 
@@ -33,8 +30,8 @@ namespace launcher.Managers
             GetSelfUpdater();
             EULA_Control.SetupEULA();
 
-            if (AppState.IsOnline && News.Connection.Test())
-                News.Items.Populate();
+            if (AppState.IsOnline && Network.Connection.NewsTest())
+                News.Populate();
             else
             {
                 Main_Window.NewsContainer.Visibility = Visibility.Collapsed;
@@ -75,7 +72,7 @@ namespace launcher.Managers
 
         private static void CheckInternetConnection()
         {
-            bool isOnline = Connection.Test();
+            bool isOnline = Network.Connection.CDNTest();
             LogInfo(Source.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
             AppState.IsOnline = isOnline;
         }
@@ -367,7 +364,7 @@ namespace launcher.Managers
 
             storyboard.Begin();
 
-            News.Items.SetPage(index);
+            News.SetPage(index);
         }
 
         private static Storyboard CreateTransitionStoryboard(double from, double to, double duration)

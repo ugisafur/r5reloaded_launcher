@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 
 namespace launcher
 {

@@ -6,7 +6,6 @@ using static launcher.Global.References;
 using System.Globalization;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 
 namespace launcher
 {

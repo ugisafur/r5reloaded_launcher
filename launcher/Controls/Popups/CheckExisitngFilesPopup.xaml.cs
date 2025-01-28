@@ -17,12 +17,12 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideCheckExistingFiles();
+            Managers.App.HideCheckExistingFiles();
         }
 
         private void CheckFiles_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideCheckExistingFiles();
+            Managers.App.HideCheckExistingFiles();
             Task.Run(() => Repair.Start());
         }
     }

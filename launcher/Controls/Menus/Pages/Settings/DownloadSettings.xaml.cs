@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using launcher.Utilities;
+using launcher.Global;
 
 namespace launcher
 {
@@ -22,7 +22,7 @@ namespace launcher
     /// </summary>
     public partial class DownloadSettings : UserControl
     {
-        private readonly int[] downloadSpeeds =
+        private readonly int[] DownloadSpeeds =
         [
             100,
             75,
@@ -40,12 +40,12 @@ namespace launcher
 
         public void SetupDownloadSettings()
         {
-            int conDownloadsLimit = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
-            if (conDownloadsLimit > 100)
+            int ConDownloadsLimit = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
+            if (ConDownloadsLimit > 100)
                 Ini.Set(Ini.Vars.Concurrent_Downloads, 100);
 
             MaxSpeed.Text = $"{(int)Ini.Get(Ini.Vars.Download_Speed_Limit)}";
-            ConDownloads.SelectedIndex = Array.IndexOf(downloadSpeeds, (int)Ini.Get(Ini.Vars.Concurrent_Downloads));
+            ConDownloads.SelectedIndex = Array.IndexOf(DownloadSpeeds, (int)Ini.Get(Ini.Vars.Concurrent_Downloads));
 
             MaxSpeed.LostFocus += MaxSpeed_LostFocus;
             MaxSpeed.PreviewTextInput += NumericTextBox_PreviewTextInput;
@@ -89,8 +89,8 @@ namespace launcher
 
         private void ConDownloads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((int)Ini.Get(Ini.Vars.Concurrent_Downloads) != downloadSpeeds[ConDownloads.SelectedIndex])
-                Ini.Set(Ini.Vars.Concurrent_Downloads, downloadSpeeds[ConDownloads.SelectedIndex]);
+            if ((int)Ini.Get(Ini.Vars.Concurrent_Downloads) != DownloadSpeeds[ConDownloads.SelectedIndex])
+                Ini.Set(Ini.Vars.Concurrent_Downloads, DownloadSpeeds[ConDownloads.SelectedIndex]);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using launcher.Game;

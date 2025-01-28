@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.Managers;
 using launcher.BranchUtils;
 
@@ -54,12 +53,12 @@ namespace launcher
         {
             SetBranch.EULAAccepted(true);
             Task.Run(() => Install.Start());
-            AppManager.HideEULA();
+            Managers.App.HideEULA();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideEULA();
+            Managers.App.HideEULA();
         }
     }
 

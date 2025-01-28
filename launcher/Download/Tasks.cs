@@ -1,29 +1,47 @@
-﻿using Polly;
-using Polly.Retry;
-using System.IO;
-using System.Net;
-using static launcher.Utilities.Logger;
-using System.Windows;
-using System.Net.Http;
-using static launcher.Global.References;
-using ZstdSharp;
-using launcher.Network;
+﻿using launcher.BranchUtils;
 using launcher.Game;
 using launcher.Global;
-using launcher.Utilities;
-using launcher.BranchUtils;
+using Polly.Retry;
+using Polly;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using launcher.Network;
+using static launcher.Global.Logger;
+using System.Net.Http;
+using ZstdSharp;
+using static launcher.Global.References;
+using launcher.Managers;
+using System.Windows;
 
-namespace launcher.Managers
+namespace launcher.Download
 {
-    /// <summary>
-    /// Manages file downloads within the launcher application, providing functionalities such as
-    /// concurrent downloads, retry policies, speed throttling, and UI updates.
-    /// </summary>
-    public static class DownloadManager
+    public static class Tasks
     {
         public static long _downloadSpeedLimit = 0;
         public static SemaphoreSlim _downloadSemaphore;
         public static DownloadSpeedMonitor _speedMonitor;
+
+        public static void ConfigureConcurrency()
+        {
+            if (AppState.IsInstalling)
+                return;
+
+            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
+            _downloadSemaphore?.Dispose();
+            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
+        }
+
+        public static void ConfigureDownloadSpeed()
+        {
+            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
+            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
+            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
+        }
 
         public static void CreateDownloadMontior()
         {
@@ -65,23 +83,6 @@ namespace launcher.Managers
                 Speed_Label.Text = $"{speedText}";
                 Downloads_Control.Speed_Label.Text = $"{speedText}";
             });
-        }
-
-        public static void ConfigureConcurrency()
-        {
-            if (AppState.IsInstalling)
-                return;
-
-            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
-            _downloadSemaphore?.Dispose();
-            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
-        }
-
-        public static void ConfigureDownloadSpeed()
-        {
-            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
-            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
-            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
         }
 
         public static List<Task<string>> CreateDownloadTasks(GameFiles gameFiles, string branchDirectory)
@@ -131,12 +132,7 @@ namespace launcher.Managers
                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
                 onRetry: (exception, timeSpan, retryNumber, context) =>
                 {
-                    Log(
-                        Logger.Type.Warning,
-                        Source.DownloadManager,
-                        $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
-                        $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
-                    );
+                    Log(Logger.Type.Warning, Source.Download, $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " + $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt.");
                 }
             );
         }
@@ -166,7 +162,7 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                LogError(Source.DownloadManager, $"All retries failed for {fileUrl}: {ex.Message}");
+                LogError(Source.Download, $"All retries failed for {fileUrl}: {ex.Message}");
                 AppState.BadFilesDetected = true;
                 return string.Empty;
             }
@@ -374,7 +370,7 @@ namespace launcher.Managers
         {
             if (File.Exists(destinationPath))
             {
-                string actualChecksum = FileManager.CalculateChecksum(destinationPath);
+                string actualChecksum = Checksums.CalculateChecksum(destinationPath);
                 if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
                     return true;
             }

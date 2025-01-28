@@ -10,7 +10,7 @@ using System.Windows.Threading;
 using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Media;
-using launcher.Utilities;
+using launcher.Game;
 
 namespace launcher.Global
 {

@@ -6,8 +6,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using Hardcodet.Wpf.TaskbarNotification;
 using static launcher.Global.References;
-using launcher.Utilities;
 using launcher.Managers;
+using launcher.Global;
 
 namespace launcher
 {
@@ -27,14 +27,14 @@ namespace launcher
         private void Tray_Click(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Enable_Quit_On_Close, "tray");
-            AppManager.HideAskToQuit();
-            AppManager.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+            Managers.App.HideAskToQuit();
+            Managers.App.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
             Main_Window.OnClose();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.HideAskToQuit();
+            Managers.App.HideAskToQuit();
         }
     }
 }

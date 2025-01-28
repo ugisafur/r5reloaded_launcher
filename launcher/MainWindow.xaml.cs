@@ -1,17 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using launcher.BranchUtils;
-using launcher.CDN;
 using launcher.Game;
 using launcher.Global;
-using launcher.Managers;
-using launcher.News;
-using launcher.Utilities;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -20,14 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using static launcher.Utilities.Logger;
-using Color = System.Windows.Media.Color;
+using static launcher.Global.Logger;
 
 namespace launcher
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private double _previousWidth;
@@ -98,7 +88,7 @@ namespace launcher
             SetupSystemTray();
 
             // Setup the application
-            AppManager.SetupApp(this);
+            Managers.App.SetupApp(this);
 
             // Setup the news buttons
             NewsButtons.Add(Community_Button);
@@ -106,9 +96,9 @@ namespace launcher
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
 
-            if (AppState.IsOnline && News.Connection.Test())
+            if (AppState.IsOnline && Network.Connection.NewsTest())
             {
-                AppManager.MoveNewsRect(0);
+                Managers.App.MoveNewsRect(0);
                 HideNewsRect();
             }
 
@@ -142,7 +132,7 @@ namespace launcher
 
             if ((bool)Ini.Get(Ini.Vars.Ask_For_Tour))
             {
-                AppManager.ShowOnBoardAskPopup();
+                Managers.App.ShowOnBoardAskPopup();
             }
         }
 
@@ -183,7 +173,7 @@ namespace launcher
 
             if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close)))
             {
-                AppManager.ShowAskToQuit();
+                Managers.App.ShowAskToQuit();
                 return;
             }
 
@@ -191,7 +181,7 @@ namespace launcher
                 Application.Current.Shutdown();
             else if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "tray")
             {
-                AppManager.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+                Managers.App.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
             }
         }
@@ -213,7 +203,7 @@ namespace launcher
             {
                 if (!GetBranch.Installed() && !string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)) && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
                 {
-                    AppManager.ShowCheckExistingFiles();
+                    Managers.App.ShowCheckExistingFiles();
                 }
                 else
                 {
@@ -229,7 +219,7 @@ namespace launcher
             var selectedBranch = comboBox.SelectedIndex;
             var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
 
-            AppManager.SetupAdvancedMenu();
+            Managers.App.SetupAdvancedMenu();
             GameSettings_Control.OpenDir_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
             GameSettings_Control.AdvancedMenu_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
 
@@ -431,7 +421,7 @@ namespace launcher
         {
             Button button = (Button)sender;
             int index = NewsButtons.IndexOf(button);
-            AppManager.MoveNewsRect(index);
+            Managers.App.MoveNewsRect(index);
         }
 
         private bool _isNewsRectShown = false;

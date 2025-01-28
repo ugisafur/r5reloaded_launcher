@@ -11,7 +11,6 @@ using System.Numerics;
 using System.Windows.Media.Animation;
 using System;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.Managers;
 
 namespace launcher
@@ -29,7 +28,7 @@ namespace launcher
         {
             if (currentIndex + 1 >= DataCollections.OnBoardingItems.Count)
             {
-                AppManager.EndTour();
+                Managers.App.EndTour();
                 return;
             }
 
@@ -128,7 +127,7 @@ namespace launcher
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            AppManager.EndTour();
+            Managers.App.EndTour();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using launcher.Utilities;
+﻿using launcher.Global;
 using static launcher.Global.References;
 
 namespace launcher.Game

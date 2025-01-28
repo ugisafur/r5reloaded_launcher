@@ -9,12 +9,10 @@ using System.Windows;
 using static launcher.Global.References;
 using System.Windows.Shapes;
 using System.Windows.Media;
-using launcher.Global;
-using launcher.Utilities;
 
-namespace launcher.News
+namespace launcher.Global
 {
-    public static class Items
+    public static class News
     {
         public static List<UIElement> Community = [];
         public static List<UIElement> NewLegends = [];
@@ -148,23 +146,6 @@ namespace launcher.News
         public static Root GetNewsItems()
         {
             return Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors", new JsonSerializerOptions { AllowTrailingCommas = true }).Result;
-        }
-    }
-
-    public static class Connection
-    {
-        public static bool Test()
-        {
-            try
-            {
-                using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 

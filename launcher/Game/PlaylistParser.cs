@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using ValveKeyValue;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 
-namespace launcher.Utilities
+namespace launcher.Game
 {
     public class PlaylistFile
     {

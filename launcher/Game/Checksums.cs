@@ -1,22 +1,19 @@
-﻿using System.IO;
-using System.Security.Cryptography;
-using Path = System.IO.Path;
-using static launcher.Utilities.Logger;
-using static launcher.Global.References;
-using System.Text.RegularExpressions;
-using launcher.Game;
+﻿using launcher.BranchUtils;
 using launcher.Global;
-using launcher.BranchUtils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static launcher.Global.Logger;
+using static launcher.Global.References;
 
-namespace launcher.Managers
+namespace launcher.Game
 {
-    /// <summary>
-    /// The FileManager class provides various static methods for managing files within the launcher application.
-    /// It includes functionalities for identifying bad files, cleaning up temporary directories, generating file checksums,
-    /// and managing the launcher configuration. This class is essential for ensuring the integrity and proper functioning
-    /// of the launcher by handling file operations and configurations.
-    /// </summary>
-    public static class FileManager
+    public static class Checksums
     {
         public static int IdentifyBadFiles(GameFiles gameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory)
         {
@@ -52,7 +49,7 @@ namespace launcher.Managers
             return DataCollections.BadFiles.Count;
         }
 
-        public static List<Task<FileChecksum>> PrepareBaseGameChecksumTasks(string branchFolder)
+        public static List<Task<FileChecksum>> PrepareBranchChecksumTasks(string branchFolder)
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
@@ -107,7 +104,7 @@ namespace launcher.Managers
             return checksumTasks;
         }
 
-        public static List<Task<FileChecksum>> PrepareOptionalGameChecksumTasks(string branchFolder)
+        public static List<Task<FileChecksum>> PrepareOptChecksumTasks(string branchFolder)
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
@@ -136,7 +133,7 @@ namespace launcher.Managers
         {
             return Task.Run(async () =>
             {
-                await DownloadManager._downloadSemaphore.WaitAsync();
+                await Download.Tasks._downloadSemaphore.WaitAsync();
 
                 var fileChecksum = new FileChecksum();
                 try
@@ -159,7 +156,7 @@ namespace launcher.Managers
                 }
                 finally
                 {
-                    DownloadManager._downloadSemaphore.Release();
+                    Download.Tasks._downloadSemaphore.Release();
                 }
             });
         }

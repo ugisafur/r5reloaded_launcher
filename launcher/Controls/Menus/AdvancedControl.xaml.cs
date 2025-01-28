@@ -4,7 +4,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using launcher.Global;
 using launcher.Managers;
-using launcher.Utilities;
 
 namespace launcher
 {
@@ -121,7 +120,7 @@ namespace launcher
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (AppState.InAdvancedMenu)
-                AppManager.HideAdvancedControl();
+                Managers.App.HideAdvancedControl();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

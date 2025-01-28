@@ -1,10 +1,9 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System.IO;
-using static launcher.Utilities.Logger;
+using static launcher.Global.Logger;
 using static launcher.Global.References;
 using System.Windows.Controls;
 using launcher.Global;
-using launcher.Utilities;
 using launcher.Managers;
 using launcher.BranchUtils;
 using launcher.CDN;
@@ -19,7 +18,7 @@ namespace launcher.Game
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    AppManager.ShowInstallLocation();
+                    Managers.App.ShowInstallLocation();
                 }));
                 return;
             }
@@ -28,7 +27,7 @@ namespace launcher.Game
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    AppManager.ShowEULA();
+                    Managers.App.ShowEULA();
                 }));
                 return;
             }
@@ -49,32 +48,32 @@ namespace launcher.Game
                 return;
             }
 
-            DownloadManager.CreateDownloadMontior();
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
+            Download.Tasks.CreateDownloadMontior();
+            Download.Tasks.ConfigureConcurrency();
+            Download.Tasks.ConfigureDownloadSpeed();
 
             //Install started
-            DownloadManager.SetInstallState(true, "INSTALLING");
+            Download.Tasks.SetInstallState(true, "INSTALLING");
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
 
             //Fetch compressed base game file list
-            DownloadManager.UpdateStatusLabel("Fetching game files list", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Fetching game files list", Source.Installer);
             GameFiles gameFiles = await Fetch.GameFiles(true, false);
 
             //Prepare download tasks
-            DownloadManager.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = DownloadManager.CreateDownloadTasks(gameFiles, branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
+            var downloadTasks = Download.Tasks.CreateDownloadTasks(gameFiles, branchDirectory);
 
             //Download base game files
-            DownloadManager.UpdateStatusLabel("Downloading game files", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Downloading game files", Source.Installer);
             await Task.WhenAll(downloadTasks);
 
             //if bad files detected, attempt game repair
             if (AppState.BadFilesDetected)
             {
-                DownloadManager.UpdateStatusLabel("Reparing game files", Source.Installer);
+                Download.Tasks.UpdateStatusLabel("Reparing game files", Source.Installer);
                 await AttemptGameRepair();
             }
 
@@ -90,15 +89,15 @@ namespace launcher.Game
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
-            AppManager.SetupAdvancedMenu();
-            AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
+            Managers.App.SetupAdvancedMenu();
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
 
             //Install finished
-            DownloadManager.SetInstallState(false);
+            Download.Tasks.SetInstallState(false);
 
             appDispatcher.Invoke(new Action(() =>
             {
-                AppManager.ShowDownloadOptlFiles();
+                Managers.App.ShowDownloadOptlFiles();
             }));
         }
 
@@ -114,27 +113,27 @@ namespace launcher.Game
                 return;
 
             //Set download limits
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
+            Download.Tasks.ConfigureConcurrency();
+            Download.Tasks.ConfigureDownloadSpeed();
 
-            DownloadManager.SetOptionalInstallState(true);
+            Download.Tasks.SetOptionalInstallState(true);
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
 
             //Fetch compressed base game file list
-            DownloadManager.UpdateStatusLabel("Fetching optional files list", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files list", Source.Installer);
             GameFiles optionalGameFiles = await Fetch.GameFiles(true, true);
 
             //Prepare download tasks
-            DownloadManager.UpdateStatusLabel("Preparing optional download", Source.Installer);
-            var optionaldownloadTasks = DownloadManager.CreateDownloadTasks(optionalGameFiles, branchDirectory);
+            Download.Tasks.UpdateStatusLabel("Preparing optional download", Source.Installer);
+            var optionaldownloadTasks = Download.Tasks.CreateDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
-            DownloadManager.UpdateStatusLabel("Downloading optional files", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
 
-            DownloadManager.SetOptionalInstallState(false);
+            Download.Tasks.SetOptionalInstallState(false);
 
             SetBranch.DownloadHDTextures(true);
 
@@ -143,7 +142,7 @@ namespace launcher.Game
                 Settings_Control.gameInstalls.UpdateGameItems();
             }));
 
-            AppManager.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
         }
 
         private static async Task AttemptGameRepair()
@@ -168,7 +167,7 @@ namespace launcher.Game
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    AppManager.ShowInstallLocation();
+                    Managers.App.ShowInstallLocation();
                 }));
                 return;
             }
@@ -182,14 +181,14 @@ namespace launcher.Game
                     checkBox.IsEnabled = false;
             });
 
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
+            Download.Tasks.ConfigureConcurrency();
+            Download.Tasks.ConfigureDownloadSpeed();
 
             string branchDirectory = GetBranch.Directory();
 
             GameFiles langFiles = await Fetch.LanguageFiles(langs);
 
-            var langdownloadTasks = DownloadManager.CreateDownloadTasks(langFiles, branchDirectory);
+            var langdownloadTasks = Download.Tasks.CreateDownloadTasks(langFiles, branchDirectory);
 
             await Task.WhenAll(langdownloadTasks);
 

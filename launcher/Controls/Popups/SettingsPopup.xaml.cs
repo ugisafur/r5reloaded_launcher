@@ -29,7 +29,7 @@ namespace launcher
             if (!AppState.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
-                AppManager.ShowAdvancedControl();
+                Managers.App.ShowAdvancedControl();
             }
         }
 
