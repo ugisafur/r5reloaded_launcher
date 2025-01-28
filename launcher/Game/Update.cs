@@ -64,7 +64,7 @@ namespace launcher.Game
             if (changedFileCount > 0)
             {
                 Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Update);
-                var downloadTasks = Download.Tasks.CreateRepairTasks(branchDirectory);
+                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading updated files", Source.Update);
                 await Task.WhenAll(downloadTasks);
@@ -119,7 +119,7 @@ namespace launcher.Game
             if (changedFileCount > 0)
             {
                 Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
-                var downloadTasks = Download.Tasks.CreateRepairTasks(branchDirectory);
+                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 await Task.WhenAll(downloadTasks);

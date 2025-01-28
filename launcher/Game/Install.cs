@@ -64,7 +64,7 @@ namespace launcher.Game
 
             //Prepare download tasks
             Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = Download.Tasks.CreateDownloadTasks(gameFiles, branchDirectory);
+            var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             //Download base game files
             Download.Tasks.UpdateStatusLabel("Downloading game files", Source.Installer);
@@ -89,7 +89,11 @@ namespace launcher.Game
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
-            Managers.App.SetupAdvancedMenu();
+            appDispatcher.Invoke(new Action(() =>
+            {
+                Managers.App.SetupAdvancedMenu();
+            }));
+
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
 
             //Install finished
@@ -127,7 +131,7 @@ namespace launcher.Game
 
             //Prepare download tasks
             Download.Tasks.UpdateStatusLabel("Preparing optional download", Source.Installer);
-            var optionaldownloadTasks = Download.Tasks.CreateDownloadTasks(optionalGameFiles, branchDirectory);
+            var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
             Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Installer);
@@ -188,7 +192,7 @@ namespace launcher.Game
 
             GameFiles langFiles = await Fetch.LanguageFiles(langs);
 
-            var langdownloadTasks = Download.Tasks.CreateDownloadTasks(langFiles, branchDirectory);
+            var langdownloadTasks = Download.Tasks.InitializeDownloadTasks(langFiles, branchDirectory);
 
             await Task.WhenAll(langdownloadTasks);
 

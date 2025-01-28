@@ -26,23 +26,6 @@ namespace launcher.Download
         public static SemaphoreSlim _downloadSemaphore;
         public static DownloadSpeedMonitor _speedMonitor;
 
-        public static void ConfigureConcurrency()
-        {
-            if (AppState.IsInstalling)
-                return;
-
-            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
-            _downloadSemaphore?.Dispose();
-            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
-        }
-
-        public static void ConfigureDownloadSpeed()
-        {
-            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
-            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
-            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
-        }
-
         public static void CreateDownloadMontior()
         {
             if (_speedMonitor != null)
@@ -64,7 +47,7 @@ namespace launcher.Download
 
             if (speed >= 1024 * 1024)
             {
-                speed /= 1024 * 1024;
+                speed /= (1024 * 1024);
                 speedText = $"{speed:F2} MB/s";
             }
             else if (speed >= 1024)
@@ -85,8 +68,37 @@ namespace launcher.Download
             });
         }
 
-        public static List<Task<string>> CreateDownloadTasks(GameFiles gameFiles, string branchDirectory)
+        /// <summary>
+        /// Configures the maximum number of concurrent downloads based on configuration settings.
+        /// </summary>
+        public static void ConfigureConcurrency()
         {
+            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
+            _downloadSemaphore?.Dispose();
+            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
+        }
+
+        /// <summary>
+        /// Sets the download speed limit based on configuration settings.
+        /// </summary>
+        public static void ConfigureDownloadSpeed()
+        {
+            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
+            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
+            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
+        }
+
+        /// <summary>
+        /// Initializes and starts download tasks for the base game files.
+        /// </summary>
+        /// <param name="baseGameFiles">The base game files to download.</param>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of download tasks.</returns>
+        public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
+        {
+            if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
+
             var downloadTasks = new List<Task<string>>(gameFiles.files.Count);
             ConfigureProgress(gameFiles.files.Count);
 
@@ -95,16 +107,31 @@ namespace launcher.Download
                 string fileUrl = $"{GetBranch.GameURL()}/{file.name}";
                 string destinationPath = Path.Combine(branchDirectory, file.name);
 
-                Directory.CreateDirectory(destinationPath);
+                EnsureDirectoryExists(destinationPath);
 
-                downloadTasks.Add(DownloadFile(fileUrl, destinationPath, file.name, file.checksum, checkForExistingFiles: true));
+                downloadTasks.Add(
+                    DownloadFileAsync(
+                        fileUrl,
+                        destinationPath,
+                        file.name,
+                        file.checksum,
+                        checkForExistingFiles: true
+                    )
+                );
             }
 
             return downloadTasks;
         }
 
-        public static List<Task<string>> CreateRepairTasks(string branchDirectory)
+        /// <summary>
+        /// Initializes and starts download tasks for repairing bad files.
+        /// </summary>
+        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
+        /// <returns>A list of download tasks.</returns>
+        public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
         {
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
+
             int badFilesCount = DataCollections.BadFiles.Count;
             ConfigureProgress(badFilesCount);
 
@@ -115,29 +142,31 @@ namespace launcher.Download
                 string fileUrl = $"{GetBranch.GameURL()}/{file}";
                 string destinationPath = Path.Combine(branchDirectory, file);
 
-                Directory.CreateDirectory(destinationPath);
+                EnsureDirectoryExists(destinationPath);
 
-                downloadTasks.Add(DownloadFile(fileUrl, destinationPath, file, checkForExistingFiles: false));
+                downloadTasks.Add(
+                    DownloadFileAsync(
+                        fileUrl,
+                        destinationPath,
+                        file,
+                        checkForExistingFiles: false
+                    )
+                );
             }
 
             return downloadTasks;
         }
 
-        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts)
-        {
-            const double exponentialBackoffFactor = 2.0;
-
-            return Policy.Handle<WebException>().Or<TimeoutException>().WaitAndRetryAsync(
-                retryCount: maxRetryAttempts,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
-                onRetry: (exception, timeSpan, retryNumber, context) =>
-                {
-                    Log(Logger.Type.Warning, Source.Download, $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " + $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt.");
-                }
-            );
-        }
-
-        private static async Task<string> DownloadFile(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
+        /// <summary>
+        /// Downloads a file with optional checksum verification and updates the UI accordingly.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file to download.</param>
+        /// <param name="destinationPath">The local path where the file will be saved.</param>
+        /// <param name="fileName">The name of the file.</param>
+        /// <param name="checksum">Optional checksum for file verification.</param>
+        /// <param name="checkForExistingFiles">Whether to check for existing files before downloading.</param>
+        /// <returns>The path to the downloaded file, or an empty string if the download failed.</returns>
+        private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
         {
             await _downloadSemaphore.WaitAsync();
 
@@ -145,18 +174,28 @@ namespace launcher.Download
 
             try
             {
-                //Check if the file already exists and has the correct checksum, if so skip the download and only decompress
                 if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
                 {
-                    await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () => { await Decompress(destinationPath, destinationPath.Replace(".zst", ""), downloadItem); });
+                    //Decompress the file
+                    await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () =>
+                    {
+                        await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
+                    });
+
                     return destinationPath;
                 }
 
                 //Download the file
-                await CreateRetryPolicy(destinationPath, 30).ExecuteAsync(async () => { await Download(fileUrl, destinationPath, downloadItem); });
+                await CreateRetryPolicy(destinationPath, 30).ExecuteAsync(async () =>
+                {
+                    await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
+                });
 
                 //Decompress the file
-                await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () => { await Decompress(destinationPath, destinationPath.Replace(".zst", ""), downloadItem); });
+                await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () =>
+                {
+                    await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
+                });
 
                 return destinationPath;
             }
@@ -168,7 +207,11 @@ namespace launcher.Download
             }
             finally
             {
-                UpdateProgress();
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
 
                 await RemoveDownloadItemAsync(downloadItem);
 
@@ -179,7 +222,111 @@ namespace launcher.Download
             }
         }
 
-        private static async Task Download(string fileUrl, string destinationPath, DownloadItem downloadItem)
+        /// <summary>
+        /// Determines whether a file should be skipped based on its existence and checksum.
+        /// </summary>
+        /// <param name="destinationPath">The path to the destination file.</param>
+        /// <param name="expectedChecksum">The expected checksum of the file.</param>
+        /// <returns>True if the file exists and matches the checksum; otherwise, false.</returns>
+        private static bool ShouldSkipDownload(string destinationPath, string expectedChecksum)
+        {
+            if (File.Exists(destinationPath))
+            {
+                string actualChecksum = Checksums.CalculateChecksum(destinationPath);
+                if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Ensures that the directory for the specified file path exists.
+        /// </summary>
+        /// <param name="filePath">The file path whose directory should be checked.</param>
+        private static void EnsureDirectoryExists(string filePath)
+        {
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        /// <summary>
+        /// Configures the progress bar and related UI elements based on the total number of files.
+        /// </summary>
+        /// <param name="totalFiles">The total number of files to process.</param>
+        private static void ConfigureProgress(int totalFiles)
+        {
+            AppState.FilesLeft = totalFiles;
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = totalFiles;
+                Progress_Bar.Value = 0;
+                Files_Label.Text = $"{totalFiles} files left";
+            });
+        }
+
+        /// <summary>
+        /// Creates a retry policy using Polly for handling transient download errors.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file being downloaded.</param>
+        /// <returns>An asynchronous retry policy.</returns>
+        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts)
+        {
+            const double exponentialBackoffFactor = 2.0;
+
+            return Policy
+                .Handle<WebException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(
+                    retryCount: maxRetryAttempts,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
+                    onRetry: (exception, timeSpan, retryNumber, context) =>
+                    {
+                        Log(
+                            Logger.Type.Warning,
+                            Source.Download,
+                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
+                            $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
+                        );
+                    }
+                );
+        }
+
+        /// <summary>
+        /// Adds a download item to the UI.
+        /// </summary>
+        /// <param name="fileName">The name of the file being downloaded.</param>
+        /// <returns>The added <see cref="DownloadItem"/>.</returns>
+        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
+        {
+            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
+        }
+
+        /// <summary>
+        /// Removes a download item from the UI.
+        /// </summary>
+        /// <param name="downloadItem">The download item to remove.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
+        {
+            if (downloadItem != null)
+            {
+                await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
+            }
+        }
+
+        /// <summary>
+        /// Downloads a file with speed throttling and updates the UI with download progress.
+        /// </summary>
+        /// <param name="fileUrl">The URL of the file to download.</param>
+        /// <param name="destinationPath">The local path where the file will be saved.</param>
+        /// <param name="downloadItem">The UI download item to update.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
             using var response = await Networking.HttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
 
@@ -188,22 +335,22 @@ namespace launcher.Download
 
             long totalBytes = response.Content.Headers.ContentLength ?? -1;
             long downloadedBytes = 0;
-
             DateTime lastUpdate = DateTime.Now;
             DateTime timeoutLastUpdate = DateTime.Now;
             TimeSpan timeoutThreshold = TimeSpan.FromSeconds(30);
 
-            // Create a throttled stream to limit the download speed
             using var responseStream = await response.Content.ReadAsStreamAsync();
+
+            // Use the global rate limiter
             using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[64 * 1024]; // 64KB buffer
             int bytesRead;
 
             while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                // Write the downloaded data to the file
                 await fileStream.WriteAsync(buffer, 0, bytesRead);
                 downloadedBytes += bytesRead;
 
@@ -212,13 +359,16 @@ namespace launcher.Download
 
                 // Update the lastUpdate time if new data is downloaded
                 if (bytesRead > 0)
+                {
                     timeoutLastUpdate = DateTime.Now;
+                }
 
                 // Check for timeout
                 if (DateTime.Now - timeoutLastUpdate > timeoutThreshold)
+                {
                     throw new TimeoutException($"Download stalled for {timeoutThreshold.TotalSeconds} seconds. Retrying...");
+                }
 
-                // Update the UI every 200ms to avoid excessive updates
                 if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                 {
                     lastUpdate = DateTime.Now;
@@ -240,59 +390,6 @@ namespace launcher.Download
             }
 
             await fileStream.FlushAsync();
-        }
-
-        public static async Task Decompress(string compressedFilePath, string decompressedFilePath, DownloadItem downloadItem)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
-
-            long totalBytes = new FileInfo(compressedFilePath).Length;
-            long processedBytes = 0;
-            DateTime lastUpdate = DateTime.Now;
-
-            using var input = File.OpenRead(compressedFilePath);
-            using var output = File.OpenWrite(decompressedFilePath);
-            using var decompressionStream = new DecompressionStream(input);
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = await decompressionStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                await output.WriteAsync(buffer, 0, bytesRead);
-                processedBytes += bytesRead;
-
-                if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
-                {
-                    lastUpdate = DateTime.Now;
-
-                    double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
-                    string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                    double downloadedSize = processedBytes >= 1024L * 1024 * 1024 ? processedBytes / (1024.0 * 1024 * 1024) : processedBytes / (1024.0 * 1024.0);
-                    string downloadedText = processedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        downloadItem.downloadFilePercent.Text = $"decompressing...";
-                        downloadItem.downloadFileProgress.Value = (double)processedBytes / totalBytes * 100;
-                    });
-                }
-            }
-
-            decompressionStream.Close();
-            output.Close();
-            input.Close();
-        }
-
-        private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
-        {
-            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
-        }
-
-        private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
-        {
-            if (downloadItem != null)
-                await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
         }
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
@@ -366,37 +463,48 @@ namespace launcher.Download
             });
         }
 
-        private static bool ShouldSkipDownload(string destinationPath, string expectedChecksum)
+        public static async Task DecompressFileAsync(string compressedFilePath, string decompressedFilePath, DownloadItem downloadItem)
         {
-            if (File.Exists(destinationPath))
+            Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
+
+            // Get the total size of the compressed file
+            long totalBytes = new FileInfo(compressedFilePath).Length;
+            long processedBytes = 0;
+            DateTime lastUpdate = DateTime.Now;
+
+            using var input = File.OpenRead(compressedFilePath);
+            using var output = File.OpenWrite(decompressedFilePath);
+            using var decompressionStream = new DecompressionStream(input);
+
+            // Wrap the output stream with a progress handler
+            byte[] buffer = new byte[8192]; // 8KB buffer size
+            int bytesRead;
+            while ((bytesRead = await decompressionStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                string actualChecksum = Checksums.CalculateChecksum(destinationPath);
-                if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
-                    return true;
+                await output.WriteAsync(buffer, 0, bytesRead);
+                processedBytes += bytesRead;
+
+                if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
+                {
+                    lastUpdate = DateTime.Now;
+
+                    double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
+                    string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                    double downloadedSize = processedBytes >= 1024L * 1024 * 1024 ? processedBytes / (1024.0 * 1024 * 1024) : processedBytes / (1024.0 * 1024.0);
+                    string downloadedText = processedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                    await appDispatcher.InvokeAsync(() =>
+                    {
+                        downloadItem.downloadFilePercent.Text = $"decompressing...";
+                        downloadItem.downloadFileProgress.Value = (double)processedBytes / totalBytes * 100;
+                    });
+                }
             }
 
-            return false;
-        }
-
-        private static void ConfigureProgress(int totalFiles)
-        {
-            AppState.FilesLeft = totalFiles;
-
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Maximum = totalFiles;
-                Progress_Bar.Value = 0;
-                Files_Label.Text = $"{totalFiles} files left";
-            });
-        }
-
-        private static void UpdateProgress()
-        {
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Value++;
-                Files_Label.Text = $"{--AppState.FilesLeft} files left";
-            });
+            decompressionStream.Close();
+            output.Close();
+            input.Close();
         }
     }
 }
