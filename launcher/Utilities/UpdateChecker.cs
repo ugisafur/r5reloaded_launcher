@@ -9,6 +9,7 @@ using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
 using launcher.Game;
+using launcher.News;
 
 namespace launcher.Utilities
 {
@@ -49,7 +50,8 @@ namespace launcher.Utilities
                     }
                     else
                     {
-                        LogInfo(Source.UpdateChecker, $"Update for launcher is not available (latest version: {newServerConfig.launcherVersion})");
+                        string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.VERSION;
+                        LogInfo(Source.UpdateChecker, $"Update for launcher is not available (latest version: {version})");
                     }
 
                     if (ShouldUpdateGame(newServerConfig))
@@ -172,16 +174,13 @@ namespace launcher.Utilities
 
         private static string GetLatestNightlyTag(List<GithubItems> newGithubConfig)
         {
-            string latest = "";
-            foreach (var root in newGithubConfig)
+            for (int i = 0; i < newGithubConfig.Count; i++)
             {
-                if (root.prerelease && root.tag_name.Contains("nightly"))
-                {
-                    latest = root.tag_name;
-                }
+                if (newGithubConfig[i].prerelease && newGithubConfig[i].tag_name.StartsWith("nightly"))
+                    return newGithubConfig[i].tag_name;
             }
 
-            return latest;
+            return "";
         }
 
         private static bool ShouldUpdateLauncher(ServerConfig newServerConfig, List<GithubItems> newGithubConfig)
