@@ -171,10 +171,9 @@ namespace launcher.Global
 
         private static string GetLatestNightlyTag(List<GithubItems> newGithubConfig)
         {
-            for (int i = 0; i < newGithubConfig.Count; i++)
+            if (newGithubConfig.Count > 0)
             {
-                if (newGithubConfig[i].prerelease && newGithubConfig[i].tag_name.StartsWith("nightly"))
-                    return newGithubConfig[i].tag_name;
+                return newGithubConfig[0].tag_name;
             }
 
             return "";
@@ -184,6 +183,8 @@ namespace launcher.Global
         {
             if ((bool)Ini.Get(Ini.Vars.Nightly_Builds))
             {
+                newGithubConfig = newGithubConfig.Where(release => release.prerelease && release.tag_name.StartsWith("nightly")).ToList();
+
                 if (!iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewNightlyVersion((string)Ini.Get(Ini.Vars.Launcher_Version), newGithubConfig))
                 {
                     var messageBoxResult = MessageBox.Show("A new nightly version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Cancel, MessageBoxOptions.DefaultDesktopOnly);
