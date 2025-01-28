@@ -838,12 +838,7 @@
                             </Grid>
                         </Grid>
                         <Grid Grid.Row="3" Margin="0,6,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="45" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="45" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="Version_Label" Text="0.0.1" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Width="35" Height="16" Margin="8,0,0,0" />
+                            <TextBlock x:Name="Version_Label" Text="" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16" Margin="8,0,0,0" />
                         </Grid>
                     </Grid>
                 </Grid>

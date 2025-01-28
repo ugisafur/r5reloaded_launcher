@@ -134,21 +134,33 @@ namespace launcher.Managers
 
         public static Task<FileChecksum> GenerateAndReturnFileChecksum(string file, string branchFolder)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
-                var fileChecksum = new FileChecksum
-                {
-                    name = file.Replace(branchFolder + "\\", ""),
-                    checksum = CalculateChecksum(file)
-                };
+                await DownloadManager._downloadSemaphore.WaitAsync();
 
-                appDispatcher.Invoke(() =>
+                var fileChecksum = new FileChecksum();
+                try
                 {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
+                    fileChecksum.name = file.Replace(branchFolder + "\\", "");
+                    fileChecksum.checksum = CalculateChecksum(file);
 
-                return fileChecksum;
+                    appDispatcher.Invoke(() =>
+                    {
+                        Progress_Bar.Value++;
+                        Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    });
+
+                    return fileChecksum;
+                }
+                catch (Exception ex)
+                {
+                    LogError(Source.Repair, ex.Message);
+                    return fileChecksum;
+                }
+                finally
+                {
+                    DownloadManager._downloadSemaphore.Release();
+                }
             });
         }
 

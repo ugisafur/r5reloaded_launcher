@@ -50,13 +50,11 @@ namespace launcher.Game
             }
 
             DownloadManager.CreateDownloadMontior();
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
 
             //Install started
             DownloadManager.SetInstallState(true, "INSTALLING");
-
-            //Set download limits
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
@@ -115,11 +113,11 @@ namespace launcher.Game
             if (GetBranch.IsLocalBranch())
                 return;
 
-            DownloadManager.SetOptionalInstallState(true);
-
             //Set download limits
             DownloadManager.ConfigureConcurrency();
             DownloadManager.ConfigureDownloadSpeed();
+
+            DownloadManager.SetOptionalInstallState(true);
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();

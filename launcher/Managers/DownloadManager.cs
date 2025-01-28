@@ -25,9 +25,9 @@ namespace launcher.Managers
     /// </summary>
     public static class DownloadManager
     {
-        private static long _downloadSpeedLimit = 0;
-        private static SemaphoreSlim _downloadSemaphore;
-        private static DownloadSpeedMonitor _speedMonitor;
+        public static long _downloadSpeedLimit = 0;
+        public static SemaphoreSlim _downloadSemaphore;
+        public static DownloadSpeedMonitor _speedMonitor;
 
         public static void CreateDownloadMontior()
         {

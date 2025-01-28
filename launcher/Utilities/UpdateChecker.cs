@@ -15,6 +15,7 @@ namespace launcher.Utilities
     public static class UpdateChecker
     {
         private static bool iqnoredLauncherUpdate = false;
+        public static bool checkForUpdatesOveride = false;
 
         public static async Task Start()
         {
@@ -69,7 +70,28 @@ namespace launcher.Utilities
                     LogError(Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(5));
+                await WaitTime(5);
+            }
+        }
+
+        private static async Task WaitTime(double Minutes)
+        {
+            DateTime start = DateTime.Now;
+            checkForUpdatesOveride = false;
+
+            while (true)
+            {
+                if (checkForUpdatesOveride)
+                {
+                    break;
+                }
+
+                if ((DateTime.Now - start).TotalMinutes >= Minutes)
+                {
+                    break;
+                }
+
+                await Task.Delay(1000);
             }
         }
 
@@ -168,7 +190,7 @@ namespace launcher.Utilities
             {
                 if (!iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewNightlyVersion((string)Ini.Get(Ini.Vars.Launcher_Version), newGithubConfig))
                 {
-                    var messageBoxResult = MessageBox.Show("A new nightly version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    var messageBoxResult = MessageBox.Show("A new nightly version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Cancel, MessageBoxOptions.DefaultDesktopOnly);
                     if (messageBoxResult == MessageBoxResult.No)
                     {
                         iqnoredLauncherUpdate = true;
@@ -184,7 +206,7 @@ namespace launcher.Utilities
 
             if (!iqnoredLauncherUpdate && !AppState.IsInstalling && newServerConfig.launcherallowUpdates && IsNewVersion(Launcher.VERSION, newServerConfig.launcherVersion))
             {
-                var messageBoxResult = MessageBox.Show("A new version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                var messageBoxResult = MessageBox.Show("A new version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Cancel, MessageBoxOptions.DefaultDesktopOnly);
                 if (messageBoxResult == MessageBoxResult.No)
                 {
                     iqnoredLauncherUpdate = true;

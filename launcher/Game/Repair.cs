@@ -32,13 +32,11 @@ namespace launcher.Game
             bool repairSuccess = true;
 
             DownloadManager.CreateDownloadMontior();
+            DownloadManager.ConfigureConcurrency();
+            DownloadManager.ConfigureDownloadSpeed();
 
             //Install started
             DownloadManager.SetInstallState(true, "REPAIRING");
-
-            //Set download limits
-            DownloadManager.ConfigureConcurrency();
-            DownloadManager.ConfigureDownloadSpeed();
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
@@ -98,11 +96,10 @@ namespace launcher.Game
 
         private static async Task RepairOptionalFiles()
         {
-            DownloadManager.SetOptionalInstallState(true);
-
-            //Set download limits
             DownloadManager.ConfigureConcurrency();
             DownloadManager.ConfigureDownloadSpeed();
+
+            DownloadManager.SetOptionalInstallState(true);
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();

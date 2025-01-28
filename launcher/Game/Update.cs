@@ -32,12 +32,11 @@ namespace launcher.Game
 
             SetBranch.UpdateAvailable(false);
 
-            //Install started
-            DownloadManager.SetInstallState(true, "UPDATING");
-
-            //Set download limits
             DownloadManager.ConfigureConcurrency();
             DownloadManager.ConfigureDownloadSpeed();
+
+            //Install started
+            DownloadManager.SetInstallState(true, "UPDATING");
 
             //Create branch library directory to store downloaded files
             string branchDirectory = GetBranch.Directory();
