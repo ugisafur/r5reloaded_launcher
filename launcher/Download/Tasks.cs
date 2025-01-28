@@ -17,6 +17,7 @@ using ZstdSharp;
 using static launcher.Global.References;
 using launcher.Managers;
 using System.Windows;
+using System.Net.Http.Headers;
 
 namespace launcher.Download
 {
@@ -171,6 +172,32 @@ namespace launcher.Download
             await _downloadSemaphore.WaitAsync();
 
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
+
+            // Remove default headers
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("User-Agent");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Accept");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Referer");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Accept-Encoding");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Connection");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Dest");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Mode");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Site");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Priority");
+
+            // Add custom headers
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("User-Agent", "rclone/v1.69.0");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Referer", "https://google.com");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br, zstd");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Priority", "u=0, i");
+
+            //Must delete the file if it exists, otherwise if the new file is smaller than the old one, it will only write the new data and the rest will be the old data
+            if (File.Exists(destinationPath.Replace(".zst", "")))
+                File.Delete(destinationPath.Replace(".zst", ""));
 
             try
             {
@@ -328,7 +355,7 @@ namespace launcher.Download
         /// <returns>A task representing the asynchronous operation.</returns>
         private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
-            using var response = await Networking.HttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await Networking.DownloadHttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new WebException($"Failed to download: {response.StatusCode}");

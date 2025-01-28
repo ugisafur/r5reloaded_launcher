@@ -98,6 +98,8 @@ namespace patch_creator
             var final_game_dir = textBox2.Text;
             Directory.CreateDirectory(final_game_dir);
 
+            string[] overrideStrings = richTextBox2.Lines;
+
             //Get current checksums.json file
             UpdateProgressLabel("Getting server checksums");
             var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
@@ -109,7 +111,7 @@ namespace patch_creator
 
             //Find the changed files
             UpdateProgressLabel("Finding changed files");
-            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum)).ToList();
+            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum) || overrideStrings.Contains(updatedFile.name)).ToList();
             GameChecksums new_checksums = UpdateGameChecksums(server_checksums, local_checksums);
 
             //Compress and move the changed files to the game directory
@@ -438,7 +440,7 @@ namespace patch_creator
         {
             using var delta_temp_input = File.OpenRead(input_file);
             using var delta_compressed_output = File.OpenWrite(output_file);
-            using var compressionStream = new CompressionStream(delta_compressed_output, 12);
+            using var compressionStream = new CompressionStream(delta_compressed_output, 0);
             await delta_temp_input.CopyToAsync(compressionStream);
         }
 

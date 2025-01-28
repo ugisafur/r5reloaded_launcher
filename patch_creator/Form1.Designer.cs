@@ -42,6 +42,7 @@
             progressBar1 = new ProgressBar();
             progressLabel = new Label();
             totalFilesLeft = new Label();
+            richTextBox2 = new RichTextBox();
             SuspendLayout();
             // 
             // textBox1
@@ -169,11 +170,22 @@
             totalFilesLeft.Text = "0/0";
             totalFilesLeft.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // richTextBox2
+            // 
+            richTextBox2.DetectUrls = false;
+            richTextBox2.Location = new Point(650, 27);
+            richTextBox2.Name = "richTextBox2";
+            richTextBox2.Size = new Size(520, 404);
+            richTextBox2.TabIndex = 14;
+            richTextBox2.Text = "";
+            richTextBox2.WordWrap = false;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(656, 453);
+            ClientSize = new Size(1182, 453);
+            Controls.Add(richTextBox2);
             Controls.Add(totalFilesLeft);
             Controls.Add(progressLabel);
             Controls.Add(progressBar1);
@@ -212,5 +224,6 @@
         private ProgressBar progressBar1;
         private Label progressLabel;
         private Label totalFilesLeft;
+        private RichTextBox richTextBox2;
     }
 }
