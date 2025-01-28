@@ -1,7 +1,9 @@
 # R5Reloaded Game Launcher
 
-![GitHub](https://img.shields.io/github/license/AyeZeeBB/r5reloaded_launcher)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/AyeZeeBB/r5reloaded_launcher)
+![GitHub](https://img.shields.io/github/license/AyeZeeBB/r5reloaded_launcher?logo=gnu)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/AyeZeeBB/r5reloaded_launcher?label=release&logo=github)
+![GitHub pre-release (latest by date)](https://img.shields.io/github/v/release/AyeZeeBB/r5reloaded_launcher?include_prereleases&label=nightly&logo=github&filter=nightly*)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/AyeZeeBB/r5reloaded_launcher/total?logo=onlyoffice)
 ![GitHub issues](https://img.shields.io/github/issues/AyeZeeBB/r5reloaded_launcher)
 [![Launcher](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml/badge.svg)](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml)
 
@@ -35,7 +37,7 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
 ## Installation
 
 1. **Download the Launcher**:
-   - Download the latest release from the [Releases](https://github.com/AyeZeeBB/r5reloaded_launcher/releases) page.
+   - Download the latest release from the [Releases](https://github.com/AyeZeeBB/r5reloaded_launcher/releases/latest) page.
 
 2. **Install the Launcher**:
    - Run the installer and follow the on-screen instructions.
