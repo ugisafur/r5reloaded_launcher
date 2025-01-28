@@ -6,13 +6,9 @@ using static launcher.Utilities.Logger;
 using System.Windows;
 using System.Net.Http;
 using static launcher.Global.References;
-using launcher.CDN;
 using ZstdSharp;
 using launcher.Network;
 using launcher.Game;
-
-using launcher.Network;
-
 using launcher.Global;
 using launcher.Utilities;
 using launcher.BranchUtils;
