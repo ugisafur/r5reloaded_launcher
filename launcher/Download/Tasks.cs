@@ -228,7 +228,18 @@ namespace launcher.Download
             }
             catch (Exception ex)
             {
-                LogError(Source.Download, $"All retries failed for {fileUrl}: {ex.Message}");
+                LogError(Source.Download, $@"
+==============================================================
+All retries failed for {fileUrl}
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+
                 AppState.BadFilesDetected = true;
                 return string.Empty;
             }

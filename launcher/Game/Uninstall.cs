@@ -45,9 +45,19 @@ namespace launcher.Game
                     {
                         File.Delete(file);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        LogError(Source.Uninstaller, $"Failed to delete file: {file}");
+                        LogError(Source.Uninstaller, $@"
+==============================================================
+Failed to delete file: {file}
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                     }
                     finally
                     {
@@ -153,9 +163,19 @@ namespace launcher.Game
                     {
                         File.Delete(file);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        LogError(Source.Uninstaller, $"Failed to delete file: {file}");
+                        LogError(Source.Uninstaller, $@"
+==============================================================
+Failed to delete file: {file}
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                     }
                     finally
                     {

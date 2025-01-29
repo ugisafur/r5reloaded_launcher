@@ -66,7 +66,17 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                LogError(Source.Launcher, $"Failed to load playlist file: {ex.Message}");
+                LogError(Source.Launcher, $@"
+==============================================================
+Failed to load playlist file: {ex.Message}
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
         }
 
@@ -395,7 +405,17 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                LogError(Source.Launcher, $"Failed to send notification: {ex.Message}");
+                LogError(Source.Launcher, $@"
+==============================================================
+Failed to send notification
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
         }
 

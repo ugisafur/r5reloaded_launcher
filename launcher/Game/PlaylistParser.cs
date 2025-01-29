@@ -24,7 +24,17 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogError(Source.VDF, ex.Message);
+                LogError(Source.VDF, $@"
+==============================================================
+Playlist Parsing Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
             finally
             {
@@ -57,7 +67,17 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogError(Source.VDF, ex.Message);
+                LogError(Source.VDF, $@"
+==============================================================
+Playlist Get Maps Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
 
             return maps;
@@ -80,7 +100,17 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogError(Source.VDF, ex.Message);
+                LogError(Source.VDF, $@"
+==============================================================
+Playlist Get Gamemodes Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
 
             return playlistnames;

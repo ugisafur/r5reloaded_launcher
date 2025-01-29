@@ -58,15 +58,45 @@ namespace launcher.Global
                 }
                 catch (HttpRequestException ex)
                 {
-                    LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                    LogError(Source.UpdateChecker, $@"
+==============================================================
+HTTP Request Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                 }
                 catch (JsonSerializationException ex)
                 {
-                    LogError(Source.UpdateChecker, $"JSON Deserialization Failed: {ex.Message}");
+                    LogError(Source.UpdateChecker, $@"
+==============================================================
+JSON Deserialization Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                 }
                 catch (Exception ex)
                 {
-                    LogError(Source.UpdateChecker, $"Unexpected Error: {ex.Message}");
+                    LogError(Source.UpdateChecker, $@"
+==============================================================
+Unexpected Error
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                 }
 
                 await WaitTime(5);
@@ -106,7 +136,17 @@ namespace launcher.Global
             }
             catch (HttpRequestException ex)
             {
-                LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                LogError(Source.UpdateChecker, $@"
+==============================================================
+HTTP Request Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                 return null;
             }
             finally
@@ -131,7 +171,17 @@ namespace launcher.Global
             }
             catch (HttpRequestException ex)
             {
-                LogError(Source.UpdateChecker, $"HTTP Request Failed: {ex.Message}");
+                LogError(Source.UpdateChecker, $@"
+==============================================================
+HTTP Request Failed
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
                 return null;
             }
             finally

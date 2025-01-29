@@ -89,7 +89,17 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogError(Source.Launcher, $"Failed to set processor affinity: {ex.Message}");
+                LogError(Source.Launcher, $@"
+==============================================================
+Failed to set processor affinity
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
         }
     }
