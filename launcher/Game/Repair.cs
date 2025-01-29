@@ -66,7 +66,9 @@ namespace launcher.Game
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading repaired files", Source.Repair);
+                Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
             }
 
             if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
@@ -127,7 +129,9 @@ namespace launcher.Game
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
+                Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
             }
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
@@ -165,7 +169,9 @@ namespace launcher.Game
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading language files", Source.Repair);
+                Download.Tasks.ShowSpeedLabels(false, true);
                 await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
             }
         }
     }

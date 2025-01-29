@@ -444,8 +444,6 @@ Message: {ex.Message}
                 Play_Button.IsEnabled = !installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
-                Speed_Label.Text = "";
-                Downloads_Control.Speed_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -467,8 +465,6 @@ Message: {ex.Message}
                 AppState.IsInstalling = installing;
                 Status_Label.Text = "";
                 Files_Label.Text = "";
-                Speed_Label.Text = "";
-                Downloads_Control.Speed_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -495,9 +491,18 @@ Message: {ex.Message}
                 Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Downloads_Control.Speed_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 ReadMore_Label.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
+            });
+        }
+
+        public static void ShowSpeedLabels(bool Speed_Label_isVisible, bool Downloads_Control_Speed_Label_isVisible)
+        {
+            appDispatcher.Invoke(() =>
+            {
+                Speed_Label.Visibility = Speed_Label_isVisible ? Visibility.Visible : Visibility.Hidden;
+                Downloads_Control.Speed_Label.Visibility = Downloads_Control_Speed_Label_isVisible ? Visibility.Visible : Visibility.Hidden;
+                Speed_Label.Text = "";
+                Downloads_Control.Speed_Label.Text = "";
             });
         }
 

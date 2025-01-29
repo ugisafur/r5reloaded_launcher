@@ -67,8 +67,10 @@ namespace launcher.Game
             var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             //Download base game files
+            Download.Tasks.ShowSpeedLabels(true, true);
             Download.Tasks.UpdateStatusLabel("Downloading game files", Source.Installer);
             await Task.WhenAll(downloadTasks);
+            Download.Tasks.ShowSpeedLabels(false, false);
 
             //if bad files detected, attempt game repair
             if (AppState.BadFilesDetected)
@@ -134,8 +136,10 @@ namespace launcher.Game
             var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
             //Download base game files
+            Download.Tasks.ShowSpeedLabels(true, true);
             Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
+            Download.Tasks.ShowSpeedLabels(false, false);
 
             Download.Tasks.SetOptionalInstallState(false);
 
@@ -194,7 +198,9 @@ namespace launcher.Game
 
             var langdownloadTasks = Download.Tasks.InitializeDownloadTasks(langFiles, branchDirectory);
 
+            Download.Tasks.ShowSpeedLabels(false, true);
             await Task.WhenAll(langdownloadTasks);
+            Download.Tasks.ShowSpeedLabels(false, false);
 
             appDispatcher.Invoke(new Action(() =>
             {

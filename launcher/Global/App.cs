@@ -30,6 +30,8 @@ namespace launcher.Managers
             GetSelfUpdater();
             EULA_Control.SetupEULA();
 
+            Download.Tasks.ShowSpeedLabels(false, false);
+
             if (AppState.IsOnline && Network.Connection.NewsTest())
                 News.Populate();
             else

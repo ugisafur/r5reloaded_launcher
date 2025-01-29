@@ -67,7 +67,9 @@ namespace launcher.Game
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading updated files", Source.Update);
+                Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
             }
 
             //Update launcher config
@@ -122,7 +124,9 @@ namespace launcher.Game
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
+                Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
             }
 
             Download.Tasks.SetOptionalInstallState(false);
