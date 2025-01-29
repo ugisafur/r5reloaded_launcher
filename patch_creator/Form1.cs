@@ -9,6 +9,9 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace patch_creator
 {
@@ -23,6 +26,9 @@ namespace patch_creator
             "paks\\Win64",
             "audio\\ship",
         };
+
+        private string AUTH_TOKEN;
+        private string ZONE_ID;
 
         public Form1()
         {
@@ -43,6 +49,41 @@ namespace patch_creator
             }
 
             comboBox1.SelectedIndex = 0;
+
+            LoadConfig();
+        }
+
+        private void LoadConfig()
+        {
+            string configPath = Application.StartupPath + "config.json";
+            if (!File.Exists(configPath))
+            {
+                Log("Config file not found, creating default config");
+                Log("Please fill in the required fields in the config file");
+
+                CFConfig cFConfig = new CFConfig
+                {
+                    zoneID = "",
+                    authKey = ""
+                };
+
+                string defaultConfig = JsonConvert.SerializeObject(cFConfig, Formatting.Indented);
+                File.WriteAllText(configPath, defaultConfig);
+            }
+
+            string config = File.ReadAllText(configPath);
+            CFConfig cfConfig = JsonConvert.DeserializeObject<CFConfig>(config);
+
+            if (!string.IsNullOrEmpty(cfConfig.zoneID) || !string.IsNullOrEmpty(cfConfig.authKey))
+            {
+                AUTH_TOKEN = cfConfig.authKey;
+                ZONE_ID = cfConfig.zoneID;
+            }
+            else
+            {
+                PurgeAllBtn.Enabled = false;
+                PurgeListBtn.Enabled = false;
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -145,6 +186,11 @@ namespace patch_creator
             //Update the clear cache list
             UpdateProgressLabel("Updating clear cache list");
             UpdateClearCacheList(selected_index, compressed_changedFiles, final_game_dir);
+
+            if (!string.IsNullOrEmpty(versionTxt.Text))
+            {
+                File.WriteAllText(final_game_dir + "\\version.txt", versionTxt.Text);
+            }
 
             UpdateProgressLabel("Patch creation complete");
             Log("---------- Patch creation finished ----------");
@@ -360,15 +406,7 @@ namespace patch_creator
 
             richTextBox1.Invoke(() =>
             {
-                richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json").Replace("\\", "/") + Environment.NewLine);
-                richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums_zst.json").Replace("\\", "/") + Environment.NewLine);
-
-                int i = 0;
-                foreach (var file in changed_files)
-                {
-                    richTextBox1.AppendText(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, file.name).Replace("\\", "/") + Environment.NewLine);
-                    SetProgressBarValue(i++);
-                }
+                richTextBox1.Lines = changed_files_txt.ToArray();
             });
         }
 
@@ -440,12 +478,119 @@ namespace patch_creator
         {
             using var delta_temp_input = File.OpenRead(input_file);
             using var delta_compressed_output = File.OpenWrite(output_file);
-            using var compressionStream = new CompressionStream(delta_compressed_output, 0);
+            using var compressionStream = new CompressionStream(delta_compressed_output, (int)compressionLevel.Value);
             await delta_temp_input.CopyToAsync(compressionStream);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
         }
+
+        private async void button4_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(AUTH_TOKEN) || string.IsNullOrEmpty(ZONE_ID))
+                return;
+
+            string url = $"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache";
+
+            var payload = new
+            {
+                purge_everything = true
+            };
+
+            string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AUTH_TOKEN);
+
+                HttpResponseMessage response = await Global.HTTP_CLIENT.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Cache has been purged");
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Response from Cloudflare:");
+                    Console.WriteLine(responseBody);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to purge cache");
+                    string errorBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    Console.WriteLine(errorBody);
+                }
+            }
+        }
+
+        private async void PurgeListBtn_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(AUTH_TOKEN) || string.IsNullOrEmpty(ZONE_ID))
+                return;
+
+            string[] purge_list = richTextBox1.Lines;
+
+            // Split the purge list into chunks of 30
+            List<List<string>> purge_lists = new List<List<string>>();
+
+            for (int i = 0; i < purge_list.Length; i += 30)
+            {
+                purge_lists.Add(purge_list.Skip(i).Take(30).ToList());
+            }
+
+            string url = $"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache";
+
+            bool did_fail = false;
+
+            foreach (var list in purge_lists)
+            {
+                var payload = new
+                {
+                    files = list
+                };
+
+                string jsonPayload = JsonSerializer.Serialize(payload);
+
+                using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+                {
+                    request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AUTH_TOKEN);
+
+                    HttpResponseMessage response = await Global.HTTP_CLIENT.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Response from Cloudflare:");
+                        Console.WriteLine(responseBody);
+                    }
+                    else
+                    {
+                        string errorBody = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine($"Error: {response.StatusCode}");
+                        Console.WriteLine(errorBody);
+                        did_fail = true;
+                    }
+                }
+            }
+
+            if (!did_fail)
+            {
+                MessageBox.Show("Files have been purged from cache");
+            }
+            else
+            {
+                MessageBox.Show("Failed to purge cache");
+            }
+        }
+    }
+
+    public class CFConfig
+    {
+        public string zoneID { get; set; }
+        public string authKey { get; set; }
     }
 }
