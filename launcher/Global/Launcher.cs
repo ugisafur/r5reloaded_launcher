@@ -8,7 +8,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.7.5";
+        public const string VERSION = "0.9.7.6";
         public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
         public const string GITHUB_API_URL = "https://api.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases";
         public const string BACKGROUND_VIDEO_URL = "https://cdn.r5r.org/launcher/video_backgrounds/";
