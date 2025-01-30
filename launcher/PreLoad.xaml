@@ -7,10 +7,15 @@
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
         Title="R5Reloaded Launcher" Height="350" AllowsTransparency="True" Width="600" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="launcher_x64.ico" Background="Transparent" Loaded="Window_Loaded" Topmost="True" ShowInTaskbar="False">
-    <Border Background="{StaticResource PrimaryColor}" BorderBrush="{StaticResource SecondaryColor2}" BorderThickness="1" CornerRadius="10">
+    <Border Background="{StaticResource ThemePrimary}" BorderBrush="Black" BorderThickness="4" CornerRadius="10">
         <Grid>
-            <Image Source="/assets/logo-main-white.png" Margin="39,74,49,74" />
-            <TextBlock Text="Loading..." Foreground="{StaticResource PrimaryTextColor}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="396,226,0,0" FontFamily="Bahnschrift SemiBold" FontSize="18" />
+            <Grid.Clip>
+                <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />
+            </Grid.Clip>
+            <Image Source="/assets/Revenant-apex.jpg" Margin="-26,0,-26,-12" />
+            <Rectangle Fill="#7F000000" Margin="0,0,0,0" />
+            <Image Source="/assets/logo-main-white.png" Margin="169,15,168,225" />
+            <TextBlock Text="Loading..." Foreground="{StaticResource ThemePrimaryText}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="506,310,0,0" FontFamily="Bahnschrift SemiBold" FontSize="18" />
         </Grid>
     </Border>
 </Window>

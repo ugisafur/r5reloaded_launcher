@@ -64,14 +64,14 @@
         </Style>
     </UserControl.Resources>
 
-    <Border x:Name="NewsItemBorder" Background="{StaticResource SecondaryColor}" BorderThickness="2" Height="289" Width="568" CornerRadius="15">
+    <Border x:Name="NewsItemBorder" Background="{StaticResource ThemeSecondary}" BorderThickness="2" Height="289" Width="568" CornerRadius="15">
         <Border.Style>
             <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="{StaticResource SecondaryColor2}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAlt}" />
                 <Style.Triggers>
                     <!-- Watch the Button’s IsMouseOver property -->
                     <DataTrigger Binding="{Binding IsMouseOver, ElementName=LinkButton}" Value="True">
-                        <Setter Property="BorderBrush" Value="{StaticResource StatusTextColor2}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -87,9 +87,9 @@
                     <RowDefinition Height="158" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBlock x:Name="Title" Text="Test" Foreground="{StaticResource PrimaryTextColor}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="15,15,15,0" Grid.Column="0" />
-                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="137" VerticalAlignment="Bottom" />
-                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
+                <TextBlock x:Name="Title" Text="Test" Foreground="{StaticResource ThemePrimaryText}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="15,15,15,0" Grid.Column="0" />
+                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="137" VerticalAlignment="Bottom" />
+                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{StaticResource ThemeSecondaryAltText}" FontFamily="Bahnschrift SemiLight" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
                 <Image Source="/assets/icons8-linking-48.png" Height="15" Width="15" Margin="15,4,177,8" Grid.Row="2" />
             </Grid>
             <Grid Grid.Column="1" ClipToBounds="True">
@@ -106,12 +106,12 @@
                        VerticalAlignment="Stretch"
                        Stretch="UniformToFill" />
 
-                <TextBlock x:Name="Date" Text="Date" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,5" Visibility="Hidden">
+                <TextBlock x:Name="Date" Text="Date" Foreground="{StaticResource ThemeSecondaryAltText}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,5" Visibility="Hidden">
                     <TextBlock.Effect>
                         <DropShadowEffect Color="Black" Direction="315" ShadowDepth="2" Opacity="1" BlurRadius="2" />
                     </TextBlock.Effect>
                 </TextBlock>
-                <TextBlock x:Name="Author" Text="Author" Foreground="{StaticResource StatusTextColor2}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,5" Visibility="Hidden">
+                <TextBlock x:Name="Author" Text="Author" Foreground="{StaticResource ThemeSecondaryAltText}" FontFamily="Bahnschrift SemiLight" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,5" Visibility="Hidden">
                     <TextBlock.Effect>
                         <DropShadowEffect Color="Black" Direction="315" ShadowDepth="2" Opacity="1" BlurRadius="2" />
                     </TextBlock.Effect>

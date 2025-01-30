@@ -71,11 +71,11 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" Height="40">
+    <Border Background="{StaticResource ThemeSecondaryAlt}" BorderThickness="0" Height="40">
         <Grid>
-            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{StaticResource PrimaryTextColor}" FontSize="14" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="6,4,135,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
-            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{StaticResource PrimaryTextColor}" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="0,5,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
-            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="8" Margin="6,12,5,2" Foreground="{StaticResource AccentColor}" BorderBrush="{StaticResource PrimaryColor}" Background="{StaticResource PrimaryColor}" HorizontalAlignment="Stretch" />
+            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="6,4,135,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{StaticResource ThemePrimaryText}" FontWeight="Bold" FontFamily="Bahnschrift Light" Margin="0,5,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="8" Margin="6,12,5,2" Foreground="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemePrimary}" Background="{StaticResource ThemePrimary}" HorizontalAlignment="Stretch" />
         </Grid>
     </Border>
 </UserControl>

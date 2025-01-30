@@ -42,20 +42,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -79,19 +79,19 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonColor}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource CloseButtonHoverColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -99,13 +99,13 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource PrimaryColor}" CornerRadius="10" Height="160" Width="480">
+    <Border Background="{StaticResource ThemePrimary}" CornerRadius="10" Height="160" Width="480">
         <Grid>
-            <TextBlock x:Name="Title" Text="Title" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,10,60,0" />
-            <TextBlock x:Name="Desc" Text="Desc" Foreground="{StaticResource AccentTextColor}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="7,37,23,0" />
-            <Button x:Name="Next" Style="{DynamicResource checkBtnStyle}" Margin="389,108,10,0" Content="NEXT" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Foreground="{StaticResource DownloadOptButtonTextColor}" Height="42" Click="Next_Click" />
-            <Button x:Name="Skip" Style="{DynamicResource closeBtnStyle}" Margin="304,108,97,0" Content="SKIP" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="42" Foreground="{StaticResource StatusTextColor2}" Click="Skip_Click" />
-            <TextBlock x:Name="Page" Text="1 of #" Foreground="{StaticResource AccentTextColor}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,131,358,0" />
+            <TextBlock x:Name="Title" Text="Title" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,10,60,0" />
+            <TextBlock x:Name="Desc" Text="Desc" Foreground="{StaticResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="7,37,23,0" />
+            <Button x:Name="Next" Style="{DynamicResource checkBtnStyle}" Margin="389,108,10,0" Content="NEXT" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Foreground="{StaticResource ThemePrimaryAltText}" Height="42" Click="Next_Click" />
+            <Button x:Name="Skip" Style="{DynamicResource closeBtnStyle}" Margin="304,108,97,0" Content="SKIP" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="42" Foreground="{StaticResource ThemeSecondaryAltText}" Click="Skip_Click" />
+            <TextBlock x:Name="Page" Text="1 of #" Foreground="{StaticResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,131,358,0" />
         </Grid>
     </Border>
 </UserControl>

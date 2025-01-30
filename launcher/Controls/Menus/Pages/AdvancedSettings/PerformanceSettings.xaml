@@ -28,7 +28,7 @@
                         <DockPanel x:Name="dockPanel">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
-                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource SwitchColor}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
+                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
                                 <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -50,9 +50,9 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard" />
                                 </Trigger.EnterActions>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource SwitchColor}" />
-                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource SwitchColor}" />
-                                <Setter TargetName="slider" Property="Background" Value="{StaticResource SwitchBackgroundColor}" />
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="slider" Property="Background" Value="{StaticResource ThemeSecondary}" />
                                 <Setter TargetName="checkImage" Property="Source" Value="/assets/icons8-check-48.png" />
                                 <Setter TargetName="checkImage" Property="Width" Value="15" />
                             </Trigger>
@@ -99,20 +99,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -124,7 +124,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="CoresTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -133,7 +133,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
+            <Setter Property="CaretBrush" Value="{StaticResource ThemePrimaryText}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -141,18 +141,18 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="Reserved Cores" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                            <TextBlock IsHitTestVisible="False" Text="Reserved Cores" Foreground="{StaticResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -170,7 +170,7 @@
         </Style>
         <Style x:Key="WorkerTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -179,7 +179,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
+            <Setter Property="CaretBrush" Value="{StaticResource ThemePrimaryText}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -187,18 +187,18 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="Worker Threads" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                            <TextBlock IsHitTestVisible="False" Text="Worker Threads" Foreground="{StaticResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -216,7 +216,7 @@
         </Style>
         <Style x:Key="AffinityTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -225,7 +225,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
+            <Setter Property="CaretBrush" Value="{StaticResource ThemePrimaryText}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -233,18 +233,18 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="Processor Affinity" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                            <TextBlock IsHitTestVisible="False" Text="Processor Affinity" Foreground="{StaticResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="#" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -261,23 +261,23 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource SecondaryColor}">
+    <Border Background="{StaticResource ThemeSecondary}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="704" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="Performance Settings" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Optimize game performance by fine-tuning hardware utilization. Adjust CPU core usage, threading, and asynchronous processes to achieve the best performance on your system." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,72,0" Height="50" Width="820" />
+                <TextBlock Text="Performance Settings" Foreground="{StaticResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Optimize game performance by fine-tuning hardware utilization. Adjust CPU core usage, threading, and asynchronous processes to achieve the best performance on your system." TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,72,0" Height="50" Width="820" />
 
                 <CheckBox x:Name="NoAsync" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,184,0,0" Cursor="Hand" />
-                <TextBlock Text="No Async" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
-                <TextBlock Text="Disables all asynchronous game processes ( Enabling this will make your game run slower )" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
+                <TextBlock Text="No Async" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
+                <TextBlock Text="Disables all asynchronous game processes ( Enabling this will make your game run slower )" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
 
-                <TextBox x:Name="ReservedCores" Style="{DynamicResource CoresTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,229,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
-                <TextBox x:Name="ThreadsWorker" Style="{DynamicResource WorkerTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,290,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
-                <TextBox x:Name="AffinityProc" Style="{DynamicResource AffinityTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,351,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="ReservedCores" Style="{DynamicResource CoresTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,229,0,0" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" Text="" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="ThreadsWorker" Style="{DynamicResource WorkerTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,290,0,0" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" Text="" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="AffinityProc" Style="{DynamicResource AffinityTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,351,0,0" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" Text="" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
             </Grid>
         </Grid>
     </Border>

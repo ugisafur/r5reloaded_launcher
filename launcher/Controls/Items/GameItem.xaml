@@ -43,20 +43,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorDisabled}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorDisabled}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeDisabledText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeDisabledText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -81,20 +81,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UninstallButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource UninstallButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UninstallButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource UninstallButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UninstallButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource UninstallButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource UninstallButtonColorPressed}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource UninstallButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemeUninstallButtonText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -119,19 +119,19 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorNormal}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource BranchTopButtonColorHover}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -173,9 +173,9 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border x:Name="checkBoxBorder" Width="20" Height="20" Background="{DynamicResource PrimaryColor}" BorderBrush="{DynamicResource PopupSettingButtonTextColor}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" CornerRadius="1" Margin="1" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <Border x:Name="checkBoxBorder" Width="20" Height="20" Background="{DynamicResource ThemePrimary}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" CornerRadius="1" Margin="1" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                                 <Grid x:Name="markGrid">
-                                    <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Fill="{DynamicResource AccentColor}" Margin="2" Opacity="0" Stretch="Fill" />
+                                    <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Fill="{DynamicResource ThemeSecondaryAltText}" Margin="2" Opacity="0" Stretch="Fill" />
                                     <Rectangle x:Name="indeterminateMark" Fill="{StaticResource OptionMark.Static.Glyph}" Margin="2" Opacity="0" />
                                 </Grid>
                             </Border>
@@ -187,22 +187,22 @@
                                 <Setter Property="Padding" Value="4,-1,0,0" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource AccentColor}" />
-                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource PopupSettingButtonTextColor}" />
-                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource SecondaryColor}" />
-                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource SecondaryColor}" />
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource ThemeSecondary}" />
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource ThemeSecondary}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource PrimaryColor}" />
-                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource PopupSettingButtonTextColor}" />
-                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource AccentTextColor}" />
-                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource AccentTextColor}" />
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ThemePrimary}" />
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource ThemeSecondaryText}" />
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource ThemeSecondaryText}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource PrimaryColor}" />
-                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource PopupSettingButtonTextColor}" />
-                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource AccentTextColor}" />
-                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource AccentTextColor}" />
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ThemePrimary}" />
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource ThemeSecondaryText}" />
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource ThemeSecondaryText}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
                                 <Setter Property="Opacity" TargetName="optionMark" Value="1" />
@@ -219,30 +219,30 @@
         </Style>
     </UserControl.Resources>
 
-    <Border x:Name="MainBG" Background="{StaticResource PrimaryColor}" CornerRadius="10" Margin="20,0,20,0">
+    <Border x:Name="MainBG" Background="{StaticResource ThemePrimary}" CornerRadius="10" Margin="20,0,20,0">
         <Grid>
-            <Border x:Name="TopBar" Background="{StaticResource SecondaryColor2}" Height="65" CornerRadius="10,10,0,0" VerticalAlignment="Top">
+            <Border x:Name="TopBar" Background="{StaticResource ThemeSecondaryAlt}" Height="65" CornerRadius="10,10,0,0" VerticalAlignment="Top">
                 <Grid>
-                    <Button x:Name="TopButton" Style="{DynamicResource TopBtnStyle}" Background="{StaticResource BranchTopButtonColorNormal}" BorderBrush="{StaticResource BranchTopButtonColorNormal}" Click="TopButton_Click" />
-                    <TextBlock x:Name="BranchName" IsHitTestVisible="False" Text="R5Reloaded - Branch Name" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" Margin="22,0,299,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{StaticResource PrimaryTextColor}" FontSize="26" Margin="810,0,20,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" TextAlignment="Center" HorizontalAlignment="Right" />
+                    <Button x:Name="TopButton" Style="{DynamicResource TopBtnStyle}" Background="Transparent" BorderBrush="Transparent" Click="TopButton_Click" />
+                    <TextBlock x:Name="BranchName" IsHitTestVisible="False" Text="R5Reloaded - Branch Name" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" Margin="22,0,299,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{StaticResource ThemePrimaryText}" FontSize="26" Margin="810,0,20,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" TextAlignment="Center" HorizontalAlignment="Right" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="Game location complete path:" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,113,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
-            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
+            <TextBlock Text="Game location complete path:" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,113,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
 
-            <Rectangle Height="2" Fill="{StaticResource SeperatorColor}"  VerticalAlignment="Top" Margin="50,210,50,0" />
-            <TextBlock Text="Game Files" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="14" Margin="48,286,410,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,641,0" Content="VERIFY GAME" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="202,344,457,0" Content="Uninstall Branch" Background="{StaticResource UninstallButtonColorNormal}" BorderBrush="{StaticResource UninstallButtonColorNormal}" Foreground="{StaticResource UninstallButtonTextColor}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,344,457,0" Content="INSTALL BRANCH" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
-            <TextBlock Text="Game Files" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{StaticResource BranchDisabledTextColor}" FontSize="24" Margin="50,350,580,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,0,0" Content="UNINSTALL HD TEXTURES" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="14" Margin="48,448,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Audio Languages" Foreground="{StaticResource PrimaryTextColor}" FontSize="18" Margin="48,421,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Rectangle Height="2" Fill="{StaticResource ThemeSeperator}"  VerticalAlignment="Top" Margin="50,210,50,0" />
+            <TextBlock Text="Game Files" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="14" Margin="48,286,410,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,641,0" Content="VERIFY GAME" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="202,344,457,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="{StaticResource ThemeUninstallButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,344,457,0" Content="INSTALL BRANCH" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
+            <TextBlock Text="Game Files" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{StaticResource ThemeDisabledText}" FontSize="24" Margin="50,350,580,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,0,0" Content="UNINSTALL HD TEXTURES" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="14" Margin="48,448,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Audio Languages" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,421,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
             <Grid Margin="50,473,50,31" x:Name="LangBox">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25" />

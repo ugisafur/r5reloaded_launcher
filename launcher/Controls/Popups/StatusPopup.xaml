@@ -46,17 +46,17 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorDisabled}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorDisabled}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource MenuButtonColorNormal}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource MenuButtonDisabledTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="Transparent" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemeDisabledText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -65,7 +65,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource SecondaryColor2}" BorderThickness="0" CornerRadius="2" Width="577" Height="292" Padding="10" Loaded="Border_Loaded">
+    <Border Background="{StaticResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="2" Width="577" Height="292" Padding="10" Loaded="Border_Loaded">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="5*" />
@@ -80,39 +80,39 @@
                 <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="R5Reloaded Status" FontSize="20" Foreground="{StaticResource PrimaryTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="R5Reloaded Status" FontSize="20" Foreground="{StaticResource ThemePrimaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift SemiBold" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Website" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Master Server" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Content Download Network" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Website" FontSize="14" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Master Server" FontSize="14" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Content Download Network" FontSize="14" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontFamily="Bahnschrift SemiLight" />
 
             <Border x:Name="WebsiteStatusBG" Grid.Row="1" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblWebsiteStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblWebsiteStatus" Text="Operational" FontSize="12" Foreground="{StaticResource ThemePrimaryAltText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
             <Border x:Name="MSStatusBG" Grid.Row="2" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblMSStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblMSStatus" Text="Operational" FontSize="12" Foreground="{StaticResource ThemePrimaryAltText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
             <Border x:Name="CDNStatusBG" Grid.Row="3" Grid.Column="1" Background="#FF8DF3BB" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock x:Name="lblCNDStatus" Text="Operational" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
+                <TextBlock x:Name="lblCNDStatus" Text="Operational" FontSize="12" Foreground="{StaticResource ThemePrimaryAltText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontFamily="Bahnschrift Light" FontWeight="Bold" />
             </Border>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Players Online" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
-            <Border Grid.Row="4" Grid.Column="1" Background="{StaticResource StatusPlayerServerBG}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
-                <TextBlock x:Name="lblPlayersCount" Text="0" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Players Online" FontSize="14" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
+            <Border Grid.Row="4" Grid.Column="1" Background="{StaticResource ThemeSecondaryAltText}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
+                <TextBlock x:Name="lblPlayersCount" Text="0" FontSize="12" Foreground="{StaticResource ThemePrimaryAltText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
             </Border>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Servers Online" FontSize="14" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
-            <Border Grid.Row="5" Grid.Column="1" Background="{StaticResource StatusPlayerServerBG}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
-                <TextBlock x:Name="lblServerCount" Text="0" FontSize="12" Foreground="{StaticResource StatusTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Servers Online" FontSize="14" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,-20" FontFamily="Bahnschrift SemiLight" />
+            <Border Grid.Row="5" Grid.Column="1" Background="{StaticResource ThemeSecondaryAltText}" CornerRadius="2" Width="90" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,-20">
+                <TextBlock x:Name="lblServerCount" Text="0" FontSize="12" Foreground="{StaticResource ThemePrimaryAltText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" FontWeight="Bold" FontFamily="Bahnschrift Light" />
             </Border>
 
-            <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="{StaticResource SeperatorColor}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
+            <Rectangle Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" Fill="{StaticResource ThemeSeperator}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,-5" />
 
-            <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="{StaticResource AccentTextColor}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
+            <TextBlock x:Name="LastUpdate" Grid.Column="1" Text="Last Updated: 60 seconds ago" FontSize="10" Foreground="{StaticResource ThemeSecondaryText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Bahnschrift Light" Width="260" TextAlignment="Right" />
 
-            <Button x:Name="gotoDownloads" Grid.Row="6" Style="{DynamicResource SettingsButton}" Width="150" Margin="1,0,0,1" FontFamily="Bahnschrift SemiBold" FontSize="12" Background="{StaticResource MenuButtonColorNormal}" Foreground="{StaticResource MenuButtonTextColor}" BorderBrush="{StaticResource MenuButtonColorNormal}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="moreInfo_Click" Cursor="Hand" Height="25">
+            <Button x:Name="gotoDownloads" Grid.Row="6" Style="{DynamicResource SettingsButton}" Width="150" Margin="1,0,0,1" FontFamily="Bahnschrift SemiBold" FontSize="12" Background="Transparent" Foreground="{StaticResource ThemeSecondaryAltText}" BorderBrush="Transparent" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="moreInfo_Click" Cursor="Hand" Height="25">
                 <Grid Width="150">
                     <TextBlock Text="More Information" HorizontalAlignment="Left" FontSize="14" Margin="29,3,0,3" />
                     <Image Source="/assets/icons8-linking-48.png" Width="18" Height="18" HorizontalAlignment="Left" Margin="5,0,0,0" />

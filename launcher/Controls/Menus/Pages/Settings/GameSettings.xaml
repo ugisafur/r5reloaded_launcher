@@ -21,7 +21,7 @@
             CornerRadius="5" />
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource StatusTextColor2}" />
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -33,8 +33,8 @@
             <!-- Set properties specifically for a horizontal bar -->
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="Width" Value="6" />
-            <Setter Property="Background" Value="{StaticResource SecondaryColor2}" />
-            <Setter Property="Foreground" Value="{StaticResource SecondaryColor2}" />
+            <Setter Property="Background" Value="{StaticResource ThemeSecondaryAlt}" />
+            <Setter Property="Foreground" Value="{StaticResource ThemeSecondaryAlt}" />
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -46,7 +46,7 @@
                                 <RowDefinition Height="15" />
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="1" Background="{StaticResource PrimaryColor}" CornerRadius="6" Width="10" />
+                            <Border Grid.Row="1" Background="{StaticResource ThemePrimary}" CornerRadius="6" Width="10" />
 
                             <Track
                 x:Name="PART_Track"
@@ -57,8 +57,8 @@
                                 <Track.Thumb>
                                     <Thumb
                                 Style="{StaticResource RoundedThumbStyle}"
-                        Background="{StaticResource SecondaryColor2}"
-                        BorderBrush="{StaticResource SecondaryColor2}"
+                        Background="{StaticResource ThemeSecondaryAlt}"
+                        BorderBrush="{StaticResource ThemeSecondaryAlt}"
                         BorderThickness="1" />
                                 </Track.Thumb>
                             </Track>
@@ -76,7 +76,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="AdvancedTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderColor}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -85,7 +85,7 @@
             <Setter Property="AllowDrop" Value="true" />
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextColor}" />
+            <Setter Property="CaretBrush" Value="{StaticResource ThemePrimaryText}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -93,17 +93,17 @@
                             <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
-                            <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{StaticResource AccentTextColor}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                            <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{StaticResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Opacity" TargetName="border" Value="0.56" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBoxColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -164,20 +164,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -186,20 +186,20 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource SecondaryColor}">
+    <Border Background="{StaticResource ThemeSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="340" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="Game Branches" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" Width="875" HorizontalAlignment="Left" />
-                <TextBlock Text="Game location" Foreground="{StaticResource PrimaryTextColor}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="33,156,10,0" Height="24" HorizontalAlignment="Left" />
-                <TextBlock Text="This is the path of your game folder location" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,190,10,0" Height="37" HorizontalAlignment="Left" />
+                <TextBlock Text="Game Branches" Foreground="{StaticResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" Width="875" HorizontalAlignment="Left" />
+                <TextBlock Text="Game location" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="33,156,10,0" Height="24" HorizontalAlignment="Left" />
+                <TextBlock Text="This is the path of your game folder location" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,190,10,0" Height="37" HorizontalAlignment="Left" />
 
-                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="{StaticResource TextBoxColorNormal}" BorderBrush="{StaticResource TextBoxBorderColor}" Text="" Foreground="{StaticResource TextBoxTextColor}" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
-                <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" HorizontalAlignment="Left" />
-                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="{StaticResource SettingButtonColorNormal}" BorderBrush="{StaticResource SettingButtonColorNormal}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,0,0" Click="ChangePath_Click" HorizontalAlignment="Left" />
+                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" Text="" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
+                <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" HorizontalAlignment="Left" />
+                <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,0,0" Click="ChangePath_Click" HorizontalAlignment="Left" />
 
                 <StackPanel x:Name="BranchPanel" Grid.Row="1">
                 </StackPanel>

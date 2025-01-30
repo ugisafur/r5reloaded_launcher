@@ -33,6 +33,7 @@
     <None Remove="assets\news_default_bg.jpg" />
     <None Remove="assets\preload.gif" />
     <None Remove="assets\R5R-Logo-White.gif" />
+    <None Remove="assets\Revenant-apex.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -93,6 +94,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\news_default_bg.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Revenant-apex.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="launcher_x64.ico">

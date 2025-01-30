@@ -28,7 +28,7 @@
                         <DockPanel x:Name="dockPanel">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
-                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource SwitchColor}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
+                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
                                 <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -50,9 +50,9 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard" />
                                 </Trigger.EnterActions>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource SwitchColor}" />
-                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource SwitchColor}" />
-                                <Setter TargetName="slider" Property="Background" Value="{StaticResource SwitchBackgroundColor}" />
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="slider" Property="Background" Value="{StaticResource ThemeSecondary}" />
                                 <Setter TargetName="checkImage" Property="Source" Value="/assets/icons8-check-48.png" />
                                 <Setter TargetName="checkImage" Property="Width" Value="15" />
                             </Trigger>
@@ -99,20 +99,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SettingButtonColorPressed}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource SettingButtonTextColor}" />
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -120,35 +120,35 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource SecondaryColor}">
+    <Border Background="{StaticResource ThemeSecondary}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="704" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="General Settings" Foreground="{StaticResource PrimaryTextColor}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Basic options that influence overall gameplay and developer accessibility. These settings include cheats, developer tools, and console visibility." TextWrapping="Wrap" Foreground="{StaticResource AccentTextColor}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,172,0" Height="45" Width="720" />
+                <TextBlock Text="General Settings" Foreground="{StaticResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Basic options that influence overall gameplay and developer accessibility. These settings include cheats, developer tools, and console visibility." TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,172,0" Height="45" Width="720" />
 
                 <CheckBox x:Name="Cheats" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,184,0,0" Cursor="Hand" />
-                <TextBlock Text="Enable Cheats" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
-                <TextBlock Text="Enables the ability to use cheats ingame" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
+                <TextBlock Text="Enable Cheats" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
+                <TextBlock Text="Enables the ability to use cheats ingame" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
 
                 <CheckBox x:Name="Dev" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,228,0,0" Cursor="Hand" />
-                <TextBlock Text="Enable Developer" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
-                <TextBlock Text="Enables dev options and console commands" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
+                <TextBlock Text="Enable Developer" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
+                <TextBlock Text="Enables dev options and console commands" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
 
                 <CheckBox x:Name="ConsoleShow" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,275,0,0" Cursor="Hand" />
-                <TextBlock Text="Show Console" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
-                <TextBlock Text="Show external game console" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
+                <TextBlock Text="Show Console" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
+                <TextBlock Text="Show external game console" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
 
                 <CheckBox x:Name="ColoredCon" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,322,0,0" Cursor="Hand" />
-                <TextBlock Text="Color Console" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
-                <TextBlock Text="Enable Colored game console" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
+                <TextBlock Text="Color Console" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
+                <TextBlock Text="Enable Colored game console" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
 
                 <CheckBox x:Name="Offline" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,369,0,0" Cursor="Hand" />
-                <TextBlock Text="Offline Mode" TextWrapping="Wrap" Foreground="{StaticResource PrimaryTextColor}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,367,17,0" Height="20" />
-                <TextBlock Text="Disables access to any online features" Foreground="{StaticResource AccentTextColor}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,387,17,0" Height="16" />
+                <TextBlock Text="Offline Mode" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,367,17,0" Height="20" />
+                <TextBlock Text="Disables access to any online features" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,387,17,0" Height="16" />
             </Grid>
         </Grid>
     </Border>
