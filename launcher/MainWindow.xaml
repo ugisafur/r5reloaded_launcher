@@ -711,7 +711,7 @@
     </Window.Resources>
 
     <Grid>
-        <Border BorderBrush="{StaticResource ThemePrimary}" BorderThickness="3" CornerRadius="5">
+        <Border BorderBrush="{DynamicResource ThemePrimary}" BorderThickness="3" CornerRadius="5">
             <Grid x:Name="MainUI" Opacity="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="58" />
@@ -720,7 +720,7 @@
                 <Grid Grid.Row="1">
                     <MediaElement x:Name="Background_Video" Grid.Row="0" Source="assets/launcher_bg_autum.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" Stretch="UniformToFill" Margin="0,-1,0,0" />
                     <Image x:Name="Background_Image" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Visibility="Hidden" />
-                    <Rectangle Grid.Row="0" Margin="0,0,0,0" Fill="{StaticResource ThemeSecondary}">
+                    <Rectangle Grid.Row="0" Margin="0,0,0,0" Fill="{DynamicResource ThemeSecondary}">
                         <Rectangle.OpacityMask>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                 <GradientStop Color="#00FFFFFF" Offset="0.0" />

@@ -74,6 +74,19 @@ namespace launcher
             // Hide the window on startup
             this.Opacity = 0;
 
+            var app = (App)Application.Current;
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
+            {
+                app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
+            }
+            else
+            {
+                if (Network.Connection.CDNTest())
+                {
+                    app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
+                }
+            }
+
             PreLoad preLoad = new();
             preLoad.Show();
 

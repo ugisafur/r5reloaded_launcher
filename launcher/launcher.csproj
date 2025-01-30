@@ -169,6 +169,9 @@
       <CopyToOutputDirectory></CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="theme.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
   </ItemGroup>
 
 </Project>
