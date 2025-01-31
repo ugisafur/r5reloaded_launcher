@@ -64,14 +64,14 @@
         </Style>
     </UserControl.Resources>
 
-    <Border x:Name="NewsItemBorder" Background="{StaticResource ThemeSecondary}" BorderThickness="2" Height="289" Width="207" CornerRadius="15">
+    <Border x:Name="NewsItemBorder" Background="{DynamicResource ThemeSecondary}" BorderThickness="2" Height="289" Width="207" CornerRadius="15">
         <Border.Style>
             <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAlt}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAlt}" />
                 <Style.Triggers>
                     <!-- Watch the Button’s IsMouseOver property -->
                     <DataTrigger Binding="{Binding IsMouseOver, ElementName=LinkButton}" Value="True">
-                        <Setter Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -86,9 +86,9 @@
                     <RowDefinition Height="165" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBlock x:Name="Title" Text="Title" Foreground="{StaticResource ThemePrimaryText}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" Margin="15,15,15,0" />
-                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{StaticResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="144" VerticalAlignment="Bottom" />
-                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{StaticResource ThemeSecondaryAltText}" FontFamily="Bahnschrift Light" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
+                <TextBlock x:Name="Title" Text="Title" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" Margin="15,15,15,0" />
+                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="144" VerticalAlignment="Bottom" />
+                <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{DynamicResource ThemeSecondaryAltText}" FontFamily="Bahnschrift Light" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
                 <Image Source="/assets/icons8-linking-48.png" Height="15" Width="15" Margin="15,12,177,12" Grid.Row="2" />
             </Grid>
             <Button Style="{DynamicResource NewsButtonStyle}" x:Name="LinkButton" Background="Transparent" BorderBrush="Transparent" Click="Button_Click" Cursor="Hand" />

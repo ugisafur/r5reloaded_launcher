@@ -45,8 +45,8 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
@@ -55,10 +55,10 @@
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemeDisabledText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemeDisabledText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="true">
-                                <Setter Property="TextBlock.Foreground" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -66,7 +66,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="220" Height="315" Padding="5">
+    <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="220" Height="315" Padding="5">
         <StackPanel VerticalAlignment="Bottom">
             <Button x:Name="Settings" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Settings_Click" Cursor="Hand">
                 <TextBlock Text="Settings" HorizontalAlignment="Left" Width="200" />

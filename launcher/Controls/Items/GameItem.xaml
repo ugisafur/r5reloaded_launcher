@@ -43,20 +43,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeDisabledText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeDisabledText}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeDisabledText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeDisabledText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -84,17 +84,17 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemeUninstallButtonText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemeUninstallButtonText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -122,16 +122,16 @@
                                 <Setter Property="BorderBrush" TargetName="btnborder" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
-                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{StaticResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="Background" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
+                                <Setter Property="BorderBrush" TargetName="btnborder" Value="{DynamicResource ThemeComboBoxMouseOver}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -219,30 +219,30 @@
         </Style>
     </UserControl.Resources>
 
-    <Border x:Name="MainBG" Background="{StaticResource ThemePrimary}" CornerRadius="10" Margin="20,0,20,0">
+    <Border x:Name="MainBG" Background="{DynamicResource ThemePrimary}" CornerRadius="10" Margin="20,0,20,0">
         <Grid>
-            <Border x:Name="TopBar" Background="{StaticResource ThemeSecondaryAlt}" Height="65" CornerRadius="10,10,0,0" VerticalAlignment="Top">
+            <Border x:Name="TopBar" Background="{DynamicResource ThemeSecondaryAlt}" Height="65" CornerRadius="10,10,0,0" VerticalAlignment="Top">
                 <Grid>
                     <Button x:Name="TopButton" Style="{DynamicResource TopBtnStyle}" Background="Transparent" BorderBrush="Transparent" Click="TopButton_Click" />
-                    <TextBlock x:Name="BranchName" IsHitTestVisible="False" Text="R5Reloaded - Branch Name" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" Margin="22,0,299,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{StaticResource ThemePrimaryText}" FontSize="26" Margin="810,0,20,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" TextAlignment="Center" HorizontalAlignment="Right" />
+                    <TextBlock x:Name="BranchName" IsHitTestVisible="False" Text="R5Reloaded - Branch Name" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" Margin="22,0,299,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{DynamicResource ThemePrimaryText}" FontSize="26" Margin="810,0,20,0" VerticalAlignment="Center" FontFamily="Bahnschrift SemiBold" TextAlignment="Center" HorizontalAlignment="Right" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="Game location complete path:" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,113,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
-            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{StaticResource ThemePrimaryText}" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
+            <TextBlock Text="Game location complete path:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,113,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" Margin="48,145,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
 
-            <Rectangle Height="2" Fill="{StaticResource ThemeSeperator}"  VerticalAlignment="Top" Margin="50,210,50,0" />
-            <TextBlock Text="Game Files" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="14" Margin="48,286,410,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,641,0" Content="VERIFY GAME" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="202,344,457,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="{StaticResource ThemeUninstallButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,344,457,0" Content="INSTALL BRANCH" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
-            <TextBlock Text="Game Files" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{StaticResource ThemeDisabledText}" FontSize="24" Margin="50,350,580,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,0,0" Content="UNINSTALL HD TEXTURES" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="14" Margin="48,448,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Audio Languages" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" Margin="48,421,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Rectangle Height="2" Fill="{DynamicResource ThemeSeperator}"  VerticalAlignment="Top" Margin="50,210,50,0" />
+            <TextBlock Text="Game Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="48,286,410,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,344,641,0" Content="VERIFY GAME" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="202,344,457,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="{DynamicResource ThemeUninstallButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,344,457,0" Content="INSTALL BRANCH" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
+            <TextBlock Text="Game Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,259,566,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{DynamicResource ThemeDisabledText}" FontSize="24" Margin="50,350,580,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,344,0,0" Content="UNINSTALL HD TEXTURES" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="48,448,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Audio Languages" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,421,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
             <Grid Margin="50,473,50,31" x:Name="LangBox">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25" />

@@ -45,20 +45,20 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextBlock.Foreground" Value="{StaticResource ThemeDisabledText}" />
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeDisabledText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="true">
-                                <Setter Property="TextBlock.Foreground" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -66,13 +66,13 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemeSecondary}">
+    <Border Background="{DynamicResource ThemeSecondary}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="401" />
                 <ColumnDefinition Width="939*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Background="{StaticResource ThemePrimary}" BorderThickness="0" CornerRadius="2" Width="401" Padding="10" />
+            <Border Grid.Column="0" Background="{DynamicResource ThemePrimary}" BorderThickness="0" CornerRadius="2" Width="401" Padding="10" />
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="33" />
@@ -87,8 +87,8 @@
                             <Image Source="/assets/icons8-left-arrow-100.png" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                     </Button>
-                    <Rectangle Fill="{StaticResource ThemeSeperator}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
-                    <TextBlock Text="Advanced Settings" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{StaticResource ThemePrimaryText}" FontFamily="Bahnschrift SemiBold" FontSize="30" Width="250" Margin="125,0,0,0" />
+                    <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
+                    <TextBlock Text="Advanced Settings" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiBold" FontSize="30" Width="250" Margin="125,0,0,0" />
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">

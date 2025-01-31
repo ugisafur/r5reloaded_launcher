@@ -28,7 +28,7 @@
                         <DockPanel x:Name="dockPanel">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
-                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{StaticResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
+                                <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
                                 <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -50,9 +50,9 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard" />
                                 </Trigger.EnterActions>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter TargetName="slider" Property="Background" Value="{StaticResource ThemeSecondary}" />
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="slider" Property="Background" Value="{DynamicResource ThemeSecondary}" />
                                 <Setter TargetName="checkImage" Property="Source" Value="/assets/icons8-check-48.png" />
                                 <Setter TargetName="checkImage" Property="Width" Value="15" />
                             </Trigger>
@@ -99,20 +99,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMainButtonsBorderHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeSecondaryAltText}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -120,32 +120,32 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemeSecondary}">
+    <Border Background="{DynamicResource ThemeSecondary}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="704" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Center" Width="935">
-                <TextBlock Text="Application" Foreground="{StaticResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Window Behavior" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,152,0,0" Height="24" />
-                <TextBlock Text="This option will allow you to quit the app when the window is closed." TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,186,0,0" Height="37" />
+                <TextBlock Text="Application" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Window Behavior" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,152,0,0" Height="24" />
+                <TextBlock Text="This option will allow you to quit the app when the window is closed." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,186,0,0" Height="37" />
                 <CheckBox x:Name="CloseToQuit" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,240,842,437" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Enable close-to-quit" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,243,460,0" Height="20" Cursor="Hand" />
-                <TextBlock Text="Launcher debug tools" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,459,0,0" Height="24" />
-                <TextBlock Text="If you have trouble with the launcher, clearing the cache may solve the issue. You may also need to locate your log file, this can be useful for reporting a bug for the launcher in the discord." TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,493,347,0" Width="545" Height="69" />
-                <Button x:Name="GetLogs" Style="{DynamicResource SettingsBtnStyle}" Margin="43,621,670,36" Content="GET CURRENT LOG FILE" Background="{StaticResource ThemeSecondaryAltText}" BorderBrush="{StaticResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Click="GetLogs_Click" Cursor="Hand" />
+                <TextBlock Text="Enable close-to-quit" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,243,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Launcher debug tools" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,459,0,0" Height="24" />
+                <TextBlock Text="If you have trouble with the launcher, clearing the cache may solve the issue. You may also need to locate your log file, this can be useful for reporting a bug for the launcher in the discord." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,493,347,0" Width="545" Height="69" />
+                <Button x:Name="GetLogs" Style="{DynamicResource SettingsBtnStyle}" Margin="43,621,670,36" Content="GET CURRENT LOG FILE" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Click="GetLogs_Click" Cursor="Hand" />
                 <CheckBox x:Name="Notifications" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,286,842,391" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Enable system notifications" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,290,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Enable system notifications" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,290,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="KeepAllLogs" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,577,842,100" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,581,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,581,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="StreamVideo" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,333,842,344" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Stream background video" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,337,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Stream background video" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,337,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="NightlyBuilds" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,377,842,300" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Nightly Launcher Builds" TextWrapping="Wrap" Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,381,460,0" Height="20" Cursor="Hand" />
-                <TextBlock Text="Warning: These are pre-release builds and may contain bugs or major issues." TextWrapping="Wrap" Foreground="{StaticResource ThemeSecondaryText}" FontSize="12" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="107,403,47,0" Height="23" />
+                <TextBlock Text="Nightly Launcher Builds" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,381,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Warning: These are pre-release builds and may contain bugs or major issues." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="12" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="107,403,47,0" Height="23" />
             </Grid>
-            <Rectangle Fill="{StaticResource ThemeSeperator}" Margin="43,430,45,271" />
+            <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="43,430,45,271" />
         </Grid>
     </Border>
 </UserControl>

@@ -42,20 +42,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltHover}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltHover}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -79,20 +79,20 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonHover}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonHover}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -119,16 +119,16 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -136,25 +136,25 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemePrimary}" CornerRadius="10">
+    <Border Background="{DynamicResource ThemePrimary}" CornerRadius="10">
         <Grid>
-            <Border Background="{StaticResource ThemeSecondaryAlt}" Height="55" VerticalAlignment="Top"  CornerRadius="10, 10, 0, 0">
+            <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="55" VerticalAlignment="Top"  CornerRadius="10, 10, 0, 0">
                 <Grid>
-                    <TextBlock Text="Install Optional Files" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="15,0,280,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{StaticResource ThemePrimaryText}" Click="close_Click" />
+                    <TextBlock Text="Install Optional Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="15,0,280,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="For an enhanced visual experience, you can download the optional HD Texture files. These files improve the quality of in-game textures." Foreground="{StaticResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
+            <TextBlock Text="For an enhanced visual experience, you can download the optional HD Texture files. These files improve the quality of in-game textures." Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
 
             <Border Height="55" VerticalAlignment="Bottom">
                 <Grid>
-                    <Button x:Name="Download" Style="{DynamicResource downloadBtnStyle}" Margin="422,0,10,0" Content="DOWNLOAD" Background="{StaticResource ThemeOtherButtonAltText}" BorderBrush="{StaticResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Foreground="{StaticResource ThemePrimaryAltText}" Height="42" Click="Download_Click" />
-                    <Button x:Name="Later" Style="{DynamicResource laterBtnStyle}" Margin="328,0,150,0" Content="LATER" Background="{StaticResource ThemeOtherButtonText}" BorderBrush="{StaticResource ThemeOtherButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{StaticResource ThemePrimaryAltText}" Click="Later_Click" />
+                    <Button x:Name="Download" Style="{DynamicResource downloadBtnStyle}" Margin="422,0,10,0" Content="DOWNLOAD" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Download_Click" />
+                    <Button x:Name="Later" Style="{DynamicResource laterBtnStyle}" Margin="328,0,150,0" Content="LATER" Background="{DynamicResource ThemeOtherButtonText}" BorderBrush="{DynamicResource ThemeOtherButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Later_Click" />
                 </Grid>
             </Border>
-            <TextBlock Text="Download Size: Approximately 20 GB" Foreground="{StaticResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
-            <TextBlock Text="Note: This is entirely optional and not required to play the game. The base game will function perfectly without it." Foreground="{StaticResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,177,15,0" />
+            <TextBlock Text="Download Size: Approximately 20 GB" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
+            <TextBlock Text="Note: This is entirely optional and not required to play the game. The base game will function perfectly without it." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,177,15,0" />
         </Grid>
     </Border>
 </UserControl>

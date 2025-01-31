@@ -21,7 +21,7 @@ BorderThickness="{TemplateBinding BorderThickness}"
 CornerRadius="5" />
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -33,8 +33,8 @@ CornerRadius="5" />
             <!-- Set properties specifically for a horizontal bar -->
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="Width" Value="6" />
-            <Setter Property="Background" Value="{StaticResource ThemeSecondary}" />
-            <Setter Property="Foreground" Value="{StaticResource ThemeSecondary}" />
+            <Setter Property="Background" Value="{DynamicResource ThemeSecondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource ThemeSecondary}" />
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -46,7 +46,7 @@ CornerRadius="5" />
                                 <RowDefinition Height="0" />
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="1" Background="{StaticResource ThemePrimary}" CornerRadius="6" Width="10" />
+                            <Border Grid.Row="1" Background="{DynamicResource ThemePrimary}" CornerRadius="6" Width="10" />
 
                             <Track
     x:Name="PART_Track"
@@ -57,8 +57,8 @@ CornerRadius="5" />
                                 <Track.Thumb>
                                     <Thumb
                     Style="{StaticResource RoundedThumbStyle}"
-            Background="{StaticResource ThemePrimary}"
-            BorderBrush="{StaticResource ThemePrimary}"
+            Background="{DynamicResource ThemePrimary}"
+            BorderBrush="{DynamicResource ThemePrimary}"
             BorderThickness="1" />
                                 </Track.Thumb>
                             </Track>
@@ -106,20 +106,20 @@ CornerRadius="5" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeOtherButtonAltText}" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemePrimaryAltText}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeOtherButtonAltText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -146,16 +146,16 @@ CornerRadius="5" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeUninstallButtonHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeUninstallButtonHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -164,19 +164,19 @@ CornerRadius="5" />
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource ThemePrimary}" CornerRadius="10">
+    <Border Background="{DynamicResource ThemePrimary}" CornerRadius="10">
         <Grid>
             <ScrollViewer Margin="5,65,0,95">
-                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="{StaticResource ThemePrimaryText}" FontFamily="Bahnschrift Light" Background="{StaticResource ThemePrimary}" BorderThickness="0" IsReadOnly="True" />
+                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" Background="{DynamicResource ThemePrimary}" BorderThickness="0" IsReadOnly="True" />
             </ScrollViewer>
 
-            <Border Background="{StaticResource ThemeSecondaryAlt}" Height="60" VerticalAlignment="Top" CornerRadius="10, 10, 0, 0">
+            <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="60" VerticalAlignment="Top" CornerRadius="10, 10, 0, 0">
                 <Border.Effect>
                     <DropShadowEffect Direction="270" ShadowDepth="11" Opacity="0.1" BlurRadius="8" />
                 </Border.Effect>
                 <Grid>
-                    <TextBlock Text="End-User License Agreement" Foreground="{StaticResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="20,0,77,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{StaticResource ThemePrimaryText}" Click="close_Click" />
+                    <TextBlock Text="End-User License Agreement" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="20,0,77,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
 
@@ -186,8 +186,8 @@ CornerRadius="5" />
                 </Border.Effect>
 
                 <Grid>
-                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="{StaticResource ThemeOtherButtonAltText}" BorderBrush="{StaticResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
-                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{StaticResource ThemePrimaryText}" Click="close_Click" />
+                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
+                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
         </Grid>

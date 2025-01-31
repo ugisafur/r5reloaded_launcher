@@ -8,7 +8,7 @@
                       d:DesignHeight="704" d:DesignWidth="935">
     <UserControl.Resources>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemeSecondary}">
+    <Border Background="{DynamicResource ThemeSecondary}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="121" />
@@ -16,34 +16,34 @@
                 <RowDefinition Height="410" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="About" Foreground="{StaticResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
+            <TextBlock Text="About" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
             <Image Grid.Row="1" Source="/assets/R5R-Logo-White.gif" HorizontalAlignment="Left" VerticalAlignment="Center" Height="150" Width="150" Margin="10,0,0,0" />
-            <Rectangle Grid.Row="2" Fill="{StaticResource ThemeSeperator}" Height="1" VerticalAlignment="Top" Margin="40,0,40,0" />
-            <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" Width="114" Height="17" HorizontalAlignment="Left" />
+            <Rectangle Grid.Row="2" Fill="{DynamicResource ThemeSeperator}" Height="1" VerticalAlignment="Top" Margin="40,0,40,0" />
+            <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,27,778,367" Width="114" Height="17" HorizontalAlignment="Left" />
             <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="White" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="162,27,380,367" Width="393" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{StaticResource ThemePrimaryText}" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,53,778,341" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,53,377,341" Width="393" Height="17" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{DynamicResource ThemePrimaryText}" FontSize="60" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,53,778,341" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,53,377,341" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://github.com/AyeZeeBB/r5reloaded_launcher" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://github.com/AyeZeeBB/r5reloaded_launcher" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Website:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,130,0,263" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,130,0,263" Width="393" Height="17" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="2" Text="Website:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,130,0,263" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,130,0,263" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://r5reloaded.com" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://r5reloaded.com" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,156,0,237" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,156,0,237" Width="393" Height="17" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="2" Text="Discord:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,156,0,237" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,156,0,237" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://discord.com/invite/jqMkUdXrBr" RequestNavigate="Hyperlink_RequestNavigate">
                     <Run Text="https://discord.com/invite/jqMkUdXrBr" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Grid.Row="2" Text="SDK source:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,0,314" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,0,314" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/Mauler125/r5sdk" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/Mauler125/r5sdk" /></Hyperlink></TextBlock>
-            <TextBlock Grid.Row="2" Text="Scripts source:" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,0,288" Width="114" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="2" Foreground="{StaticResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,0,288" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/CafeFPS/r5_flowstate" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/CafeFPS/r5_flowstate" /></Hyperlink></TextBlock>
+            <TextBlock Grid.Row="2" Text="SDK source:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,79,0,314" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,79,0,314" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/Mauler125/r5sdk" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/Mauler125/r5sdk" /></Hyperlink></TextBlock>
+            <TextBlock Grid.Row="2" Text="Scripts source:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift SemiBold" TextWrapping="Wrap" Margin="43,105,0,288" Width="114" Height="17" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="Bahnschrift Light" TextWrapping="Wrap" Margin="165,105,0,288" Width="393" Height="17" HorizontalAlignment="Left"><Hyperlink NavigateUri="https://github.com/CafeFPS/r5_flowstate" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://github.com/CafeFPS/r5_flowstate" /></Hyperlink></TextBlock>
         </Grid>
     </Border>
 </UserControl>

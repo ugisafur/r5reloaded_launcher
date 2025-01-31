@@ -45,8 +45,8 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
@@ -55,7 +55,7 @@
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ThemeDisabledText}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemeDisabledText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -63,12 +63,12 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Border Background="{StaticResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="170" Height="180" Padding="5">
+    <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="170" Height="180" Padding="5">
         <StackPanel VerticalAlignment="Center">
-            <Button x:Name="AdvancedMenu_Button" Style="{DynamicResource SettingsButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{StaticResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
-            <Button x:Name="RepairGame_Button" Style="{DynamicResource SettingsButton}" Content="Verify Game Files" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{StaticResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="btnRepair_Click" Cursor="Hand" />
-            <Button x:Name="OpenDir_Button" Style="{DynamicResource SettingsButton}" Content="Open Branch Folder" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{StaticResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="OpenDir_Button_Click" />
-            <Button x:Name="UninstallGame_Button" Style="{DynamicResource SettingsButton}" Content="Uninstall Branch" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{StaticResource ThemeOtherButtonText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="Uninstall_Click" />
+            <Button x:Name="AdvancedMenu_Button" Style="{DynamicResource SettingsButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
+            <Button x:Name="RepairGame_Button" Style="{DynamicResource SettingsButton}" Content="Verify Game Files" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="btnRepair_Click" Cursor="Hand" />
+            <Button x:Name="OpenDir_Button" Style="{DynamicResource SettingsButton}" Content="Open Branch Folder" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="OpenDir_Button_Click" />
+            <Button x:Name="UninstallGame_Button" Style="{DynamicResource SettingsButton}" Content="Uninstall Branch" Width="160" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeOtherButtonText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="Uninstall_Click" />
         </StackPanel>
     </Border>
 </UserControl>
