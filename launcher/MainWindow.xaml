@@ -644,7 +644,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border x:Name="Bd" Background="#143a52" BorderBrush="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
+                        <Border x:Name="Bd" Background="{DynamicResource ThemeSecondaryAlt}" BorderBrush="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
                         <ControlTemplate.Triggers>
