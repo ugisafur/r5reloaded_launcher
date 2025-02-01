@@ -9,12 +9,9 @@ using launcher.BranchUtils;
 
 namespace launcher
 {
-    /// <summary>
-    /// Interaction logic for SettingsPopup.xaml
-    /// </summary>
-    public partial class SettingsPopup : UserControl
+    public partial class Popup_Game_Menu : UserControl
     {
-        public SettingsPopup()
+        public Popup_Game_Menu()
         {
             InitializeComponent();
         }

@@ -11,9 +11,9 @@ using launcher.Global;
 
 namespace launcher
 {
-    public partial class OnBoardAskPopup : UserControl
+    public partial class Popup_Start_Tour : UserControl
     {
-        public OnBoardAskPopup()
+        public Popup_Start_Tour()
         {
             InitializeComponent();
         }

@@ -771,7 +771,7 @@
                                         </ComboBox>
                                         <Button x:Name="GameSettings_Button" Style="{StaticResource SettingsButtonStyle}" Margin="5,0,0,0" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="SettingsButton_Click" Cursor="Hand" />
                                         <Popup x:Name="GameSettings_Popup" PlacementTarget="{Binding ElementName=GameSettings_Button}" Placement="Bottom" StaysOpen="False" VerticalOffset="8" HorizontalOffset="-120" AllowsTransparency="True" PopupAnimation="Fade" Opened="GameSettings_Popup_Opened" Closed="GameSettings_Popup_Closed">
-                                            <local:SettingsPopup x:Name="GameSettings_Control" />
+                                            <local:Popup_Game_Menu x:Name="GameSettings_Control" />
                                         </Popup>
                                     </StackPanel>
                                     <Button Style="{DynamicResource PlatButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="{DynamicResource ThemeMainButtonsBackground}" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
@@ -878,7 +878,7 @@
                                 </StackPanel>
                             </Button>
                             <Popup x:Name="Menu_Popup" PlacementTarget="{Binding ElementName=Menu_Button}" Placement="Bottom" VerticalOffset="10" HorizontalOffset="0" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="MenuPopup_Loaded" Closed="MenuPopup_Unloaded">
-                                <local:MenuPopup x:Name="Menu_Control" />
+                                <local:Popup_Menu x:Name="Menu_Control" />
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="1" />
@@ -887,14 +887,14 @@
                             <Image Source="/assets/icons8-info-96.png" Margin="45,19,131,21" IsHitTestVisible="False" />
                             <Rectangle Fill="#3F54ADF7" Width="2" HorizontalAlignment="Right"  IsHitTestVisible="False" Margin="0,10,7,10" />
                             <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
-                                <local:StatusPopup x:Name="Status_Control" />
+                                <local:Popup_Services x:Name="Status_Control" />
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Right">
                             <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="DownloadsBtn_Click" Cursor="Hand" />
                             <Image Source="/assets/icons8-download-96.png" Margin="10,18,205,19" IsHitTestVisible="False" />
                             <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
-                                <local:DownloadsPopup x:Name="Downloads_Control" />
+                                <local:Popup_Tasks x:Name="Downloads_Control" />
                             </Popup>
                             <Button x:Name="Close_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
                             <Button x:Name="Minimize_Button" Style="{DynamicResource StatusBtnStyle}" Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />
@@ -904,12 +904,12 @@
             </Grid>
         </Border>
         <Rectangle x:Name="POPUP_BG" Fill="#66000000" Opacity="0" Visibility="Hidden" />
-        <local:EULAPopup x:Name="EULA_Control" Width="561" Height="720" Opacity="0" Visibility="Hidden" />
-        <local:InstallOptFilesPopup x:Name="OptFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
-        <local:CheckExisitngFilesPopup x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
-        <local:InstallLocation x:Name="InstallLocation_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
-        <local:AskToQuitPopup x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
-        <local:OnBoardAskPopup x:Name="OnBoardAsk_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
+        <local:Popup_EULA x:Name="EULA_Control" Width="561" Height="720" Opacity="0" Visibility="Hidden" />
+        <local:Popup_HD_Textures x:Name="OptFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:Popup_Existing_Files x:Name="CheckFiles_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:Popup_Install_Location x:Name="InstallLocation_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:Popup_Exit_App x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
+        <local:Popup_Start_Tour x:Name="OnBoardAsk_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
 
         <Rectangle x:Name="OnBoardingRect" Fill="#BF000000" Margin="0,0,0,0" Visibility="Hidden">
             <Rectangle.OpacityMask>
@@ -932,12 +932,12 @@
             </Rectangle.OpacityMask>
         </Rectangle>
 
-        <local:OnBoardPopup x:Name="OnBoard_Control" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
-            <local:OnBoardPopup.RenderTransform>
+        <local:Popup_Tour x:Name="OnBoard_Control" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
+            <local:Popup_Tour.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="6" Y="64" />
                 </TransformGroup>
-            </local:OnBoardPopup.RenderTransform>
-        </local:OnBoardPopup>
+            </local:Popup_Tour.RenderTransform>
+        </local:Popup_Tour>
     </Grid>
 </Window>

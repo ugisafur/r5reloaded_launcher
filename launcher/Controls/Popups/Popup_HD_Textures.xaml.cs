@@ -9,9 +9,9 @@ namespace launcher
     /// <summary>
     /// Interaction logic for InstallOptFilesPopup.xaml
     /// </summary>
-    public partial class InstallOptFilesPopup : UserControl
+    public partial class Popup_HD_Textures : UserControl
     {
-        public InstallOptFilesPopup()
+        public Popup_HD_Textures()
         {
             InitializeComponent();
         }

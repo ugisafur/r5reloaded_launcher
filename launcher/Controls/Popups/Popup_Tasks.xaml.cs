@@ -8,11 +8,11 @@ namespace launcher
     /// <summary>
     /// Interaction logic for DownloadsPopup.xaml
     /// </summary>
-    public partial class DownloadsPopup : UserControl
+    public partial class Popup_Tasks : UserControl
     {
         private List<DownloadItem> downloadItems = [];
 
-        public DownloadsPopup()
+        public Popup_Tasks()
         {
             InitializeComponent();
         }

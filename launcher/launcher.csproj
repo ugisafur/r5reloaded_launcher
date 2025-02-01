@@ -117,31 +117,28 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\Items\NewsItemSmall.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Controls\Menus\Pages\AdvancedSettings\NetworkSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\Menus\Pages\AdvancedSettings\GeneralSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\OnBoardAskPopup.xaml.cs">
+    <Compile Update="Controls\Popups\Popup_Start_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\OnBoardPopup.xaml.cs">
+    <Compile Update="Controls\Popups\Popup_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\CheckExisitngFilesPopup.xaml.cs">
+    <Compile Update="Controls\Popups\Popup_Existing_Files.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\Menus\AdvancedControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\AskToQuitPopup.xaml.cs">
+    <Compile Update="Controls\Popups\Popup_Exit_App.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\InstallLocation.xaml.cs">
+    <Compile Update="Controls\Popups\Popup_Install_Location.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -159,10 +156,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Controls\Popups\OnBoardPopup.xaml">
+    <Page Update="Controls\Popups\Popup_Tour.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Popups\CheckExisitngFilesPopup.xaml">
+    <Page Update="Controls\Popups\Popup_Existing_Files.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

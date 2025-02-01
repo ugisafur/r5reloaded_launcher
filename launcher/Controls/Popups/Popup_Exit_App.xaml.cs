@@ -11,9 +11,9 @@ using launcher.Global;
 
 namespace launcher
 {
-    public partial class AskToQuitPopup : UserControl
+    public partial class Popup_Exit_App : UserControl
     {
-        public AskToQuitPopup()
+        public Popup_Exit_App()
         {
             InitializeComponent();
         }

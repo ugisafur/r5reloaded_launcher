@@ -13,9 +13,9 @@ namespace launcher
     /// <summary>
     /// Interaction logic for EULAPopup.xaml
     /// </summary>
-    public partial class EULAPopup : UserControl
+    public partial class Popup_EULA : UserControl
     {
-        public EULAPopup()
+        public Popup_EULA()
         {
             InitializeComponent();
         }

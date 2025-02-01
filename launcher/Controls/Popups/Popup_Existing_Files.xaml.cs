@@ -8,9 +8,9 @@ namespace launcher
     /// <summary>
     /// Interaction logic for InstallOptFilesPopup.xaml
     /// </summary>
-    public partial class CheckExisitngFilesPopup : UserControl
+    public partial class Popup_Existing_Files : UserControl
     {
-        public CheckExisitngFilesPopup()
+        public Popup_Existing_Files()
         {
             InitializeComponent();
         }

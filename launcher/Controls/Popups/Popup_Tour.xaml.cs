@@ -15,11 +15,11 @@ using launcher.Managers;
 
 namespace launcher
 {
-    public partial class OnBoardPopup : UserControl
+    public partial class Popup_Tour : UserControl
     {
         private int currentIndex = 0;
 
-        public OnBoardPopup()
+        public Popup_Tour()
         {
             InitializeComponent();
         }

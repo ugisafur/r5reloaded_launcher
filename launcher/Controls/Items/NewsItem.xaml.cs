@@ -14,7 +14,7 @@ namespace launcher
             InitializeComponent();
         }
 
-        public NewsItem(string title, string excerpt, string author, string published, string url, string image, string overrideReadme = "")
+        public NewsItem(string title, string excerpt, string author, string published, string url, string image, bool small = false, string overrideReadme = "")
         {
             InitializeComponent();
 
@@ -29,6 +29,12 @@ namespace launcher
 
             if (!string.IsNullOrEmpty(image))
                 FeatImage.Source = new BitmapImage(new Uri(image));
+
+            if (small)
+            {
+                NewsItemBorder.Width = 207;
+                FeatImage.Visibility = Visibility.Hidden;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

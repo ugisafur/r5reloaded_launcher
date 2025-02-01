@@ -10,9 +10,9 @@ using launcher.Managers;
 
 namespace launcher
 {
-    public partial class InstallLocation : UserControl
+    public partial class Popup_Install_Location : UserControl
     {
-        public InstallLocation()
+        public Popup_Install_Location()
         {
             InitializeComponent();
         }

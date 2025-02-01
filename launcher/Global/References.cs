@@ -70,17 +70,17 @@ namespace launcher.Global
 
         #region Popup Controls
 
-        public static SettingsPopup GameSettings_Control = new();
-        public static DownloadsPopup Downloads_Control = new();
-        public static StatusPopup Status_Control = new();
-        public static MenuPopup Menu_Control = new();
-        public static EULAPopup EULA_Control = new();
-        public static InstallOptFilesPopup OptFiles_Control = new();
-        public static CheckExisitngFilesPopup CheckFiles_Control = new();
-        public static InstallLocation InstallLocation_Control = new();
-        public static AskToQuitPopup AskToQuit_Control = new();
-        public static OnBoardPopup OnBoard_Control = new();
-        public static OnBoardAskPopup OnBoardAsk_Control = new();
+        public static Popup_Game_Menu GameSettings_Control = new();
+        public static Popup_Tasks Downloads_Control = new();
+        public static Popup_Services Status_Control = new();
+        public static Popup_Menu Menu_Control = new();
+        public static Popup_EULA EULA_Control = new();
+        public static Popup_HD_Textures OptFiles_Control = new();
+        public static Popup_Existing_Files CheckFiles_Control = new();
+        public static Popup_Install_Location InstallLocation_Control = new();
+        public static Popup_Exit_App AskToQuit_Control = new();
+        public static Popup_Tour OnBoard_Control = new();
+        public static Popup_Start_Tour OnBoardAsk_Control = new();
 
         #endregion Popup Controls
 

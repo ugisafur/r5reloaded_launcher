@@ -14,39 +14,34 @@ namespace launcher.Global
 {
     public static class News
     {
-        public static List<UIElement> Community = [];
-        public static List<UIElement> NewLegends = [];
-        public static List<UIElement> Comms = [];
-        public static List<UIElement> PatchNotes = [];
-        private static List<List<UIElement>> Pages = [];
+        public static List<NewsItem> Community = [];
+        public static List<NewsItem> NewLegends = [];
+        public static List<NewsItem> Comms = [];
+        public static List<NewsItem> PatchNotes = [];
+        private static List<List<NewsItem>> Pages = [];
 
         public static void Populate()
         {
-            Root newsitems = GetNewsItems();
-            foreach (Post post in newsitems.posts)
+            const int MaxItemsPerCategory = 8;
+            var newsItems = GetNewsItems();
+
+            var tagToCategoryMap = new Dictionary<string, List<NewsItem>>
             {
-                if (post.tags.Count < 1)
+                { "Community", Community },
+                { "Comms", Comms },
+                { "Patch Notes", PatchNotes }
+            };
+
+            foreach (var post in newsItems.posts)
+            {
+                if (post.tags == null || post.tags.Count < 1)
                     continue;
 
-                if (post.tags[0].name == "Community")
+                var tagName = post.tags[0].name;
+                if (tagToCategoryMap.TryGetValue(tagName, out var categoryList) && categoryList.Count < MaxItemsPerCategory)
                 {
-                    if (Community.Count < 8)
-                        Community.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
-                }
-                else if (post.tags[0].name == "Comms")
-                {
-                    if (Comms.Count < 8)
-                    {
-                        if (post.feature_image == null)
-                            Comms.Add(new NewsItemSmall(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url));
-                        else
-                            Comms.Add(new NewsItem(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url, post.feature_image));
-                    }
-                }
-                else if (post.tags[0].name == "Patch Notes")
-                {
-                    if (PatchNotes.Count < 8)
-                        PatchNotes.Add(new NewsItemSmall(post.title, post.excerpt, post.primary_author.name, post.published_at.ToShortDateString(), post.url));
+                    var newsItem = CreateNewsItem(post, tagName == "Patch Notes");
+                    categoryList.Add(newsItem);
                 }
             }
 
@@ -58,46 +53,48 @@ namespace launcher.Global
             Pages.Add(PatchNotes);
         }
 
+        private static NewsItem CreateNewsItem(Post post, bool isPatchNotes)
+        {
+            return new NewsItem(
+                post.title,
+                post.excerpt,
+                post.primary_author.name,
+                post.published_at.ToShortDateString(),
+                post.url,
+                post.feature_image,
+                isPatchNotes
+            );
+        }
+
         private static void CreatePremadeNewLegends()
         {
-            NewLegends.Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", "Welcome To R5R"));
-            NewLegends.Add(new NewsItemSmall("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "View Blog"));
-            NewLegends.Add(new NewsItemSmall("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "Join Discord"));
-            NewLegends.Add(new NewsItemSmall("Follow Us On Twitter", "Follow us on twitter to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://twitter.com/r5reloaded", "Follow Twitter"));
+            NewLegends.Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", false, "Welcome To R5R"));
+            NewLegends.Add(new NewsItem("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "", true, "View Blog"));
+            NewLegends.Add(new NewsItem("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "", true, "Join Discord"));
+            NewLegends.Add(new NewsItem("Follow Us On Twitter", "Follow us on twitter to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://twitter.com/r5reloaded", "", true, "Follow Twitter"));
         }
 
         public static void SetPage(int index)
         {
-            List<UIElement> selected = Pages[index];
+            List<NewsItem> selected = Pages[index];
             NewsPanel.Children.Clear();
 
-            for (int i = 0; i < selected.Count; i++)
+            int i = 0;
+            foreach (NewsItem newsItem in selected)
             {
                 double speed1 = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 500;
                 double speed2 = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 200;
                 double beginTime = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 0 : i * 0.1;
+                i++;
 
-                UIElement item = selected[i];
-                NewsItem newsItem = item as NewsItem;
-                NewsItemSmall newsItemSmall = item as NewsItemSmall;
+                newsItem.BeginAnimation(UIElement.OpacityProperty, null);
+                newsItem.BeginAnimation(FrameworkElement.MarginProperty, null);
 
-                item.BeginAnimation(UIElement.OpacityProperty, null);
-                item.BeginAnimation(FrameworkElement.MarginProperty, null);
+                NewsPanel.Children.Add(newsItem);
 
-                NewsPanel.Children.Add(item);
-
-                if (item is NewsItem)
-                {
-                    newsItem.Opacity = 0;
-                    newsItem.VerticalAlignment = VerticalAlignment.Top;
-                    newsItem.Margin = new Thickness(0, 100, 0, 0);
-                }
-                else if (item is NewsItemSmall)
-                {
-                    newsItemSmall.Opacity = 0;
-                    newsItemSmall.VerticalAlignment = VerticalAlignment.Top;
-                    newsItemSmall.Margin = new Thickness(0, 100, 0, 0);
-                }
+                newsItem.Opacity = 0;
+                newsItem.VerticalAlignment = VerticalAlignment.Top;
+                newsItem.Margin = new Thickness(0, 100, 0, 0);
 
                 Rectangle separator = new Rectangle
                 {
@@ -119,7 +116,7 @@ namespace launcher.Global
                     BeginTime = TimeSpan.FromSeconds(beginTime),
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
                 };
-                Storyboard.SetTarget(fadeInAnimation, item);
+                Storyboard.SetTarget(fadeInAnimation, newsItem);
                 Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(UIElement.OpacityProperty));
                 storyboard.Children.Add(fadeInAnimation);
 
@@ -132,7 +129,7 @@ namespace launcher.Global
                     BeginTime = TimeSpan.FromSeconds(beginTime),
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
                 };
-                Storyboard.SetTarget(slideUpAnimation, item);
+                Storyboard.SetTarget(slideUpAnimation, newsItem);
                 Storyboard.SetTargetProperty(slideUpAnimation, new PropertyPath(FrameworkElement.MarginProperty));
                 storyboard.Children.Add(slideUpAnimation);
 

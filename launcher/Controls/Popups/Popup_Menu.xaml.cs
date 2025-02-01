@@ -10,11 +10,11 @@ namespace launcher
     /// <summary>
     /// Interaction logic for subMenu.xaml
     /// </summary>
-    public partial class MenuPopup : UserControl
+    public partial class Popup_Menu : UserControl
     {
         public Button settingsButton;
 
-        public MenuPopup()
+        public Popup_Menu()
         {
             InitializeComponent();
             settingsButton = Settings;

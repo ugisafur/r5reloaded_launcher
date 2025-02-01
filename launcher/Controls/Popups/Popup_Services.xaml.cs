@@ -15,14 +15,14 @@ namespace launcher
     /// <summary>
     /// Interaction logic for StatusPopup.xaml
     /// </summary>
-    public partial class StatusPopup : UserControl
+    public partial class Popup_Services : UserControl
     {
         private const int refresh_interval = 30;
         private const string website_url = "https://r5reloaded.com/";
         private const string ms_url = "https://r5r.org/";
         private const string cdn_url = "https://cdn.r5r.org/launcher/config.json";
 
-        public StatusPopup()
+        public Popup_Services()
         {
             InitializeComponent();
         }
