@@ -48,6 +48,7 @@ namespace launcher.Global
             Updater_Version,
             Nightly_Builds,
             Launcher_Version,
+            F11_Refresh_Theme,
         }
 
         public static Dictionary<Vars, string> VarSections = new()
@@ -94,6 +95,8 @@ namespace launcher.Global
             { Vars.Updater_Version, "Launcher" },
             { Vars.Nightly_Builds, "Launcher" },
             { Vars.Launcher_Version, "Launcher" },
+
+            { Vars.F11_Refresh_Theme, "Dev" },
         };
 
         public static Dictionary<Vars, object> VarDefaults = new()
@@ -133,6 +136,7 @@ namespace launcher.Global
             { Vars.Stream_Video, true },
             { Vars.Ask_For_Tour, true },
             { Vars.Nightly_Builds, false },
+            { Vars.F11_Refresh_Theme, false },
 
             { Vars.Mode, 0 },
             { Vars.Visibility, 0 },
@@ -187,12 +191,13 @@ namespace launcher.Global
                 IEnumerable<IniSetting> settings = file.GetSectionSettings("Settings");
                 IEnumerable<IniSetting> advanced = file.GetSectionSettings("Advanced_Options");
                 IEnumerable<IniSetting> launcher = file.GetSectionSettings("Launcher");
+                IEnumerable<IniSetting> dev = file.GetSectionSettings("Dev");
 
                 foreach (Vars setting in Enum.GetValues(typeof(Vars)))
                 {
                     string settings_name = Enum.GetName(typeof(Vars), setting);
 
-                    if (settings.Concat(advanced).Concat(launcher).Any(x => x.Name == settings_name))
+                    if (settings.Concat(advanced).Concat(launcher).Concat(dev).Any(x => x.Name == settings_name))
                         continue;
 
                     switch (VarDefaults[setting])
