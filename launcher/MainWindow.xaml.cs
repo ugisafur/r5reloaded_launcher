@@ -292,7 +292,17 @@ namespace launcher
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"Unable to open link: {ex.Message}");
+                LogError(Source.Launcher, $@"
+==============================================================
+Failed to load theme:
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
             }
             e.Handled = true;
         }
@@ -805,22 +815,21 @@ namespace launcher
 
         private void RefreshStyle_Button_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)Ini.Get(Ini.Vars.F11_Refresh_Theme))
+            if ((bool)Ini.Get(Ini.Vars.Refresh_Theme))
             {
                 var app = (App)Application.Current;
                 if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
                 {
-                    app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
-                }
-                else
-                {
-                    if (Network.Connection.CDNTest())
+                    try
                     {
-                        app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
+                        app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
+                        LogInfo(Source.Launcher, "Theme refreshed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(Source.Launcher, $"Failed to refresh theme: {ex.Message}");
                     }
                 }
-
-                LogInfo(Source.Launcher, "Theme refreshed.");
             }
         }
     }

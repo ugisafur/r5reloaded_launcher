@@ -70,7 +70,7 @@ namespace launcher.Managers
             {
                 LogError(Source.Launcher, $@"
 ==============================================================
-Failed to load playlist file: {ex.Message}
+Failed to load playlist file
 ==============================================================
 Message: {ex.Message}
 
