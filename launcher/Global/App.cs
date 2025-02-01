@@ -517,6 +517,12 @@ Message: {ex.Message}
 
         public static void StartTour()
         {
+            if (AppState.InSettingsMenu)
+                HideSettingsControl();
+
+            if (AppState.InAdvancedMenu)
+                HideAdvancedControl();
+
             AppState.OnBoarding = true;
 
             Main_Window.ResizeMode = ResizeMode.NoResize;

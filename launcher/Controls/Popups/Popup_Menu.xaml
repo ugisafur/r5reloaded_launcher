@@ -55,7 +55,7 @@
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="border" Value="Transparent" />
                                 <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemeDisabledText}" />
+                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeDisabledText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="true">
                                 <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeSecondaryAltText}" />
