@@ -133,7 +133,6 @@ namespace launcher
 
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
-            RefreshStyle_Button.Visibility = (bool)Ini.Get(Ini.Vars.F11_Refresh_Theme) ? Visibility.Visible : Visibility.Hidden;
 
             preLoad.Close();
 
@@ -151,6 +150,13 @@ namespace launcher
             if ((bool)Ini.Get(Ini.Vars.Ask_For_Tour))
             {
                 Managers.App.ShowOnBoardAskPopup();
+            }
+
+            if ((bool)Ini.Get(Ini.Vars.Show_Theme_Editor))
+            {
+                ThemeEditor themeEditor = new();
+                themeEditor.SetupThemeEditor();
+                themeEditor.Show();
             }
         }
 
@@ -791,47 +797,6 @@ Message: {ex.Message}
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion functions
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F10 && (bool)Ini.Get(Ini.Vars.F11_Refresh_Theme))
-            {
-                var app = (App)Application.Current;
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
-                {
-                    app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
-                }
-                else
-                {
-                    if (Network.Connection.CDNTest())
-                    {
-                        app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
-                    }
-                }
-
-                LogInfo(Source.Launcher, "Theme refreshed.");
-            }
-        }
-
-        private void RefreshStyle_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if ((bool)Ini.Get(Ini.Vars.Refresh_Theme))
-            {
-                var app = (App)Application.Current;
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
-                {
-                    try
-                    {
-                        app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
-                        LogInfo(Source.Launcher, "Theme refreshed.");
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError(Source.Launcher, $"Failed to refresh theme: {ex.Message}");
-                    }
-                }
-            }
-        }
     }
 
     public class ComboBranch

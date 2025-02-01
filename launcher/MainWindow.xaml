@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:launcher" xmlns:local1="clr-namespace:launcher.Global"
         mc:Ignorable="d"
-        Title="R5Reloaded Launcher" MinHeight="768" Height="768" MinWidth="1340" Width="1340" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing" ResizeMode="CanResize" SizeChanged="Window_SizeChanged" AllowsTransparency="True" StateChanged="Window_StateChanged" LocationChanged="Window_LocationChanged" KeyDown="Window_KeyDown">
+        Title="R5Reloaded Launcher" MinHeight="768" Height="768" MinWidth="1340" Width="1340" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="launcher_x64.ico" Background="Transparent" Closing="Window_Closing" ResizeMode="CanResize" SizeChanged="Window_SizeChanged" AllowsTransparency="True" StateChanged="Window_StateChanged" LocationChanged="Window_LocationChanged">
 
     <Window.RenderTransform>
         <ScaleTransform x:Name="WindowScale" ScaleX="1.0" ScaleY="1.0" />
@@ -953,7 +953,6 @@
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="1">
-                            <Button Style="{DynamicResource StatusBtnStyle}" Visibility="Hidden" x:Name="RefreshStyle_Button" Content="Refresh Theme" FontSize="18" Width="130" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="10,10,103,10" HorizontalAlignment="Left" Foreground="{DynamicResource ThemeSecondaryAltText}" Cursor="Hand" Click="RefreshStyle_Button_Click" />
                         </Grid>
                         <Grid Grid.Column="2" HorizontalAlignment="Right">
                             <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="StatusBtn_Click" Cursor="Hand" />
