@@ -89,8 +89,8 @@ namespace launcher
 
             PreLoad preLoad = new();
 
-            if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "startup.png")))
-                preLoad.PreloadBG.Source = new BitmapImage(new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "startup.png")));
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png")))
+                preLoad.PreloadBG.Source = new BitmapImage(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png")));
 
             preLoad.Show();
 
