@@ -34,4 +34,8 @@
 
     <SolidColorBrush x:Key="ThemeUninstallButtonText" Color="#DD7477" />
     <SolidColorBrush x:Key="ThemeUninstallButtonHover" Color="#CC000000" />
+
+    <SolidColorBrush x:Key="ThemeStatusPlayerServerCount" Color="#FF54ADF7" />
+    <SolidColorBrush x:Key="ThemeStatusOperational" Color="#FF8DF3BB" />
+    <SolidColorBrush x:Key="ThemeStatusNonOperational" Color="#FFF38D8D" />
 </ResourceDictionary>

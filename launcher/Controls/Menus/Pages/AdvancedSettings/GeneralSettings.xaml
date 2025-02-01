@@ -29,7 +29,7 @@
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
                                 <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
-                                <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
+                                <Border Background="{DynamicResource ThemeSecondaryAltText}" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
                                             <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -55,9 +55,6 @@
                                 <Setter TargetName="slider" Property="Background" Value="{DynamicResource ThemeSecondary}" />
                                 <Setter TargetName="checkImage" Property="Data" Value="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
                                 <Setter TargetName="checkImage" Property="Fill" Value="{DynamicResource ThemeSecondaryAltText}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <!-- ToDo: Add Style for Isenabled == False -->
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

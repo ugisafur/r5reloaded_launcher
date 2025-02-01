@@ -67,7 +67,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border x:Name="ComboBoxBorder" Background="{DynamicResource ThemeComboBoxBorder}" BorderThickness="1" CornerRadius="4" BorderBrush="#54adf7" Width="495">
+                            <Border x:Name="ComboBoxBorder" Background="{DynamicResource ThemeMainButtonsBackground}" BorderThickness="2" CornerRadius="4" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Width="495">
                                 <DockPanel LastChildFill="True">
                                     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
                               VerticalAlignment="Center"
@@ -100,7 +100,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeMainButtonsBorderHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -208,7 +208,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="AdvancedTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeMainButtonsBorder}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -222,7 +222,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Grid>
-                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
                             <TextBlock IsHitTestVisible="False" Text="Download Speed Limit" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
@@ -301,7 +301,7 @@
                     <ComboBoxItem Content="10" />
                     <ComboBoxItem Content="5" />
                 </ComboBox>
-                <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" />
+                <TextBox x:Name="MaxSpeed" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="42,116,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" />
                 <TextBlock Text="Regulate download speed by setting a cap on the data transfer rate per second for each concurrent download connection. set this to 0 for no limit." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="42,167,395,0" Height="37" Width="498" />
             </Grid>
         </Grid>

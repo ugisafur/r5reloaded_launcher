@@ -76,7 +76,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="AdvancedTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeMainButtonsBorder}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -90,7 +90,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Grid>
-                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
                             <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
@@ -197,7 +197,7 @@
                 <TextBlock Text="Game location" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="33,156,10,0" Height="24" HorizontalAlignment="Left" />
                 <TextBlock Text="This is the path of your game folder location" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,190,10,0" Height="37" HorizontalAlignment="Left" />
 
-                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
+                <TextBox x:Name="LibraryPath" Style="{DynamicResource AdvancedTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="29,253,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" LostFocus="InputTextBox_LostFocus" KeyDown="LibraryPath_KeyDown" />
                 <TextBlock Text="if your game is already installed at a diffrent location, select it here, then hit Verify" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="33,232,405,0" Height="16" HorizontalAlignment="Left" />
                 <Button x:Name="ChangePath" Style="{DynamicResource SettingsBtnStyle}" Width="104" Height="49" Content="CHANGE" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Margin="545,253,0,0" Click="ChangePath_Click" HorizontalAlignment="Left" />
 

@@ -64,8 +64,9 @@ namespace launcher
 
             Dispatcher.Invoke(() =>
             {
-                Brush upBrush = new SolidColorBrush(Color.FromArgb(255, 141, 243, 187));
-                Brush downBrush = new SolidColorBrush(Color.FromArgb(255, 243, 141, 141));
+                var app = (App)Application.Current;
+                Brush upBrush = app.ThemeDictionary["ThemeStatusOperational"] as SolidColorBrush;
+                Brush downBrush = app.ThemeDictionary["ThemeStatusUnOperational"] as SolidColorBrush;
 
                 WebsiteStatusBG.Background = isWebsiteUP ? upBrush : downBrush;
                 MSStatusBG.Background = isMSUP ? upBrush : downBrush;
@@ -86,6 +87,11 @@ namespace launcher
 
             if (string.IsNullOrEmpty(serverlist))
             {
+                Dispatcher.Invoke(() =>
+                {
+                    lblPlayersCount.Text = "error";
+                    lblServerCount.Text = "error";
+                });
                 LogError(Source.API, "Failed to get server list from API.");
                 return;
             }
@@ -94,6 +100,11 @@ namespace launcher
 
             if (!game_server_list.success)
             {
+                Dispatcher.Invoke(() =>
+                {
+                    lblPlayersCount.Text = "error";
+                    lblServerCount.Text = "error";
+                });
                 LogError(Source.API, "Failed to get server list from API.");
                 return;
             }
@@ -115,45 +126,37 @@ namespace launcher
             try
             {
                 using HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromSeconds(5); // Set a timeout for the request
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 HttpResponseMessage response = await client.GetAsync(url);
-                return response.IsSuccessStatusCode; // Returns true if status code is 2xx
+                return response.IsSuccessStatusCode;
             }
             catch (HttpRequestException)
             {
-                // Handle HTTP-related errors (e.g., DNS failure, connection issues)
                 LogError(Source.API, $"URL is down or unreachable: {url}");
             }
             catch (TaskCanceledException)
             {
-                // Handle request timeout
                 LogError(Source.API, $"Request timed out: {url}");
             }
             catch (Exception ex)
             {
-                // Handle other exceptions
                 LogError(Source.API, $"An error occurred: {ex.Message}");
             }
 
-            return false; // URL is down or unreachable
+            return false;
         }
 
         public async Task<string> SendPostRequestAsync(string url, string jsonContent)
         {
             using (HttpClient client = new HttpClient())
             {
-                // Set headers if needed (optional)
-                // Create the content to send in the POST request (in JSON format)
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                // Send the POST request and get the response
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
-                // Ensure successful response
                 response.EnsureSuccessStatusCode();
 
-                // Read the JSON response as a string
                 string responseJson = await response.Content.ReadAsStringAsync();
                 return responseJson;
             }

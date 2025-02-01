@@ -29,7 +29,7 @@
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                             <Grid>
                                 <Border x:Name="BackgroundBorder" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" BorderThickness="1" CornerRadius="12" Height="27" Width="50" />
-                                <Border Background="#FF52AAF2" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
+                                <Border Background="{DynamicResource ThemeSecondaryAltText}" HorizontalAlignment="Left" x:Name="slider" Width="23" Height="23" BorderThickness="1" CornerRadius="10" RenderTransformOrigin="0.5,0.5" Margin="0">
                                     <Border.RenderTransform>
                                         <TransformGroup>
                                             <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -124,7 +124,7 @@
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#95CCFA" />
         <Style x:Key="ResWidthTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeMainButtonsBorder}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -138,7 +138,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Grid>
-                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
                             <TextBlock IsHitTestVisible="False" Text="Resolution Width" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
@@ -170,7 +170,7 @@
         </Style>
         <Style x:Key="ResHeightTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeMainButtonsBorder}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -184,7 +184,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Grid>
-                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
                             <TextBlock IsHitTestVisible="False" Text="Resolution Height" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
@@ -216,7 +216,7 @@
         </Style>
         <Style x:Key="MaxFPSTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeMainButtonsBorder}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -230,7 +230,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Grid>
-                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                             </Border>
                             <TextBlock IsHitTestVisible="False" Text="Max FPS" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
@@ -279,9 +279,9 @@
                 <TextBlock Text="Borderless" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
                 <TextBlock Text="Enable borderless windowed mode" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
 
-                <TextBox x:Name="WidthRes" Style="{DynamicResource ResWidthTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,275,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
-                <TextBox x:Name="HeightRes" Style="{DynamicResource ResHeightTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,336,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
-                <TextBox x:Name="MaxFPS" Style="{DynamicResource MaxFPSTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,397,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeSecondaryAltText}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="WidthRes" Style="{DynamicResource ResWidthTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,275,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="HeightRes" Style="{DynamicResource ResHeightTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,336,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
+                <TextBox x:Name="MaxFPS" Style="{DynamicResource MaxFPSTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,397,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" PreviewTextInput="NumericTextBox2_PreviewTextInput" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Cursor="IBeam" />
             </Grid>
         </Grid>
     </Border>
