@@ -56,7 +56,7 @@
             <Grid.Clip>
                 <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />
             </Grid.Clip>
-            <Image Source="/assets/Revenant-apex.jpg" Margin="-26,0,-26,-12" />
+            <Image x:Name="PreloadBG" Source="/assets/Revenant-apex.jpg" Margin="-26,0,-26,-12" />
             <Rectangle Fill="#7F000000" Margin="0,0,0,0" />
             <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="169,15,168,225">
                 <Image.RenderTransform>

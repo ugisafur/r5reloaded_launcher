@@ -88,6 +88,10 @@ namespace launcher
             }
 
             PreLoad preLoad = new();
+
+            if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "startup.png")))
+                preLoad.PreloadBG.Source = new BitmapImage(new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "startup.png")));
+
             preLoad.Show();
 
             // Setup global exception handlers
@@ -269,7 +273,7 @@ namespace launcher
             string url = string.IsNullOrEmpty(GetBranch.Branch().latest_patch_notes) ? "https://blog.r5reloaded.com" : GetBranch.Branch().latest_patch_notes;
 
             // Create a hyperlink
-            Hyperlink link = new Hyperlink(new Run("see patch notes"))
+            Hyperlink link = new(new Run("see patch notes"))
             {
                 NavigateUri = new Uri(url)
             };
@@ -474,10 +478,10 @@ namespace launcher
         {
             _isNewsRectShown = true;
 
-            Storyboard storyboard = new Storyboard();
+            Storyboard storyboard = new();
 
             // Fade-in animation
-            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            DoubleAnimation fadeInAnimation = new()
             {
                 From = 0,
                 To = 1,
@@ -495,10 +499,10 @@ namespace launcher
         {
             _isNewsRectShown = false;
 
-            Storyboard storyboard = new Storyboard();
+            Storyboard storyboard = new();
 
             // Fade-in animation
-            DoubleAnimation fadeInAnimation = new DoubleAnimation
+            DoubleAnimation fadeInAnimation = new()
             {
                 From = 1,
                 To = 0,
