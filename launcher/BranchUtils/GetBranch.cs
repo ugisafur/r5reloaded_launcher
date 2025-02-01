@@ -130,5 +130,15 @@ namespace launcher.BranchUtils
 
             return Path.Combine((string)Ini.Get(Ini.Vars.Library_Location), "R5R Library", Name()); ;
         }
+
+        public static bool ExeExists(Branch branch = null)
+        {
+            if (branch != null)
+            {
+                return System.IO.Directory.Exists(Directory(branch)) && File.Exists(Path.Combine(Directory(branch), "r5apex.exe"));
+            }
+
+            return System.IO.Directory.Exists(Directory()) && File.Exists(Path.Combine(Directory(), "r5apex.exe"));
+        }
     }
 }

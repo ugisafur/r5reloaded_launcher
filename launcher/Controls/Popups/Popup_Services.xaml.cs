@@ -19,6 +19,7 @@ namespace launcher
     {
         private const int refresh_interval = 30;
         private const string website_url = "https://r5reloaded.com/";
+        private const string status_url = "https://status.r5reloaded.com/";
         private const string ms_url = "https://r5r.org/";
         private const string cdn_url = "https://cdn.r5r.org/launcher/config.json";
 
@@ -160,7 +161,7 @@ namespace launcher
 
         private void moreInfo_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start {website_url}") { CreateNoWindow = true });
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {status_url}") { CreateNoWindow = true });
         }
     }
 

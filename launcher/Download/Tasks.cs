@@ -42,7 +42,6 @@ namespace launcher.Download
 
         private static void UpdateDownloadSpeedUI(double speedBytesPerSecond)
         {
-            // Convert bytes per second to a more readable format (e.g., KB/s or MB/s)
             string speedText;
             double speed = speedBytesPerSecond;
 
@@ -61,7 +60,6 @@ namespace launcher.Download
                 speedText = $"{speed} B/s";
             }
 
-            // Update your UI element (e.g., a label)
             appDispatcher.Invoke(() =>
             {
                 Speed_Label.Text = $"{speedText}";
@@ -69,9 +67,6 @@ namespace launcher.Download
             });
         }
 
-        /// <summary>
-        /// Configures the maximum number of concurrent downloads based on configuration settings.
-        /// </summary>
         public static void ConfigureConcurrency()
         {
             int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
@@ -79,9 +74,6 @@ namespace launcher.Download
             _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
         }
 
-        /// <summary>
-        /// Sets the download speed limit based on configuration settings.
-        /// </summary>
         public static void ConfigureDownloadSpeed()
         {
             int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
@@ -89,12 +81,6 @@ namespace launcher.Download
             GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
         }
 
-        /// <summary>
-        /// Initializes and starts download tasks for the base game files.
-        /// </summary>
-        /// <param name="baseGameFiles">The base game files to download.</param>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A list of download tasks.</returns>
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
             if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
@@ -124,11 +110,6 @@ namespace launcher.Download
             return downloadTasks;
         }
 
-        /// <summary>
-        /// Initializes and starts download tasks for repairing bad files.
-        /// </summary>
-        /// <param name="branchDirectory">The directory where files will be downloaded.</param>
-        /// <returns>A list of download tasks.</returns>
         public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
         {
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
@@ -158,15 +139,6 @@ namespace launcher.Download
             return downloadTasks;
         }
 
-        /// <summary>
-        /// Downloads a file with optional checksum verification and updates the UI accordingly.
-        /// </summary>
-        /// <param name="fileUrl">The URL of the file to download.</param>
-        /// <param name="destinationPath">The local path where the file will be saved.</param>
-        /// <param name="fileName">The name of the file.</param>
-        /// <param name="checksum">Optional checksum for file verification.</param>
-        /// <param name="checkForExistingFiles">Whether to check for existing files before downloading.</param>
-        /// <returns>The path to the downloaded file, or an empty string if the download failed.</returns>
         private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
         {
             await _downloadSemaphore.WaitAsync();
@@ -260,12 +232,6 @@ Message: {ex.Message}
             }
         }
 
-        /// <summary>
-        /// Determines whether a file should be skipped based on its existence and checksum.
-        /// </summary>
-        /// <param name="destinationPath">The path to the destination file.</param>
-        /// <param name="expectedChecksum">The expected checksum of the file.</param>
-        /// <returns>True if the file exists and matches the checksum; otherwise, false.</returns>
         private static bool ShouldSkipDownload(string destinationPath, string expectedChecksum)
         {
             if (File.Exists(destinationPath))
@@ -278,10 +244,6 @@ Message: {ex.Message}
             return false;
         }
 
-        /// <summary>
-        /// Ensures that the directory for the specified file path exists.
-        /// </summary>
-        /// <param name="filePath">The file path whose directory should be checked.</param>
         private static void EnsureDirectoryExists(string filePath)
         {
             string directory = Path.GetDirectoryName(filePath);
@@ -291,10 +253,6 @@ Message: {ex.Message}
             }
         }
 
-        /// <summary>
-        /// Configures the progress bar and related UI elements based on the total number of files.
-        /// </summary>
-        /// <param name="totalFiles">The total number of files to process.</param>
         private static void ConfigureProgress(int totalFiles)
         {
             AppState.FilesLeft = totalFiles;
@@ -307,11 +265,6 @@ Message: {ex.Message}
             });
         }
 
-        /// <summary>
-        /// Creates a retry policy using Polly for handling transient download errors.
-        /// </summary>
-        /// <param name="fileUrl">The URL of the file being downloaded.</param>
-        /// <returns>An asynchronous retry policy.</returns>
         private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts)
         {
             const double exponentialBackoffFactor = 2.0;
@@ -334,21 +287,11 @@ Message: {ex.Message}
                 );
         }
 
-        /// <summary>
-        /// Adds a download item to the UI.
-        /// </summary>
-        /// <param name="fileName">The name of the file being downloaded.</param>
-        /// <returns>The added <see cref="DownloadItem"/>.</returns>
         private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
         {
             return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
         }
 
-        /// <summary>
-        /// Removes a download item from the UI.
-        /// </summary>
-        /// <param name="downloadItem">The download item to remove.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
         {
             if (downloadItem != null)
@@ -357,13 +300,6 @@ Message: {ex.Message}
             }
         }
 
-        /// <summary>
-        /// Downloads a file with speed throttling and updates the UI with download progress.
-        /// </summary>
-        /// <param name="fileUrl">The URL of the file to download.</param>
-        /// <param name="destinationPath">The local path where the file will be saved.</param>
-        /// <param name="downloadItem">The UI download item to update.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
             using var response = await Networking.DownloadHttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
@@ -379,7 +315,6 @@ Message: {ex.Message}
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
 
-            // Use the global rate limiter
             using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
 
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
@@ -392,16 +327,13 @@ Message: {ex.Message}
                 await fileStream.WriteAsync(buffer, 0, bytesRead);
                 downloadedBytes += bytesRead;
 
-                // Update the global downloaded bytes counter
                 DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
 
-                // Update the lastUpdate time if new data is downloaded
                 if (bytesRead > 0)
                 {
                     timeoutLastUpdate = DateTime.Now;
                 }
 
-                // Check for timeout
                 if (DateTime.Now - timeoutLastUpdate > timeoutThreshold)
                 {
                     throw new TimeoutException($"Download stalled for {timeoutThreshold.TotalSeconds} seconds. Retrying...");
@@ -510,7 +442,6 @@ Message: {ex.Message}
         {
             Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
 
-            // Get the total size of the compressed file
             long totalBytes = new FileInfo(compressedFilePath).Length;
             long processedBytes = 0;
             DateTime lastUpdate = DateTime.Now;
@@ -519,8 +450,7 @@ Message: {ex.Message}
             using var output = File.OpenWrite(decompressedFilePath);
             using var decompressionStream = new DecompressionStream(input);
 
-            // Wrap the output stream with a progress handler
-            byte[] buffer = new byte[8192]; // 8KB buffer size
+            byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = await decompressionStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {

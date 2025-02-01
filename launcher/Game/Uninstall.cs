@@ -83,15 +83,13 @@ Message: {ex.Message}
 
         public static async void LangFile(CheckBox checkbox, List<string> lang)
         {
-            if (!GetBranch.Installed())
-                return;
-
-            if (!Directory.Exists(GetBranch.Directory()))
+            if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory()))
                 return;
 
             appDispatcher.Invoke(() =>
             {
-                checkbox.IsEnabled = false;
+                if (checkbox != null)
+                    checkbox.IsEnabled = false;
             });
 
             Download.Tasks.SetInstallState(true, "UNINSTALLING");
@@ -120,26 +118,24 @@ Message: {ex.Message}
                 }
 
                 appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Value++;
-                Files_Label.Text = $"{--AppState.FilesLeft} files left";
-            });
+                {
+                    Progress_Bar.Value++;
+                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                });
             }
 
             Download.Tasks.SetInstallState(false);
 
             appDispatcher.Invoke(() =>
             {
-                checkbox.IsEnabled = true;
+                if (checkbox != null)
+                    checkbox.IsEnabled = true;
             });
         }
 
         public static async void HDTextures(Branch branch)
         {
-            if (!GetBranch.Installed(branch) && !Directory.Exists(GetBranch.Directory(branch)))
-                return;
-
-            if (!Directory.Exists(GetBranch.Directory(branch)))
+            if (!GetBranch.Installed(branch) || !Directory.Exists(GetBranch.Directory(branch)))
                 return;
 
             Download.Tasks.SetInstallState(true, "UNINSTALLING");

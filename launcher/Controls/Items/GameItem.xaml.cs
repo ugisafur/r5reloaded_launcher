@@ -37,6 +37,32 @@ namespace launcher
             InitializeComponent();
         }
 
+        public void UpdateGameItem()
+        {
+            BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, gameBranch)}";
+            InstallPath.Text = $"{GetBranch.Directory(gameBranch)}";
+            UninstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Visible : Visibility.Hidden;
+            InstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Hidden : Visibility.Visible;
+
+            UninstallGame.IsEnabled = !AppState.IsInstalling;
+            InstallGame.IsEnabled = !AppState.IsInstalling;
+            VerifyGame.IsEnabled = !AppState.IsInstalling;
+            InstallOpt.IsEnabled = !AppState.IsInstalling;
+
+            UninstallGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
+            InstallGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
+            VerifyGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
+            BranchDisabledTxt.Visibility = gameBranch.enabled ? Visibility.Hidden : Visibility.Visible;
+
+            InstallOpt.Visibility = Visibility.Hidden;
+
+            if (GetBranch.Enabled(gameBranch) && GetBranch.Installed(gameBranch))
+            {
+                InstallOpt.Visibility = Visibility.Visible;
+                InstallOpt.Content = GetBranch.DownloadHDTextures(gameBranch) ? "UINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
+            }
+        }
+
         public void SetupGameItem(Branch branch)
         {
             gameBranch = branch;

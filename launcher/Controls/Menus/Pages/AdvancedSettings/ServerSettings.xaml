@@ -7,6 +7,70 @@
              mc:Ignorable="d"
              d:DesignHeight="704" d:DesignWidth="935">
     <UserControl.Resources>
+        <Style x:Key="RoundedThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="DarkGray" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="border"
+    Background="{TemplateBinding Background}"
+    BorderBrush="{TemplateBinding BorderBrush}"
+    BorderThickness="{TemplateBinding BorderThickness}"
+    CornerRadius="5" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ThemeSecondaryAltText}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="VerticalScrollBarStyle" TargetType="ScrollBar">
+            <!-- Set properties specifically for a horizontal bar -->
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Width" Value="6" />
+            <Setter Property="Background" Value="{DynamicResource ThemeSecondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource ThemeSecondary}" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="2" />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="1" Background="{DynamicResource ThemePrimary}" CornerRadius="6" Width="10" />
+
+                            <Track
+        x:Name="PART_Track"
+        Grid.Row="1"
+        Orientation="Vertical"
+        IsDirectionReversed="true"
+                        Width="10">
+                                <Track.Thumb>
+                                    <Thumb
+                        Style="{StaticResource RoundedThumbStyle}"
+                Background="{DynamicResource ThemeSecondary}"
+                BorderBrush="{DynamicResource ThemeSecondary}"
+                BorderThickness="1" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style that applies to all ScrollBars by default (optional) -->
+        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource VerticalScrollBarStyle}" />
+
         <Style x:Key="FocusVisual3">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -100,7 +164,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchThemeMainButtonsBorderHover}" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -145,7 +209,7 @@ VerticalOffset="55" MaxHeight="290">
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchThemeMainButtonsBorderHover}" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -190,7 +254,7 @@ VerticalOffset="55" MaxHeight="290">
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchThemeMainButtonsBorderHover}" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -235,7 +299,7 @@ VerticalOffset="55">
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource BranchThemeMainButtonsBorderHover}" />
+                                <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="{StaticResource ThemeSecondaryAltText}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -274,7 +338,7 @@ VerticalOffset="55">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border x:Name="Bd" Background="#143a52" BorderBrush="#143a52" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
+                        <Border x:Name="Bd" Background="{DynamicResource ThemeSecondaryAlt}" BorderBrush="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" Padding="10" SnapsToDevicePixels="true" CornerRadius="5">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
                         <ControlTemplate.Triggers>

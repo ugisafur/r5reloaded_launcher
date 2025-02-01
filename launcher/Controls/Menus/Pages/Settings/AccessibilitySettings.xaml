@@ -38,7 +38,7 @@
                                             <TranslateTransform X="2" Y="0" />
                                         </TransformGroup>
                                     </Border.RenderTransform>
-                                    <Image x:Name="checkImage" Source="/assets/icons8-x-50.png" />
+                                    <Path x:Name="checkImage" IsHitTestVisible="False" Data="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" Fill="{DynamicResource ThemeSecondary}" Width="10" Height="10" Stretch="Uniform" />
                                 </Border>
                             </Grid>
                         </DockPanel>
@@ -53,8 +53,8 @@
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ThemeSecondaryAltText}" />
                                 <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource ThemeSecondaryAltText}" />
                                 <Setter TargetName="slider" Property="Background" Value="{DynamicResource ThemeSecondary}" />
-                                <Setter TargetName="checkImage" Property="Source" Value="/assets/icons8-check-48.png" />
-                                <Setter TargetName="checkImage" Property="Width" Value="15" />
+                                <Setter TargetName="checkImage" Property="Data" Value="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+                                <Setter TargetName="checkImage" Property="Fill" Value="{DynamicResource ThemeSecondaryAltText}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <!-- ToDo: Add Style for Isenabled == False -->

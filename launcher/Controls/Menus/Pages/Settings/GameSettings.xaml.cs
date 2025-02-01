@@ -136,11 +136,9 @@ namespace launcher
 
         public void UpdateGameItems()
         {
-            List<Branch> branches = Configuration.ServerConfig.branches;
-
             foreach (var item in gameItems)
             {
-                item.SetupGameItem(branches[item.index]);
+                item.UpdateGameItem();
             }
         }
     }

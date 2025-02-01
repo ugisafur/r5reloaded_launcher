@@ -84,7 +84,7 @@
                 <Grid Grid.Row="1" HorizontalAlignment="Left">
                     <Button x:Name="BackBtn" Style="{DynamicResource SettingsButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
                         <Grid Width="60" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Source="/assets/icons8-left-arrow-100.png" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Path IsHitTestVisible="False" Data="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" Fill="{DynamicResource ThemePrimaryText}" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                         </Grid>
                     </Button>
                     <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />

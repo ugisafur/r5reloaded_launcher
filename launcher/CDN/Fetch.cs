@@ -28,14 +28,13 @@ namespace launcher.CDN
             string fileName = compressed ? "checksums_zst.json" : "checksums.json";
             string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
 
-            JsonSerializerOptions jsonSerializerOptions = new()
-            {
-                AllowTrailingCommas = true
-            };
+            JsonSerializerOptions jsonSerializerOptions = new() { AllowTrailingCommas = true };
 
             GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\{fileName}", jsonSerializerOptions);
 
             List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
+
+            // Remove english from the list of languages as english is always included
             excludedLanguages.Remove("english");
 
             string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));

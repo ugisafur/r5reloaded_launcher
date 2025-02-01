@@ -73,12 +73,10 @@ namespace launcher.Game
 
                 if (coreCount >= 1 && coreCount <= processorCount)
                 {
-                    // Set processor affinity to the first 'coreCount' cores
                     int affinityMask = 0;
 
-                    // Set bits for the first 'coreCount' cores
                     for (int i = 0; i < coreCount; i++)
-                        affinityMask |= 1 << i;  // Set the bit corresponding to core 'i'
+                        affinityMask |= 1 << i;
 
                     gameProcess.ProcessorAffinity = affinityMask;
 

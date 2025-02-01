@@ -12,14 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\icons8-check-48.png" />
-    <None Remove="assets\icons8-download-96.png" />
-    <None Remove="assets\icons8-info-96.png" />
-    <None Remove="assets\icons8-left-arrow-100.png" />
-    <None Remove="assets\icons8-link-100.png" />
-    <None Remove="assets\icons8-linking-48.png" />
-    <None Remove="assets\icons8-settings-100.png" />
-    <None Remove="assets\icons8-x-50.png" />
     <None Remove="assets\launcher_bg.jpg" />
     <None Remove="assets\launcher_bg_autum.mp4" />
     <None Remove="assets\launcher_bg_beach.mp4" />
@@ -27,12 +19,8 @@
     <None Remove="assets\launcher_bg_shadow.mp4" />
     <None Remove="assets\launcher_bg_we.mp4" />
     <None Remove="assets\launcher_x64.ico" />
-    <None Remove="assets\logo-50.png" />
-    <None Remove="assets\logo-main-white.png" />
-    <None Remove="assets\logo-main.png" />
     <None Remove="assets\news_default_bg.jpg" />
     <None Remove="assets\preload.gif" />
-    <None Remove="assets\R5R-Logo-White.gif" />
     <None Remove="assets\Revenant-apex.jpg" />
   </ItemGroup>
 
@@ -66,31 +54,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <None Include="..\.editorconfig" Link=".editorconfig" />
-    <Resource Include="assets\icons8-check-48.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-download-96.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-info-96.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-left-arrow-100.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-link-100.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-linking-48.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-x-50.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="assets\launcher_bg.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\logo-50.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\news_default_bg.jpg">
@@ -100,18 +64,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="launcher_x64.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\icons8-settings-100.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\logo-main-white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\logo-main.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="assets\R5R-Logo-White.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
