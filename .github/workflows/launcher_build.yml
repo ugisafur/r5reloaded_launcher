@@ -1,4 +1,4 @@
-name: Launcher
+name: Build And Create Nightly Release
 
 on:
   # This can be used to automatically publish nightlies at UTC nighttime
