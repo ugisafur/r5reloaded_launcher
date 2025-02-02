@@ -7,6 +7,7 @@ using launcher.Game;
 using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
+using launcher.Network;
 
 namespace launcher
 {
@@ -24,7 +25,7 @@ namespace launcher
         {
         }
 
-        public void SetupEULA()
+        public async Task SetupEULA()
         {
             if (!AppState.IsOnline)
             {
@@ -33,9 +34,15 @@ namespace launcher
                 return;
             }
 
+            if (!Connection.MasterServerTest())
+            {
+                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA, no reponse from master server");
+                EULATextBox.Text = "Failed to get EULA, no reponse from master server";
+                return;
+            }
+
             var content = new StringContent("{}", Encoding.UTF8, "application/json");
             HttpResponseMessage response = Networking.HttpClient.PostAsync("https://r5r.org/eula", content).Result;
-            response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessStatusCode)
             {

@@ -36,5 +36,19 @@ namespace launcher.Network
                 return false;
             }
         }
+
+        public static bool MasterServerTest()
+        {
+            try
+            {
+                using var client = new System.Net.WebClient();
+                using var stream = client.OpenRead("https://r5r.org");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

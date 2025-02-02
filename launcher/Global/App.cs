@@ -22,13 +22,13 @@ namespace launcher.Managers
 #endif
             CheckInternetConnection();
             SetupControlReferences(mainWindow);
-            StartStatusChecker();
             Configuration.Init();
             //SetupLibaryPath();
             SetupMenus();
             SetupBranchComboBox();
             GetSelfUpdater();
-            EULA_Control.SetupEULA();
+            Task.Run(() => EULA_Control.SetupEULA());
+            Task.Run(() => Status_Control.StartStatusTimer());
 
             Download.Tasks.ShowSpeedLabels(false, false);
 
@@ -87,18 +87,6 @@ Message: {ex.Message}
             bool isOnline = Network.Connection.CDNTest();
             LogInfo(Source.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
             AppState.IsOnline = isOnline;
-        }
-
-        private static void StartStatusChecker()
-        {
-            if (AppState.IsOnline)
-            {
-                Task.Run(() => Status_Control.StartStatusTimer());
-                return;
-            }
-
-            Status_Button.IsEnabled = false;
-            Downloads_Button.IsEnabled = false;
         }
 
         private static void SetupMenus()

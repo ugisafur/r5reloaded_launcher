@@ -34,7 +34,23 @@ namespace launcher
 
         public async void StartStatusTimer()
         {
-            Task.Run(() => GetStatusInfo());
+            await Dispatcher.InvokeAsync(() =>
+            {
+                var app = (App)Application.Current;
+                Brush downBrush = app.ThemeDictionary["ThemeStatusNonOperational"] as SolidColorBrush;
+
+                MSStatusBG.Background = downBrush;
+                CDNStatusBG.Background = downBrush;
+                WebsiteStatusBG.Background = downBrush;
+                lblWebsiteStatus.Text = "Non-Operational";
+                lblMSStatus.Text = "Non-Operational";
+                lblPlayersCount.Text = "~";
+                lblServerCount.Text = "~";
+            });
+
+            Task.Run(() => GetMasterServerStatusInfo());
+            Task.Run(() => GetWebsiteStatusInfo());
+            Task.Run(() => GetCDNStatusInfo());
 
             int current_time = 0;
 
@@ -50,36 +66,37 @@ namespace launcher
 
                 if (current_time >= refresh_interval)
                 {
-                    Task.Run(() => GetStatusInfo());
+                    Task.Run(() => GetMasterServerStatusInfo());
+                    Task.Run(() => GetWebsiteStatusInfo());
+                    Task.Run(() => GetCDNStatusInfo());
                     current_time = 0;
                 }
             }
         }
 
-        private async void GetStatusInfo()
+        private async Task GetMasterServerStatusInfo()
         {
-            bool isWebsiteUP = await IsUrlUp(website_url);
             bool isMSUP = await IsUrlUp(ms_url);
-            bool isCDNUP = await IsUrlUp(cdn_url);
 
-            Dispatcher.Invoke(() =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 var app = (App)Application.Current;
                 Brush upBrush = app.ThemeDictionary["ThemeStatusOperational"] as SolidColorBrush;
-                Brush downBrush = app.ThemeDictionary["ThemeStatusUnOperational"] as SolidColorBrush;
+                Brush downBrush = app.ThemeDictionary["ThemeStatusNonOperational"] as SolidColorBrush;
 
-                WebsiteStatusBG.Background = isWebsiteUP ? upBrush : downBrush;
                 MSStatusBG.Background = isMSUP ? upBrush : downBrush;
-                CDNStatusBG.Background = isCDNUP ? upBrush : downBrush;
-
-                lblWebsiteStatus.Text = isWebsiteUP ? "Operational" : "Non-Operational";
                 lblMSStatus.Text = isMSUP ? "Operational" : "Non-Operational";
-                lblCNDStatus.Text = isCDNUP ? "Operational" : "Non-Operational";
             });
 
             if (!isMSUP)
             {
                 LogError(Source.API, "Master Server is down.");
+
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    lblPlayersCount.Text = "~";
+                    lblServerCount.Text = "~";
+                });
                 return;
             }
 
@@ -87,7 +104,7 @@ namespace launcher
 
             if (string.IsNullOrEmpty(serverlist))
             {
-                Dispatcher.Invoke(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     lblPlayersCount.Text = "error";
                     lblServerCount.Text = "error";
@@ -100,7 +117,7 @@ namespace launcher
 
             if (!game_server_list.success)
             {
-                Dispatcher.Invoke(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     lblPlayersCount.Text = "error";
                     lblServerCount.Text = "error";
@@ -114,10 +131,40 @@ namespace launcher
             foreach (var server in game_server_list.servers)
                 total_players += int.Parse(server.playerCount);
 
-            Dispatcher.Invoke(() =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 lblPlayersCount.Text = total_players.ToString();
                 lblServerCount.Text = game_server_list.servers.Count.ToString();
+            });
+        }
+
+        private async Task GetWebsiteStatusInfo()
+        {
+            bool isWebsiteUP = await IsUrlUp(website_url);
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                var app = (App)Application.Current;
+                Brush upBrush = app.ThemeDictionary["ThemeStatusOperational"] as SolidColorBrush;
+                Brush downBrush = app.ThemeDictionary["ThemeStatusNonOperational"] as SolidColorBrush;
+
+                WebsiteStatusBG.Background = isWebsiteUP ? upBrush : downBrush;
+                lblWebsiteStatus.Text = isWebsiteUP ? "Operational" : "Non-Operational";
+            });
+        }
+
+        private async Task GetCDNStatusInfo()
+        {
+            bool isCDNUP = await IsUrlUp(cdn_url);
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                var app = (App)Application.Current;
+                Brush upBrush = app.ThemeDictionary["ThemeStatusOperational"] as SolidColorBrush;
+                Brush downBrush = app.ThemeDictionary["ThemeStatusNonOperational"] as SolidColorBrush;
+
+                CDNStatusBG.Background = isCDNUP ? upBrush : downBrush;
+                lblCNDStatus.Text = isCDNUP ? "Operational" : "Non-Operational";
             });
         }
 
@@ -125,26 +172,15 @@ namespace launcher
         {
             try
             {
-                using HttpClient client = new HttpClient();
+                using var client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(5);
-
-                HttpResponseMessage response = await client.GetAsync(url);
-                return response.IsSuccessStatusCode;
+                using var stream = await client.GetStreamAsync(url);
+                return true;
             }
-            catch (HttpRequestException)
+            catch
             {
-                LogError(Source.API, $"URL is down or unreachable: {url}");
+                return false;
             }
-            catch (TaskCanceledException)
-            {
-                LogError(Source.API, $"Request timed out: {url}");
-            }
-            catch (Exception ex)
-            {
-                LogError(Source.API, $"An error occurred: {ex.Message}");
-            }
-
-            return false;
         }
 
         public async Task<string> SendPostRequestAsync(string url, string jsonContent)
