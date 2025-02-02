@@ -6,100 +6,41 @@
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
              d:DesignHeight="315" d:DesignWidth="220">
-    <UserControl.Resources>
-        <Style x:Key="FocusVisual">
-            <Setter Property="Control.Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
-        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
-        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
-        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
-        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
-        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
-        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
-        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
-        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
-        <Style x:Key="SettingsButton" TargetType="{x:Type Button}">
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
-            <Setter Property="Background" Value="{StaticResource Button.Static.Background}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}" />
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" CornerRadius="5">
-                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsDefaulted" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeMenuButtonColorHover}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="Transparent" />
-                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent" />
-                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeDisabledText}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="true">
-                                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ThemeSecondaryAltText}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
+
     <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="220" Height="315" Padding="5">
         <StackPanel VerticalAlignment="Bottom">
-            <Button x:Name="Settings" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Settings_Click" Cursor="Hand">
-                <TextBlock Text="Settings" HorizontalAlignment="Left" Width="200" />
+            <Button x:Name="Settings" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Settings_Click" Cursor="Hand">
+                <TextBlock Text="Settings" HorizontalAlignment="Left" Width="230" />
             </Button>
-            <Button x:Name="SupportCreator" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="SupportCreator_Click" Cursor="Hand">
-                <Grid Width="200">
+            <Button x:Name="SupportCreator" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="SupportCreator_Click" Cursor="Hand">
+                <Grid Width="230">
                     <TextBlock Text="Support The Creator" />
                     <Path IsHitTestVisible="False" Data="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z" Fill="{DynamicResource ThemeSecondaryAltText}" Width="20" Height="20" HorizontalAlignment="Right" Stretch="Uniform" />
                 </Grid>
             </Button>
-            <Button x:Name="CreatorYoutube" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="CreatorYoutube_Click" Cursor="Hand">
-                <Grid Width="200">
+            <Button x:Name="CreatorYoutube" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="CreatorYoutube_Click" Cursor="Hand">
+                <Grid Width="230">
                     <TextBlock Text="Creators Youtube" />
                     <Path IsHitTestVisible="False" Data="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z" Fill="{DynamicResource ThemeSecondaryAltText}" Width="20" Height="20" HorizontalAlignment="Right" Stretch="Uniform" />
                 </Grid>
             </Button>
-            <Button x:Name="Discord" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Discord_Click" Cursor="Hand">
-                <Grid Width="200">
+            <Button x:Name="Discord" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Discord_Click" Cursor="Hand">
+                <Grid Width="230">
                     <TextBlock Text="Join The Discord" />
                     <Path IsHitTestVisible="False" Data="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z" Fill="{DynamicResource ThemeSecondaryAltText}" Width="20" Height="20" HorizontalAlignment="Right" Stretch="Uniform" />
                 </Grid>
             </Button>
-            <Button x:Name="Website" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Website_Click" Cursor="Hand">
-                <Grid Width="200">
+            <Button x:Name="Website" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Website_Click" Cursor="Hand">
+                <Grid Width="230">
                     <TextBlock Text="Visit The Website" />
                     <Path IsHitTestVisible="False" Data="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z" Fill="{DynamicResource ThemeSecondaryAltText}" Width="20" Height="20" HorizontalAlignment="Right" Stretch="Uniform" />
                 </Grid>
             </Button>
-            <Button x:Name="Tour" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Tour_Click" Cursor="Hand">
-                <TextBlock Text="Launcher Tour" HorizontalAlignment="Left" Width="200" />
+            <Button x:Name="Tour" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Tour_Click" Cursor="Hand">
+                <TextBlock Text="Launcher Tour" HorizontalAlignment="Left" Width="230" />
             </Button>
-            <Button x:Name="Exit" Style="{DynamicResource SettingsButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Exit_Click" Cursor="Hand">
-                <TextBlock Text="Exit The App" HorizontalAlignment="Left" Width="200" />
+            <Button x:Name="Exit" Style="{DynamicResource MenuButton}" Width="210" Margin="0,2" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Exit_Click" Cursor="Hand">
+                <TextBlock Text="Exit The App" HorizontalAlignment="Left" Width="230" />
             </Button>
         </StackPanel>
     </Border>

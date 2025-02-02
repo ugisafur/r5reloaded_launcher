@@ -10,6 +10,7 @@
                 <ResourceDictionary x:Name="ThemeDictionary">
                     <ResourceDictionary.MergedDictionaries>
                         <ResourceDictionary Source="theme.xaml" />
+                        <ResourceDictionary Source="styles.xaml" />
                     </ResourceDictionary.MergedDictionaries>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

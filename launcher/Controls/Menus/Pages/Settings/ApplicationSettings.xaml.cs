@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using launcher.Global;
 using static launcher.Global.Logger;
+using static launcher.Global.References;
 
 namespace launcher
 {
@@ -72,6 +73,19 @@ namespace launcher
         private void StreamVideo_Unchecked(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Stream_Video, StreamVideo.IsChecked.Value);
+        }
+
+        private void OpenThemeEditor_Click(object sender, RoutedEventArgs e)
+        {
+            if (themeEditor != null)
+            {
+                themeEditor.Focus();
+                return;
+            }
+
+            themeEditor = new();
+            themeEditor.SetupThemeEditor();
+            themeEditor.Show();
         }
     }
 }

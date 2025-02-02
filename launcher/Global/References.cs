@@ -96,6 +96,7 @@ namespace launcher.Global
         public static Rectangle OnBoardingRect = new();
         public static RectangleGeometry OnBoardingClip = new();
         public static Rectangle DragBarDropShadow = new();
+        public static ThemeEditor themeEditor = null;
 
         public static PlaylistRoot playlistRoot = new();
         public static List<string> gamemodes = [];

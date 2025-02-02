@@ -15,6 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using static launcher.Global.Logger;
+using static launcher.Global.References;
 
 namespace launcher
 {
@@ -89,8 +90,20 @@ namespace launcher
 
             PreLoad preLoad = new();
 
-            if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png")))
-                preLoad.PreloadBG.Source = new BitmapImage(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png")));
+            string imagePath = Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png");
+            if (File.Exists(imagePath))
+            {
+                var bitmap = new BitmapImage();
+                using (var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                }
+                bitmap.Freeze();
+                preLoad.PreloadBG.Source = bitmap;
+            }
 
             preLoad.Show();
 
@@ -128,7 +141,18 @@ namespace launcher
             else
             {
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.png")))
-                    Background_Image.Source = new BitmapImage(new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.png")));
+                {
+                    var bitmap = new BitmapImage();
+                    using (var stream = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.png"), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = stream;
+                        bitmap.EndInit();
+                    }
+                    bitmap.Freeze();
+                    Background_Image.Source = bitmap;
+                }
             }
 
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
@@ -150,13 +174,6 @@ namespace launcher
             if ((bool)Ini.Get(Ini.Vars.Ask_For_Tour))
             {
                 Managers.App.ShowOnBoardAskPopup();
-            }
-
-            if ((bool)Ini.Get(Ini.Vars.Show_Theme_Editor))
-            {
-                ThemeEditor themeEditor = new();
-                themeEditor.SetupThemeEditor();
-                themeEditor.Show();
             }
         }
 

@@ -7,50 +7,6 @@
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
         Title="R5Reloaded Launcher" Height="350" AllowsTransparency="True" Width="600" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="launcher_x64.ico" Background="Transparent" Loaded="Window_Loaded" Topmost="True" ShowInTaskbar="False">
-    <Window.Resources>
-        <DrawingImage x:Key="logo_main_whiteDrawingImage">
-            <DrawingImage.Drawing>
-                <DrawingGroup ClipGeometry="M0,0 V1365 H4096 V0 H0 Z">
-                    <DrawingGroup Transform="1,0,0,1,2732,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L201,0 215,2 229,7 241,14 251,23 259,34 265,47 267,53 269,69 269,653 266,672 261,685 254,696 245,706 235,713 224,718 209,722 196,723 -1,723 -1,2z M95,88L95,635 174,635 174,88z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,3351,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L201,0 215,2 227,6 240,13 250,22 257,30 265,46 268,58 269,67 269,655 266,672 262,684 255,695 246,705 237,712 224,718 209,722 199,723 0,723z M95,88L95,635 174,635 174,88z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,494,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L203,0 216,2 229,6 243,14 252,22 260,33 266,45 270,63 270,413 266,429 261,441 252,453 243,461 231,468 215,474 240,554 261,621 283,692 292,720 292,723 198,723 196,721 142,530 128,480 127,476 99,475 99,722 98,723 4,723 3,555 4,88 -18,88 -17,79 -1,2z M99,88L99,387 176,387 176,88z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,1156,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L203,0 216,2 231,7 244,15 251,21 260,33 267,48 270,65 270,411 267,426 263,436 259,444 252,453 243,461 231,468 216,473 216,477 235,539 245,570 259,615 279,679 292,720 291,723 197,723 191,704 168,622 145,541 127,477 127,475 100,476 99,722 98,723 4,723 4,88 -18,88 -17,79 -2,6z M99,88L99,387 176,387 176,88z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,2110,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L132,0 148,3 161,8 171,14 183,25 192,39 196,49 199,65 199,657 196,673 191,685 184,696 175,706 161,715 148,720 139,722 126,723 6,723 -7,722 -24,717 -37,710 -49,699 -57,688 -62,677 -66,658 -67,640 -67,98 -66,64 -63,49 -59,39 -53,29 -47,21 -34,11 -19,4 -7,1z M29,88L29,635 104,635 104,88z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,2436,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L161,0 163,7 170,76 197,332 213,485 231,657 238,722 237,723 145,723 143,713 132,607 32,606 28,646 21,718 19,723 -76,723 -75,710 -62,587 -55,519 -45,425 -32,302 -25,234 -11,101 -1,5z M82,114L78,148 61,313 51,408 44,477 40,517 124,517 123,500 108,355 89,171 83,114z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,826,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L265,0 266,1 266,87 263,88 95,88 95,303 197,303 212,305 222,308 235,315 247,326 255,336 261,348 265,364 266,377 266,649 264,666 260,680 254,691 247,700 240,707 229,714 217,719 205,722 194,723 71,723 55,721 42,717 30,711 19,702 10,690 4,678 0,661 -1,647 -1,517 94,517 95,518 95,635 170,634 170,391 0,391 -1,390 -1,1z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,3058,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L238,0 240,1 240,87 239,88 95,88 95,308 196,308 197,312 197,395 195,397 95,397 95,635 239,635 240,636 240,723 0,723 -1,722 -1,2z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,1501,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L240,0 241,86 240,88 95,88 95,308 196,308 197,309 197,396 195,397 95,397 95,635 240,635 241,722 240,723 0,723z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,510,263">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L2039,0 2047,7 2084,44 2084,46 -12,46 -11,37 -1,1z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,1582,1055">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L1885,0 1965,1 1964,5 1953,16 1945,23 1936,32 1920,46 1918,47 -38,47 -61,24 -68,18 -72,13 -74,12 -74,10 -78,8 -83,3 -83,1z" />
-                    </DrawingGroup>
-                    <DrawingGroup Transform="1,0,0,1,1795,323">
-                        <GeometryDrawing Brush="{DynamicResource ThemePrimaryText}" Geometry="F1 M4096,1365z M0,0z M0,0L94,0 95,2 95,621 94,635 206,635 207,639 207,722 206,723 -1,723 -1,1z" />
-                    </DrawingGroup>
-                </DrawingGroup>
-            </DrawingImage.Drawing>
-        </DrawingImage>
-    </Window.Resources>
     <Border Background="{DynamicResource ThemePrimary}" BorderBrush="Black" BorderThickness="4" CornerRadius="10">
         <Grid>
             <Grid.Clip>
