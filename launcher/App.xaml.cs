@@ -134,6 +134,7 @@ namespace launcher
                 catch (Exception ex)
                 {
                     // Handle exceptions (log them, etc.)
+                    Global.Backtrace.Send(ex);
                     Debug.WriteLine($"Pipe listening error: {ex.Message}");
                 }
             }
@@ -162,6 +163,7 @@ namespace launcher
             catch (Exception ex)
             {
                 // Handle exceptions (e.g., server not available)
+                Global.Backtrace.Send(ex);
                 Debug.WriteLine($"Pipe client error: {ex.Message}");
             }
         }

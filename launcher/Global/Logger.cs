@@ -54,8 +54,7 @@ namespace launcher.Global
 
         public static void LogCrashToFile(Exception ex)
         {
-            if (AppState.IsOnline && (bool)Ini.Get(Ini.Vars.Upload_Crashes))
-                Backtrace.Send(ex);
+            Backtrace.Send(ex);
 
             string filePath = Path.Combine(Path.GetDirectoryName(LogFilePath), "crash.log");
 

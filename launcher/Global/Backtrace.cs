@@ -10,12 +10,14 @@ namespace launcher.Global
 
         public static void Send(Exception exception)
         {
-            Client.Send(new BacktraceReport(exception));
+            if (AppState.IsOnline && (bool)Ini.Get(Ini.Vars.Upload_Crashes))
+                Client.Send(new BacktraceReport(exception));
         }
 
         public static async Task SendAsync(Exception exception)
         {
-            await Client.SendAsync(new BacktraceReport(exception));
+            if (AppState.IsOnline && (bool)Ini.Get(Ini.Vars.Upload_Crashes))
+                await Client.SendAsync(new BacktraceReport(exception));
         }
     }
 }

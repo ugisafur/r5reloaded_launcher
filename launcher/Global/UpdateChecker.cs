@@ -72,6 +72,8 @@ Message: {ex.Message}
                 }
                 catch (JsonSerializationException ex)
                 {
+                    Global.Backtrace.Send(ex);
+
                     LogError(Source.UpdateChecker, $@"
 ==============================================================
 JSON Deserialization Failed
@@ -86,6 +88,8 @@ Message: {ex.Message}
                 }
                 catch (Exception ex)
                 {
+                    Global.Backtrace.Send(ex);
+
                     LogError(Source.UpdateChecker, $@"
 ==============================================================
 Unexpected Error

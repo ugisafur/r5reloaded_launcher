@@ -68,6 +68,8 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
+                Global.Backtrace.Send(ex);
+
                 LogError(Source.Launcher, $@"
 ==============================================================
 Failed to load playlist file
@@ -395,6 +397,8 @@ Message: {ex.Message}
             }
             catch (Exception ex)
             {
+                Global.Backtrace.Send(ex);
+
                 LogError(Source.Launcher, $@"
 ==============================================================
 Failed to send notification
