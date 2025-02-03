@@ -25,13 +25,16 @@
                 <CheckBox x:Name="Notifications" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,286,842,391" RenderTransformOrigin="0.545,1.288" />
                 <TextBlock Text="Enable system notifications" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,290,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="KeepAllLogs" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,577,842,100" RenderTransformOrigin="0.545,1.288" />
-                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,581,460,0" Height="20" Cursor="Hand" />
+                <TextBlock Text="Keep All Log Files" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,580,678,0" Width="150" Height="20" Cursor="Hand" />
+                <CheckBox x:Name="UploadCrashes" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="276,575,609,102" RenderTransformOrigin="0.545,1.288" />
+                <TextBlock Text="Upload Crashes" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="339,576,446,0" Width="150" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="StreamVideo" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,333,842,344" RenderTransformOrigin="0.545,1.288" />
                 <TextBlock Text="Stream background video" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,337,460,0" Height="20" Cursor="Hand" />
                 <CheckBox x:Name="NightlyBuilds" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="43,377,842,300" RenderTransformOrigin="0.545,1.288" />
                 <TextBlock Text="Nightly Launcher Builds" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="107,381,460,0" Height="20" Cursor="Hand" />
                 <TextBlock Text="Warning: These are pre-release builds and may contain bugs or major issues." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="12" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="107,403,47,0" Height="23" />
                 <Button x:Name="GetLogs_Copy" Style="{DynamicResource SettingsBtnStyle}" Margin="276,621,437,36" Content="OPEN THEME EDITOR" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Click="OpenThemeEditor_Click" Cursor="Hand" />
+                <TextBlock Text="These crash logs help us fix bugs with the launcher" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="12" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="339,598,47,0" Height="18" />
             </Grid>
             <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="43,430,45,271" />
         </Grid>

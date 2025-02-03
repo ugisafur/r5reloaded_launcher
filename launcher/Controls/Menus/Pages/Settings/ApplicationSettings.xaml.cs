@@ -24,18 +24,21 @@ namespace launcher
             KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
             StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
             NightlyBuilds.IsChecked = (bool)Ini.Get(Ini.Vars.Nightly_Builds);
+            UploadCrashes.IsChecked = (bool)Ini.Get(Ini.Vars.Upload_Crashes);
 
             CloseToQuit.Checked += CloseToQuit_Unchecked;
             Notifications.Checked += Notifications_Unchecked;
             KeepAllLogs.Checked += KeepAllLogs_Unchecked;
             StreamVideo.Checked += StreamVideo_Unchecked;
             NightlyBuilds.Checked += NightlyBuilds_Unchecked;
+            UploadCrashes.Checked += UploadCrashes_Unchecked;
 
             CloseToQuit.Unchecked += CloseToQuit_Unchecked;
             Notifications.Unchecked += Notifications_Unchecked;
             KeepAllLogs.Unchecked += KeepAllLogs_Unchecked;
             StreamVideo.Unchecked += StreamVideo_Unchecked;
             NightlyBuilds.Unchecked += NightlyBuilds_Unchecked;
+            UploadCrashes.Unchecked += UploadCrashes_Unchecked;
         }
 
         private void NightlyBuilds_Unchecked(object sender, RoutedEventArgs e)
@@ -52,6 +55,11 @@ namespace launcher
         private void ClearCache_Click(object sender, RoutedEventArgs e)
         {
             //TODO
+        }
+
+        private void UploadCrashes_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Ini.Set(Ini.Vars.Upload_Crashes, UploadCrashes.IsChecked.Value);
         }
 
         private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)

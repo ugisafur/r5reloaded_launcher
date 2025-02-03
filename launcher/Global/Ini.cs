@@ -48,6 +48,7 @@ namespace launcher.Global
             Updater_Version,
             Nightly_Builds,
             Launcher_Version,
+            Upload_Crashes,
         }
 
         public static Dictionary<Vars, string> VarSections = new()
@@ -62,6 +63,7 @@ namespace launcher.Global
             { Vars.Library_Location, "Settings" },
             { Vars.Keep_All_Logs, "Settings" },
             { Vars.Stream_Video, "Settings" },
+            { Vars.Upload_Crashes, "Settings" },
 
             { Vars.Enable_Cheats, "Advanced_Options" },
             { Vars.Enable_Developer, "Advanced_Options" },
@@ -133,6 +135,7 @@ namespace launcher.Global
             { Vars.Stream_Video, true },
             { Vars.Ask_For_Tour, true },
             { Vars.Nightly_Builds, false },
+            { Vars.Upload_Crashes, true },
 
             { Vars.Mode, 0 },
             { Vars.Visibility, 0 },
