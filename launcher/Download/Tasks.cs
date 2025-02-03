@@ -83,8 +83,6 @@ namespace launcher.Download
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("User-Agent", "rclone/v1.69.0");
-
             if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
@@ -204,12 +202,12 @@ Message: {ex.Message}
                     Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
 
-                await RemoveDownloadItemAsync(downloadItem);
-
                 if (File.Exists(destinationPath))
                     File.Delete(destinationPath);
 
                 _downloadSemaphore.Release();
+
+                await RemoveDownloadItemAsync(downloadItem);
             }
         }
 
@@ -275,60 +273,69 @@ Message: {ex.Message}
 
         private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
         {
-            if (downloadItem != null)
+            try
             {
                 await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
+            }
+            catch
+            {
             }
         }
 
         private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
-            using var response = await Networking.DownloadHttpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
+            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
+            request.Method = "GET";
+            request.Timeout = 10000; // Set appropriate timeout
+            request.AllowAutoRedirect = true;
 
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new WebException($"Failed to download: {response.StatusCode}");
-
-            long totalBytes = response.Content.Headers.ContentLength ?? -1;
-            long downloadedBytes = 0;
-            DateTime lastUpdate = DateTime.Now;
-
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-
-            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
-
-            using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-            byte[] buffer = new byte[4096]; // 64KB buffer
-            int bytesRead;
-
-            while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            using (var response = (HttpWebResponse)await request.GetResponseAsync())
             {
-                await fileStream.WriteAsync(buffer, 0, bytesRead);
-                downloadedBytes += bytesRead;
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new WebException($"Failed to download: {response.StatusCode}");
 
-                DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+                long totalBytes = response.ContentLength;
+                long downloadedBytes = 0;
+                DateTime lastUpdate = DateTime.Now;
 
-                if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
+                using var responseStream = response.GetResponseStream();
+
+                using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+
+                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+
+                while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
-                    lastUpdate = DateTime.Now;
-                    if (downloadItem != null && totalBytes > 0)
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    downloadedBytes += bytesRead;
+
+                    DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+
+                    if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                     {
-                        double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
-                        string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                        double downloadedSize = downloadedBytes >= 1024L * 1024 * 1024 ? downloadedBytes / (1024.0 * 1024 * 1024) : downloadedBytes / (1024.0 * 1024.0);
-                        string downloadedText = downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                        await appDispatcher.InvokeAsync(() =>
+                        lastUpdate = DateTime.Now;
+                        if (downloadItem != null && totalBytes > 0)
                         {
-                            downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
-                            downloadItem.downloadFileProgress.Value = (double)downloadedBytes / totalBytes * 100;
-                        });
+                            double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
+                            string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                            double downloadedSize = downloadedBytes >= 1024L * 1024 * 1024 ? downloadedBytes / (1024.0 * 1024 * 1024) : downloadedBytes / (1024.0 * 1024.0);
+                            string downloadedText = downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                            await appDispatcher.InvokeAsync(() =>
+                            {
+                                downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
+                                downloadItem.downloadFileProgress.Value = (double)downloadedBytes / totalBytes * 100;
+                            });
+                        }
                     }
                 }
-            }
 
-            await fileStream.DisposeAsync();
+                await fileStream.FlushAsync();
+            }
         }
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")
