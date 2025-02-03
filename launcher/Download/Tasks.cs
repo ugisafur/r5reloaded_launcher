@@ -83,6 +83,8 @@ namespace launcher.Download
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
+            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("User-Agent", "rclone/v1.69.0");
+
             if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
@@ -145,34 +147,13 @@ namespace launcher.Download
 
             DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
 
-            // Remove default headers
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("User-Agent");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Accept");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Referer");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Accept-Encoding");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Connection");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Dest");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Mode");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Sec-Fetch-Site");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Remove("Priority");
-
-            // Add custom headers
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("User-Agent", "rclone/v1.69.0");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Referer", "https://google.com");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br, zstd");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
-            Networking.DownloadHttpClient.DefaultRequestHeaders.Add("Priority", "u=0, i");
-
-            //Must delete the file if it exists, otherwise if the new file is smaller than the old one, it will only write the new data and the rest will be the old data
-            if (File.Exists(destinationPath.Replace(".zst", "")))
-                File.Delete(destinationPath.Replace(".zst", ""));
+            await Task.Delay(2000);
 
             try
             {
+                if (File.Exists(destinationPath.Replace(".zst", "")))
+                    File.Delete(destinationPath.Replace(".zst", ""));
+
                 if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
                 {
                     //Decompress the file
@@ -310,8 +291,6 @@ Message: {ex.Message}
             long totalBytes = response.Content.Headers.ContentLength ?? -1;
             long downloadedBytes = 0;
             DateTime lastUpdate = DateTime.Now;
-            DateTime timeoutLastUpdate = DateTime.Now;
-            TimeSpan timeoutThreshold = TimeSpan.FromSeconds(30);
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
 
@@ -319,7 +298,7 @@ Message: {ex.Message}
 
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
-            byte[] buffer = new byte[64 * 1024]; // 64KB buffer
+            byte[] buffer = new byte[4096]; // 64KB buffer
             int bytesRead;
 
             while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -328,16 +307,6 @@ Message: {ex.Message}
                 downloadedBytes += bytesRead;
 
                 DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
-
-                if (bytesRead > 0)
-                {
-                    timeoutLastUpdate = DateTime.Now;
-                }
-
-                if (DateTime.Now - timeoutLastUpdate > timeoutThreshold)
-                {
-                    throw new TimeoutException($"Download stalled for {timeoutThreshold.TotalSeconds} seconds. Retrying...");
-                }
 
                 if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                 {
@@ -359,7 +328,7 @@ Message: {ex.Message}
                 }
             }
 
-            await fileStream.FlushAsync();
+            await fileStream.DisposeAsync();
         }
 
         public static void SetInstallState(bool installing, string buttonText = "PLAY")

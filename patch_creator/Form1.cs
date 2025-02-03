@@ -27,8 +27,8 @@ namespace patch_creator
             "audio\\ship",
         };
 
-        private string AUTH_TOKEN;
-        private string ZONE_ID;
+        private string? AUTH_TOKEN;
+        private string? ZONE_ID;
 
         public Form1()
         {
@@ -153,7 +153,7 @@ namespace patch_creator
             //Find the changed files
             UpdateProgressLabel("Finding changed files");
             List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.name == updatedFile.name && currentFile.checksum == updatedFile.checksum) || overrideStrings.Contains(updatedFile.name)).ToList();
-            GameChecksums new_checksums = UpdateGameChecksums(server_checksums, local_checksums);
+            GameChecksums new_checksums = local_checksums;//UpdateGameChecksums(server_checksums, local_checksums);
 
             //Compress and move the changed files to the game directory
             UpdateProgressLabel("Compressing files");
@@ -161,7 +161,7 @@ namespace patch_creator
 
             //Get server checksums.json file
             UpdateProgressLabel("Creating new checksums.json");
-            var game_checksums_file = JsonSerializer.Serialize(new_checksums, new JsonSerializerOptions { WriteIndented = true });
+            var game_checksums_file = JsonSerializer.Serialize(local_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
 
             //Get local compressed files checksums

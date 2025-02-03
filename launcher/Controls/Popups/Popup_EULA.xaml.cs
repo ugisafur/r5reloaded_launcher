@@ -25,7 +25,7 @@ namespace launcher
         {
         }
 
-        public async Task SetupEULA()
+        public void SetupEULA()
         {
             if (!AppState.IsOnline)
             {
