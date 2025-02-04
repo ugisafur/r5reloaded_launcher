@@ -83,6 +83,9 @@ namespace launcher.Download
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
@@ -251,8 +254,7 @@ Message: {ex.Message}
             const double exponentialBackoffFactor = 2.0;
 
             return Policy
-                .Handle<WebException>()
-                .Or<TimeoutException>()
+                .Handle<Exception>()
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
                     sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
@@ -288,8 +290,10 @@ Message: {ex.Message}
         {
             var request = (HttpWebRequest)WebRequest.Create(fileUrl);
             request.Method = "GET";
-            request.Timeout = 10000; // Set appropriate timeout
+            request.Timeout = 10000;
             request.AllowAutoRedirect = true;
+            request.Host = request.RequestUri.Host;
+            request.UserAgent = $"R5RLauncher-{Environment.MachineName}";
 
             using (var response = (HttpWebResponse)await request.GetResponseAsync())
             {
