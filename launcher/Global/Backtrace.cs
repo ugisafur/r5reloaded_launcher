@@ -16,8 +16,8 @@ namespace launcher.Global
             if (AppState.IsOnline && (bool)Ini.Get(Ini.Vars.Upload_Crashes))
             {
                 BacktraceReport report = new(exception);
-                report.Attributes.Add("Version", Launcher.VERSION);
-                report.Attributes.Add("Source", Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US")));
+                report.Attributes.Add("Launcher Version", Launcher.VERSION);
+                report.Attributes.Add("Log Source", Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US")));
 
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini")))
                     report.AttachmentPaths.Add(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
