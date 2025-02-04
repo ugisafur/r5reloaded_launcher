@@ -2,6 +2,7 @@
 using Backtrace;
 using static launcher.Global.Logger;
 using System.Globalization;
+using System.IO;
 
 namespace launcher.Global
 {
@@ -17,6 +18,13 @@ namespace launcher.Global
                 BacktraceReport report = new(exception);
                 report.Attributes.Add("Version", Launcher.VERSION);
                 report.Attributes.Add("Source", Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US")));
+
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini")))
+                    report.AttachmentPaths.Add(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+
+                if (File.Exists(LogFilePath))
+                    report.AttachmentPaths.Add(LogFilePath);
+
                 Client.Send(report);
             }
         }
