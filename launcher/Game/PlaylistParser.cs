@@ -24,7 +24,7 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.VDF);
 
                 LogError(Source.VDF, $@"
 ==============================================================
@@ -69,7 +69,7 @@ Message: {ex.Message}
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.VDF);
 
                 LogError(Source.VDF, $@"
 ==============================================================
@@ -104,7 +104,7 @@ Message: {ex.Message}
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.VDF);
 
                 LogError(Source.VDF, $@"
 ==============================================================

@@ -72,7 +72,7 @@ Message: {ex.Message}
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Global.Backtrace.Send(ex);
+                    Global.Backtrace.Send(ex, Source.UpdateChecker);
 
                     LogError(Source.UpdateChecker, $@"
 ==============================================================
@@ -88,7 +88,7 @@ Message: {ex.Message}
                 }
                 catch (Exception ex)
                 {
-                    Global.Backtrace.Send(ex);
+                    Global.Backtrace.Send(ex, Source.UpdateChecker);
 
                     LogError(Source.UpdateChecker, $@"
 ==============================================================

@@ -194,7 +194,7 @@ Message: {ex.Message}
 --- Inner Exception ---
 {(ex.InnerException != null ? ex.InnerException.Message : "None")}");
 
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.Download);
 
                 AppState.BadFilesDetected = true;
                 return string.Empty;

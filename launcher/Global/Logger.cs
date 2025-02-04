@@ -30,7 +30,9 @@ namespace launcher.Global
             Checksums,
             Decompression,
             Ini,
-            VDF
+            VDF,
+            Crash,
+            Pipe,
         }
 
         static Logger()
@@ -54,7 +56,7 @@ namespace launcher.Global
 
         public static void LogCrashToFile(Exception ex)
         {
-            Backtrace.Send(ex);
+            Backtrace.Send(ex, Source.Crash);
 
             string filePath = Path.Combine(Path.GetDirectoryName(LogFilePath), "crash.log");
 

@@ -68,7 +68,7 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.Launcher);
 
                 LogError(Source.Launcher, $@"
 ==============================================================
@@ -397,7 +397,7 @@ Message: {ex.Message}
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex);
+                Global.Backtrace.Send(ex, Source.Launcher);
 
                 LogError(Source.Launcher, $@"
 ==============================================================
