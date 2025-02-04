@@ -151,6 +151,10 @@ namespace launcher.Global
             Progress_Bar.Visibility = Visibility.Hidden;
             Status_Label.Visibility = Visibility.Hidden;
             Files_Label.Visibility = Visibility.Hidden;
+            Speed_Label.Visibility = Visibility.Hidden;
+            Percent_Label.Visibility = Visibility.Hidden;
+
+            ReadMore_Label.Visibility = Visibility.Visible;
         }
     }
 }
