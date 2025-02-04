@@ -29,6 +29,7 @@ namespace launcher.Global
         public static TextBlock Version_Label = new();
         public static TextBlock Speed_Label = new();
         public static TextBlock ReadMore_Label = new();
+        public static TextBlock Percent_Label = new();
 
         #endregion Labels
 
@@ -144,6 +145,7 @@ namespace launcher.Global
             OnBoardAsk_Control = mainWindow.OnBoardAsk_Control;
             ReadMore_Label = mainWindow.ReadMore_Label;
             DragBarDropShadow = mainWindow.DragBarDropShadow;
+            Percent_Label = mainWindow.Percent_Label;
 
             Update_Button.Visibility = Visibility.Hidden;
             Progress_Bar.Visibility = Visibility.Hidden;

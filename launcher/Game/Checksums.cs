@@ -43,6 +43,7 @@ namespace launcher.Game
                 {
                     Progress_Bar.Value++;
                     Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                 });
             }
 
@@ -62,6 +63,7 @@ namespace launcher.Game
             {
                 Progress_Bar.Maximum = allFiles.Length;
                 Progress_Bar.Value = 0;
+                Percent_Label.Text = "0%";
             });
 
             AppState.FilesLeft = allFiles.Length;
@@ -92,6 +94,7 @@ namespace launcher.Game
             {
                 Progress_Bar.Maximum = allFiles.Length;
                 Progress_Bar.Value = 0;
+                Percent_Label.Text = "0%";
             });
 
             AppState.FilesLeft = allFiles.Length;
@@ -117,6 +120,7 @@ namespace launcher.Game
             {
                 Progress_Bar.Maximum = allFiles.Length;
                 Progress_Bar.Value = 0;
+                Percent_Label.Text = "0%";
             });
 
             AppState.FilesLeft = allFiles.Length;
@@ -145,6 +149,7 @@ namespace launcher.Game
                     {
                         Progress_Bar.Value++;
                         Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                        Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                     });
 
                     return fileChecksum;

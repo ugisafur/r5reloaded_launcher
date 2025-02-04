@@ -434,8 +434,11 @@ Message: {ex.Message}
                 _previousTop = Top;
                 _previousLeft = Left;
 
-                // Adjust the window to fit the screen's working area
-                var screen = System.Windows.SystemParameters.WorkArea;
+                // Get the current monitor's working area
+                var helper = new WindowInteropHelper(this);
+                System.Windows.Forms.Screen currentScreen = System.Windows.Forms.Screen.FromHandle(helper.Handle);
+                var screen = currentScreen.WorkingArea;
+
                 WindowState = WindowState.Normal;
                 Top = screen.Top;
                 Left = screen.Left;

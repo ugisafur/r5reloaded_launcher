@@ -167,7 +167,7 @@ namespace launcher.Download
                 }
 
                 //Download the file
-                await CreateRetryPolicy(destinationPath, 30).ExecuteAsync(async () =>
+                await CreateRetryPolicy(destinationPath, 50).ExecuteAsync(async () =>
                 {
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
@@ -205,6 +205,7 @@ Message: {ex.Message}
                 {
                     Progress_Bar.Value++;
                     Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                 });
 
                 if (File.Exists(destinationPath))
@@ -246,6 +247,7 @@ Message: {ex.Message}
                 Progress_Bar.Maximum = totalFiles;
                 Progress_Bar.Value = 0;
                 Files_Label.Text = $"{totalFiles} files left";
+                Percent_Label.Text = "0%";
             });
         }
 
@@ -405,6 +407,7 @@ Message: {ex.Message}
                 Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Percent_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 ReadMore_Label.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
             });
         }
