@@ -1,4 +1,4 @@
-name: Build And Create Nightly Release
+name: Nightly Build
 
 on:
   # This can be used to automatically publish nightlies at UTC nighttime
