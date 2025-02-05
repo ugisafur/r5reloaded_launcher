@@ -158,7 +158,7 @@ namespace launcher.Download
                 if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
                 {
                     //Decompress the file
-                    await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () =>
+                    await CreateRetryPolicy(destinationPath, 5, downloadItem).ExecuteAsync(async () =>
                     {
                         await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
                     });
@@ -167,13 +167,13 @@ namespace launcher.Download
                 }
 
                 //Download the file
-                await CreateRetryPolicy(destinationPath, 50).ExecuteAsync(async () =>
+                await CreateRetryPolicy(destinationPath, 50, downloadItem).ExecuteAsync(async () =>
                 {
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
 
                 //Decompress the file
-                await CreateRetryPolicy(destinationPath, 5).ExecuteAsync(async () =>
+                await CreateRetryPolicy(destinationPath, 5, downloadItem).ExecuteAsync(async () =>
                 {
                     await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
                 });
@@ -251,15 +251,13 @@ Message: {ex.Message}
             });
         }
 
-        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts)
+        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts, DownloadItem downloadItem)
         {
-            const double exponentialBackoffFactor = 2.0;
-
             return Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(exponentialBackoffFactor, retryAttempt)),
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(5),
                     onRetry: (exception, timeSpan, retryNumber, context) =>
                     {
                         Log(
@@ -268,6 +266,8 @@ Message: {ex.Message}
                             $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
                             $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
                         );
+
+                        downloadItem.downloadFilePercent.Text = $"retrying... {retryNumber}";
                     }
                 );
         }

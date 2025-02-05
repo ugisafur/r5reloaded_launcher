@@ -155,17 +155,17 @@ Message: {ex.Message}
             else
                 Configuration.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
 
-            List<int> ids_to_remove = [];
+            List<Branch> branches_to_remove = [];
             for (int i = 0; i < Configuration.ServerConfig.branches.Count; i++)
             {
                 if (!Configuration.ServerConfig.branches[i].enabled)
-                    ids_to_remove.Add(i);
+                    branches_to_remove.Add(Configuration.ServerConfig.branches[i]);
             }
 
-            if (ids_to_remove.Count > 0)
+            if (branches_to_remove.Count > 0)
             {
-                foreach (int id in ids_to_remove)
-                    Configuration.ServerConfig.branches.RemoveAt(id);
+                foreach (Branch branch in branches_to_remove)
+                    Configuration.ServerConfig.branches.Remove(branch);
             }
 
             return Configuration.ServerConfig.branches
