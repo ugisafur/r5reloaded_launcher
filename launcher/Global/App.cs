@@ -155,6 +155,19 @@ Message: {ex.Message}
             else
                 Configuration.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
 
+            List<int> ids_to_remove = [];
+            for (int i = 0; i < Configuration.ServerConfig.branches.Count; i++)
+            {
+                if (!Configuration.ServerConfig.branches[i].enabled)
+                    ids_to_remove.Add(i);
+            }
+
+            if (ids_to_remove.Count > 0)
+            {
+                foreach (int id in ids_to_remove)
+                    Configuration.ServerConfig.branches.RemoveAt(id);
+            }
+
             return Configuration.ServerConfig.branches
                 .Where(branch => branch.show_in_launcher || !AppState.IsOnline)
                 .Select(branch => new ComboBranch

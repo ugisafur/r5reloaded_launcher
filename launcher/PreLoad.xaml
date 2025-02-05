@@ -12,14 +12,14 @@
             <Grid.Clip>
                 <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />
             </Grid.Clip>
-            <Image x:Name="PreloadBG" Source="/assets/Revenant-apex.jpg" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
-            <Rectangle Fill="#7F000000" Margin="0,0,0,0" />
-            <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="169,15,168,225">
+            <Image x:Name="PreloadBG" Source="/assets/preload.jpg" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
+            <Rectangle Fill="#33000000" Margin="0,0,0,0" />
+            <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="28,113,221,117">
                 <Image.RenderTransform>
                     <TranslateTransform X="20" Y="15" />
                 </Image.RenderTransform>
             </Image>
-            <TextBlock Text="Loading..." Foreground="{DynamicResource ThemePrimaryText}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="506,310,0,0" FontFamily="Bahnschrift SemiBold" FontSize="18" />
+            <TextBlock Text="Loading..." Foreground="{DynamicResource ThemePrimaryText}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="504,313,0,0" FontFamily="Bahnschrift SemiBold" FontSize="20" />
         </Grid>
     </Border>
 </Window>
