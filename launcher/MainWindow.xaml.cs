@@ -5,6 +5,7 @@ using launcher.Global;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -557,17 +558,30 @@ Message: {ex.Message}
         {
             if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
             {
-                string videoUrl = Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo;
-                Background_Video.Source = new Uri(videoUrl, UriKind.Absolute);
+                Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
-                double bufferingProgress = Background_Video.BufferingProgress;
-                while (bufferingProgress < 0.3)
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo)))
                 {
-                    bufferingProgress = Background_Video.BufferingProgress;
-                    await Task.Delay(100);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+                    LogInfo(Source.Launcher, "Loading local video background");
                 }
+                else
+                {
+                    using (var client = new HttpClient())
+                    {
+                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo))
+                        {
+                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), FileMode.OpenOrCreate))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
+                        }
+                    }
 
-                LogInfo(Source.Launcher, $"Streaming video background from: {videoUrl}");
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+
+                    LogInfo(Source.Launcher, $"Loaded video background from server");
+                }
             }
             else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
             {

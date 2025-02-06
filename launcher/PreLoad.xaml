@@ -7,7 +7,7 @@
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
         Title="R5Reloaded Launcher" Height="350" AllowsTransparency="True" Width="600" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="launcher_x64.ico" Background="Transparent" Loaded="Window_Loaded" Topmost="True" ShowInTaskbar="False">
-    <Border Background="{DynamicResource ThemePrimary}" BorderBrush="Black" BorderThickness="4" CornerRadius="10">
+    <Border Background="{DynamicResource ThemeSecondary}" BorderBrush="{DynamicResource ThemeSecondary}" BorderThickness="4" CornerRadius="10">
         <Grid>
             <Grid.Clip>
                 <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />

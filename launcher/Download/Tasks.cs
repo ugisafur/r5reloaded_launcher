@@ -253,21 +253,26 @@ Message: {ex.Message}
 
         private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts, DownloadItem downloadItem)
         {
+            int retryDelaySeconds = 5;
+
             return Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(5),
-                    onRetry: (exception, timeSpan, retryNumber, context) =>
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(retryDelaySeconds),
+                    onRetryAsync: async (exception, timeSpan, retryNumber, context) =>
                     {
                         Log(
                             Logger.Type.Warning,
                             Source.Download,
-                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}. " +
-                            $"Waiting {timeSpan.TotalSeconds:F2} seconds before next attempt."
+                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}."
                         );
 
-                        downloadItem.downloadFilePercent.Text = $"retrying... {retryNumber}";
+                        for (int remaining = retryDelaySeconds; remaining > 0; remaining--)
+                        {
+                            downloadItem.downloadFilePercent.Text = $"Retrying in {remaining} second{(remaining > 1 ? "s" : "")}...";
+                            await Task.Delay(1000);
+                        }
                     }
                 );
         }

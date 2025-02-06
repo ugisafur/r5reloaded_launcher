@@ -32,8 +32,11 @@ namespace launcher.Managers
 
             Download.Tasks.ShowSpeedLabels(false, false);
 
-            if (AppState.IsOnline && Network.Connection.NewsTest())
-                News.Populate();
+            if (AppState.IsOnline)
+            {
+                if (Network.Connection.NewsTest())
+                    News.Populate();
+            }
             else
             {
                 Main_Window.NewsContainer.Visibility = Visibility.Collapsed;
