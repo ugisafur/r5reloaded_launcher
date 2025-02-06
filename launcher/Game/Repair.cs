@@ -58,8 +58,8 @@ namespace launcher.Game
                 Download.Tasks.ShowSpeedLabels(false, false);
             }
 
-            if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
-                await Task.Run(() => LangFile([Configuration.language_name], true));
+            if (GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase) && Launcher.language_name != "english")
+                await Task.Run(() => LangFile([Launcher.language_name], true));
 
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());

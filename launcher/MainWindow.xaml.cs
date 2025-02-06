@@ -83,7 +83,7 @@ namespace launcher
             }
             else
             {
-                if (Network.Connection.CDNTest())
+                if (Networking.CDNTest())
                 {
                     app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
                 }
@@ -127,7 +127,7 @@ namespace launcher
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
 
-            if (AppState.IsOnline && Network.Connection.NewsTest())
+            if (AppState.IsOnline && Networking.NewsTest())
             {
                 Managers.App.MoveNewsRect(0);
                 HideNewsRect();
@@ -539,7 +539,6 @@ Message: {ex.Message}
 
             Storyboard storyboard = new();
 
-            // Fade-in animation
             DoubleAnimation fadeInAnimation = new()
             {
                 From = 1,
@@ -560,28 +559,35 @@ Message: {ex.Message}
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
-                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo)))
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo)))
                 {
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
                     LogInfo(Source.Launcher, "Loading local video background");
                 }
                 else
                 {
                     using (var client = new HttpClient())
                     {
-                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Configuration.ServerConfig.launcherBackgroundVideo))
+                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.ServerConfig.launcherBackgroundVideo))
                         {
-                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), FileMode.OpenOrCreate))
+                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), FileMode.OpenOrCreate))
                             {
                                 s.Result.CopyTo(fs);
                             }
                         }
                     }
 
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Configuration.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+                    Ini.Set(Ini.Vars.Server_Video_Name, Launcher.ServerConfig.launcherBackgroundVideo);
+
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
 
                     LogInfo(Source.Launcher, $"Loaded video background from server");
                 }
+            }
+            else if ((bool)Ini.Get(Ini.Vars.Stream_Video) && string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Server_Video_Name)) && File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name))))
+            {
+                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name)), UriKind.Absolute);
+                LogInfo(Source.Launcher, "Loading local video background");
             }
             else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
             {
@@ -614,7 +620,7 @@ Message: {ex.Message}
 
         private void HandleInstalledBranch(int selectedBranch)
         {
-            var branch = Configuration.ServerConfig.branches[selectedBranch];
+            var branch = Launcher.ServerConfig.branches[selectedBranch];
 
             if (!branch.enabled)
             {
@@ -630,7 +636,7 @@ Message: {ex.Message}
 
         private void HandleUninstalledBranch(int selectedBranch)
         {
-            var branch = Configuration.ServerConfig.branches[selectedBranch];
+            var branch = Launcher.ServerConfig.branches[selectedBranch];
 
             if (!branch.enabled)
             {

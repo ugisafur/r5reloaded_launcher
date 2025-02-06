@@ -49,6 +49,7 @@ namespace launcher.Global
             Nightly_Builds,
             Launcher_Version,
             Upload_Crashes,
+            Server_Video_Name,
         }
 
         public static Dictionary<Vars, string> VarSections = new()
@@ -96,6 +97,7 @@ namespace launcher.Global
             { Vars.Updater_Version, "Launcher" },
             { Vars.Nightly_Builds, "Launcher" },
             { Vars.Launcher_Version, "Launcher" },
+            { Vars.Server_Video_Name, "Launcher" }
         };
 
         public static Dictionary<Vars, object> VarDefaults = new()
@@ -114,6 +116,7 @@ namespace launcher.Global
             { Vars.Enable_Quit_On_Close, "" },
             { Vars.Updater_Version, "" },
             { Vars.Launcher_Version, "" },
+            { Vars.Server_Video_Name, "" },
 
             { Vars.Keep_All_Logs, true },
             { Vars.Enable_Notifications, true },

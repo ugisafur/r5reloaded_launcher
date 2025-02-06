@@ -61,10 +61,10 @@ namespace launcher.Game
             }
 
             LogInfo(Source.Installer, $"Checking system language against available game languages");
-            if (GetBranch.Branch().mstr_languages.Contains(Configuration.language_name, StringComparer.OrdinalIgnoreCase) && Configuration.language_name != "english")
+            if (GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase) && Launcher.language_name != "english")
             {
-                LogInfo(Source.Installer, $"game language found ({Configuration.language_name}), installing language files");
-                await LangFile(null, [Configuration.language_name], true);
+                LogInfo(Source.Installer, $"game language found ({Launcher.language_name}), installing language files");
+                await LangFile(null, [Launcher.language_name], true);
             }
 
             SetBranch.Installed(true);

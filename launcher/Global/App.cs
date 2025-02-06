@@ -22,7 +22,7 @@ namespace launcher.Managers
 #endif
             CheckInternetConnection();
             SetupControlReferences(mainWindow);
-            Configuration.Init();
+            Launcher.Init();
             //SetupLibaryPath();
             SetupMenus();
             SetupBranchComboBox();
@@ -34,7 +34,7 @@ namespace launcher.Managers
 
             if (AppState.IsOnline)
             {
-                if (Network.Connection.NewsTest())
+                if (Networking.NewsTest())
                     News.Populate();
             }
             else
@@ -89,7 +89,7 @@ Message: {ex.Message}
 
         private static void CheckInternetConnection()
         {
-            bool isOnline = Network.Connection.CDNTest();
+            bool isOnline = Networking.CDNTest();
             LogInfo(Source.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
             AppState.IsOnline = isOnline;
         }
@@ -108,9 +108,9 @@ Message: {ex.Message}
             Branch_Combobox.ItemsSource = GetGameBranches();
 
             string savedBranch = (string)Ini.Get(Ini.Vars.SelectedBranch);
-            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Configuration.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)Ini.Get(Ini.Vars.SelectedBranch);
+            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Launcher.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)Ini.Get(Ini.Vars.SelectedBranch);
 
-            int selectedIndex = Configuration.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
+            int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
             if (selectedIndex == -1)
                 selectedIndex = 0;
@@ -135,7 +135,7 @@ Message: {ex.Message}
                     bool shouldAdd = true;
 
                     if (AppState.IsOnline)
-                        shouldAdd = !Configuration.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
+                        shouldAdd = !Launcher.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
 
                     if (shouldAdd)
                     {
@@ -154,24 +154,24 @@ Message: {ex.Message}
             }
 
             if (AppState.IsOnline)
-                Configuration.ServerConfig.branches.AddRange(DataCollections.FolderBranches);
+                Launcher.ServerConfig.branches.AddRange(DataCollections.FolderBranches);
             else
-                Configuration.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
+                Launcher.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
 
             List<Branch> branches_to_remove = [];
-            for (int i = 0; i < Configuration.ServerConfig.branches.Count; i++)
+            for (int i = 0; i < Launcher.ServerConfig.branches.Count; i++)
             {
-                if (!Configuration.ServerConfig.branches[i].enabled)
-                    branches_to_remove.Add(Configuration.ServerConfig.branches[i]);
+                if (!Launcher.ServerConfig.branches[i].enabled)
+                    branches_to_remove.Add(Launcher.ServerConfig.branches[i]);
             }
 
             if (branches_to_remove.Count > 0)
             {
                 foreach (Branch branch in branches_to_remove)
-                    Configuration.ServerConfig.branches.Remove(branch);
+                    Launcher.ServerConfig.branches.Remove(branch);
             }
 
-            return Configuration.ServerConfig.branches
+            return Launcher.ServerConfig.branches
                 .Where(branch => branch.show_in_launcher || !AppState.IsOnline)
                 .Select(branch => new ComboBranch
                 {
@@ -184,20 +184,20 @@ Message: {ex.Message}
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)Ini.Get(Ini.Vars.Updater_Version) != Configuration.ServerConfig.updaterVersion)
+            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)Ini.Get(Ini.Vars.Updater_Version) != Launcher.ServerConfig.updaterVersion)
             {
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
                     File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
 
                 LogInfo(Source.Launcher, "Downloading launcher updater");
-                Networking.HttpClient.GetAsync(Configuration.ServerConfig.launcherSelfUpdater)
+                Networking.HttpClient.GetAsync(Launcher.ServerConfig.launcherSelfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
                             File.WriteAllBytes(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"), data);
-                            Ini.Set(Ini.Vars.Updater_Version, Configuration.ServerConfig.updaterVersion);
+                            Ini.Set(Ini.Vars.Updater_Version, Launcher.ServerConfig.updaterVersion);
                         }
                     });
             }

@@ -143,7 +143,7 @@ namespace launcher
             File.WriteAllText(filePath, sb.ToString());
         }
 
-        public static string GetName(object obj)
+        private static string GetName(object obj)
         {
             // First see if it is a FrameworkElement
             var element = obj as FrameworkElement;

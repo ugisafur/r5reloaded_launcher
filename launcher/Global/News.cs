@@ -23,7 +23,7 @@ namespace launcher.Global
         public static void Populate()
         {
             const int MaxItemsPerCategory = 8;
-            var newsItems = GetNewsItems();
+            Root newsItems = GetNewsItems();
 
             var tagToCategoryMap = new Dictionary<string, List<NewsItem>>
             {
@@ -32,16 +32,19 @@ namespace launcher.Global
                 { "Patch Notes", PatchNotes }
             };
 
-            foreach (var post in newsItems.posts)
+            if (newsItems != null && newsItems.posts != null && newsItems.posts.Count > 0)
             {
-                if (post.tags == null || post.tags.Count < 1)
-                    continue;
-
-                var tagName = post.tags[0].name;
-                if (tagToCategoryMap.TryGetValue(tagName, out var categoryList) && categoryList.Count < MaxItemsPerCategory)
+                foreach (var post in newsItems.posts)
                 {
-                    var newsItem = CreateNewsItem(post, tagName == "Patch Notes");
-                    categoryList.Add(newsItem);
+                    if (post.tags == null || post.tags.Count < 1)
+                        continue;
+
+                    var tagName = post.tags[0].name;
+                    if (tagToCategoryMap.TryGetValue(tagName, out var categoryList) && categoryList.Count < MaxItemsPerCategory)
+                    {
+                        var newsItem = CreateNewsItem(post, tagName == "Patch Notes");
+                        categoryList.Add(newsItem);
+                    }
                 }
             }
 
@@ -104,10 +107,8 @@ namespace launcher.Global
 
                 NewsPanel.Children.Add(separator);
 
-                // Create a storyboard for the animation
                 Storyboard storyboard = new Storyboard();
 
-                // Fade-in animation
                 DoubleAnimation fadeInAnimation = new DoubleAnimation
                 {
                     From = 0,
@@ -120,7 +121,6 @@ namespace launcher.Global
                 Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(UIElement.OpacityProperty));
                 storyboard.Children.Add(fadeInAnimation);
 
-                // Slide-up animation
                 ThicknessAnimation slideUpAnimation = new ThicknessAnimation
                 {
                     From = new Thickness(0, 50, 0, 0),
@@ -133,7 +133,6 @@ namespace launcher.Global
                 Storyboard.SetTargetProperty(slideUpAnimation, new PropertyPath(FrameworkElement.MarginProperty));
                 storyboard.Children.Add(slideUpAnimation);
 
-                // Start the storyboard
                 storyboard.Begin();
 
                 Task.Delay(500);
@@ -142,7 +141,17 @@ namespace launcher.Global
 
         public static Root GetNewsItems()
         {
-            return Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors", new JsonSerializerOptions { AllowTrailingCommas = true }).Result;
+            Root root = new();
+            try
+            {
+                root = Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors").Result;
+            }
+            catch
+            {
+                Logger.LogWarning(Logger.Source.Launcher, "Failed to fetch news items.");
+            }
+
+            return root;
         }
     }
 

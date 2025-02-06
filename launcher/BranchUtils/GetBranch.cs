@@ -19,7 +19,7 @@ namespace launcher.BranchUtils
 
         public static Branch Branch()
         {
-            return Configuration.ServerConfig.branches[Index()];
+            return Launcher.ServerConfig.branches[Index()];
         }
 
         public static string Name(bool uppercase = true, Branch branch = null)

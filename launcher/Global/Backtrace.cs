@@ -28,16 +28,5 @@ namespace launcher.Global
                 Client.Send(report);
             }
         }
-
-        public static async Task SendAsync(Exception exception, Source source)
-        {
-            if (AppState.IsOnline && (bool)Ini.Get(Ini.Vars.Upload_Crashes))
-            {
-                BacktraceReport report = new(exception);
-                report.Attributes.Add("launcher.version", Launcher.VERSION);
-                report.Attributes.Add("log.source", Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US")));
-                await Client.SendAsync(report);
-            }
-        }
     }
 }

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
+using System.Windows.Forms;
 
 namespace launcher.Game
 {
@@ -23,6 +24,9 @@ namespace launcher.Game
                 SetBranch.Version("");
                 return;
             }
+
+            if (AnyFilesOpen(GetBranch.Directory()))
+                return;
 
             Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
@@ -81,7 +85,7 @@ Message: {ex.Message}
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
         }
 
-        public static async void LangFile(CheckBox checkbox, List<string> lang)
+        public static async void LangFile(System.Windows.Controls.CheckBox checkbox, List<string> lang)
         {
             if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory()))
                 return;
@@ -189,6 +193,42 @@ Message: {ex.Message}
             Download.Tasks.SetInstallState(false, "PLAY");
 
             Managers.App.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) has been uninstalled!", BalloonIcon.Info);
+        }
+
+        private static bool AnyFilesOpen(string path)
+        {
+            bool anyFileInUse = false;
+
+            foreach (string file in Directory.GetFiles(path))
+            {
+                if (IsFileLocked(file))
+                {
+                    MessageBox.Show($"The file '{Path.GetFileName(file)}' is currently in use. Please close it before uninstalling.",
+                                    "File In Use",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                    anyFileInUse = true;
+                    break;
+                }
+            }
+
+            return anyFileInUse;
+        }
+
+        private static bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    // If we get here, the file is not locked.
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

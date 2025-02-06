@@ -26,7 +26,7 @@ namespace launcher
 
             LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
 
-            List<Branch> branches = Configuration.ServerConfig.branches;
+            List<Branch> branches = Launcher.ServerConfig.branches;
 
             int index = 0;
 

@@ -7,6 +7,7 @@ using System.IO;
 using static launcher.Global.References;
 using launcher.BranchUtils;
 using launcher.Game;
+using launcher.Global;
 
 namespace launcher.Global
 {
@@ -275,7 +276,7 @@ Message: {ex.Message}
         {
             return !AppState.IsInstalling &&
                    newServerConfig.branches[GetBranch.Index()].allow_updates &&
-                   Configuration.LauncherConfig != null &&
+                   Launcher.LauncherConfig != null &&
                    !GetBranch.IsLocalBranch() &&
                    GetBranch.Installed() &&
                    GetBranch.LocalVersion() != GetBranch.ServerVersion();
