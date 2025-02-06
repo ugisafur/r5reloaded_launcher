@@ -259,7 +259,7 @@ Message: {ex.Message}
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(retryDelaySeconds),
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(1),
                     onRetryAsync: async (exception, timeSpan, retryNumber, context) =>
                     {
                         Log(
@@ -270,7 +270,12 @@ Message: {ex.Message}
 
                         for (int remaining = retryDelaySeconds; remaining > 0; remaining--)
                         {
-                            downloadItem.downloadFilePercent.Text = $"Retrying in {remaining} second{(remaining > 1 ? "s" : "")}...";
+                            appDispatcher.Invoke(() =>
+                            {
+                                downloadItem.downloadFilePercent.Text = $"Retrying in {remaining} second{(remaining > 1 ? "s" : "")}...";
+                                downloadItem.downloadFileProgress.Value = 0;
+                            });
+
                             await Task.Delay(1000);
                         }
                     }
