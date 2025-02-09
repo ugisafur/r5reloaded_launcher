@@ -72,18 +72,7 @@ namespace launcher.Managers
             catch (Exception ex)
             {
                 Global.Backtrace.Send(ex, Source.Launcher);
-
-                LogError(Source.Launcher, $@"
-==============================================================
-Failed to load playlist file
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"Failed to load playlist file", Source.Launcher, ex);
             }
         }
 
@@ -414,18 +403,7 @@ Message: {ex.Message}
             catch (Exception ex)
             {
                 Global.Backtrace.Send(ex, Source.Launcher);
-
-                LogError(Source.Launcher, $@"
-==============================================================
-Failed to send notification
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"Failed to send notification", Source.Launcher, ex);
             }
         }
 

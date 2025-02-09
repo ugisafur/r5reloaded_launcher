@@ -36,13 +36,13 @@ namespace launcher.Global
                 {
                     var newServerConfig = await GetServerConfigAsync();
                     var newGithubConfig = await GetGithubConfigAsync();
-                    if (newServerConfig == null)
+                    if (newServerConfig == null || newServerConfig.branches == null)
                     {
                         LogError(Source.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
-                    if (ShouldUpdateLauncher(newServerConfig, newGithubConfig))
+                    if (ShouldUpdateLauncher(newServerConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
                     {
                         HandleLauncherUpdate();
                     }
@@ -52,56 +52,24 @@ namespace launcher.Global
                         LogInfo(Source.UpdateChecker, $"Update for launcher is not available (latest version: {version})");
                     }
 
-                    if (ShouldUpdateGame(newServerConfig))
+                    if (ShouldUpdateGame(newServerConfig) && newServerConfig.branches.Count > 0)
                     {
                         HandleGameUpdate();
                     }
                 }
                 catch (HttpRequestException ex)
                 {
-                    LogError(Source.UpdateChecker, $@"
-==============================================================
-HTTP Request Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                    LogException($"HTTP Request Failed", Source.UpdateChecker, ex);
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Global.Backtrace.Send(ex, Source.UpdateChecker);
-
-                    LogError(Source.UpdateChecker, $@"
-==============================================================
-JSON Deserialization Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                    Backtrace.Send(ex, Source.UpdateChecker);
+                    LogException($"JSON Deserialization Failed", Source.UpdateChecker, ex);
                 }
                 catch (Exception ex)
                 {
-                    Global.Backtrace.Send(ex, Source.UpdateChecker);
-
-                    LogError(Source.UpdateChecker, $@"
-==============================================================
-Unexpected Error
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                    Backtrace.Send(ex, Source.UpdateChecker);
+                    LogException($"Unexpected Error", Source.UpdateChecker, ex);
                 }
 
                 await WaitTime(5);
@@ -141,17 +109,7 @@ Message: {ex.Message}
             }
             catch (HttpRequestException ex)
             {
-                LogError(Source.UpdateChecker, $@"
-==============================================================
-HTTP Request Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"HTTP Request Failed", Source.UpdateChecker, ex);
                 return null;
             }
             finally
@@ -176,17 +134,7 @@ Message: {ex.Message}
             }
             catch (HttpRequestException ex)
             {
-                LogError(Source.UpdateChecker, $@"
-==============================================================
-HTTP Request Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"HTTP Request Failed", Source.UpdateChecker, ex);
                 return null;
             }
             finally

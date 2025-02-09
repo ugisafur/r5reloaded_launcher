@@ -51,17 +51,7 @@ namespace launcher.Game
                     }
                     catch (Exception ex)
                     {
-                        LogError(Source.Uninstaller, $@"
-==============================================================
-Failed to delete file: {file}
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                        LogException($"Failed to delete file: {file}", Source.Uninstaller, ex);
                     }
                     finally
                     {
@@ -165,17 +155,7 @@ Message: {ex.Message}
                     }
                     catch (Exception ex)
                     {
-                        LogError(Source.Uninstaller, $@"
-==============================================================
-Failed to delete file: {file}
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                        LogException($"Failed to delete file: {file}", Source.Uninstaller, ex);
                     }
                     finally
                     {

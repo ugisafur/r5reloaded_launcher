@@ -116,6 +116,21 @@ Message: {ex.Message}
             }
         }
 
+        public static void LogException(string title, Source source, Exception ex)
+        {
+            LogError(source, $@"
+==============================================================
+{title}
+==============================================================
+Message: {ex.Message}
+
+--- Stack Trace ---
+{ex.StackTrace}
+
+--- Inner Exception ---
+{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+        }
+
         #region Logging Helpers
 
         public static void LogInfo(Source source, string message) => Log(Type.Info, source, message);

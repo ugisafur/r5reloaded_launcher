@@ -316,17 +316,7 @@ namespace launcher
             }
             catch (System.Exception ex)
             {
-                LogError(Source.Launcher, $@"
-==============================================================
-Failed to load theme:
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"Failed to load theme:", Source.Launcher, ex);
             }
             e.Handled = true;
         }

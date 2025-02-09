@@ -182,17 +182,7 @@ namespace launcher.Download
             }
             catch (Exception ex)
             {
-                LogError(Source.Download, $@"
-==============================================================
-All retries failed for {fileUrl}
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"All retries failed for {fileUrl}", Source.Download, ex);
 
                 Global.Backtrace.Send(ex, Source.Download);
 
