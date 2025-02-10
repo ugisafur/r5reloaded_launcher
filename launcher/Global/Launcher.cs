@@ -44,7 +44,7 @@ namespace launcher.Global
         public static void Init()
         {
             string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.VERSION;
-            Version_Label.Text = version;
+            appDispatcher.Invoke(() => Version_Label.Text = version);
 
             LogInfo(Source.Launcher, $"Launcher Version: {version}");
 

@@ -87,7 +87,7 @@ Message: {ex.Message}
             }
             catch
             {
-                // failed
+                // failed: file is probably locked but we don't want to crash the app
             }
         }
 
@@ -112,7 +112,7 @@ Message: {ex.Message}
             }
             catch
             {
-                // failed
+                // failed: file is probably locked but we don't want to crash the app
             }
         }
 

@@ -11,6 +11,17 @@ namespace launcher
             InitializeComponent();
         }
 
+        public void SetLoadingText(string text)
+        {
+            Task.Run(() =>
+            {
+                Dispatcher.InvokeAsync(() =>
+                {
+                    LoadingText.Text = text;
+                });
+            });
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
         }

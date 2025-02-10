@@ -156,17 +156,7 @@ namespace launcher.Game
                 }
                 catch (Exception ex)
                 {
-                    LogError(Source.Checksums, $@"
-==============================================================
-Failed Generating Checksum For {file}
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                    LogException($"Failed Generating Checksum For {file}", Source.Checksums, ex);
                     return fileChecksum;
                 }
                 finally

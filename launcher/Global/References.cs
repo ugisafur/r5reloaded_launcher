@@ -19,6 +19,7 @@ namespace launcher.Global
         #region Windows
 
         public static MainWindow Main_Window = new();
+        public static PreLoad PreLoad_Window = new();
 
         #endregion Windows
 
@@ -147,14 +148,17 @@ namespace launcher.Global
             DragBarDropShadow = mainWindow.DragBarDropShadow;
             Percent_Label = mainWindow.Percent_Label;
 
-            Update_Button.Visibility = Visibility.Hidden;
-            Progress_Bar.Visibility = Visibility.Hidden;
-            Status_Label.Visibility = Visibility.Hidden;
-            Files_Label.Visibility = Visibility.Hidden;
-            Speed_Label.Visibility = Visibility.Hidden;
-            Percent_Label.Visibility = Visibility.Hidden;
+            appDispatcher.Invoke(() =>
+            {
+                Update_Button.Visibility = Visibility.Hidden;
+                Progress_Bar.Visibility = Visibility.Hidden;
+                Status_Label.Visibility = Visibility.Hidden;
+                Files_Label.Visibility = Visibility.Hidden;
+                Speed_Label.Visibility = Visibility.Hidden;
+                Percent_Label.Visibility = Visibility.Hidden;
 
-            ReadMore_Label.Visibility = Visibility.Visible;
+                ReadMore_Label.Visibility = Visibility.Visible;
+            });
         }
     }
 }

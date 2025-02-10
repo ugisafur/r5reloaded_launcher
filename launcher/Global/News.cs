@@ -56,7 +56,7 @@ namespace launcher.Global
             Pages.Add(PatchNotes);
         }
 
-        private static NewsItem CreateNewsItem(Post post, bool isPatchNotes)
+        private static NewsItem CreateNewsItem(Post post, bool smallItem)
         {
             return new NewsItem(
                 post.title,
@@ -65,7 +65,7 @@ namespace launcher.Global
                 post.published_at.ToShortDateString(),
                 post.url,
                 post.feature_image,
-                isPatchNotes
+                smallItem
             );
         }
 

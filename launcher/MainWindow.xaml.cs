@@ -89,7 +89,7 @@ namespace launcher
                 }
             }
 
-            PreLoad preLoad = new();
+            PreLoad_Window = new();
 
             string imagePath = Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\assets", "startup.png");
             if (File.Exists(imagePath))
@@ -103,25 +103,29 @@ namespace launcher
                     bitmap.EndInit();
                 }
                 bitmap.Freeze();
-                preLoad.PreloadBG.Source = bitmap;
+                PreLoad_Window.PreloadBG.Source = bitmap;
             }
 
-            preLoad.Show();
+            PreLoad_Window.Show();
 
             // Setup global exception handlers
+            PreLoad_Window.SetLoadingText("Creating exception handlers");
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // Create the configuration file if it doesn't exist
+            PreLoad_Window.SetLoadingText("Creating configuration file");
             Ini.CreateConfig();
 
             // Setup the system tray
+            PreLoad_Window.SetLoadingText("Setting up system tray");
             SetupSystemTray();
 
             // Setup the application
-            Managers.App.SetupApp(this);
+            await Managers.App.SetupApp(this);
 
             // Setup the news buttons
+            PreLoad_Window.SetLoadingText("Setting up news items");
             NewsButtons.Add(Community_Button);
             NewsButtons.Add(NewLegends_Button);
             NewsButtons.Add(Comms_Button);
@@ -134,6 +138,7 @@ namespace launcher
             }
 
             // Setup Background
+            PreLoad_Window.SetLoadingText("Finishing up");
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             if (!useStaticImage)
             {
@@ -159,7 +164,7 @@ namespace launcher
             Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
 
-            preLoad.Close();
+            PreLoad_Window.Close();
 
             // Show window open animation
             await OnOpen();

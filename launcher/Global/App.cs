@@ -8,6 +8,8 @@ using System.Globalization;
 using launcher.Game;
 using launcher.Global;
 using launcher.BranchUtils;
+using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace launcher.Managers
 {
@@ -15,23 +17,51 @@ namespace launcher.Managers
     {
         #region Setup Functions
 
-        public static void SetupApp(MainWindow mainWindow)
+        public static async Task SetupApp(MainWindow mainWindow)
         {
 #if DEBUG
             EnableDebugConsole();
 #endif
-            CheckInternetConnection();
-            SetupControlReferences(mainWindow);
-            Launcher.Init();
-            //SetupLibaryPath();
-            SetupMenus();
-            SetupBranchComboBox();
-            GetSelfUpdater();
-            Task.Run(() => EULA_Control.SetupEULA());
+            PreLoad_Window.SetLoadingText("Checking for EA Desktop App");
+            await Task.Delay(100);
+            await Task.Run(() => FindAndStartEAApp());
+
+            PreLoad_Window.SetLoadingText("Checking for internet connection");
+            await Task.Delay(100);
+            await Task.Run(() => CheckInternetConnection());
+
+            PreLoad_Window.SetLoadingText("Setting up controls references");
+            await Task.Delay(100);
+            await Task.Run(() => SetupControlReferences(mainWindow));
+
+            PreLoad_Window.SetLoadingText("Setting up app");
+            await Task.Delay(100);
+            await Task.Run(() => Launcher.Init());
+
+            PreLoad_Window.SetLoadingText("Setting up menus");
+            await Task.Delay(100);
+            await Task.Run(() => SetupMenus());
+
+            PreLoad_Window.SetLoadingText("Getting game branches");
+            await Task.Delay(100);
+            await Task.Run(() => SetupBranchComboBox());
+
+            PreLoad_Window.SetLoadingText("Starting update checker");
+            await Task.Delay(100);
+            await Task.Run(() => GetSelfUpdater());
+
+            PreLoad_Window.SetLoadingText("Getting EULA contents");
+            await Task.Delay(100);
+            await Task.Run(() => EULA_Control.SetupEULA());
+
+            PreLoad_Window.SetLoadingText("Starting service status");
+            await Task.Delay(100);
             Task.Run(() => Status_Control.StartStatusTimer());
 
             Download.Tasks.ShowSpeedLabels(false, false);
 
+            PreLoad_Window.SetLoadingText("Checking for news");
+            await Task.Delay(100);
             if (AppState.IsOnline)
             {
                 if (Networking.NewsTest())
@@ -42,6 +72,49 @@ namespace launcher.Managers
                 Main_Window.NewsContainer.Visibility = Visibility.Collapsed;
                 foreach (var button in Main_Window.NewsButtons)
                     button.IsEnabled = false;
+            }
+        }
+
+        private static void FindAndStartEAApp()
+        {
+            Process[] processes = Process.GetProcessesByName("EADesktop");
+            if (processes.Length==0)
+            {
+                string subKeyPath = @"SOFTWARE\WOW6432Node\Electronic Arts\EA Desktop";
+                string EADesktopPath = "";
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(subKeyPath))
+                {
+                    if (key != null)
+                    {
+                        object installLocationValue = key.GetValue("DesktopAppPath");
+
+                        if (installLocationValue != null)
+                        {
+                            EADesktopPath = installLocationValue.ToString();
+                            LogInfo(Source.Launcher, "Found EA Desktop App");
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(EADesktopPath))
+                {
+                    LogError(Source.Launcher, "Failed to find EA Desktop App");
+                    return;
+                }
+
+                LogInfo(Source.Launcher, "Starting EA Desktop App");
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c start \"\" \"{EADesktopPath}\" /min",
+                    WindowStyle = ProcessWindowStyle.Minimized
+                };
+
+                Process.Start(startInfo);
+            }
+            else
+            {
+                LogInfo(Source.Launcher, "EA Desktop App is already running");
             }
         }
 
@@ -85,28 +158,34 @@ namespace launcher.Managers
 
         private static void SetupMenus()
         {
-            Settings_Control.SetupSettingsMenu();
-            LogInfo(Source.Launcher, $"Settings menu initialized");
+            appDispatcher.BeginInvoke(new Action(() =>
+            {
+                Settings_Control.SetupSettingsMenu();
+                LogInfo(Source.Launcher, $"Settings menu initialized");
 
-            Advanced_Control.SetupAdvancedSettings();
-            LogInfo(Source.Launcher, $"Advanced settings initialized");
+                Advanced_Control.SetupAdvancedSettings();
+                LogInfo(Source.Launcher, $"Advanced settings initialized");
+            }));
         }
 
         private static void SetupBranchComboBox()
         {
-            Branch_Combobox.ItemsSource = GetGameBranches();
+            appDispatcher.BeginInvoke(new Action(() =>
+            {
+                Branch_Combobox.ItemsSource = GetGameBranches();
 
-            string savedBranch = (string)Ini.Get(Ini.Vars.SelectedBranch);
-            string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Launcher.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)Ini.Get(Ini.Vars.SelectedBranch);
+                string savedBranch = (string)Ini.Get(Ini.Vars.SelectedBranch);
+                string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Launcher.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)Ini.Get(Ini.Vars.SelectedBranch);
 
-            int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
+                int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
-            if (selectedIndex == -1)
-                selectedIndex = 0;
+                if (selectedIndex == -1)
+                    selectedIndex = 0;
 
-            Branch_Combobox.SelectedIndex = selectedIndex;
+                Branch_Combobox.SelectedIndex = selectedIndex;
 
-            LogInfo(Source.Launcher, "Game branches initialized");
+                LogInfo(Source.Launcher, "Game branches initialized");
+            }));
         }
 
         public static List<ComboBranch> GetGameBranches()

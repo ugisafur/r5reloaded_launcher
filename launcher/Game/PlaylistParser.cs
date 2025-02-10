@@ -59,18 +59,7 @@ namespace launcher.Game
             catch (Exception ex)
             {
                 Global.Backtrace.Send(ex, Source.VDF);
-
-                LogError(Source.VDF, $@"
-==============================================================
-Playlist Get Maps Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"Playlist Get Maps Failed", Source.VDF, ex);
             }
 
             return maps;
@@ -94,18 +83,7 @@ Message: {ex.Message}
             catch (Exception ex)
             {
                 Global.Backtrace.Send(ex, Source.VDF);
-
-                LogError(Source.VDF, $@"
-==============================================================
-Playlist Get Gamemodes Failed
-==============================================================
-Message: {ex.Message}
-
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+                LogException($"Playlist Get Gamemodes Failed", Source.VDF, ex);
             }
 
             return playlistnames;
