@@ -131,12 +131,6 @@ namespace launcher
             NewsButtons.Add(Comms_Button);
             NewsButtons.Add(PatchNotes_Button);
 
-            if (AppState.IsOnline && Networking.NewsTest())
-            {
-                Managers.App.MoveNewsRect(0);
-                HideNewsRect();
-            }
-
             // Setup Background
             PreLoad_Window.SetLoadingText("Finishing up");
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
@@ -507,7 +501,7 @@ namespace launcher
 
         #region functions
 
-        private void ShowNewsRect()
+        public void ShowNewsRect()
         {
             _isNewsRectShown = true;
 
@@ -528,7 +522,7 @@ namespace launcher
             storyboard.Begin();
         }
 
-        private void HideNewsRect()
+        public void HideNewsRect()
         {
             _isNewsRectShown = false;
 

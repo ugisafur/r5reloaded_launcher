@@ -13,7 +13,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.8.6";
+        public const string VERSION = "0.9.8.7";
 
         #region Public Keys
 
@@ -95,17 +95,19 @@ namespace launcher.Global
             }
         }
 
-        public static bool NewsTest()
+        public static async Task<bool> NewsTestAsync()
         {
             try
             {
-                using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors");
-                return true;
+                using var client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(5); // Set a timeout (e.g., 5 seconds)
+
+                var response = await client.GetAsync($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors");
+                return response.IsSuccessStatusCode; // Return true if the request was successful
             }
             catch
             {
-                return false;
+                return false; // Return false if there's an exception (e.g., timeout or network error)
             }
         }
 

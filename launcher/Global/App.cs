@@ -62,10 +62,14 @@ namespace launcher.Managers
 
             PreLoad_Window.SetLoadingText("Checking for news");
             await Task.Delay(100);
-            if (AppState.IsOnline)
+
+            bool isNewsOnline = await Networking.NewsTestAsync();
+
+            if (AppState.IsOnline && isNewsOnline)
             {
-                if (Networking.NewsTest())
-                    News.Populate();
+                News.Populate();
+                MoveNewsRect(0);
+                mainWindow.HideNewsRect();
             }
             else
             {
