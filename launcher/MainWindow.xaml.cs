@@ -83,7 +83,7 @@ namespace launcher
             }
             else
             {
-                if (Networking.CDNTest())
+                if (await Networking.CDNTest())
                 {
                     app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
                 }

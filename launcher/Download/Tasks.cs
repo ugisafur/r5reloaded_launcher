@@ -184,8 +184,6 @@ namespace launcher.Download
             {
                 LogException($"All retries failed for {fileUrl}", Source.Download, ex);
 
-                Global.Backtrace.Send(ex, Source.Download);
-
                 AppState.BadFilesDetected = true;
                 return string.Empty;
             }

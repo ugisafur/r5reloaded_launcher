@@ -35,7 +35,7 @@ namespace launcher
                 return;
             }
 
-            if (!Networking.MasterServerTest())
+            if (!Networking.MasterServerTest().Result)
             {
                 Logger.LogError(Logger.Source.Launcher, "Failed to get EULA, no reponse from master server");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no reponse from master server"));

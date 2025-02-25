@@ -63,12 +63,10 @@ namespace launcher.Global
                 }
                 catch (JsonSerializationException ex)
                 {
-                    Backtrace.Send(ex, Source.UpdateChecker);
                     LogException($"JSON Deserialization Failed", Source.UpdateChecker, ex);
                 }
                 catch (Exception ex)
                 {
-                    Backtrace.Send(ex, Source.UpdateChecker);
                     LogException($"Unexpected Error", Source.UpdateChecker, ex);
                 }
 
@@ -222,12 +220,31 @@ namespace launcher.Global
 
         private static bool ShouldUpdateGame(ServerConfig newServerConfig)
         {
-            return !AppState.IsInstalling &&
-                   newServerConfig.branches[GetBranch.Index()].allow_updates &&
-                   Launcher.LauncherConfig != null &&
-                   !GetBranch.IsLocalBranch() &&
-                   GetBranch.Installed() &&
-                   GetBranch.LocalVersion() != GetBranch.ServerVersion();
+            if (Launcher.LauncherConfig == null)
+                return false;
+
+            if (newServerConfig.branches.Count == 0)
+                return false;
+
+            if(!AppState.IsOnline)
+                return false;
+
+            if (AppState.IsInstalling)
+                return false;
+
+            if (GetBranch.IsLocalBranch())
+                return false;
+
+            if(!GetBranch.Installed())
+                return false;
+
+            if (!newServerConfig.branches[GetBranch.Index()].allow_updates)
+                return false;
+
+            if(GetBranch.LocalVersion() == GetBranch.ServerVersion())
+                return false;
+
+            return true;
         }
 
         private static void HandleLauncherUpdate()

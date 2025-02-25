@@ -46,6 +46,10 @@ namespace launcher.Managers
             await Task.Delay(100);
             await Task.Run(() => SetupBranchComboBox());
 
+            PreLoad_Window.SetLoadingText("Checking game installs");
+            await Task.Delay(100);
+            await Task.Run(() => CheckGameInstalls());
+
             PreLoad_Window.SetLoadingText("Starting update checker");
             await Task.Delay(100);
             await Task.Run(() => GetSelfUpdater());
@@ -81,6 +85,9 @@ namespace launcher.Managers
 
         private static void FindAndStartEAApp()
         {
+            if (!(bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App))
+                return;
+
             Process[] processes = Process.GetProcessesByName("EADesktop");
             if (processes.Length==0)
             {
@@ -148,14 +155,13 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex, Source.Launcher);
                 LogException($"Failed to load playlist file", Source.Launcher, ex);
             }
         }
 
         private static void CheckInternetConnection()
         {
-            bool isOnline = Networking.CDNTest();
+            bool isOnline = Networking.CDNTest().Result;
             LogInfo(Source.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
             AppState.IsOnline = isOnline;
         }
@@ -169,6 +175,23 @@ namespace launcher.Managers
 
                 Advanced_Control.SetupAdvancedSettings();
                 LogInfo(Source.Launcher, $"Advanced settings initialized");
+            }));
+        }
+
+        private static void CheckGameInstalls()
+        {
+            appDispatcher.BeginInvoke(new Action(() =>
+            {
+                foreach (var branch in Launcher.ServerConfig.branches)
+                {
+                    if (GetBranch.Installed(branch) && !Directory.Exists(GetBranch.Directory(branch)))
+                    {
+                        LogWarning(Source.Launcher, $"Branch {branch.branch} is set as installed but directory is missing");
+                        SetBranch.Installed(false, branch);
+                        SetBranch.DownloadHDTextures(false, branch);
+                        SetBranch.Version("", branch);
+                    }
+                }
             }));
         }
 
@@ -485,7 +508,6 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex, Source.Launcher);
                 LogException($"Failed to send notification", Source.Launcher, ex);
             }
         }

@@ -25,6 +25,7 @@ namespace launcher
             StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
             NightlyBuilds.IsChecked = (bool)Ini.Get(Ini.Vars.Nightly_Builds);
             UploadCrashes.IsChecked = (bool)Ini.Get(Ini.Vars.Upload_Crashes);
+            OpenEAApp.IsChecked = (bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App);
 
             CloseToQuit.Checked += CloseToQuit_Unchecked;
             Notifications.Checked += Notifications_Unchecked;
@@ -32,6 +33,7 @@ namespace launcher
             StreamVideo.Checked += StreamVideo_Unchecked;
             NightlyBuilds.Checked += NightlyBuilds_Unchecked;
             UploadCrashes.Checked += UploadCrashes_Unchecked;
+            OpenEAApp.Checked += OpenEAApp_Unchecked;
 
             CloseToQuit.Unchecked += CloseToQuit_Unchecked;
             Notifications.Unchecked += Notifications_Unchecked;
@@ -39,12 +41,18 @@ namespace launcher
             StreamVideo.Unchecked += StreamVideo_Unchecked;
             NightlyBuilds.Unchecked += NightlyBuilds_Unchecked;
             UploadCrashes.Unchecked += UploadCrashes_Unchecked;
+            OpenEAApp.Unchecked += OpenEAApp_Unchecked;
         }
 
         private void NightlyBuilds_Unchecked(object sender, RoutedEventArgs e)
         {
             Ini.Set(Ini.Vars.Nightly_Builds, NightlyBuilds.IsChecked.Value);
             UpdateChecker.checkForUpdatesOveride = true;
+        }
+
+        private void OpenEAApp_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Ini.Set(Ini.Vars.Auto_Launch_EA_App, OpenEAApp.IsChecked.Value);
         }
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)

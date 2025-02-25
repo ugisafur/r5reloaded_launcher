@@ -24,7 +24,6 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex, Source.VDF);
                 LogException($"Playlist Parsing Failed", Source.VDF, ex);
             }
             finally
@@ -58,7 +57,6 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex, Source.VDF);
                 LogException($"Playlist Get Maps Failed", Source.VDF, ex);
             }
 
@@ -82,7 +80,6 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                Global.Backtrace.Send(ex, Source.VDF);
                 LogException($"Playlist Get Gamemodes Failed", Source.VDF, ex);
             }
 

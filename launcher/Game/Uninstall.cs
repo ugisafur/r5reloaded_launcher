@@ -14,9 +14,6 @@ namespace launcher.Game
     {
         public static async void Start()
         {
-            if (!GetBranch.Installed() && !Directory.Exists(GetBranch.Directory()))
-                return;
-
             if (!Directory.Exists(GetBranch.Directory()))
             {
                 SetBranch.Installed(false);

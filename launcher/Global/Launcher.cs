@@ -13,7 +13,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.8.7";
+        public const string VERSION = "0.9.8.9";
 
         #region Public Keys
 
@@ -81,17 +81,19 @@ namespace launcher.Global
 
         public static SemaphoreSlim DownloadSemaphore = new(100);
 
-        public static bool CDNTest()
+        public static async Task<bool> CDNTest()
         {
             try
             {
-                using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead("https://cdn.r5r.org/launcher/config.json");
-                return true;
+                using var client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(5); // Set a timeout (e.g., 5 seconds)
+
+                var response = await client.GetAsync($"https://cdn.r5r.org/launcher/config.json");
+                return response.IsSuccessStatusCode; // Return true if the request was successful
             }
             catch
             {
-                return false;
+                return false; // Return false if there's an exception (e.g., timeout or network error)
             }
         }
 
@@ -111,17 +113,19 @@ namespace launcher.Global
             }
         }
 
-        public static bool MasterServerTest()
+        public static async Task<bool> MasterServerTest()
         {
             try
             {
-                using var client = new System.Net.WebClient();
-                using var stream = client.OpenRead("https://r5r.org");
-                return true;
+                using var client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(5); // Set a timeout (e.g., 5 seconds)
+
+                var response = await client.GetAsync($"https://r5r.org");
+                return response.IsSuccessStatusCode; // Return true if the request was successful
             }
             catch
             {
-                return false;
+                return false; // Return false if there's an exception (e.g., timeout or network error)
             }
         }
     }
