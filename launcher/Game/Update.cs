@@ -55,6 +55,10 @@ namespace launcher.Game
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
+            string sigCacheFile = Path.Combine(branchDirectory, "cfg\\startup.bin");
+            if (File.Exists(sigCacheFile))
+                File.Delete(sigCacheFile);
+
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
             Managers.App.SetupAdvancedMenu();
 
