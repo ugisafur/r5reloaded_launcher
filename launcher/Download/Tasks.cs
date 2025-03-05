@@ -167,7 +167,7 @@ namespace launcher.Download
                 }
 
                 //Download the file
-                await CreateRetryPolicy(destinationPath, 50, downloadItem).ExecuteAsync(async () =>
+                await CreateRetryPolicy(destinationPath, 15, downloadItem).ExecuteAsync(async () =>
                 {
                     await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
                 });
@@ -244,7 +244,25 @@ namespace launcher.Download
             int retryDelaySeconds = 5;
 
             return Policy
-                .Handle<Exception>()
+                .Handle<Exception>(ex =>
+                {
+                    if (ex is WebException webEx && webEx.Response is HttpWebResponse httpWebResponse)
+                    {
+                        if (httpWebResponse.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            LogWarning(Source.Download, $"(404) Not Found: {fileUrl}");
+                            return false;
+                        }
+                    }
+                    else if (ex is HttpRequestException httpEx && httpEx.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        LogWarning(Source.Download, $"(404) Not Found: {fileUrl}");
+                        return false;
+                    }
+
+                    // Handle all other exceptions
+                    return true;
+                })
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
                     sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(1),
