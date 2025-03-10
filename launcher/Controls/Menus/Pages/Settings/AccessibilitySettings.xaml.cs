@@ -55,7 +55,6 @@ namespace launcher
         {
             LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
             Background_Video.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
-            Background_Image.Visibility = disabled ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }

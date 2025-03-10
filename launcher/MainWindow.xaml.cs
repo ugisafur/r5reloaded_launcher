@@ -155,7 +155,6 @@ namespace launcher
                 }
             }
 
-            Background_Image.Visibility = useStaticImage ? Visibility.Visible : Visibility.Hidden;
             Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
 
             PreLoad_Window.Close();
@@ -594,7 +593,6 @@ namespace launcher
             Background_Video.MediaFailed += (sender, e) =>
             {
                 LogInfo(Source.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
-                Background_Image.Visibility = Visibility.Visible;
                 Background_Video.Visibility = Visibility.Hidden;
             };
         }
