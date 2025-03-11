@@ -30,6 +30,12 @@ namespace launcher
             DisableAnimationsBtn.Unchecked += DisableAnimationsBtn_CheckedChanged;
             DisableTransitionsBtn.Unchecked += DisableTransitionsBtn_CheckedChanged;
             DisableBackgroundVideoBtn.Unchecked += DisableBackgroundVideoBtn_CheckedChanged;
+
+            if(Managers.App.IsWineEnvironment())
+            {
+                DisableBackgroundVideoBtn.IsEnabled = false;
+                DisableBackgroundText.Text = "Disable background video - Permanently disabled when running under wine";
+            }
         }
 
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)

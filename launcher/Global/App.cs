@@ -307,6 +307,11 @@ namespace launcher.Managers
             return finalDirectory;
         }
 
+        public static bool IsWineEnvironment()
+        {
+            return Process.GetProcessesByName("winlogon").Length == 0;
+        }
+
         #region Settings Functions
 
         //TODO: Refactor these functions to use a single function with parameters

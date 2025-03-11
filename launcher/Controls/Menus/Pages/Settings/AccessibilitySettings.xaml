@@ -22,7 +22,7 @@
                 <CheckBox x:Name="DisableBackgroundVideoBtn" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="45,20,840,450" Cursor="Hand" />
                 <CheckBox x:Name="DisableAnimationsBtn" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="45,72,840,398" Cursor="Hand" />
                 <CheckBox x:Name="DisableTransitionsBtn" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="45,126,840,344" Cursor="Hand" />
-                <TextBlock Text="Disable background video" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,24,579,0" Height="20" Width="247" />
+                <TextBlock x:Name="DisableBackgroundText" Text="Disable background video" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,24,76,0" Height="20" />
                 <TextBlock Text="Replace the video loop with a static image" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,44,579,0" Height="15" Width="247" />
                 <TextBlock Text="Disable animations" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="109,76,579,0" Height="20" Width="247" />
                 <TextBlock Text="Disables the startup and close animations" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="109,96,579,0" Height="15" Width="247" />

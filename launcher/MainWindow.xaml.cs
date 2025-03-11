@@ -133,6 +133,13 @@ namespace launcher
 
             // Setup Background
             PreLoad_Window.SetLoadingText("Finishing up");
+
+            if(Managers.App.IsWineEnvironment())
+            {
+                LogInfo(Source.Launcher, "Wine environment detected, disabling background video");
+                Ini.Set(Ini.Vars.Disable_Background_Video, true);
+            }
+
             bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             if (!useStaticImage)
             {
