@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.413.2" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.415.19" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Polly" Version="8.5.1" />
+    <PackageReference Include="Polly" Version="8.5.2" />
   </ItemGroup>
 
 </Project>

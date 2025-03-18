@@ -145,7 +145,7 @@
         </Grid>
 
         <Grid Grid.Row="10" Grid.Column="0">
-            <Button Content="Change Background Video" Margin="10,5,10,5" Click="BackgroundVideo_Click" />
+            <Button x:Name="ChangeVideo" Content="Change Background Video" Margin="10,5,10,5" Click="BackgroundVideo_Click" />
         </Grid>
 
         <Grid Grid.Row="10" Grid.Column="1">

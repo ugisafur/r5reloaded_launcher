@@ -38,6 +38,7 @@ namespace launcher.Global
         public static IniFile LauncherConfig { get; set; }
         public static CultureInfo cultureInfo { get; set; }
         public static string language_name { get; set; }
+        public static bool wineEnv { get; set; }
 
         #endregion Settings
 

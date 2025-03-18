@@ -76,6 +76,8 @@ namespace launcher
             // Hide the window on startup
             this.Opacity = 0;
 
+            Launcher.wineEnv = Managers.App.IsWineEnvironment();
+
             var app = (App)Application.Current;
             if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
             {
@@ -134,13 +136,33 @@ namespace launcher
             // Setup Background
             PreLoad_Window.SetLoadingText("Finishing up");
 
-            if(Managers.App.IsWineEnvironment())
+            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
+
+            if (Launcher.wineEnv)
             {
                 LogInfo(Source.Launcher, "Wine environment detected, disabling background video");
+
+                // Force disable background video
                 Ini.Set(Ini.Vars.Disable_Background_Video, true);
+                useStaticImage = true;
+
+                // Hide the video element
+                Background_Video.Source = null;
+                Background_Video.Close();
+                Background_Video.Visibility = Visibility.Collapsed;
+                Background_Video.MediaEnded -= mediaElement_MediaEnded;
+
+                // Remove the video element from the parent grid
+                Grid parent = Background_Video.Parent as Grid;
+                parent?.Children.Remove(Background_Video);
+
+                Background_Video = null;
+            }
+            else
+            {
+                Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
             }
 
-            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
             if (!useStaticImage)
             {
                 await LoadVideoBackground();
@@ -161,8 +183,6 @@ namespace launcher
                     Background_Image.Source = bitmap;
                 }
             }
-
-            Background_Video.Visibility = useStaticImage ? Visibility.Hidden : Visibility.Visible;
 
             PreLoad_Window.Close();
 
@@ -195,6 +215,9 @@ namespace launcher
 
         private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
+            if (Launcher.wineEnv)
+                return;
+
             Background_Video.Position = TimeSpan.FromSeconds(0);
             Background_Video.Play();
         }
@@ -550,6 +573,9 @@ namespace launcher
 
         private async Task LoadVideoBackground()
         {
+            if (Launcher.wineEnv)
+                return;
+
             if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));

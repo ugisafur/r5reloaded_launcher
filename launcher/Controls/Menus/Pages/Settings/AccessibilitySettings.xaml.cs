@@ -31,8 +31,9 @@ namespace launcher
             DisableTransitionsBtn.Unchecked += DisableTransitionsBtn_CheckedChanged;
             DisableBackgroundVideoBtn.Unchecked += DisableBackgroundVideoBtn_CheckedChanged;
 
-            if(Managers.App.IsWineEnvironment())
+            if (Launcher.wineEnv)
             {
+                DisableBackgroundVideoBtn.IsChecked = true;
                 DisableBackgroundVideoBtn.IsEnabled = false;
                 DisableBackgroundText.Text = "Disable background video - Permanently disabled when running under wine";
             }
@@ -59,6 +60,9 @@ namespace launcher
 
         private static void ToggleBackgroundVideo(bool disabled)
         {
+            if (Launcher.wineEnv)
+                return;
+
             LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
             Background_Video.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
         }

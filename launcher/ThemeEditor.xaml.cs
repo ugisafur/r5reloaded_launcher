@@ -80,6 +80,12 @@ namespace launcher
 
                 app.ThemeDictionary[GetName(color)] = new SolidColorBrush(color.SelectedColor);
             }
+
+            if(Launcher.wineEnv)
+            {
+                ChangeVideo.IsEnabled = false;
+                ChangeVideo.Content = "Video Disabled Under Wine";
+            }
         }
 
         private DateTime lastUpdate = DateTime.Now;
@@ -187,6 +193,9 @@ namespace launcher
 
         private async void BackgroundVideo_Click(object sender, RoutedEventArgs e)
         {
+            if (Launcher.wineEnv)
+                return;
+
             var directoryDialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = false,
