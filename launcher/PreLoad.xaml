@@ -12,7 +12,7 @@
             <Grid.Clip>
                 <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />
             </Grid.Clip>
-            <Image x:Name="PreloadBG" Source="/assets/preload.jpg" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
+            <Image x:Name="PreloadBG" Source="/assets/new_preload.png" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
             <Rectangle Fill="#33000000" Margin="0,0,0,0" />
             <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="28,113,221,117">
                 <Image.RenderTransform>

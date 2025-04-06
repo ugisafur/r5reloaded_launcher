@@ -140,5 +140,13 @@ namespace launcher.BranchUtils
 
             return System.IO.Directory.Exists(Directory()) && File.Exists(Path.Combine(Directory(), "r5apex.exe"));
         }
+
+        public static string DediURL(Branch branch = null)
+        {
+            if (branch != null)
+                return branch.dedi_url;
+
+            return Branch().dedi_url;
+        }
     }
 }

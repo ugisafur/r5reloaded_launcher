@@ -123,6 +123,7 @@ namespace launcher.Game
     {
         public string branch { get; set; }
         public string game_url { get; set; }
+        public string dedi_url { get; set; }
         public string latest_patch_notes { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }

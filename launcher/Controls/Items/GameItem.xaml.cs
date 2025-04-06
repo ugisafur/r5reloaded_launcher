@@ -8,6 +8,7 @@ using launcher.Game;
 using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
+using System.Diagnostics;
 
 namespace launcher
 {
@@ -39,20 +40,29 @@ namespace launcher
 
         public void UpdateGameItem()
         {
-            BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, gameBranch)}";
+            BranchName.Text = $"{GetBranch.Name(true, gameBranch)}";
             InstallPath.Text = $"{GetBranch.Directory(gameBranch)}";
-            UninstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Visible : Visibility.Hidden;
-            InstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Hidden : Visibility.Visible;
+            Dedi.Visibility = string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)) ? Visibility.Hidden : Visibility.Visible;
 
             UninstallGame.IsEnabled = !AppState.IsInstalling;
             InstallGame.IsEnabled = !AppState.IsInstalling;
             VerifyGame.IsEnabled = !AppState.IsInstalling;
             InstallOpt.IsEnabled = !AppState.IsInstalling;
 
-            UninstallGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
-            InstallGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
-            VerifyGame.Visibility = gameBranch.enabled ? Visibility.Visible : Visibility.Hidden;
-            BranchDisabledTxt.Visibility = gameBranch.enabled ? Visibility.Hidden : Visibility.Visible;
+            if (gameBranch.enabled)
+            {
+                UninstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Visible : Visibility.Hidden;
+                InstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Hidden : Visibility.Visible;
+                VerifyGame.Visibility = Visibility.Visible;
+                BranchDisabledTxt.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                UninstallGame.Visibility = Visibility.Hidden;
+                InstallGame.Visibility = Visibility.Hidden;
+                VerifyGame.Visibility = Visibility.Hidden;
+                BranchDisabledTxt.Visibility = Visibility.Visible;
+            }
 
             InstallOpt.Visibility = Visibility.Hidden;
 
@@ -66,22 +76,31 @@ namespace launcher
         public void SetupGameItem(Branch branch)
         {
             gameBranch = branch;
+            branchName = branch.branch;
 
             BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, branch)}";
             InstallPath.Text = $"{GetBranch.Directory(branch)}";
-            UninstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Visible : Visibility.Hidden;
-            InstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Hidden : Visibility.Visible;
-            branchName = branch.branch;
+            Dedi.Visibility = string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)) ? Visibility.Hidden : Visibility.Visible;
 
             UninstallGame.IsEnabled = !AppState.IsInstalling;
             InstallGame.IsEnabled = !AppState.IsInstalling;
             VerifyGame.IsEnabled = !AppState.IsInstalling;
             InstallOpt.IsEnabled = !AppState.IsInstalling;
 
-            UninstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
-            InstallGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
-            VerifyGame.Visibility = branch.enabled ? Visibility.Visible : Visibility.Hidden;
-            BranchDisabledTxt.Visibility = branch.enabled ? Visibility.Hidden : Visibility.Visible;
+            if(gameBranch.enabled)
+            {
+                UninstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Visible : Visibility.Hidden;
+                InstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Hidden : Visibility.Visible;
+                VerifyGame.Visibility = Visibility.Visible;
+                BranchDisabledTxt.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                UninstallGame.Visibility = Visibility.Hidden;
+                InstallGame.Visibility = Visibility.Hidden;
+                VerifyGame.Visibility = Visibility.Hidden;
+                BranchDisabledTxt.Visibility = Visibility.Visible;
+            }
 
             InstallOpt.Visibility = Visibility.Hidden;
             if (GetBranch.Enabled(branch) && GetBranch.Installed(branch))
@@ -324,6 +343,14 @@ namespace launcher
                 Task.Run(() => Uninstall.HDTextures(gameBranch));
             else
                 Managers.App.ShowDownloadOptlFiles();
+        }
+
+        private void Dedi_Click(object sender, RoutedEventArgs e)
+        {
+            if(!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
+            {
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {GetBranch.DediURL(gameBranch)}") { CreateNoWindow = true });
+            }
         }
     }
 }

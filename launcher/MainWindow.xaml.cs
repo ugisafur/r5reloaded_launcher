@@ -201,6 +201,8 @@ namespace launcher
             {
                 Managers.App.ShowOnBoardAskPopup();
             }
+
+            this.Activate();
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)

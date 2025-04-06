@@ -20,6 +20,7 @@
     <None Remove="assets\launcher_bg_we.mp4" />
     <None Remove="assets\launcher_x64.ico" />
     <None Remove="assets\news_default_bg.jpg" />
+    <None Remove="assets\new_preload.png" />
     <None Remove="assets\preload.gif" />
     <None Remove="assets\preload.jpg" />
   </ItemGroup>
@@ -61,6 +62,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\news_default_bg.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\new_preload.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\preload.jpg">
