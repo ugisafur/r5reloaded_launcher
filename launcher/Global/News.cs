@@ -9,51 +9,93 @@ using System.Windows;
 using static launcher.Global.References;
 using System.Windows.Shapes;
 using System.Windows.Media;
+using launcher.BranchUtils;
 
 namespace launcher.Global
 {
     public static class News
     {
-        public static List<NewsItem> Community = [];
-        public static List<NewsItem> NewLegends = [];
-        public static List<NewsItem> Comms = [];
-        public static List<NewsItem> PatchNotes = [];
-        private static List<List<NewsItem>> Pages = [];
+        private static List<List<NewsItem>> Pages = [[], [], [], []];
+
+        const int MaxItemsPerCategory = 8;
+
+        static int currentPage = 0;
 
         public static void Populate()
         {
-            const int MaxItemsPerCategory = 8;
-            Root newsItems = GetNewsItems();
-
-            var tagToCategoryMap = new Dictionary<string, List<NewsItem>>
+            if (Pages[0].Count == 0)
             {
-                { "Community", Community },
-                { "Comms", Comms },
-                { "Patch Notes", PatchNotes }
-            };
+                Root CommunityItems = GetNewsItems("community");
 
-            if (newsItems != null && newsItems.posts != null && newsItems.posts.Count > 0)
+                appDispatcher.BeginInvoke(() =>
+                {
+                    foreach (var post in CommunityItems.posts)
+                    {
+                        if (post.tags == null || post.tags.Count < 1)
+                            continue;
+
+                        var newsItem = CreateNewsItem(post);
+                        Pages[0].Add(newsItem);
+                    }
+                });
+            }
+
+            if (Pages[1].Count == 0)
             {
-                foreach (var post in newsItems.posts)
+                CreatePremadeNewLegends();
+            }
+
+            if (Pages[2].Count == 0)
+            {
+                Root CommsItems = GetNewsItems("comms");
+
+                appDispatcher.BeginInvoke(() =>
+                {
+                    foreach (var post in CommsItems.posts)
+                    {
+                        if (post.tags == null || post.tags.Count < 1)
+                            continue;
+
+                        var newsItem = CreateNewsItem(post);
+                        Pages[2].Add(newsItem);
+                    }
+                });
+            }
+
+            Root PatchNotesItems = GetNewsItems(GetBranch.Branch().patch_notes_blog_slug);
+
+            appDispatcher.BeginInvoke(() =>
+            {
+                Pages[3].Clear();
+
+                foreach (var post in PatchNotesItems.posts)
                 {
                     if (post.tags == null || post.tags.Count < 1)
                         continue;
 
-                    var tagName = post.tags[0].name;
-                    if (tagToCategoryMap.TryGetValue(tagName, out var categoryList) && categoryList.Count < MaxItemsPerCategory)
-                    {
-                        var newsItem = CreateNewsItem(post, tagName == "Patch Notes");
-                        categoryList.Add(newsItem);
-                    }
+                    var newsItem = CreateNewsItem(post);
+                    Pages[3].Add(newsItem);
                 }
-            }
+            });
 
-            CreatePremadeNewLegends();
+            appDispatcher.BeginInvoke(() =>
+            {
+                if (currentPage == 3)
+                    SetPage(3);
+            });
+        }
 
-            Pages.Add(Community);
-            Pages.Add(NewLegends);
-            Pages.Add(Comms);
-            Pages.Add(PatchNotes);
+        private static NewsItem CreateNewsItem(Post post)
+        {
+            return new NewsItem(
+                post.title,
+                post.excerpt,
+                post.primary_author.name,
+                post.published_at.ToShortDateString(),
+                post.url,
+                post.feature_image,
+                string.IsNullOrEmpty(post.feature_image)
+            );
         }
 
         private static NewsItem CreateNewsItem(Post post, bool smallItem)
@@ -71,14 +113,16 @@ namespace launcher.Global
 
         private static void CreatePremadeNewLegends()
         {
-            NewLegends.Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", false, "Welcome To R5R"));
-            NewLegends.Add(new NewsItem("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "", true, "View Blog"));
-            NewLegends.Add(new NewsItem("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "", true, "Join Discord"));
-            NewLegends.Add(new NewsItem("Follow Us On X", "Follow us on x to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://x.com/r5reloaded", "", true, "Follow Us"));
+            Pages[1].Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", false, "Welcome To R5R"));
+            Pages[1].Add(new NewsItem("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "", true, "View Blog"));
+            Pages[1].Add(new NewsItem("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "", true, "Join Discord"));
+            Pages[1].Add(new NewsItem("Follow Us On X", "Follow us on x to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://x.com/r5reloaded", "", true, "Follow Us"));
         }
 
         public static void SetPage(int index)
         {
+            currentPage = index;
+
             List<NewsItem> selected = Pages[index];
             NewsPanel.Children.Clear();
 
@@ -139,12 +183,16 @@ namespace launcher.Global
             }
         }
 
-        public static Root GetNewsItems()
+        public static Root GetNewsItems(string slug)
         {
             Root root = new();
+
             try
             {
-                root = Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors").Result;
+                string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
+                //string order = sortByOldest ? "&order=published_at%20desc" : "&order=published_at%20asc";
+
+                root = Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit={MaxItemsPerCategory}").Result;
             }
             catch
             {

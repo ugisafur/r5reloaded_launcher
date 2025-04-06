@@ -125,6 +125,7 @@ namespace launcher.Game
         public string game_url { get; set; }
         public string dedi_url { get; set; }
         public string latest_patch_notes { get; set; }
+        public string patch_notes_blog_slug { get; set; }
         public bool enabled { get; set; }
         public bool show_in_launcher { get; set; }
         public bool allow_updates { get; set; }

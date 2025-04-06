@@ -295,6 +295,11 @@ namespace launcher
             GameSettings_Control.OpenDir_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
             GameSettings_Control.AdvancedMenu_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
 
+            if (AppState.IsOnline && Launcher.newsOnline)
+            {
+                Task.Run(() => News.Populate());
+            }
+
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
             {
                 ReadMore_Label.Inlines.Clear();

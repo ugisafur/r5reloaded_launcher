@@ -15,7 +15,7 @@ namespace launcher.Game
 {
     public static class Checksums
     {
-        public static int IdentifyBadFiles(GameFiles gameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory)
+        public static int IdentifyBadFiles(GameFiles gameFiles, List<Task<FileChecksum>> checksumTasks, string branchDirectory, bool isUpdate = false)
         {
             var fileChecksums = Task.WhenAll(checksumTasks).Result;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
@@ -35,7 +35,7 @@ namespace launcher.Game
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(Source.Repair, $"Bad file found: {file.name}");
+                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.name}" : "Bad file found: {file.name}");
                     DataCollections.BadFiles.Add($"{file.name}.zst");
                 }
 

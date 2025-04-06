@@ -13,7 +13,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.9.3";
+        public const string VERSION = "0.9.9.5";
 
         #region Public Keys
 
@@ -39,6 +39,7 @@ namespace launcher.Global
         public static CultureInfo cultureInfo { get; set; }
         public static string language_name { get; set; }
         public static bool wineEnv { get; set; }
+        public static bool newsOnline { get; set; }
 
         #endregion Settings
 

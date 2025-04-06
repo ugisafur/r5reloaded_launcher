@@ -67,9 +67,9 @@ namespace launcher.Managers
             PreLoad_Window.SetLoadingText("Checking for news");
             await Task.Delay(100);
 
-            bool isNewsOnline = await Networking.NewsTestAsync();
+            Launcher.newsOnline = await Networking.NewsTestAsync();
 
-            if (AppState.IsOnline && isNewsOnline)
+            if (AppState.IsOnline && Launcher.newsOnline)
             {
                 News.Populate();
                 MoveNewsRect(0);
@@ -240,7 +240,8 @@ namespace launcher.Managers
                             game_url = "",
                             enabled = true,
                             show_in_launcher = true,
-                            is_local_branch = true
+                            is_local_branch = true,
+                            patch_notes_blog_slug = "null",
                         };
                         DataCollections.FolderBranches.Add(branch);
                         LogInfo(Source.Launcher, $"Local branch found: {folder}");

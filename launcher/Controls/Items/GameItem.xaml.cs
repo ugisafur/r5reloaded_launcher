@@ -69,7 +69,7 @@ namespace launcher
             if (GetBranch.Enabled(gameBranch) && GetBranch.Installed(gameBranch))
             {
                 InstallOpt.Visibility = Visibility.Visible;
-                InstallOpt.Content = GetBranch.DownloadHDTextures(gameBranch) ? "UINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
+                InstallOpt.Content = GetBranch.DownloadHDTextures(gameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
         }
 

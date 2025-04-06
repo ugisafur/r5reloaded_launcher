@@ -6,6 +6,9 @@ using launcher.Global;
 using launcher.Managers;
 using launcher.BranchUtils;
 using launcher.CDN;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace launcher.Game
 {
@@ -39,7 +42,7 @@ namespace launcher.Game
             GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
             Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Update);
-            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
@@ -89,7 +92,7 @@ namespace launcher.Game
             GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
             Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Repair);
-            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
@@ -127,7 +130,12 @@ namespace launcher.Game
                     {
                         if (!gameFiles.files.Exists(f => f.name.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
                         {
-                            if (File.Exists(file))
+                            string languagesPattern = string.Join("|", GetBranch.Branch().mstr_languages.Select(Regex.Escape));
+                            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
+
+                            string fileName = Path.GetFileName(file);
+
+                            if (!excludeLangRegex.IsMatch(fileName) && File.Exists(file))
                                 File.Delete(file);
                         }
                     }
