@@ -16,6 +16,7 @@ namespace launcher.Game
                 KVSerializerOptions options = new()
                 {
                     HasEscapeSequences = false,
+                    EnableValveNullByteBugBehavior = true,
                 };
                 options.Conditions.Clear();
 
