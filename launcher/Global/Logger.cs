@@ -6,7 +6,7 @@ namespace launcher.Global
     public static class Logger
     {
         private static readonly string LogFileName = "launcher_log.log";
-
+        public static string LogFileUUID = "";
         public static string LogFilePath = "";
 
         public enum Type
@@ -46,8 +46,8 @@ namespace launcher.Global
                 }
             }
 
-            string folderUUID = GenerateFolderUUID();
-            LogFilePath = Path.Combine(Launcher.PATH, $"launcher_data\\logs\\{folderUUID}", LogFileName);
+            LogFileUUID = GenerateFolderUUID();
+            LogFilePath = Path.Combine(Launcher.PATH, $"launcher_data\\logs\\{LogFileUUID}", LogFileName);
 
             string logDirectory = Path.GetDirectoryName(LogFilePath);
             if (!Directory.Exists(logDirectory))

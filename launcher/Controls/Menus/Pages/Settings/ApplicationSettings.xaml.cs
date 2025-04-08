@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using launcher.Global;
@@ -102,6 +103,71 @@ namespace launcher
             themeEditor = new();
             themeEditor.SetupThemeEditor();
             themeEditor.Show();
+        }
+
+        private void ClearCache_Click_1(object sender, RoutedEventArgs e)
+        {
+            string logsPath = Path.Combine(Launcher.PATH, "launcher_data\\logs");
+            string cachePath = Path.Combine(Launcher.PATH, "launcher_data\\cache");
+
+            if (Path.Exists(logsPath))
+            {
+                string[] allLogs = Directory.GetDirectories(logsPath);
+                foreach (string log in allLogs)
+                {
+                    try
+                    {
+                        // Check if the file is the current log file
+                        if (log.Contains(LogFileUUID))
+                            continue;
+
+                        Directory.Delete(log, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(Source.Launcher, $"Failed to delete {log}: {ex.Message}");
+                    }
+                }
+            }
+
+            if (Path.Exists(cachePath))
+            {
+                string[] allCacheFiles = Directory.GetFiles(cachePath);
+                foreach (string cache in allCacheFiles)
+                {
+                    try
+                    {
+                        // Check if the file is locked
+                        if (IsFileLocked(new FileInfo(cache)))
+                            continue;
+
+                        File.Delete(cache);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(Source.Launcher, $"Failed to delete {cache}: {ex.Message}");
+                    }
+                }
+
+                Global.News.CachedCleared();
+            }
+        }
+
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

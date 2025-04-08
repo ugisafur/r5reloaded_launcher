@@ -37,6 +37,7 @@
                 <TextBlock Text="These crash logs help us fix bugs with the launcher" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="12" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="339,598,47,0" Height="18" />
                 <CheckBox x:Name="OpenEAApp" Style="{StaticResource SwitchStyle}" Height="27" Width="50" Margin="404,240,481,437" RenderTransformOrigin="0.545,1.288" />
                 <TextBlock Text="Auto Open EA App" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="468,243,99,0" Height="20" Cursor="Hand" />
+                <Button x:Name="ClearCache" Style="{DynamicResource SettingsBtnStyle}" Margin="509,621,182,36" Content="CLEAR LOGS AND CACHE" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" Click="ClearCache_Click_1" />
             </Grid>
             <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="43,430,45,271" />
         </Grid>

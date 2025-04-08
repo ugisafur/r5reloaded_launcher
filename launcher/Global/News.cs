@@ -10,78 +10,67 @@ using static launcher.Global.References;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using launcher.BranchUtils;
+using System.IO;
+using System.Reflection;
 
 namespace launcher.Global
 {
     public static class News
     {
         private static List<List<NewsItem>> Pages = [[], [], [], []];
-
-        const int MaxItemsPerCategory = 8;
-
-        static int currentPage = 0;
+        private const int MaxItemsPerCategory = 8;
+        private static bool firstTimePopulate = true;
+        private static int currentPage = 0;
+        private static Dictionary<string, bool> blogItemsCached = [];
 
         public static void Populate()
         {
             if (Pages[0].Count == 0)
-            {
-                Root CommunityItems = GetNewsItems("community");
-
-                appDispatcher.BeginInvoke(() =>
-                {
-                    foreach (var post in CommunityItems.posts)
-                    {
-                        if (post.tags == null || post.tags.Count < 1)
-                            continue;
-
-                        var newsItem = CreateNewsItem(post);
-                        Pages[0].Add(newsItem);
-                    }
-                });
-            }
+                PopulateNewsCatagory("community", 0, false);
 
             if (Pages[1].Count == 0)
-            {
                 CreatePremadeNewLegends();
-            }
 
             if (Pages[2].Count == 0)
-            {
-                Root CommsItems = GetNewsItems("comms");
+                PopulateNewsCatagory("comms", 2, false);
 
-                appDispatcher.BeginInvoke(() =>
-                {
-                    foreach (var post in CommsItems.posts)
-                    {
-                        if (post.tags == null || post.tags.Count < 1)
-                            continue;
-
-                        var newsItem = CreateNewsItem(post);
-                        Pages[2].Add(newsItem);
-                    }
-                });
-            }
-
-            Root PatchNotesItems = GetNewsItems(GetBranch.Branch().patch_notes_blog_slug);
-
-            appDispatcher.BeginInvoke(() =>
-            {
-                Pages[3].Clear();
-
-                foreach (var post in PatchNotesItems.posts)
-                {
-                    if (post.tags == null || post.tags.Count < 1)
-                        continue;
-
-                    var newsItem = CreateNewsItem(post);
-                    Pages[3].Add(newsItem);
-                }
-            });
+            if (!GetBranch.IsLocalBranch())
+                PopulateNewsCatagory(GetBranch.Branch().patch_notes_blog_slug, 3, true);
 
             appDispatcher.BeginInvoke(() =>
             {
                 if (currentPage == 3)
                     SetPage(3);
+
+                if(firstTimePopulate)
+                {
+                    SetPage(0);
+                    firstTimePopulate = false;
+                }
+            });
+        }
+
+        private static void PopulateNewsCatagory(string slug, int index, bool shouldCache)
+        {
+            Root root = new();
+
+            if (blogItemsCached.TryGetValue(slug, out bool value) && value)
+                root = GetCachedNewsItems(slug);
+            else
+                root = GetNewsItems(slug, shouldCache);
+
+            appDispatcher.BeginInvoke(() =>
+            {
+                Pages[index].Clear();
+
+                foreach (var post in root.posts)
+                {
+                    if (post.tags == null || post.tags.Count < 1)
+                        continue;
+
+                    var newsItem = CreateNewsItem(post);
+                    Pages[index].Add(newsItem);
+                }
             });
         }
 
@@ -183,7 +172,7 @@ namespace launcher.Global
             }
         }
 
-        public static Root GetNewsItems(string slug)
+        private static Root GetNewsItems(string slug, bool shouldCache)
         {
             Root root = new();
 
@@ -199,7 +188,56 @@ namespace launcher.Global
                 Logger.LogWarning(Logger.Source.Launcher, "Failed to fetch news items.");
             }
 
+            if (shouldCache)
+            {
+                try
+                {
+                    string filePath = System.IO.Path.Combine(Launcher.PATH, "launcher_data\\cache", $"{slug}.json");
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+
+                    File.WriteAllText(filePath, JsonSerializer.Serialize(root));
+                    blogItemsCached[slug] = true;
+
+                    Logger.LogInfo(Logger.Source.Launcher, $"Cached news items for {slug}.");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(Logger.Source.Launcher, $"Failed to cache news items: {ex.Message}");
+                }
+            }
+
             return root;
+        }
+
+        private static Root GetCachedNewsItems(string slug)
+        {
+            Root root = new();
+
+            string filePath = System.IO.Path.Combine(Launcher.PATH, "launcher_data\\cache", $"{slug}.json");
+            if (!File.Exists(filePath))
+                return root;
+
+            string json = File.ReadAllText(filePath);
+
+            if (string.IsNullOrEmpty(json))
+                return root;
+
+            try
+            {
+                root = JsonSerializer.Deserialize<Root>(json);
+            }
+            catch (JsonException ex)
+            {
+                Logger.LogError(Logger.Source.Launcher, $"Failed to deserialize JSON: {ex.Message}");
+            }
+
+            return root;
+        }
+
+        public static void CachedCleared()
+        {
+            blogItemsCached.Clear();
         }
     }
 
