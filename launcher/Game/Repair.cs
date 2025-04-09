@@ -4,9 +4,6 @@ using static launcher.Global.Logger;
 using System.Windows;
 using static launcher.Global.References;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
-using launcher.CDN;
 
 namespace launcher.Game
 {

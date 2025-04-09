@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using launcher.Game;
 using launcher.Global;
-using launcher.BranchUtils;
 
 namespace launcher
 {

@@ -1,12 +1,8 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using System.IO;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
 using System.Windows.Controls;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
-using launcher.CDN;
 
 namespace launcher.Game
 {

@@ -1,16 +1,10 @@
 using Newtonsoft.Json;
-using Octodiff.Core;
-using Octodiff.Diagnostics;
-using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using ZstdSharp;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace patch_creator

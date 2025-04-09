@@ -5,9 +5,7 @@ using System.Windows;
 using static launcher.Global.Logger;
 using System.IO;
 using static launcher.Global.References;
-using launcher.BranchUtils;
 using launcher.Game;
-using launcher.Global;
 
 namespace launcher.Global
 {

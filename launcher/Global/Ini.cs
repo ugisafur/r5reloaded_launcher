@@ -6,6 +6,7 @@ namespace launcher.Global
 {
     public static class Ini
     {
+        //Add new settings to save to this enum
         public enum Vars
         {
             Enable_Quit_On_Close,
@@ -53,6 +54,7 @@ namespace launcher.Global
             Auto_Launch_EA_App,
         }
 
+        // Maps the settings to their respective sections in the INI file
         public static Dictionary<Vars, string> VarSections = new()
         {
             { Vars.Enable_Quit_On_Close, "Settings" },
@@ -102,6 +104,7 @@ namespace launcher.Global
             { Vars.Server_Video_Name, "Launcher" }
         };
 
+        // Default values for each setting
         public static Dictionary<Vars, object> VarDefaults = new()
         {
             { Vars.Library_Location, "" },

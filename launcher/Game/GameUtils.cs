@@ -3,7 +3,6 @@ using System.IO;
 using static launcher.Game.LaunchParameters;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using launcher.BranchUtils;
 using launcher.Global;
 
 namespace launcher.Game

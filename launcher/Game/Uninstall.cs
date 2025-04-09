@@ -2,10 +2,7 @@
 using System.IO;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using System.Windows.Controls;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
 using System.Windows.Forms;
 
 namespace launcher.Game
@@ -85,7 +82,7 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
-            GameFiles langFiles = await CDN.Fetch.LanguageFiles(lang, false);
+            GameFiles langFiles = await Fetch.LanguageFiles(lang, false);
 
             Download.Tasks.UpdateStatusLabel("Removing Game Files", Source.Uninstaller);
             AppState.FilesLeft = langFiles.files.Count;

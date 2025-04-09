@@ -4,8 +4,6 @@ using System.Windows.Controls;
 using static launcher.Global.References;
 using launcher.Game;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
 
 namespace launcher
 {

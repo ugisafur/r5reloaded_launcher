@@ -1,5 +1,4 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using launcher.BranchUtils;
 using launcher.Game;
 using launcher.Global;
 using System.ComponentModel;

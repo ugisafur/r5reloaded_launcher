@@ -7,7 +7,6 @@ using Hardcodet.Wpf.TaskbarNotification;
 using System.Globalization;
 using launcher.Game;
 using launcher.Global;
-using launcher.BranchUtils;
 using Microsoft.Win32;
 using System.Diagnostics;
 

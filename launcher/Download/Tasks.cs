@@ -1,23 +1,15 @@
-﻿using launcher.BranchUtils;
-using launcher.Game;
+﻿using launcher.Game;
 using launcher.Global;
 using Polly.Retry;
 using Polly;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using launcher.Network;
 using static launcher.Global.Logger;
 using System.Net.Http;
 using ZstdSharp;
 using static launcher.Global.References;
-using launcher.Managers;
 using System.Windows;
-using System.Net.Http.Headers;
 
 namespace launcher.Download
 {

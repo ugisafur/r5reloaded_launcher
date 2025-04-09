@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using System.Windows.Media.Animation;
 using System.Windows;
 using static launcher.Global.References;
 using System.Windows.Shapes;
-using System.Windows.Media;
-using launcher.BranchUtils;
 using System.IO;
-using System.Reflection;
 
 namespace launcher.Global
 {
@@ -25,17 +18,26 @@ namespace launcher.Global
 
         public static void Populate()
         {
+            // Populate the community category
             if (Pages[0].Count == 0)
                 PopulateNewsCatagory("community", 0, false);
 
+            // Populate the new legends category
             if (Pages[1].Count == 0)
-                CreatePremadeNewLegends();
+            {
+                Pages[1].Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", false, "Welcome To R5R"));
+                Pages[1].Add(new NewsItem("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "", true, "View Blog"));
+                Pages[1].Add(new NewsItem("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "", true, "Join Discord"));
+                Pages[1].Add(new NewsItem("Follow Us On X", "Follow us on x to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://x.com/r5reloaded", "", true, "Follow Us"));
+            }
 
+            // Populate the comms category
             if (Pages[2].Count == 0)
                 PopulateNewsCatagory("comms", 2, false);
 
+            // Populate the patch notes category
             if (!GetBranch.IsLocalBranch())
-                PopulateNewsCatagory(GetBranch.Branch().patch_notes_blog_slug, 3, true);
+                PopulateNewsCatagory(GetBranch.BlogSlug(), 3, true);
 
             appDispatcher.BeginInvoke(() =>
             {
@@ -68,44 +70,19 @@ namespace launcher.Global
                     if (post.tags == null || post.tags.Count < 1)
                         continue;
 
-                    var newsItem = CreateNewsItem(post);
+                    var newsItem = new NewsItem(
+                        post.title,
+                        post.excerpt,
+                        post.authors[0].name,
+                        post.published_at.ToShortDateString(),
+                        post.url,
+                        post.feature_image,
+                        string.IsNullOrEmpty(post.feature_image)
+                    );
+
                     Pages[index].Add(newsItem);
                 }
             });
-        }
-
-        private static NewsItem CreateNewsItem(Post post)
-        {
-            return new NewsItem(
-                post.title,
-                post.excerpt,
-                post.primary_author.name,
-                post.published_at.ToShortDateString(),
-                post.url,
-                post.feature_image,
-                string.IsNullOrEmpty(post.feature_image)
-            );
-        }
-
-        private static NewsItem CreateNewsItem(Post post, bool smallItem)
-        {
-            return new NewsItem(
-                post.title,
-                post.excerpt,
-                post.primary_author.name,
-                post.published_at.ToShortDateString(),
-                post.url,
-                post.feature_image,
-                smallItem
-            );
-        }
-
-        private static void CreatePremadeNewLegends()
-        {
-            Pages[1].Add(new NewsItem("Learn How to Play", "View a bunch of information ranging from tutorials, scripting, and more!", "", DateTime.Now.ToShortDateString(), "https://docs.r5reloaded.com/", "", false, "Welcome To R5R"));
-            Pages[1].Add(new NewsItem("View Our Blog", "View out blog containing a bunch of usefull information and updates!", "", DateTime.Now.ToShortDateString(), "https://blog.r5reloaded.com/", "", true, "View Blog"));
-            Pages[1].Add(new NewsItem("Join Our Discord", "Join our discord server to chat with other members of the community!", "", DateTime.Now.ToShortDateString(), "https://discord.com/invite/jqMkUdXrBr", "", true, "Join Discord"));
-            Pages[1].Add(new NewsItem("Follow Us On X", "Follow us on x to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://x.com/r5reloaded", "", true, "Follow Us"));
         }
 
         public static void SetPage(int index)
@@ -180,8 +157,7 @@ namespace launcher.Global
             {
                 string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
                 //string order = sortByOldest ? "&order=published_at%20desc" : "&order=published_at%20asc";
-
-                root = Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit={MaxItemsPerCategory}").Result;
+                root = Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit={MaxItemsPerCategory}&fields=title,excerpt,published_at,url,feature_image").Result;
             }
             catch
             {

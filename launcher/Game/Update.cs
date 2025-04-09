@@ -1,13 +1,7 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System.IO;
-using static launcher.Global.References;
 using static launcher.Global.Logger;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
-using launcher.CDN;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace launcher.Game

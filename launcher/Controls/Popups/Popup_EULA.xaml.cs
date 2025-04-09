@@ -5,9 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using launcher.Game;
 using launcher.Global;
-using launcher.Managers;
-using launcher.BranchUtils;
-using launcher.Network;
 using static launcher.Global.References;
 
 namespace launcher

@@ -1,12 +1,10 @@
-﻿using launcher.BranchUtils;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using static launcher.Global.References;
 using launcher.Game;
 using launcher.Global;
-using launcher.Managers;
 
 namespace launcher
 {
