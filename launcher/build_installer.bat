@@ -1,0 +1,1 @@
+iscc .\inno_setup_script.iss
