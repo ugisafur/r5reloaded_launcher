@@ -95,9 +95,9 @@ namespace launcher.Global
             int i = 0;
             foreach (NewsItem newsItem in selected)
             {
-                double speed1 = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 500;
-                double speed2 = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 200;
-                double beginTime = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 0 : i * 0.1;
+                double speed1 = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
+                double speed2 = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 200;
+                double beginTime = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 0 : i * 0.1;
                 i++;
 
                 newsItem.BeginAnimation(UIElement.OpacityProperty, null);
