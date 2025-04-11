@@ -40,8 +40,8 @@ namespace launcher
         {
             BranchName.Text = $"{GetBranch.Name(true, gameBranch)}";
             InstallPath.Text = $"{GetBranch.Directory(gameBranch)}";
-            Dedi.Visibility = string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)) ? Visibility.Hidden : Visibility.Visible;
 
+            Dedi.IsEnabled = !string.IsNullOrEmpty(GetBranch.DediURL(gameBranch));
             UninstallGame.IsEnabled = !AppState.IsInstalling;
             InstallGame.IsEnabled = !AppState.IsInstalling;
             VerifyGame.IsEnabled = !AppState.IsInstalling;
@@ -69,6 +69,16 @@ namespace launcher
                 InstallOpt.Visibility = Visibility.Visible;
                 InstallOpt.Content = GetBranch.DownloadHDTextures(gameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
+
+            if (!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
+            {
+                string[] dedisplit = GetBranch.DediURL(gameBranch).Replace("https://", "").Split('/');
+                dediName.Text = dedisplit[dedisplit.Length - 1].Replace(".zip", "").Replace(".rar", "").Replace(".7z", "");
+            }
+            else
+            {
+                dediName.Text = "";
+            }
         }
 
         public void SetupGameItem(Branch branch)
@@ -78,8 +88,8 @@ namespace launcher
 
             BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, branch)}";
             InstallPath.Text = $"{GetBranch.Directory(branch)}";
-            Dedi.Visibility = string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)) ? Visibility.Hidden : Visibility.Visible;
-
+            
+            Dedi.IsEnabled = !string.IsNullOrEmpty(GetBranch.DediURL(gameBranch));
             UninstallGame.IsEnabled = !AppState.IsInstalling;
             InstallGame.IsEnabled = !AppState.IsInstalling;
             VerifyGame.IsEnabled = !AppState.IsInstalling;
@@ -105,6 +115,16 @@ namespace launcher
             {
                 InstallOpt.Visibility = Visibility.Visible;
                 InstallOpt.Content = GetBranch.DownloadHDTextures(branch) ? "UINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
+            }
+
+            if (!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
+            {
+                string[] dedisplit = GetBranch.DediURL(branch).Replace("https://", "").Split('/');
+                dediName.Text = dedisplit[dedisplit.Length - 1].Replace(".zip", "").Replace(".rar", "").Replace(".7z", "");
+            }
+            else
+            {
+                dediName.Text = "";
             }
 
             int row = 0;
@@ -251,7 +271,7 @@ namespace launcher
             var heightAnimation = new DoubleAnimation
             {
                 From = (int)this.Height,
-                To = 603,
+                To = 663,
                 Duration = animationDuration,
                 EasingFunction = easing
             };

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-             d:DesignHeight="603" d:DesignWidth="860">
+             d:DesignHeight="663" d:DesignWidth="860">
 
     <UserControl.Resources>
         <Style x:Key="OptionMarkFocusVisual">
@@ -85,23 +85,23 @@
                 </Grid>
             </Border>
 
-            <TextBlock Text="Game location complete path:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,91,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
-            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" Margin="48,123,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
+            <TextBlock Text="Game location complete path:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,81,437,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" />
+            <TextBlock x:Name="InstallPath" Text="C:\Program Files\R5Reloaded\R5R Library\LIVE" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" Margin="48,113,37,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
 
-            <Rectangle Height="2" Fill="{DynamicResource ThemeSeperator}"  VerticalAlignment="Top" Margin="50,170,50,0" />
+            <Rectangle Height="2" Fill="{DynamicResource ThemeSeperator}"  VerticalAlignment="Top" Margin="48,148,52,0" />
 
-            <TextBlock Text="Game Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,200,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="48,227,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,276,0,0" Content="VERIFY GAME" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="202,276,0,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="{DynamicResource ThemeUninstallButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="202,276,0,0" Content="INSTALL BRANCH" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
-            <Button x:Name="Dedi" Width="315" Style="{DynamicResource SettingsBtnStyle}" Margin="48,338,0,0" Content="DOWNLOAD DEDICATED SERVER" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" HorizontalAlignment="Left" Click="Dedi_Click" />
+            <TextBlock Text="Game Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="48,170,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall this branch or verify if the game files are installed correctly on your computer." Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="48,197,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="VerifyGame" Width="131" Style="{DynamicResource SettingsBtnStyle}" Margin="48,242,0,0" Content="VERIFY GAME" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" Cursor="Hand" VerticalAlignment="Top" Height="40" Click="VerifyGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="UninstallGame" Width="161" Style="{DynamicResource UninstallBtnStyle}" Margin="197,242,0,0" Content="Uninstall Branch" Background="Transparent" BorderBrush="Transparent" Foreground="{DynamicResource ThemeUninstallButtonText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="UninstallGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="InstallGame" Width="161" Style="{DynamicResource SettingsBtnStyle}" Margin="197,242,0,0" Content="INSTALL BRANCH" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallGame_Click" HorizontalAlignment="Left" />
+            <Button x:Name="Dedi" Width="183" Style="{DynamicResource SettingsBtnStyle}" Margin="48,394,0,0" Content="DOWNLOAD" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" HorizontalAlignment="Left" Click="Dedi_Click" />
 
-            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{DynamicResource ThemeUninstallButtonText}" FontSize="24" Margin="46,282,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="388,276,0,0" Content="UNINSTALL HD TEXTURES" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
-            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="50,456,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <TextBlock Text="Audio Languages" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="50,429,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
-            <Grid Margin="50,478,50,26" x:Name="LangBox">
+            <TextBlock x:Name="BranchDisabledTxt" Text="Branch Disabled" Width="190" TextWrapping="Wrap" Foreground="{DynamicResource ThemeUninstallButtonText}" FontSize="24" Margin="50,248,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Button x:Name="InstallOpt" Width="238" Style="{DynamicResource SettingsBtnStyle}" Margin="378,242,0,0" Content="UNINSTALL HD TEXTURES" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="40" Click="InstallOpt_Click" HorizontalAlignment="Left" />
+            <TextBlock Text="Install/Uninstall diffrent audio languages for this branch" Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="50,506,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Audio Languages" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="50,479,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Grid Margin="56,528,44,10" x:Name="LangBox">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25" />
                     <RowDefinition Height="25" />
@@ -117,6 +117,11 @@
                     <ColumnDefinition Width="140" />
                 </Grid.ColumnDefinitions>
             </Grid>
+            <Rectangle Height="2" Fill="{DynamicResource ThemeSeperator}"  VerticalAlignment="Top" Margin="48,302,52,0" />
+            <TextBlock Text="Dedicated Server Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" Margin="50,322,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <TextBlock Text="Download the dedicated server files for the current update." Width="362" TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="14" Margin="50,349,0,0" VerticalAlignment="Top" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" />
+            <Rectangle Height="2" Fill="{DynamicResource ThemeSeperator}"  VerticalAlignment="Top" Margin="50,455,52,0" />
+            <TextBlock x:Name="dediName" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" Margin="245,405,52,0" VerticalAlignment="Top" FontFamily="Bahnschrift Light" />
         </Grid>
     </Border>
 </UserControl>

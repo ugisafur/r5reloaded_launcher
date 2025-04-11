@@ -980,8 +980,8 @@
                             <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
-                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryAltText}" />
+                            <Setter Property="Background" TargetName="border" Value="{DynamicResource ThemeSecondaryText}" />
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeSecondaryText}" />
                             <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource ThemePrimaryAltText}" />
                         </Trigger>
                     </ControlTemplate.Triggers>

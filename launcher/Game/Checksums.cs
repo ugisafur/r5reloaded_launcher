@@ -51,10 +51,7 @@ namespace launcher.Game
             var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
                         .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
                         !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase)).ToArray();
+                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {
@@ -67,6 +64,9 @@ namespace launcher.Game
 
             foreach (var file in allFiles)
             {
+                if(file.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
             }
 
