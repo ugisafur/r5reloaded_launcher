@@ -83,6 +83,7 @@ namespace launcher.Global
         public static Popup_Exit_App AskToQuit_Control = new();
         public static Popup_Tour OnBoard_Control = new();
         public static Popup_Start_Tour OnBoardAsk_Control = new();
+        public static Popup_Launcher_Update LauncherUpdate_Control = new();
 
         #endregion Popup Controls
 
@@ -119,6 +120,7 @@ namespace launcher.Global
             Play_Button = mainWindow.Play_Button;
             Settings_Control = mainWindow.Settings_Control;
             Advanced_Control = mainWindow.Advanced_Control;
+            LauncherUpdate_Control = mainWindow.LauncherUpdate_Control;
             Menu_Control = mainWindow.Menu_Control;
             Transition_Rect = mainWindow.Transition_Rect;
             Menu_Popup = mainWindow.Menu_Popup;

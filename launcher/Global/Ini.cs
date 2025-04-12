@@ -148,7 +148,7 @@ namespace launcher.Global
 
             { Vars.Mode, 0 },
             { Vars.Visibility, 0 },
-            { Vars.Concurrent_Downloads, 100 },
+            { Vars.Concurrent_Downloads, 50 },
             { Vars.Download_Speed_Limit, 0 },
             { Vars.Map, 0 },
             { Vars.Playlist, 0 },

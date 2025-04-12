@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="launcher.Popup_Launcher_Update"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:launcher"
+             mc:Ignorable="d"
+             d:DesignHeight="210" d:DesignWidth="561">
+
+    <Border Background="{DynamicResource ThemePrimary}" CornerRadius="10">
+        <Grid>
+            <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="55" VerticalAlignment="Top"  CornerRadius="10, 10, 0, 0">
+                <Grid>
+                    <TextBlock Text="Launcher Update" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Margin="15,0,280,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="UpdateLater_Click" />
+                </Grid>
+            </Border>
+
+            <TextBlock x:Name="Msg" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,15,0" />
+
+            <Border Height="55" VerticalAlignment="Bottom">
+                <Grid>
+                    <Button x:Name="UpdateLauncher" Style="{DynamicResource checkBtnStyle}" Margin="437,0,10,0" Content="UPDATE" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="34" Click="UpdateLauncher_Click" />
+                    <Button x:Name="UpdateLater" Style="{DynamicResource checkBtnStyle}" Margin="318,0,129,0" Content="LATER" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Center" Cursor="Hand" Height="34" Click="UpdateLater_Click" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

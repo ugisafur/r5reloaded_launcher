@@ -521,6 +521,7 @@ namespace launcher.Managers
         {
             if (isShowing)
             {
+                UpdateChecker.otherPopupsOpened = true;
                 element.Visibility = Visibility.Visible;
                 background.Visibility = Visibility.Visible;
             }
@@ -566,6 +567,7 @@ namespace launcher.Managers
             {
                 element.Visibility = Visibility.Hidden;
                 background.Visibility = Visibility.Hidden;
+                UpdateChecker.otherPopupsOpened = false;
             }
         }
 
@@ -601,6 +603,12 @@ namespace launcher.Managers
 
         public static Task HideOnBoardAskPopup() =>
             AnimateElement(OnBoardAsk_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task ShowLauncherUpdatePopup() =>
+            AnimateElement(LauncherUpdate_Control, POPUP_BG, true, (bool)Ini.Get(Ini.Vars.Disable_Animations));
+
+        public static Task HideLauncherUpdatePopup() =>
+            AnimateElement(LauncherUpdate_Control, POPUP_BG, false, (bool)Ini.Get(Ini.Vars.Disable_Animations));
 
         public static Task ShowInstallLocation()
         {

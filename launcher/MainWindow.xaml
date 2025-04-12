@@ -243,6 +243,7 @@
         <local:Popup_Install_Location x:Name="InstallLocation_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:Popup_Exit_App x:Name="AskToQuit_Control" Width="561" Height="300" Opacity="0" Visibility="Hidden" />
         <local:Popup_Start_Tour x:Name="OnBoardAsk_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
+        <local:Popup_Launcher_Update x:Name="LauncherUpdate_Control" Width="561" Height="210" Opacity="0" Visibility="Hidden" />
 
         <Rectangle x:Name="OnBoardingRect" Fill="#BF000000" Margin="0,0,0,0" Visibility="Hidden">
             <Rectangle.OpacityMask>

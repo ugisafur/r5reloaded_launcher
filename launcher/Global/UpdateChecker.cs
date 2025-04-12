@@ -11,7 +11,12 @@ namespace launcher.Global
 {
     public static class UpdateChecker
     {
-        private static bool iqnoredLauncherUpdate = false;
+        public static bool otherPopupsOpened = false;
+
+        public static bool launcherPopupOpened = false;
+        public static bool? wantsToUpdate = null;
+
+        public static bool iqnoredLauncherUpdate = false;
         public static bool checkForUpdatesOveride = false;
 
         public static async Task Start()
@@ -40,14 +45,15 @@ namespace launcher.Global
                         continue;
                     }
 
-                    if (ShouldUpdateLauncher(newServerConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
+                    if (!otherPopupsOpened && ShouldUpdateLauncher(newServerConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
                     {
                         HandleLauncherUpdate();
                     }
                     else
                     {
-                        string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.VERSION;
-                        LogInfo(Source.UpdateChecker, $"Update for launcher is not available (latest version: {version})");
+                        string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.ServerConfig.launcherVersion;
+                        string message = iqnoredLauncherUpdate ? "Update for launcher is available but user iqnored update" : "Update for launcher is not available";
+                        LogInfo(Source.UpdateChecker, $"{message} (latest version: {version})");
                     }
 
                     if (ShouldUpdateGame(newServerConfig) && newServerConfig.branches.Count > 0)
@@ -186,15 +192,33 @@ namespace launcher.Global
 
                 if (!iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewNightlyVersion((string)Ini.Get(Ini.Vars.Launcher_Version), newGithubConfig))
                 {
-                    var messageBoxResult = MessageBox.Show("A new nightly version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Cancel, MessageBoxOptions.DefaultDesktopOnly);
-                    if (messageBoxResult == MessageBoxResult.No)
+                    appDispatcher.BeginInvoke(() =>
+                    {
+                        LauncherUpdate_Control.SetUpdateText("A new nightly version of the launcher is available. Would you like to update now?");
+                        Managers.App.ShowLauncherUpdatePopup();
+                    });
+                    
+                    launcherPopupOpened = true;
+
+                    while (launcherPopupOpened)
+                    {
+                        Task.Delay(250);
+                    }
+
+                    if(wantsToUpdate == null)
+                        return false;
+
+                    if (wantsToUpdate == false)
                     {
                         iqnoredLauncherUpdate = true;
                         return false;
                     }
 
-                    Ini.Set(Ini.Vars.Launcher_Version, newGithubConfig[0].tag_name);
-                    return true;
+                    if (wantsToUpdate == true)
+                    {
+                        Ini.Set(Ini.Vars.Launcher_Version, newGithubConfig[0].tag_name);
+                        return true;
+                    }
                 }
 
                 return false;
@@ -202,15 +226,33 @@ namespace launcher.Global
 
             if (!iqnoredLauncherUpdate && !AppState.IsInstalling && newServerConfig.launcherallowUpdates && IsNewVersion(Launcher.VERSION, newServerConfig.launcherVersion))
             {
-                var messageBoxResult = MessageBox.Show("A new version of the launcher is available. Would you like to update now?", "Launcher Update", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Cancel, MessageBoxOptions.DefaultDesktopOnly);
-                if (messageBoxResult == MessageBoxResult.No)
+                appDispatcher.BeginInvoke(() =>
+                {
+                    LauncherUpdate_Control.SetUpdateText("A new version of the launcher is available. Would you like to update now?");
+                    Managers.App.ShowLauncherUpdatePopup();
+                });
+
+                launcherPopupOpened = true;
+
+                while (launcherPopupOpened)
+                {
+                    Task.Delay(250);
+                }
+
+                if (wantsToUpdate == null)
+                    return false;
+
+                if (wantsToUpdate == false)
                 {
                     iqnoredLauncherUpdate = true;
                     return false;
                 }
 
-                Ini.Set(Ini.Vars.Launcher_Version, newServerConfig.launcherVersion);
-                return true;
+                if (wantsToUpdate == true)
+                {
+                    Ini.Set(Ini.Vars.Launcher_Version, newServerConfig.launcherVersion);
+                    return true;
+                }
             }
 
             return false;
