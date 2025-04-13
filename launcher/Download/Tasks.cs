@@ -135,6 +135,9 @@ namespace launcher.Download
 
             foreach (var file in gameFiles.files)
             {
+                if (file.name.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 string fileUrl = $"{GetBranch.GameURL()}/{file.name}";
                 string destinationPath = Path.Combine(branchDirectory, file.name);
 
@@ -169,6 +172,9 @@ namespace launcher.Download
 
             foreach (var file in DataCollections.BadFiles)
             {
+                if (file.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 string fileUrl = $"{GetBranch.GameURL()}/{file}";
                 string destinationPath = Path.Combine(branchDirectory, file);
 
