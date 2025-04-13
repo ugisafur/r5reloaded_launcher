@@ -49,10 +49,15 @@ namespace launcher.Game
                 Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
                 Download.Tasks.UpdateStatusLabel("Downloading repaired files", Source.Repair);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
+
+                cts.Cancel();
             }
 
             if (GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase) && Launcher.language_name != "english")
@@ -105,10 +110,15 @@ namespace launcher.Game
                 Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
                 Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
+
+                cts.Cancel();
             }
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
@@ -140,10 +150,15 @@ namespace launcher.Game
                 Download.Tasks.UpdateStatusLabel("Preparing language tasks", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
                 Download.Tasks.UpdateStatusLabel("Downloading language files", Source.Repair);
                 Download.Tasks.ShowSpeedLabels(false, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
+
+                cts.Cancel();
             }
         }
     }

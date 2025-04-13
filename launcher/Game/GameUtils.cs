@@ -106,6 +106,7 @@ namespace launcher.Game
     {
         public string name { get; set; }
         public string checksum { get; set; }
+        public long size { get; set; }
     }
 
     public class ServerConfig

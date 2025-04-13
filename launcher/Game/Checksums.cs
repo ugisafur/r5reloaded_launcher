@@ -29,7 +29,7 @@ namespace launcher.Game
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.name}" : "Bad file found: {file.name}");
+                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.name}" : $"Bad file found: {file.name}");
                     DataCollections.BadFiles.Add($"{file.name}.zst");
                 }
 

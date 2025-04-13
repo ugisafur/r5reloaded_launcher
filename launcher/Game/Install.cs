@@ -45,10 +45,15 @@ namespace launcher.Game
             Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
             var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
             Download.Tasks.ShowSpeedLabels(true, true);
             Download.Tasks.UpdateStatusLabel("Downloading game files", Source.Installer);
             await Task.WhenAll(downloadTasks);
             Download.Tasks.ShowSpeedLabels(false, false);
+
+            cts.Cancel();
 
             if (AppState.BadFilesDetected)
             {
@@ -99,10 +104,15 @@ namespace launcher.Game
             Download.Tasks.UpdateStatusLabel("Preparing optional download", Source.Installer);
             var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
             Download.Tasks.ShowSpeedLabels(true, true);
             Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Installer);
             await Task.WhenAll(optionaldownloadTasks);
             Download.Tasks.ShowSpeedLabels(false, false);
+
+            cts.Cancel();
 
             Download.Tasks.SetOptionalInstallState(false);
 
@@ -152,9 +162,14 @@ namespace launcher.Game
 
             var langdownloadTasks = Download.Tasks.InitializeDownloadTasks(langFiles, branchDirectory);
 
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
             Download.Tasks.ShowSpeedLabels(false, true);
             await Task.WhenAll(langdownloadTasks);
             Download.Tasks.ShowSpeedLabels(false, false);
+
+            cts.Cancel();
 
             appDispatcher.Invoke(new Action(() =>
             {

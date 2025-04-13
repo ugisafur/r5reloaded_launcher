@@ -43,10 +43,15 @@ namespace launcher.Game
                 Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Update);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
                 Download.Tasks.UpdateStatusLabel("Downloading updated files", Source.Update);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
+
+                cts.Cancel();
             }
 
             SetBranch.Installed(true);
@@ -93,10 +98,15 @@ namespace launcher.Game
                 Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+
                 Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
+
+                cts.Cancel();
             }
 
             Download.Tasks.SetOptionalInstallState(false);

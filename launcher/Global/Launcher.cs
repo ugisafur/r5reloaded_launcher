@@ -15,7 +15,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.9.8";
+        public const string VERSION = "0.9.9.9.1";
 
         #region Public Keys
 
@@ -141,7 +141,7 @@ namespace launcher.Global
 
         public static List<OnBoardingItem> OnBoardingItems { get; } = [
             new OnBoardingItem("Launcher Menu", "Quick access to settings and useful resources can be found in this menu.", new Rect(1,1,24,14), new Vector2(6,64)),
-            new OnBoardingItem("Service Status", "Monitor the status of R5R services here. If there are any preformance or service interruptions, you will see it here.", new Rect(210,1,31,14), new Vector2(600,64)),
+            new OnBoardingItem("Service Status", "Monitor the status of R5R services here. If there are any performance or service interruptions, you will see it here.", new Rect(210,1,31,14), new Vector2(600,64)),
             new OnBoardingItem("Downloads And Tasks", "Follow the progress of your game downloads / updates.", new Rect(246,1,31,14), new Vector2(760,64)),
             new OnBoardingItem("Branches And Installing", "Here you can select the game branch you want to install, update, or play", new Rect(20,75,71,63), new Vector2(86,538)),
             new OnBoardingItem("Game Settings", "Clicking this allows you to access advanced settings for the selected branch, as well as verify game files or uninstall.", new Rect(75,101,16,16), new Vector2(334,455)),

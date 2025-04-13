@@ -13,6 +13,18 @@ using System.Windows;
 
 namespace launcher.Download
 {
+    public static class GlobalDownloadStats
+    {
+        // Total size in bytes for all files (set this at the start if known)
+        public static long TotalBytes = 0;
+
+        // Total downloaded bytes so far (across all files)
+        public static long DownloadedBytes = 0;
+
+        // Overall start time for the complete download operation
+        public static DateTime StartTime;
+    }
+
     public static class Tasks
     {
         public static long _downloadSpeedLimit = 0;
@@ -72,6 +84,43 @@ namespace launcher.Download
             _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
             GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
         }
+        public static async Task UpdateGlobalDownloadProgressAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                //var elapsed = DateTime.Now - GlobalDownloadStats.StartTime;
+                //double avgSpeed = elapsed.TotalSeconds > 0 ? (double)GlobalDownloadStats.DownloadedBytes / elapsed.TotalSeconds : 0;
+                //long remainingBytes = GlobalDownloadStats.TotalBytes - GlobalDownloadStats.DownloadedBytes;
+                //TimeSpan estimatedRemaining = avgSpeed > 0 ? TimeSpan.FromSeconds(remainingBytes / avgSpeed) : TimeSpan.Zero;
+
+                await appDispatcher.InvokeAsync(() =>
+                {
+                    double totalSize = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.TotalBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.TotalBytes / (1024.0 * 1024.0);
+                    string totalText = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                    double downloadedSize = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024.0);
+                    string downloadedText = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} "; //+ $"- Estimated time remaining: {estimatedRemaining:hh\\:mm\\:ss}";
+                });
+
+                // Update every second
+                await Task.Delay(1000, token);
+            }
+
+            Main_Window.TimeLeft_Label.Text = "";
+        }
+        private static async Task<long> GetContentLengthAsync(string fileUrl)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
+            request.Method = "HEAD"; // Use the HEAD method to fetch only headers
+            request.Timeout = 10000; // Optional: set a timeout as needed
+
+            using (var response = (HttpWebResponse)await request.GetResponseAsync())
+            {
+                return response.ContentLength;  // Returns the Content-Length header value
+            }
+        }
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
@@ -102,6 +151,10 @@ namespace launcher.Download
                 );
             }
 
+            GlobalDownloadStats.TotalBytes = 0;
+            GlobalDownloadStats.DownloadedBytes = 0;
+            GlobalDownloadStats.StartTime = DateTime.Now;
+
             return downloadTasks;
         }
 
@@ -130,6 +183,10 @@ namespace launcher.Download
                     )
                 );
             }
+
+            GlobalDownloadStats.TotalBytes = 0;
+            GlobalDownloadStats.DownloadedBytes = 0;
+            GlobalDownloadStats.StartTime = DateTime.Now;
 
             return downloadTasks;
         }
@@ -324,6 +381,8 @@ namespace launcher.Download
                 long downloadedBytes = 0;
                 DateTime lastUpdate = DateTime.Now;
 
+                GlobalDownloadStats.TotalBytes += totalBytes;
+
                 using var responseStream = response.GetResponseStream();
 
                 using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
@@ -339,6 +398,8 @@ namespace launcher.Download
                     downloadedBytes += bytesRead;
 
                     DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+
+                    Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
 
                     if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
                     {
@@ -438,6 +499,7 @@ namespace launcher.Download
                 Downloads_Control.Speed_Label.Visibility = Downloads_Control_Speed_Label_isVisible ? Visibility.Visible : Visibility.Hidden;
                 Speed_Label.Text = "";
                 Downloads_Control.Speed_Label.Text = "";
+                Main_Window.TimeLeft_Label.Text = "";
             });
         }
 
