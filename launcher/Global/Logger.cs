@@ -56,12 +56,8 @@ namespace launcher.Global
 
         public static void LogCrashToFile(Exception ex)
         {
-            // no point in making a crash log if we're uploading it to Backtrace anyways
             if ((bool)Ini.Get(Ini.Vars.Upload_Crashes))
-            {
                 Backtrace.Send(ex, Source.Unknown);
-                return;
-            }
 
             string filePath = Path.Combine(Path.GetDirectoryName(LogFilePath), "crash.log");
 

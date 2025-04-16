@@ -30,6 +30,7 @@ namespace launcher.Download
         public static long _downloadSpeedLimit = 0;
         public static SemaphoreSlim _downloadSemaphore;
         public static DownloadSpeedMonitor _speedMonitor;
+        public static double currentDownloadSpeed = 0;
 
         public static void CreateDownloadMontior()
         {
@@ -48,6 +49,7 @@ namespace launcher.Download
         {
             string speedText;
             double speed = speedBytesPerSecond;
+            currentDownloadSpeed = speed;
 
             if (speed >= 1024 * 1024)
             {
@@ -88,10 +90,21 @@ namespace launcher.Download
         {
             while (!token.IsCancellationRequested)
             {
-                //var elapsed = DateTime.Now - GlobalDownloadStats.StartTime;
-                //double avgSpeed = elapsed.TotalSeconds > 0 ? (double)GlobalDownloadStats.DownloadedBytes / elapsed.TotalSeconds : 0;
-                //long remainingBytes = GlobalDownloadStats.TotalBytes - GlobalDownloadStats.DownloadedBytes;
-                //TimeSpan estimatedRemaining = avgSpeed > 0 ? TimeSpan.FromSeconds(remainingBytes / avgSpeed) : TimeSpan.Zero;
+                var elapsed = DateTime.Now - GlobalDownloadStats.StartTime;
+                double avgSpeed = elapsed.TotalSeconds > 0
+                    ? GlobalDownloadStats.DownloadedBytes / elapsed.TotalSeconds
+                    : 0;
+
+                // Use the current speed if available, otherwise fall back to average
+                double currentSpeed = Tasks.currentDownloadSpeed; // in bytes/sec
+                double effectiveSpeed = currentSpeed > 0
+                    ? (avgSpeed + currentSpeed) / 2   // blend average + current
+                    : avgSpeed;
+
+                long remainingBytes = GlobalDownloadStats.TotalBytes - GlobalDownloadStats.DownloadedBytes;
+                TimeSpan estimatedRemaining = effectiveSpeed > 0
+                    ? TimeSpan.FromSeconds(remainingBytes / effectiveSpeed)
+                    : TimeSpan.Zero;
 
                 await appDispatcher.InvokeAsync(() =>
                 {
@@ -101,26 +114,15 @@ namespace launcher.Download
                     double downloadedSize = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024.0);
                     string downloadedText = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
 
-                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} "; //+ $"- Estimated time remaining: {estimatedRemaining:hh\\:mm\\:ss}";
+                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}";
                 });
 
-                // Update every second
                 await Task.Delay(1000, token);
             }
 
             Main_Window.TimeLeft_Label.Text = "";
         }
-        private static async Task<long> GetContentLengthAsync(string fileUrl)
-        {
-            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
-            request.Method = "HEAD"; // Use the HEAD method to fetch only headers
-            request.Timeout = 10000; // Optional: set a timeout as needed
 
-            using (var response = (HttpWebResponse)await request.GetResponseAsync())
-            {
-                return response.ContentLength;  // Returns the Content-Length header value
-            }
-        }
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
@@ -154,7 +156,7 @@ namespace launcher.Download
                 );
             }
 
-            GlobalDownloadStats.TotalBytes = 0;
+            GlobalDownloadStats.TotalBytes = gameFiles.files.Sum(f => f.size);
             GlobalDownloadStats.DownloadedBytes = 0;
             GlobalDownloadStats.StartTime = DateTime.Now;
 
@@ -172,11 +174,11 @@ namespace launcher.Download
 
             foreach (var file in DataCollections.BadFiles)
             {
-                if (file.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                if (file.name.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 string fileUrl = $"{GetBranch.GameURL()}/{file}";
-                string destinationPath = Path.Combine(branchDirectory, file);
+                string destinationPath = Path.Combine(branchDirectory, file.name);
 
                 EnsureDirectoryExists(destinationPath);
 
@@ -184,13 +186,13 @@ namespace launcher.Download
                     DownloadFileAsync(
                         fileUrl,
                         destinationPath,
-                        file,
+                        file.name,
                         checkForExistingFiles: false
                     )
                 );
             }
 
-            GlobalDownloadStats.TotalBytes = 0;
+            GlobalDownloadStats.TotalBytes = DataCollections.BadFiles.Sum(f => f.size);
             GlobalDownloadStats.DownloadedBytes = 0;
             GlobalDownloadStats.StartTime = DateTime.Now;
 
@@ -386,8 +388,6 @@ namespace launcher.Download
                 long totalBytes = response.ContentLength;
                 long downloadedBytes = 0;
                 DateTime lastUpdate = DateTime.Now;
-
-                GlobalDownloadStats.TotalBytes += totalBytes;
 
                 using var responseStream = response.GetResponseStream();
 

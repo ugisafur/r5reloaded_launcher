@@ -6,6 +6,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text;
 using System.Net.Http.Headers;
+using System.IO;
 
 namespace patch_creator
 {
@@ -155,6 +156,8 @@ namespace patch_creator
 
             //Get server checksums.json file
             UpdateProgressLabel("Creating new checksums.json");
+            local_checksums.compression_level = (int)compressionLevel.Value;
+            local_checksums.game_version = versionTxt.Text;
             var game_checksums_file = JsonSerializer.Serialize(local_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
 
@@ -174,6 +177,9 @@ namespace patch_creator
             // Update the server checksums
             UpdateProgressLabel("Creating new checksums_zst.json");
             GameChecksums new_zst_checksums = UpdateZSTChecksums(local_zst_checksums, server_zst_checksums);
+
+            new_zst_checksums.compression_level = (int)compressionLevel.Value;
+            new_zst_checksums.game_version = versionTxt.Text;
             var new_zst_checksums_file = JsonSerializer.Serialize(new_zst_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums_zst.json", new_zst_checksums_file);
 
@@ -363,7 +369,8 @@ namespace patch_creator
                     return new GameFile
                     {
                         name = relativePath,
-                        checksum = checksum
+                        checksum = checksum,
+                        size = new FileInfo(filePath).Length
                     };
                 }
                 catch (Exception ex)
@@ -435,7 +442,8 @@ namespace patch_creator
                     return new GameFile
                     {
                         name = relativePath,
-                        checksum = checksum
+                        checksum = checksum,
+                        size = new FileInfo(filePath).Length
                     };
                 }
                 catch (Exception ex)

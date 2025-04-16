@@ -13,6 +13,8 @@
 
     public class GameChecksums
     {
+        public string? game_version { get; set; }
+        public int? compression_level { get; set; }
         public List<GameFile>? files { get; set; }
     }
 
@@ -20,6 +22,7 @@
     {
         public string? name { get; set; }
         public string? checksum { get; set; }
+        public long? size { get; set; }
     }
 
     public class Branch

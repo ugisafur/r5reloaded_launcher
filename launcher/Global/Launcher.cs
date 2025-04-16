@@ -136,7 +136,7 @@ namespace launcher.Global
 
     public static class DataCollections
     {
-        public static List<string> BadFiles { get; } = [];
+        public static List<GameFile> BadFiles { get; } = [];
         public static List<Branch> FolderBranches { get; } = [];
 
         public static List<OnBoardingItem> OnBoardingItems { get; } = [
