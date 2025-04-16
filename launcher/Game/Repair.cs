@@ -74,7 +74,14 @@ namespace launcher.Game
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been repaired!", BalloonIcon.Info);
 
             if (Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories).Length > 0)
+            {
+                foreach (string file in Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories))
+                {
+                    LogInfo(Source.Repair, $"Found HD Texture file: {file}");
+                }
+
                 SetBranch.DownloadHDTextures(true);
+            }
 
             Download.Tasks.SetInstallState(false);
 

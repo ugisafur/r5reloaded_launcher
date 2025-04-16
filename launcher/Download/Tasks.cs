@@ -177,7 +177,7 @@ namespace launcher.Download
                 if (file.name.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                string fileUrl = $"{GetBranch.GameURL()}/{file}";
+                string fileUrl = $"{GetBranch.GameURL()}/{file.name}";
                 string destinationPath = Path.Combine(branchDirectory, file.name);
 
                 EnsureDirectoryExists(destinationPath);
