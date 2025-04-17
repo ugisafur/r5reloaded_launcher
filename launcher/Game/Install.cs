@@ -3,6 +3,7 @@ using static launcher.Global.Logger;
 using static launcher.Global.References;
 using System.Windows.Controls;
 using launcher.Global;
+using System.Windows;
 
 namespace launcher.Game
 {
@@ -28,6 +29,14 @@ namespace launcher.Game
             if (GetBranch.ExeExists())
             {
                 Task.Run(() => { Repair.Start(); });
+                return;
+            }
+
+            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false, false);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
+            {
+                MessageBox.Show($"Not enough free space to install R5Reloaded.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -91,6 +100,14 @@ namespace launcher.Game
             if (GetBranch.IsLocalBranch())
                 return;
 
+            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false, true);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
+            {
+                MessageBox.Show($"Not enough free space to install HD Textures.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             Download.Tasks.ConfigureConcurrency();
             Download.Tasks.ConfigureDownloadSpeed();
 
@@ -144,6 +161,14 @@ namespace launcher.Game
             if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
             {
                 appDispatcher.Invoke(new Action(() => { Managers.App.ShowInstallLocation(); }));
+                return;
+            }
+
+            GameFiles uncompressedgameFiles = await Fetch.LanguageFiles(langs, false);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
+            {
+                MessageBox.Show($"Not enough free space to install Language File.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

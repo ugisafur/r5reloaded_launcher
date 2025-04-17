@@ -9,8 +9,8 @@
 
     <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" Height="40">
         <Grid>
-            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  Margin="6,4,135,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
-            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  Margin="0,5,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormal}" Margin="6,4,135,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormal}" Margin="0,5,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
             <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="8" Margin="6,12,5,2" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemePrimary}" Background="{DynamicResource ThemePrimary}" HorizontalAlignment="Stretch" />
         </Grid>
     </Border>

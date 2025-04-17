@@ -347,7 +347,7 @@ namespace launcher.Download
 
         private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
         {
-            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
+            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName.Replace(".zst", "")));
         }
 
         private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
