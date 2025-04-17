@@ -185,6 +185,9 @@ namespace launcher
 
             PreLoad_Window.Close();
 
+            TextOptions.SetTextFormattingMode(Main_Window, TextFormattingMode.Display);
+            TextOptions.SetTextRenderingMode(Main_Window, TextRenderingMode.ClearType);
+
             // Show window open animation
             await OnOpen();
 
