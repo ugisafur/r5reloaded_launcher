@@ -358,6 +358,7 @@ namespace launcher.Download
             }
             catch
             {
+                LogError(Source.Download, $"Failed to remove download item from UI. {downloadItem.downloadFileName.Text}");
             }
         }
 
