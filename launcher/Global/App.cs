@@ -82,6 +82,22 @@ namespace launcher.Managers
             }
         }
 
+        public static bool IsR5ApexOpen()
+        {
+            Process[] processes = Process.GetProcessesByName("r5apex");
+            return processes.Length > 0;
+        }
+
+        public static void CloseR5Apex()
+        {
+            Process[] processes = Process.GetProcessesByName("r5apex");
+            foreach (Process process in processes)
+            {
+                process.Kill();
+                process.WaitForExit();
+            }
+        }
+
         private static void FindAndStartEAApp()
         {
             if (!(bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App))

@@ -15,7 +15,7 @@
                 <RowDefinition Height="410" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <TextBlock Text="About" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
+            <TextBlock Text="About" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  VerticalAlignment="Center" Margin="43,0,0,0" Height="49" />
             <Image Grid.Row="1" Source="{DynamicResource logo}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="150" Width="150" Margin="10,0,0,0">
                 <Image.RenderTransform>
                     <TranslateTransform X="30" Y="0" />
@@ -24,7 +24,7 @@
             <Rectangle Grid.Row="2" Fill="{DynamicResource ThemeSeperator}" Height="1" VerticalAlignment="Top" Margin="40,0,40,0" />
             <TextBlock Grid.Row="2" Text="Launcher version:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormalSemiBold}" TextWrapping="Wrap" Margin="43,27,778,367" Width="114" Height="17" HorizontalAlignment="Left" />
             <TextBlock x:Name="launcherVersionTxt" Grid.Row="2" Text="1.0.0" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormalMedium}" TextWrapping="Wrap" Margin="162,27,380,367" Width="393" Height="17" HorizontalAlignment="Left" />
-            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{DynamicResource ThemePrimaryText}" FontSize="60" FontFamily="{StaticResource NunitoSansNormalSemiBold}" TextWrapping="Wrap" Margin="165,0,380,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+            <TextBlock Grid.Row="1" Text="R5RELOADED" Foreground="{DynamicResource ThemePrimaryText}" FontSize="60" FontFamily="{StaticResource NunitoSansNormalExtraBold}" TextWrapping="Wrap" Margin="165,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="446" />
             <TextBlock Grid.Row="2" Text="Launcher source:" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormalSemiBold}" TextWrapping="Wrap" Margin="43,53,778,341" Width="114" Height="17" HorizontalAlignment="Left" />
             <TextBlock Grid.Row="2" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource NunitoSansNormalMedium}" TextWrapping="Wrap" Margin="165,53,377,341" Width="393" Height="17" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://github.com/AyeZeeBB/r5reloaded_launcher" RequestNavigate="Hyperlink_RequestNavigate">

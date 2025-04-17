@@ -14,7 +14,7 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="General Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="General Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
                 <TextBlock Text="Basic options that influence overall gameplay and developer accessibility. These settings include cheats, developer tools, and console visibility." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="43,97,172,0" Height="45" Width="720" />
 
                 <CheckBox x:Name="Cheats" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,184,0,0" Cursor="Hand" />

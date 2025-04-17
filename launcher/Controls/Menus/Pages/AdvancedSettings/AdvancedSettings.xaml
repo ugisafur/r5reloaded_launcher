@@ -14,8 +14,8 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="Advanced Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Specialized settings for power users, including command-line arguments for custom game configuration and debugging." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="43,97,72,0" Height="44" Width="820" />
+                <TextBlock Text="Advanced Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Specialized settings for power users, including command-line arguments for custom game configuration and debugging." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="43,97,72,0" Height="53" Width="820" />
 
                 <TextBox x:Name="CommandLine" Style="{DynamicResource CommandLineTextBox}" Height="49" Width="498" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,179,0,0" Background="Transparent" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Text="" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" KeyDown="TextBox_PreviewKeyDown" Cursor="IBeam" />
             </Grid>

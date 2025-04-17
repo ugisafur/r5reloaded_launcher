@@ -3,7 +3,7 @@ using System.IO;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
 using launcher.Global;
-using System.Windows.Forms;
+using System.Windows;
 
 namespace launcher.Game
 {
@@ -19,6 +19,18 @@ namespace launcher.Game
                 return;
             }
 
+            if (Managers.App.IsR5ApexOpen())
+            {
+                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to uninstall.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    Managers.App.CloseR5Apex();
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             if (AnyFilesOpen(GetBranch.Directory()))
                 return;
 
@@ -26,7 +38,7 @@ namespace launcher.Game
 
             string[] files = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
 
-            Download.Tasks.UpdateStatusLabel("Removing Game Files", Source.Uninstaller);
+            Download.Tasks.UpdateStatusLabel("Removing game files", Source.Uninstaller);
             AppState.FilesLeft = files.Length;
 
             appDispatcher.Invoke(() =>
@@ -84,7 +96,7 @@ namespace launcher.Game
 
             GameFiles langFiles = await Fetch.LanguageFiles(lang, false);
 
-            Download.Tasks.UpdateStatusLabel("Removing Game Files", Source.Uninstaller);
+            Download.Tasks.UpdateStatusLabel("Removing game files", Source.Uninstaller);
             AppState.FilesLeft = langFiles.files.Count;
 
             appDispatcher.Invoke(() =>
@@ -130,7 +142,7 @@ namespace launcher.Game
 
             string[] opt_files = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
 
-            Download.Tasks.UpdateStatusLabel("Removing HD Textures", Source.Uninstaller);
+            Download.Tasks.UpdateStatusLabel("Removing hd textures", Source.Uninstaller);
             AppState.FilesLeft = opt_files.Length;
 
             appDispatcher.Invoke(() =>
@@ -179,8 +191,8 @@ namespace launcher.Game
                 {
                     MessageBox.Show($"The file '{Path.GetFileName(file)}' is currently in use. Please close it before uninstalling.",
                                     "File In Use",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Warning);
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning);
                     anyFileInUse = true;
                     break;
                 }

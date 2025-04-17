@@ -39,7 +39,7 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            Download.Tasks.UpdateStatusLabel("Fetching game files list", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Installer);
             GameFiles gameFiles = await Fetch.GameFiles(true, false);
 
             Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
@@ -98,10 +98,10 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            Download.Tasks.UpdateStatusLabel("Fetching optional files list", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Installer);
             GameFiles optionalGameFiles = await Fetch.GameFiles(true, true);
 
-            Download.Tasks.UpdateStatusLabel("Preparing optional download", Source.Installer);
+            Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Installer);
             var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
 
             CancellationTokenSource cts = new CancellationTokenSource();

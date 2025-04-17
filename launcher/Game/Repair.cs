@@ -14,6 +14,18 @@ namespace launcher.Game
             if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch())
                 return false;
 
+            if (Managers.App.IsR5ApexOpen())
+            {
+                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to repair.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    Managers.App.CloseR5Apex();
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             if (GetBranch.UpdateAvailable())
             {
                 Update_Button.Visibility = Visibility.Hidden;
@@ -30,29 +42,29 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            Download.Tasks.UpdateStatusLabel("Preparing checksum tasks", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
             var checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Generating local checksums", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking files", Source.Repair);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel("Fetching base game files list", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Repair);
             GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
-            Download.Tasks.UpdateStatusLabel("Identifying bad files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Finding bad files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
             {
                 repairSuccess = false;
 
-                Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Preparing downloads", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-                Download.Tasks.UpdateStatusLabel("Downloading repaired files", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Downloading files", Source.Repair);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);
@@ -100,21 +112,21 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            Download.Tasks.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
             var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Generating optional checksums", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Repair);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel("Fetching optional files list", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Repair);
             GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
-            Download.Tasks.UpdateStatusLabel("Identifying bad optional files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Finding bad optional files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
@@ -143,18 +155,18 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            Download.Tasks.UpdateStatusLabel("Preparing language checksum tasks", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
             var checksumTasks = Checksums.PrepareLangChecksumTasks(branchDirectory, langs);
 
             Download.Tasks.UpdateStatusLabel("Fetching language files", Source.Repair);
             GameFiles langFiles = await Fetch.LanguageFiles(langs, false);
 
-            Download.Tasks.UpdateStatusLabel("Identifying bad language files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Finding bad language files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(langFiles, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing language tasks", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Preparing language downloads", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();

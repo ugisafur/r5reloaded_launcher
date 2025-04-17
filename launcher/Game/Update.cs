@@ -3,6 +3,7 @@ using System.IO;
 using static launcher.Global.Logger;
 using launcher.Global;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace launcher.Game
 {
@@ -12,6 +13,18 @@ namespace launcher.Game
         {
             if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch() || !GetBranch.UpdateAvailable() || GetBranch.LocalVersion() == GetBranch.ServerVersion())
                 return;
+
+            if (Managers.App.IsR5ApexOpen())
+            {
+                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to update.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    Managers.App.CloseR5Apex();
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             Download.Tasks.CreateDownloadMontior();
 
@@ -26,21 +39,21 @@ namespace launcher.Game
 
             await CheckForDeletedFiles(false);
 
-            Download.Tasks.UpdateStatusLabel("Preparing checksum tasks", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Update);
             var checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Generating local checksums", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Checking local files", Source.Update);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel("Fetching update files list", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Update);
             GameFiles gameFiles = await Fetch.GameFiles(false, false);
 
-            Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Update);
+            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing download tasks", Source.Update);
+                Download.Tasks.UpdateStatusLabel("Preparing downloads", Source.Update);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
@@ -81,21 +94,21 @@ namespace launcher.Game
 
             await CheckForDeletedFiles(true);
 
-            Download.Tasks.UpdateStatusLabel("Preparing optional checksum tasks", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Repair);
             var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Generating optional checksums", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Repair);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel("Fetching optional files list", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Repair);
             GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
-            Download.Tasks.UpdateStatusLabel("Identifying changed files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Repair);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing optional tasks", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Repair);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();

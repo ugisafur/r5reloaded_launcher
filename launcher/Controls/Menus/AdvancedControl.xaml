@@ -29,26 +29,26 @@
                         </Grid>
                     </Button>
                     <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
-                    <TextBlock Text="Advanced Settings" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="30" Width="250" Margin="125,0,0,0" />
+                    <TextBlock Text="Advanced Settings" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="30" Width="264" Margin="125,0,0,0" />
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">
-                    <Button x:Name="GeneralBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="GeneralBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="General" Width="300" />
                     </Button>
-                    <Button x:Name="GraphicsBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="GraphicsBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Graphics" Width="300" />
                     </Button>
-                    <Button x:Name="NetworkBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="NetworkBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Network" Width="300" />
                     </Button>
-                    <Button x:Name="ServerBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="ServerBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Server / Game" Width="300" />
                     </Button>
-                    <Button x:Name="PerformanceBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="PerformanceBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Performance" Width="300" />
                     </Button>
-                    <Button x:Name="AdvancedBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="AdvancedBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Advanced" Width="300" />
                     </Button>
                 </StackPanel>
