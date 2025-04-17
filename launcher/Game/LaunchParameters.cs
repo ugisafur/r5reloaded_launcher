@@ -119,8 +119,8 @@ namespace launcher.Game
 
                         if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
-                            AppendParameter(ref svParameters, "-dev");
-                            AppendParameter(ref svParameters, "-showdevmenu");
+                            AppendParameter(ref svParameters, "+sv_cheats", "1");
+                            //AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
@@ -171,8 +171,8 @@ namespace launcher.Game
 
                         if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
-                            AppendParameter(ref svParameters, "-dev");
-                            AppendParameter(ref svParameters, "-showdevmenu");
+                            AppendParameter(ref svParameters, "+sv_cheats", "1");
+                            //AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
@@ -210,8 +210,8 @@ namespace launcher.Game
 
                         if ((bool)Ini.Get(Ini.Vars.Enable_Cheats))
                         {
-                            AppendParameter(ref svParameters, "-dev");
-                            AppendParameter(ref svParameters, "-showdevmenu");
+                            AppendParameter(ref svParameters, "+sv_cheats", "1");
+                            //AppendParameter(ref svParameters, "-showdevmenu");
                         }
 
                         if ((bool)Ini.Get(Ini.Vars.Offline_Mode))
