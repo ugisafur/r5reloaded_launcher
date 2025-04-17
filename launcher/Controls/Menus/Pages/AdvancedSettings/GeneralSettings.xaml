@@ -14,28 +14,28 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="General Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Basic options that influence overall gameplay and developer accessibility. These settings include cheats, developer tools, and console visibility." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,172,0" Height="45" Width="720" />
+                <TextBlock Text="General Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Basic options that influence overall gameplay and developer accessibility. These settings include cheats, developer tools, and console visibility." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="43,97,172,0" Height="45" Width="720" />
 
                 <CheckBox x:Name="Cheats" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,184,0,0" Cursor="Hand" />
-                <TextBlock Text="Enable Cheats" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
-                <TextBlock Text="Enables the ability to use cheats ingame" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
+                <TextBlock Text="Enable Cheats" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
+                <TextBlock Text="Enables the ability to use cheats ingame" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
 
                 <CheckBox x:Name="Dev" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,228,0,0" Cursor="Hand" />
-                <TextBlock Text="Enable Developer" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
-                <TextBlock Text="Enables dev options and console commands" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
+                <TextBlock Text="Enable Developer" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
+                <TextBlock Text="Enables dev options and console commands" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
 
                 <CheckBox x:Name="ConsoleShow" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,275,0,0" Cursor="Hand" />
-                <TextBlock Text="Show Console" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
-                <TextBlock Text="Show external game console" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
+                <TextBlock Text="Show Console" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
+                <TextBlock Text="Show external game console" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
 
                 <CheckBox x:Name="ColoredCon" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,322,0,0" Cursor="Hand" />
-                <TextBlock Text="Color Console" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
-                <TextBlock Text="Enable Colored game console" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
+                <TextBlock Text="Color Console" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
+                <TextBlock Text="Enable Colored game console" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
 
                 <CheckBox x:Name="Offline" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,369,0,0" Cursor="Hand" />
-                <TextBlock Text="Offline Mode" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,367,17,0" Height="20" />
-                <TextBlock Text="Disables access to any online features" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,387,17,0" Height="16" />
+                <TextBlock Text="Offline Mode" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,367,17,0" Height="20" />
+                <TextBlock Text="Disables access to any online features" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,387,17,0" Height="16" />
             </Grid>
         </Grid>
     </Border>

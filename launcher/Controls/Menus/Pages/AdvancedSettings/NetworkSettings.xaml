@@ -14,24 +14,24 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Left" Width="935">
-                <TextBlock Text="Network Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
-                <TextBlock Text="Options to manage networking features, including packet encryption, connection stability, and threading for prioritized packet handling." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="43,97,172,0" Height="49" Width="720" />
+                <TextBlock Text="Network Settings" Foreground="{DynamicResource ThemePrimaryText}" FontSize="40" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="43,43,0,0" Height="49" />
+                <TextBlock Text="Options to manage networking features, including packet encryption, connection stability, and threading for prioritized packet handling." TextWrapping="Wrap" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="43,97,172,0" Height="49" Width="720" />
 
                 <CheckBox x:Name="PacketsEncrypt" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,184,0,0" Cursor="Hand" />
-                <TextBlock Text="Encrypt Packets" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
-                <TextBlock Text="Toggles encryption for game packets" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
+                <TextBlock Text="Encrypt Packets" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,182,17,0" Height="20" ></TextBlock>
+                <TextBlock Text="Toggles encryption for game packets" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,202,17,0" Height="16" />
 
                 <CheckBox x:Name="PacketsQueued" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,228,0,0" Cursor="Hand" />
-                <TextBlock Text="Queued Packets" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
-                <TextBlock Text="Sends packets using a priority thread" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
+                <TextBlock Text="Queued Packets" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,226,17,0" Height="20" />
+                <TextBlock Text="Sends packets using a priority thread" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,246,17,0" Height="16" />
 
                 <CheckBox x:Name="RandomNetKey" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,275,0,0" Cursor="Hand" />
-                <TextBlock Text="Random Netkey" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
-                <TextBlock Text="Generate a new random net key on launch" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
+                <TextBlock Text="Random Netkey" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,273,17,0" Height="20" />
+                <TextBlock Text="Generate a new random net key on launch" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,293,17,0" Height="16" />
 
                 <CheckBox x:Name="NoTimeout" Style="{StaticResource SwitchStyle}" Height="27" Width="50" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="43,322,0,0" Cursor="Hand" />
-                <TextBlock Text="No Timeout" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
-                <TextBlock Text="Prevents disconnection for lost connections" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
+                <TextBlock Text="No Timeout" TextWrapping="Wrap" Foreground="{DynamicResource ThemePrimaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Margin="104,320,17,0" Height="20" />
+                <TextBlock Text="Prevents disconnection for lost connections" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="104,340,17,0" Height="16" />
             </Grid>
         </Grid>
     </Border>

@@ -23,29 +23,29 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="1" HorizontalAlignment="Left">
-                    <Button x:Name="BackBtn" Style="{DynamicResource SettingsMenuButton}" Width="60" Height="60" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
+                    <Button x:Name="BackBtn" Style="{DynamicResource SettingsMenuButton}" Width="60" Height="60" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Click="BackButton_Click" Margin="36,31,305,31" Cursor="Hand">
                         <Grid Width="60" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Path IsHitTestVisible="False" Data="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" Fill="{DynamicResource ThemePrimaryText}" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                         </Grid>
                     </Button>
                     <Rectangle Fill="{DynamicResource ThemeSeperator}" Margin="108,31,289,31" IsHitTestVisible="False" Height="60" />
-                    <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiBold" FontSize="30" Width="134" />
+                    <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="30" Width="134" />
                 </Grid>
 
                 <StackPanel VerticalAlignment="Top" Grid.Row="2">
-                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="ApplicationBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Application" Width="300" />
                     </Button>
-                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="AccessibilityBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Accessibility" Width="300" />
                     </Button>
-                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Game Branches" Width="300" />
                     </Button>
-                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Download" Width="300" />
                     </Button>
-                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="Bahnschrift SemiBold" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
+                    <Button x:Name="AboutBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource NunitoSansNormalSemiBold}" FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="About" Width="300" />
                     </Button>
                 </StackPanel>

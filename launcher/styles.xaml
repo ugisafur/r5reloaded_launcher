@@ -2,6 +2,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <FontFamily x:Key="NunitoSansNormalExtraLight">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraLight</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalLight">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Light</FontFamily>
+    <FontFamily x:Key="NunitoSansNormal">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalMedium">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Medium</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalSemiBold">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal SemiBold</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalExtraBold">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraBold</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalBlack">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Black</FontFamily>
+
     <DrawingImage x:Key="logo_main_whiteDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V1365 H4096 V0 H0 Z">
@@ -173,7 +181,7 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="true">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="0,2,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Top" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="CLICK TO UPDATE" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="Bahnschrift Light" FontSize="12" Margin="0,0,0,3" />
+                        <TextBlock IsHitTestVisible="False" Text="CLICK TO UPDATE" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="{StaticResource NunitoSansNormalMedium}" FontSize="12" Margin="0,0,0,3" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsDefaulted" Value="true">
@@ -929,7 +937,7 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="R5R Library Location" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1006,8 +1014,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Download Speed Limit" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="KB/s" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Download Speed Limit" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="KB/s" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1107,8 +1115,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Playlists File" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Playlists File" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1150,8 +1158,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Host Name" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Host Name" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1194,8 +1202,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Reserved Cores" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Reserved Cores" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1237,8 +1245,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Worker Threads" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Worker Threads" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1280,8 +1288,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Processor Affinity" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Processor Affinity" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="#" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1324,8 +1332,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Resolution Width" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="px" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Resolution Width" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="px" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1367,8 +1375,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Resolution Height" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="px" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Resolution Height" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="px" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1410,8 +1418,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,0,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Max FPS" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="fps" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,15,5,14" />
+                        <TextBlock IsHitTestVisible="False" Text="Max FPS" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="fps" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,15,5,14" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
@@ -1454,8 +1462,8 @@
                         <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" SnapsToDevicePixels="True">
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Bottom" Margin="5,-4.3,55,5" />
                         </Border>
-                        <TextBlock IsHitTestVisible="False" Text="Command Line" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="Bahnschrift Light" Height="15" Margin="8,4,-8,30" />
-                        <TextBlock IsHitTestVisible="False" Text="args" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="Bahnschrift Light" Margin="450,21,5,8" />
+                        <TextBlock IsHitTestVisible="False" Text="Command Line" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="10" FontFamily="{StaticResource NunitoSansNormalMedium}" Height="15" Margin="8,4,-8,30" />
+                        <TextBlock IsHitTestVisible="False" Text="args" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" Margin="450,21,5,8" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">

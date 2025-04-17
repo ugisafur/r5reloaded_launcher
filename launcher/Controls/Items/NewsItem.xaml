@@ -31,7 +31,7 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <TextBlock x:Name="Title" Text="Test" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiLight" FontSize="20" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="15,15,15,0" Grid.Column="0" />
-                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="137" VerticalAlignment="Bottom" />
+                <TextBlock x:Name="Excerpt" Text="Description" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" FontSize="14" TextWrapping="Wrap" Margin="15,15,15,6" Grid.Row="1" MaxHeight="137" VerticalAlignment="Bottom" />
                 <TextBlock x:Name="ReadMore" Text="Read More" Foreground="{DynamicResource ThemeSecondaryAltText}" FontFamily="Bahnschrift SemiLight" FontSize="16" TextWrapping="Wrap" Margin="32,10,18,10" Grid.Row="2" />
                 <Path IsHitTestVisible="False" Data="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z" Fill="{DynamicResource ThemeSecondaryAltText}" Height="12" Width="12" Margin="15,4,177,8" Grid.Row="2" Stretch="Uniform" />
             </Grid>

@@ -21,6 +21,7 @@
     <None Remove="assets\launcher_x64.ico" />
     <None Remove="assets\news_default_bg.jpg" />
     <None Remove="assets\new_preload.png" />
+    <None Remove="assets\NunitoSans-VariableFont.ttf" />
     <None Remove="assets\preload.gif" />
     <None Remove="assets\preload.jpg" />
   </ItemGroup>
@@ -54,6 +55,9 @@
     </Content>
     <Content Include="assets\launcher_bg_we.mp4">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\NunitoSans-VariableFont.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <Resource Include="assets\launcher_bg.jpg">

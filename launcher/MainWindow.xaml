@@ -29,12 +29,12 @@
         <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource HorizontalScrollBarStyle}" />
 
         <ContextMenu x:Key="tbiContextMenu" Style="{StaticResource CustomContextMenuStyle}">
-            <MenuItem x:Name="VersionContext" Header="R5RLauncher " IsEnabled="False" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <MenuItem x:Name="VersionContext" Header="R5RLauncher " IsEnabled="False" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="{StaticResource NunitoSansNormalMedium}" />
             <Separator Style="{StaticResource CustomSeparatorStyle}" />
-            <MenuItem Header="Visit Website" Click="VisitWebsite_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
-            <MenuItem Header="Join The Discord" Click="JoinDiscord_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <MenuItem Header="Visit Website" Click="VisitWebsite_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="{StaticResource NunitoSansNormalMedium}" />
+            <MenuItem Header="Join The Discord" Click="JoinDiscord_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="{StaticResource NunitoSansNormalMedium}" />
             <Separator Style="{StaticResource CustomSeparatorStyle}" />
-            <MenuItem Header="Quit" Click="Exit_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="Bahnschrift Light" />
+            <MenuItem Header="Quit" Click="Exit_Click" IsCheckable="False" Style="{StaticResource CustomMenuItemStyle}" FontFamily="{StaticResource NunitoSansNormalMedium}" />
         </ContextMenu>
     </Window.Resources>
 
@@ -87,16 +87,16 @@
                                     <RowDefinition Height="90" />
                                     <RowDefinition Height="261" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiBold" Margin="25,16,70,16" />
+                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalSemiBold}" Margin="25,16,70,5" />
                                 <Grid Grid.Row="1" Margin="25,0,25,0">
-                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
+                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
                                         <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="Branch_Combobox" Width="243" Height="50" SelectionChanged="cmbBranch_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <TextBlock Text="{Binding title}" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift SemiLight" FontSize="16" />
-                                                        <TextBlock Text="{Binding subtext}" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontSize="14" />
+                                                        <TextBlock Text="{Binding subtext}" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" FontSize="14" />
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
@@ -106,15 +106,15 @@
                                             <local:Popup_Game_Menu x:Name="GameSettings_Control" />
                                         </Popup>
                                     </StackPanel>
-                                    <Button Style="{DynamicResource PlayButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="{DynamicResource ThemeMainButtonsBackground}" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
+                                    <Button Style="{DynamicResource PlayButtonStyle}" x:Name="Play_Button" Content="PLAY" FontSize="24" Background="{DynamicResource ThemeMainButtonsBackground}" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeMainButtonsBorder}" Click="btnStart_Click" Margin="0,82,0,114" RenderTransformOrigin="0.044,0.488" FontFamily="{StaticResource NunitoSansNormalSemiBold}" HorizontalAlignment="Left" Width="298" Height="60" Cursor="Hand" />
                                     <ProgressBar Style="{DynamicResource installProgress}" x:Name="ProgressBar" Width="298" RenderTransformOrigin="0.5,0.5" Foreground="{DynamicResource ThemeSecondaryAltText}" Background="{DynamicResource ThemeSecondary}" BorderBrush="{DynamicResource ThemeSecondary}" Margin="0,176,52,66" />
-                                    <TextBlock x:Name="Status_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" VerticalAlignment="Top" Margin="0,162,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" />
-                                    <TextBlock x:Name="Files_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,162,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
-                                    <TextBlock x:Name="Speed_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" TextAlignment="Left" VerticalAlignment="Top" Margin="0,209,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="298" Text="" />
-                                    <TextBlock x:Name="TimeLeft_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" TextAlignment="Left" VerticalAlignment="Top" Margin="0,195,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="298" Text="" />
-                                    <TextBlock x:Name="Percent_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="Bahnschrift Light" TextAlignment="Right" VerticalAlignment="Top" Margin="0,179,55,0" HorizontalAlignment="Right" FontWeight="Bold" Width="194" Text="" Height="14" />
-                                    <TextBlock x:Name="ReadMore_Label" TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,157,0,0" Height="44" Width="298" />
-                                    <Button Style="{DynamicResource UpdateButtonStyle}" Visibility="Hidden" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{DynamicResource ThemeUpdateButtonBackground}" Foreground="{DynamicResource ThemePrimaryText}" BorderBrush="{DynamicResource ThemeUpdateButtonBackground}" Click="btnUpdate_Click" Margin="0,157,0,60" RenderTransformOrigin="0.044,0.488" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
+                                    <TextBlock x:Name="Status_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" Margin="0,159,0,0" HorizontalAlignment="Left" FontWeight="Bold" Width="195" Text="" Height="15" />
+                                    <TextBlock x:Name="Files_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,159,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="98" Text="10000 files left" />
+                                    <TextBlock x:Name="Speed_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,198,52,0" HorizontalAlignment="Right" FontWeight="Bold" Width="298" Text="" />
+                                    <TextBlock x:Name="TimeLeft_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" TextAlignment="Left" VerticalAlignment="Top" Margin="0,178,101,0" HorizontalAlignment="Right" FontWeight="Bold" Width="242" Text="Time Left" Height="17" />
+                                    <TextBlock x:Name="Percent_Label" FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,177,55,0" HorizontalAlignment="Right" FontWeight="Bold" Width="74" Text="0%" Height="20" />
+                                    <TextBlock x:Name="ReadMore_Label" TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,157,0,0" Height="44" Width="298" />
+                                    <Button Style="{DynamicResource UpdateButtonStyle}" Visibility="Hidden" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{DynamicResource ThemeUpdateButtonBackground}" Foreground="{DynamicResource ThemePrimaryText}" BorderBrush="{DynamicResource ThemeUpdateButtonBackground}" Click="btnUpdate_Click" Margin="0,157,0,60" RenderTransformOrigin="0.044,0.488" FontFamily="{StaticResource NunitoSansNormalSemiBold}" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2" x:Name="NewsContainer">
@@ -124,14 +124,14 @@
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="430" />
+                                        <ColumnDefinition Width="440" />
                                         <ColumnDefinition Width="1*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="Community_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Community" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
-                                        <Button x:Name="NewLegends_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="New Legends" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
-                                        <Button x:Name="Comms_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Comms" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
-                                        <Button x:Name="PatchNotes_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Patch Notes" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="Community_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Community" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="NewLegends_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="New Legends" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="Comms_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Comms" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
+                                        <Button x:Name="PatchNotes_Button" Style="{DynamicResource NewsBtnStyle}" Height="30" Content="Patch Notes" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="0,10,18,10" Foreground="{DynamicResource ThemePrimaryText}" Click="NewsButton_Click" Cursor="Hand" />
                                     </StackPanel>
                                     <Rectangle x:Name="NewsRect" Fill="{DynamicResource ThemePrimaryText}" Width="101" HorizontalAlignment="Center"  IsHitTestVisible="False" Margin="0,51,0,13" RenderTransformOrigin="0.5,0.5" Height="3">
                                         <Rectangle.RenderTransform>
@@ -160,7 +160,7 @@
                             </Grid>
                         </Grid>
                         <Grid Grid.Row="3" Margin="0,6,0,0">
-                            <TextBlock x:Name="Version_Label" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="Bahnschrift Light" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16" Margin="8,0,0,0" />
+                            <TextBlock x:Name="Version_Label" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16" Margin="8,0,0,0" />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -217,7 +217,7 @@
                         <Grid Grid.Column="1">
                         </Grid>
                         <Grid Grid.Column="2" HorizontalAlignment="Right">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="StatusBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="    R5R Status" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="StatusBtn_Click" Cursor="Hand" />
                             <Path IsHitTestVisible="False" Data="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" Fill="{DynamicResource ThemeSecondaryAltText}" Margin="45,19,131,21" Stretch="Uniform" />
                             <Rectangle Fill="{DynamicResource ThemeSeperator}" Width="2" HorizontalAlignment="Right"  IsHitTestVisible="False" Margin="0,10,7,10" />
                             <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
@@ -225,7 +225,7 @@
                             </Popup>
                         </Grid>
                         <Grid Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Right">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="Transparent" FontFamily="Bahnschrift SemiBold" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="DownloadsBtn_Click" Cursor="Hand" />
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="    Downloads" FontSize="18" Background="Transparent" FontFamily="{StaticResource NunitoSansNormalSemiBold}" BorderBrush="Transparent" Margin="0,10,103,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="DownloadsBtn_Click" Cursor="Hand" />
                             <Path IsHitTestVisible="False" Data="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" Fill="{DynamicResource ThemeSecondaryAltText}" Margin="10,21,205,22" Stretch="Uniform" />
                             <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
                                 <local:Popup_Tasks x:Name="Downloads_Control" />

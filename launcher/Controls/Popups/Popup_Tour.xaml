@@ -9,11 +9,11 @@
 
     <Border Background="{DynamicResource ThemePrimary}" CornerRadius="10" Height="160" Width="480">
         <Grid>
-            <TextBlock x:Name="Title" Text="Title" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,10,60,0" />
-            <TextBlock x:Name="Desc" Text="Desc" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="7,37,23,0" />
-            <Button x:Name="Next" Style="{DynamicResource checkBtnStyle}" Margin="389,108,10,0" Content="NEXT" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Next_Click" />
-            <Button x:Name="Skip" Style="{DynamicResource closeBtnStyle}" Margin="304,108,97,0" Content="SKIP" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Top" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="Skip_Click" />
-            <TextBlock x:Name="Page" Text="1 of #" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="Bahnschrift Light" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,131,358,0" />
+            <TextBlock x:Name="Title" Text="Title" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,10,60,0" />
+            <TextBlock x:Name="Desc" Text="Desc" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="7,37,23,0" />
+            <Button x:Name="Next" Style="{DynamicResource checkBtnStyle}" Margin="389,108,10,0" Content="NEXT" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Next_Click" />
+            <Button x:Name="Skip" Style="{DynamicResource closeBtnStyle}" Margin="304,108,97,0" Content="SKIP" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Top" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="Skip_Click" />
+            <TextBlock x:Name="Page" Text="1 of #" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,131,358,0" />
         </Grid>
     </Border>
 </UserControl>
