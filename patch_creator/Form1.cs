@@ -400,7 +400,7 @@ namespace patch_creator
             List<string> changed_files_txt = [];
             foreach (var file in changed_files)
             {
-                changed_files_txt.Add(file.name);
+                changed_files_txt.Add($"{Global.SERVER_CONFIG.branches[selected_index].game_url}/{file.name}");
             }
 
             File.WriteAllLines(final_dir + "\\clearcache.txt", changed_files_txt);
