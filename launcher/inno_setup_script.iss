@@ -14,6 +14,8 @@ SetupIconFile=launcher_x64.ico
 AppPublisher=R5Reloaded
 AppPublisherURL=https://r5reloaded.com
 OutputBaseFilename=R5RLauncher-Setup
+UsePreviousGroup=no
+UsePreviousAppDir=no
 
 [Files]
 Source: "bin\Publish\launcher.exe"; DestDir: "{app}\R5R Launcher\"

@@ -4,6 +4,7 @@ using static launcher.Game.LaunchParameters;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
 using launcher.Global;
+using System.Windows.Forms;
 
 namespace launcher.Game
 {
@@ -11,6 +12,26 @@ namespace launcher.Game
     {
         public static void Launch()
         {
+            Managers.App.EAAppCodes eaAppStatus = Managers.App.IsEAAppRunning();
+
+            appDispatcher.Invoke(new Action(() =>
+            {
+                if (eaAppStatus == Managers.App.EAAppCodes.Not_Installed)
+                {
+                    LogError(Source.Launcher, "EA App is not installed. Please install the EA App and try again.");
+                    MessageBox.Show(new Form { TopMost = true }, "EA App is not installed. Please install the EA App and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                if (eaAppStatus == Managers.App.EAAppCodes.Installed_And_Not_Running)
+                {
+                    LogError(Source.Launcher, "EA App is not running. Please launch the EA App and try again.");
+                    MessageBox.Show(new Form { TopMost = true }, "EA App is not running. Please launch the EA App and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }));
+
+            if (eaAppStatus != Managers.App.EAAppCodes.Installed_And_Running)
+                return;
+
             appDispatcher.Invoke(new Action(() =>
             {
                 Play_Button.IsEnabled = false;

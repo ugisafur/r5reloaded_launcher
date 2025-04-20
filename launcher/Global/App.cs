@@ -157,6 +157,29 @@ namespace launcher.Managers
             }
         }
 
+        public enum EAAppCodes
+        {
+            Installed_And_Running,
+            Installed_And_Not_Running,
+            Not_Installed,
+        }
+
+        public static EAAppCodes IsEAAppRunning()
+        {
+            if((bool)Ini.Get(Ini.Vars.Offline_Mode))
+                return EAAppCodes.Installed_And_Running;
+
+            string subKeyPath = @"SOFTWARE\WOW6432Node\Electronic Arts\EA Desktop";
+            if (Registry.GetValue($"HKEY_LOCAL_MACHINE\\{subKeyPath}", "DesktopAppPath", null) == null)
+                return EAAppCodes.Not_Installed;
+
+            Process[] processes = Process.GetProcessesByName("EADesktop");
+            if (processes.Length == 0)
+                return EAAppCodes.Installed_And_Not_Running;
+
+            return EAAppCodes.Installed_And_Running;
+        }
+
         public static void SetupAdvancedMenu()
         {
             if (!GetBranch.Installed() && !GetBranch.IsLocalBranch() || !File.Exists(Path.Combine(GetBranch.Directory(), "platform\\playlists_r5_patch.txt")))
@@ -234,7 +257,7 @@ namespace launcher.Managers
 
                 int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
 
-                if (selectedIndex == -1)
+                if (selectedIndex == -1 || selectedIndex >= Branch_Combobox.Items.Count)
                     selectedIndex = 0;
 
                 Branch_Combobox.SelectedIndex = selectedIndex;

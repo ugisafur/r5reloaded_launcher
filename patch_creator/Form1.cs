@@ -397,7 +397,12 @@ namespace patch_creator
             SetProgressBarMax(changed_files.Count);
             SetProgressBarValue(0);
 
-            List<string> changed_files_txt = [];
+            List<string> changed_files_txt = [
+                $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/checksums.json", 
+                $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/checksums_zst.json", 
+                $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/version.txt"
+            ];
+
             foreach (var file in changed_files)
             {
                 changed_files_txt.Add($"{Global.SERVER_CONFIG.branches[selected_index].game_url}/{file.name}");
@@ -535,7 +540,7 @@ namespace patch_creator
             string[] purge_list = richTextBox1.Lines;
 
             // Split the purge list into chunks of 30
-            List<List<string>> purge_lists = new List<List<string>>();
+            List<List<string>> purge_lists = new();
 
             for (int i = 0; i < purge_list.Length; i += 30)
             {
