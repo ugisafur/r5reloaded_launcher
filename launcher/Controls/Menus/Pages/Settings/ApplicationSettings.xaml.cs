@@ -27,6 +27,7 @@ namespace launcher
             NightlyBuilds.IsChecked = (bool)Ini.Get(Ini.Vars.Nightly_Builds);
             UploadCrashes.IsChecked = (bool)Ini.Get(Ini.Vars.Upload_Crashes);
             OpenEAApp.IsChecked = (bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App);
+            EnabledRichPresence.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Discord_Rich_Presence);
 
             CloseToQuit.Checked += CloseToQuit_Unchecked;
             Notifications.Checked += Notifications_Unchecked;
@@ -35,6 +36,7 @@ namespace launcher
             NightlyBuilds.Checked += NightlyBuilds_Unchecked;
             UploadCrashes.Checked += UploadCrashes_Unchecked;
             OpenEAApp.Checked += OpenEAApp_Unchecked;
+            EnabledRichPresence.Checked += EnabledRichPresence_Unchecked;
 
             CloseToQuit.Unchecked += CloseToQuit_Unchecked;
             Notifications.Unchecked += Notifications_Unchecked;
@@ -43,6 +45,12 @@ namespace launcher
             NightlyBuilds.Unchecked += NightlyBuilds_Unchecked;
             UploadCrashes.Unchecked += UploadCrashes_Unchecked;
             OpenEAApp.Unchecked += OpenEAApp_Unchecked;
+            EnabledRichPresence.Unchecked += EnabledRichPresence_Unchecked;
+        }
+
+        private void EnabledRichPresence_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Ini.Set(Ini.Vars.Enable_Discord_Rich_Presence, EnabledRichPresence.IsChecked.Value);
         }
 
         private void NightlyBuilds_Unchecked(object sender, RoutedEventArgs e)

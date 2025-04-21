@@ -108,10 +108,10 @@ namespace launcher.Managers
                 LogInfo(Source.Launcher, $"Discord RPC connected as {e.User.Username}");
             };
 
-            RPC_client.OnPresenceUpdate += (sender, e) =>
-            {
-                //LogInfo(Source.Launcher, $"Received Update! {e.Presence}");
-            };
+            //RPC_client.OnPresenceUpdate += (sender, e) =>
+            //{
+            //    //LogInfo(Source.Launcher, $"Received Update! {e.Presence}");
+            //};
 
             RPC_client.OnError += (sender, e) =>
             {
