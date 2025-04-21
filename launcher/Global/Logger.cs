@@ -33,6 +33,7 @@ namespace launcher.Global
             VDF,
             Unknown,
             Pipe,
+            DiscordRPC,
         }
 
         static Logger()

@@ -81,7 +81,7 @@
                 <Grid>
                     <Button x:Name="TopButton" Style="{DynamicResource TopBtnStyle}" Background="Transparent" BorderBrush="Transparent" Click="TopButton_Click" />
                     <TextBlock x:Name="BranchName" IsHitTestVisible="False" Text="Branch Name" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" Margin="22,0,299,0" VerticalAlignment="Center" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  HorizontalAlignment="Left" />
-                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{DynamicResource ThemePrimaryText}" FontSize="26" Margin="760,0,0,0" VerticalAlignment="Center" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  TextAlignment="Center" HorizontalAlignment="Left" Width="40" />
+                    <TextBlock x:Name="CollapseIcon" IsHitTestVisible="False" Text="-" Foreground="{DynamicResource ThemePrimaryText}" FontSize="26" Margin="0,0,10,0" VerticalAlignment="Center" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold"  TextAlignment="Center" HorizontalAlignment="Right" Width="40" />
                 </Grid>
             </Border>
 
