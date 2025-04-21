@@ -32,6 +32,8 @@ namespace launcher.Download
         public static DownloadSpeedMonitor _speedMonitor;
         public static double currentDownloadSpeed = 0;
 
+        public static int UpdateType = 0; // 0 = install, 1 = repair, 2 = uninstall
+
         public static void CreateDownloadMontior()
         {
             if (_speedMonitor != null)
@@ -86,8 +88,12 @@ namespace launcher.Download
             _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
             GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
         }
+
+
         public static async Task UpdateGlobalDownloadProgressAsync(CancellationToken token)
         {
+            DateTime lastPresenceUpdate = DateTime.MinValue;
+
             while (!token.IsCancellationRequested)
             {
                 var elapsed = DateTime.Now - GlobalDownloadStats.StartTime;
@@ -115,6 +121,15 @@ namespace launcher.Download
                     string downloadedText = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
 
                     Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}";
+
+                    if ((DateTime.UtcNow - lastPresenceUpdate).TotalSeconds >= 5)
+                    {
+
+                        string UpdateTypeString = UpdateType == 0 ? "Downloading" : "Repairing";
+
+                        AppState.SetRichPresence($"{UpdateTypeString} {GetBranch.Name()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
+                        lastPresenceUpdate = DateTime.UtcNow;
+                    }
                 });
 
                 await Task.Delay(1000, token);

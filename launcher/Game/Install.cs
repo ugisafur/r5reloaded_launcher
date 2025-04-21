@@ -44,6 +44,8 @@ namespace launcher.Game
             Download.Tasks.ConfigureConcurrency();
             Download.Tasks.ConfigureDownloadSpeed();
 
+            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
+
             Download.Tasks.SetInstallState(true, "INSTALLING");
 
             string branchDirectory = GetBranch.Directory();
@@ -84,6 +86,8 @@ namespace launcher.Game
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
 
+            AppState.SetRichPresence("", "Idle");
+
             Download.Tasks.SetInstallState(false);
 
             appDispatcher.Invoke(new Action(() => { Managers.App.ShowDownloadOptlFiles(); }));
@@ -113,6 +117,8 @@ namespace launcher.Game
 
             Download.Tasks.SetOptionalInstallState(true);
 
+            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
+
             string branchDirectory = GetBranch.Directory();
 
             Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Installer);
@@ -138,6 +144,8 @@ namespace launcher.Game
             appDispatcher.Invoke(new Action(() => { Settings_Control.gameInstalls.UpdateGameItems(); }));
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
+
+            AppState.SetRichPresence("", "Idle");
         }
 
         private static async Task AttemptGameRepair()

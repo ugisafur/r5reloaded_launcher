@@ -105,6 +105,8 @@ namespace launcher.Global
         public static List<string> gamemodes = [];
         public static List<string> maps = [];
 
+        public static DiscordRPC.DiscordRpcClient RPC_client;
+
         #endregion Other
 
         public static void SetupControlReferences(MainWindow mainWindow)

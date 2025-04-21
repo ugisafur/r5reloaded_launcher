@@ -35,6 +35,8 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "UPDATING");
 
+            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
+
             string branchDirectory = GetBranch.Directory();
 
             await CheckForDeletedFiles(false);
@@ -79,6 +81,8 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(false);
 
+            AppState.SetRichPresence("", "Idle");
+
             if (GetBranch.DownloadHDTextures())
                 Task.Run(() => UpdateOptionalWithoutPatching());
         }
@@ -91,6 +95,8 @@ namespace launcher.Game
             Download.Tasks.ConfigureDownloadSpeed();
 
             string branchDirectory = GetBranch.Directory();
+
+            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
 
             await CheckForDeletedFiles(true);
 
@@ -125,6 +131,8 @@ namespace launcher.Game
             Download.Tasks.SetOptionalInstallState(false);
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
+
+            AppState.SetRichPresence("", "Idle");
         }
 
         private static async Task CheckForDeletedFiles(bool optfiles)

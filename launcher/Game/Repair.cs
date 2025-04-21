@@ -40,6 +40,8 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "REPAIRING");
 
+            AppState.SetRichPresence($"Repairing {GetBranch.Name()}", $"Getting Ready");
+
             string branchDirectory = GetBranch.Directory();
 
             Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
@@ -96,6 +98,7 @@ namespace launcher.Game
             }
 
             Download.Tasks.SetInstallState(false);
+            AppState.SetRichPresence("", "Idle");
 
             if (GetBranch.DownloadHDTextures())
                 Task.Run(() => RepairOptionalFiles());
@@ -109,6 +112,8 @@ namespace launcher.Game
             Download.Tasks.ConfigureDownloadSpeed();
 
             Download.Tasks.SetOptionalInstallState(true);
+
+            AppState.SetRichPresence($"Repairing {GetBranch.Name()}", $"Getting Ready");
 
             string branchDirectory = GetBranch.Directory();
 
@@ -139,6 +144,8 @@ namespace launcher.Game
 
                 cts.Cancel();
             }
+
+            AppState.SetRichPresence("", "Idle");
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
 

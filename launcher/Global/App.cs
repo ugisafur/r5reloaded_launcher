@@ -9,6 +9,8 @@ using launcher.Game;
 using launcher.Global;
 using Microsoft.Win32;
 using System.Diagnostics;
+using DiscordRPC;
+using DiscordRPC.Logging;
 
 namespace launcher.Managers
 {
@@ -36,6 +38,13 @@ namespace launcher.Managers
             PreLoad_Window.SetLoadingText("Setting up app");
             await Task.Delay(100);
             await Task.Run(() => Launcher.Init());
+
+            if ((bool)Ini.Get(Ini.Vars.Enable_Discord_Rich_Presence))
+            {
+                PreLoad_Window.SetLoadingText("Setting up Discord RPC");
+                await Task.Delay(100);
+                await Task.Run(() => InitDiscordRPC());
+            }
 
             PreLoad_Window.SetLoadingText("Setting up menus");
             await Task.Delay(100);
@@ -82,6 +91,47 @@ namespace launcher.Managers
             }
         }
 
+        public static void InitDiscordRPC()
+        {
+            if (!AppState.IsOnline)
+                return;
+
+            if(RPC_client != null && RPC_client.IsInitialized)
+                return;
+
+            RPC_client = new DiscordRpcClient("1363977984179966055");
+
+            RPC_client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+
+            RPC_client.OnReady += (sender, e) =>
+            {
+                LogInfo(Source.Launcher, $"Discord RPC connected as {e.User.Username}");
+            };
+
+            RPC_client.OnPresenceUpdate += (sender, e) =>
+            {
+                //LogInfo(Source.Launcher, $"Received Update! {e.Presence}");
+            };
+
+            RPC_client.OnError += (sender, e) =>
+            {
+                LogError(Source.Launcher, $"Discord RPC Error: {e.Message}");
+            };
+
+            RPC_client.OnConnectionFailed += (sender, e) =>
+            {
+                LogError(Source.Launcher, $"Discord RPC Connection Failed");
+            };
+
+            RPC_client.OnConnectionEstablished += (sender, e) =>
+            {
+                LogInfo(Source.Launcher, $"Discord RPC Connection Established");
+            };
+
+            RPC_client.Initialize();
+
+            AppState.SetRichPresence("", "Idle", "embedded_cover", "");
+        }
         public static bool IsR5ApexOpen()
         {
             Process[] processes = Process.GetProcessesByName("r5apex");

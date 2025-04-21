@@ -52,6 +52,7 @@ namespace launcher.Global
             Upload_Crashes,
             Server_Video_Name,
             Auto_Launch_EA_App,
+            Enable_Discord_Rich_Presence,
         }
 
         // Maps the settings to their respective sections in the INI file
@@ -101,7 +102,8 @@ namespace launcher.Global
             { Vars.Updater_Version, "Launcher" },
             { Vars.Nightly_Builds, "Launcher" },
             { Vars.Launcher_Version, "Launcher" },
-            { Vars.Server_Video_Name, "Launcher" }
+            { Vars.Server_Video_Name, "Launcher" },
+            { Vars.Enable_Discord_Rich_Presence, "Launcher" },
         };
 
         // Default values for each setting
@@ -145,6 +147,7 @@ namespace launcher.Global
             { Vars.Nightly_Builds, false },
             { Vars.Upload_Crashes, true },
             { Vars.Auto_Launch_EA_App, true },
+            { Vars.Enable_Discord_Rich_Presence, true },
 
             { Vars.Mode, 0 },
             { Vars.Visibility, 0 },

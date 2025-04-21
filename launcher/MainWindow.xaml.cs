@@ -214,6 +214,12 @@ namespace launcher
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (RPC_client != null)
+            {
+                RPC_client.Deinitialize();
+                RPC_client.Dispose();
+            }
+
             Environment.Exit(0);
         }
 
