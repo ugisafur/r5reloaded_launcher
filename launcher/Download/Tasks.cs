@@ -494,6 +494,7 @@ namespace launcher.Download
 
         public static void UpdateStatusLabel(string statusText, Source source)
         {
+            AppState.SetRichPresence($"Branch: {GetBranch.Name()}", statusText);
             LogInfo(source, $"Updating status label: {statusText}");
             appDispatcher.Invoke(() =>
             {

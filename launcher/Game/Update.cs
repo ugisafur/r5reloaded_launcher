@@ -35,8 +35,6 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "UPDATING");
 
-            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
-
             string branchDirectory = GetBranch.Directory();
 
             await CheckForDeletedFiles(false);
@@ -96,31 +94,29 @@ namespace launcher.Game
 
             string branchDirectory = GetBranch.Directory();
 
-            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
-
             await CheckForDeletedFiles(true);
 
-            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Update);
             var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Update);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Update);
             GameFiles gameFiles = await Fetch.GameFiles(false, true);
 
-            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Repair);
+            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Update);
                 var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-                Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
+                Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Update);
                 Download.Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
                 Download.Tasks.ShowSpeedLabels(false, false);

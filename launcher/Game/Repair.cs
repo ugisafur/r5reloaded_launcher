@@ -40,8 +40,6 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "REPAIRING");
 
-            AppState.SetRichPresence($"Repairing {GetBranch.Name()}", $"Getting Ready");
-
             string branchDirectory = GetBranch.Directory();
 
             Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);

@@ -76,6 +76,8 @@ namespace launcher.Game
             SetBranch.DownloadHDTextures(false);
             SetBranch.Version("");
 
+            AppState.SetRichPresence("", "Idle");
+
             Download.Tasks.SetInstallState(false, "INSTALL");
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
@@ -125,6 +127,8 @@ namespace launcher.Game
             }
 
             Download.Tasks.SetInstallState(false);
+
+            AppState.SetRichPresence("", "Idle");
 
             appDispatcher.Invoke(() =>
             {

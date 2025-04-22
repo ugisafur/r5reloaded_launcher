@@ -44,8 +44,6 @@ namespace launcher.Game
             Download.Tasks.ConfigureConcurrency();
             Download.Tasks.ConfigureDownloadSpeed();
 
-            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
-
             Download.Tasks.SetInstallState(true, "INSTALLING");
 
             string branchDirectory = GetBranch.Directory();
@@ -116,8 +114,6 @@ namespace launcher.Game
             Download.Tasks.ConfigureDownloadSpeed();
 
             Download.Tasks.SetOptionalInstallState(true);
-
-            AppState.SetRichPresence($"Downloading {GetBranch.Name()}", $"Getting Ready...");
 
             string branchDirectory = GetBranch.Directory();
 
