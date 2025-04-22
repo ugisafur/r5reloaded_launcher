@@ -16,11 +16,12 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "0.9.9.9.3";
+        public const string VERSION = "0.9.9.9.5";
 
         #region Public Keys
 
         public const string NEWSKEY = "68767b4df970e8348b79ad74b1";
+        public const string DISCORDRPC_CLIENT_ID = "1364049087434850444";
 
         #endregion Public Keys
 

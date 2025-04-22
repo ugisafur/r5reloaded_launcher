@@ -99,7 +99,7 @@ namespace launcher.Managers
             if(RPC_client != null && RPC_client.IsInitialized)
                 return;
 
-            RPC_client = new DiscordRpcClient("1364049087434850444")
+            RPC_client = new DiscordRpcClient(Launcher.DISCORDRPC_CLIENT_ID)
             {
                 Logger = new ConsoleLogger() { Level = LogLevel.Warning }
             };
