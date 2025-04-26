@@ -11,7 +11,7 @@ namespace launcher.Network
         private readonly TimeSpan _monitorInterval = TimeSpan.FromSeconds(1);
         private long _previousTotalBytes = 0;
         private double _currentSpeedBytesPerSecond = 0;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cts = new();
 
         public event Action<double> OnSpeedUpdated;
 

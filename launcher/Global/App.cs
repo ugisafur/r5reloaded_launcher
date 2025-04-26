@@ -220,9 +220,10 @@ namespace launcher.Managers
             if((bool)Ini.Get(Ini.Vars.Offline_Mode))
                 return EAAppCodes.Installed_And_Running;
 
-            string subKeyPath = @"SOFTWARE\WOW6432Node\Electronic Arts\EA Desktop";
-            if (Registry.GetValue($"HKEY_LOCAL_MACHINE\\{subKeyPath}", "DesktopAppPath", null) == null)
-                return EAAppCodes.Not_Installed;
+            //TODO: Find a better way to check if EA App is installed
+            //string subKeyPath = @"SOFTWARE\WOW6432Node\Electronic Arts\EA Desktop";
+            //if (Registry.GetValue($"HKEY_LOCAL_MACHINE\\{subKeyPath}", "DesktopAppPath", null) == null)
+            //return EAAppCodes.Not_Installed;
 
             Process[] processes = Process.GetProcessesByName("EADesktop");
             if (processes.Length == 0)

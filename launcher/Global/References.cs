@@ -26,7 +26,7 @@ namespace launcher.Global
         #region Labels
 
         public static TextBlock Status_Label = new();
-        public static TextBlock Files_Label = new();
+        //public static TextBlock Files_Label = new();
         public static TextBlock Version_Label = new();
         public static TextBlock Speed_Label = new();
         public static TextBlock ReadMore_Label = new();
@@ -115,7 +115,7 @@ namespace launcher.Global
             appDispatcher = mainWindow.Dispatcher;
             Progress_Bar = mainWindow.ProgressBar;
             Status_Label = mainWindow.Status_Label;
-            Files_Label = mainWindow.Files_Label;
+            //Files_Label = mainWindow.Files_Label;
             Speed_Label = mainWindow.Speed_Label;
             Version_Label = mainWindow.Version_Label;
             Branch_Combobox = mainWindow.Branch_Combobox;
@@ -157,7 +157,7 @@ namespace launcher.Global
                 Update_Button.Visibility = Visibility.Hidden;
                 Progress_Bar.Visibility = Visibility.Hidden;
                 Status_Label.Visibility = Visibility.Hidden;
-                Files_Label.Visibility = Visibility.Hidden;
+                //Files_Label.Visibility = Visibility.Hidden;
                 Speed_Label.Visibility = Visibility.Hidden;
                 Percent_Label.Visibility = Visibility.Hidden;
 

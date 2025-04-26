@@ -44,7 +44,7 @@ namespace launcher.Game
                 appDispatcher.Invoke(() =>
                 {
                     Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                     Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                 });
             }
@@ -153,7 +153,7 @@ namespace launcher.Game
                     appDispatcher.Invoke(() =>
                     {
                         Progress_Bar.Value++;
-                        Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                        //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                         Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                     });
 

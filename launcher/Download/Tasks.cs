@@ -23,6 +23,10 @@ namespace launcher.Download
 
         // Overall start time for the complete download operation
         public static DateTime StartTime;
+
+        public static string totalText = "";
+        public static string downloadedText = "";
+        public static string timeLeftText = "";
     }
 
     public static class Tasks
@@ -71,7 +75,7 @@ namespace launcher.Download
             appDispatcher.Invoke(() =>
             {
                 Speed_Label.Text = $"{speedText}";
-                Downloads_Control.Speed_Label.Text = $"{speedText}";
+                Downloads_Control.Speed_Label.Text = $"{GlobalDownloadStats.timeLeftText}  |  {GlobalDownloadStats.downloadedText}/{GlobalDownloadStats.totalText}  |  {speedText}";
             });
         }
 
@@ -114,13 +118,23 @@ namespace launcher.Download
 
                 await appDispatcher.InvokeAsync(() =>
                 {
+                    Progress_Bar.Value = GlobalDownloadStats.DownloadedBytes;
+                    Progress_Bar.Maximum = GlobalDownloadStats.TotalBytes;
+                    Percent_Label.Text = $"{(GlobalDownloadStats.DownloadedBytes / (double)GlobalDownloadStats.TotalBytes * 100):F2}%";
+
                     double totalSize = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.TotalBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.TotalBytes / (1024.0 * 1024.0);
                     string totalText = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
 
                     double downloadedSize = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024.0);
                     string downloadedText = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
 
-                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}";
+                    string timeLeft = estimatedRemaining.TotalHours >= 1 ? estimatedRemaining.ToString(@"h\:mm\:ss") : estimatedRemaining.ToString(@"m\:ss");
+
+                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {timeLeft}";
+
+                    GlobalDownloadStats.timeLeftText = $"Time Left: {timeLeft}";
+                    GlobalDownloadStats.totalText = totalText;
+                    GlobalDownloadStats.downloadedText = downloadedText;
 
                     if ((DateTime.UtcNow - lastPresenceUpdate).TotalSeconds >= 5)
                     {
@@ -132,7 +146,7 @@ namespace launcher.Download
                     }
                 });
 
-                await Task.Delay(1000, token);
+                await Task.Delay(100, token);
             }
 
             Main_Window.TimeLeft_Label.Text = "";
@@ -148,7 +162,7 @@ namespace launcher.Download
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
             var downloadTasks = new List<Task<string>>(gameFiles.files.Count);
-            ConfigureProgress(gameFiles.files.Count);
+            //ConfigureProgress(gameFiles.files.Count);
 
             foreach (var file in gameFiles.files)
             {
@@ -183,7 +197,7 @@ namespace launcher.Download
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Temporary directory cannot be null or empty.", nameof(branchDirectory));
 
             int badFilesCount = DataCollections.BadFiles.Count;
-            ConfigureProgress(badFilesCount);
+            //ConfigureProgress(badFilesCount);
 
             var downloadTasks = new List<Task<string>>(badFilesCount);
 
@@ -263,9 +277,9 @@ namespace launcher.Download
             {
                 appDispatcher.Invoke(() =>
                 {
-                    Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                    Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
+                    //Progress_Bar.Value++;
+                    //Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    //Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                 });
 
                 if (File.Exists(destinationPath))
@@ -306,7 +320,7 @@ namespace launcher.Download
             {
                 Progress_Bar.Maximum = totalFiles;
                 Progress_Bar.Value = 0;
-                Files_Label.Text = $"{totalFiles} files left";
+                //Files_Label.Text = $"{totalFiles} files left";
                 Percent_Label.Text = "0%";
             });
         }
@@ -460,7 +474,7 @@ namespace launcher.Download
                 Branch_Combobox.IsEnabled = !installing;
                 Play_Button.IsEnabled = !installing;
                 Status_Label.Text = "";
-                Files_Label.Text = "";
+                //Files_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -481,7 +495,7 @@ namespace launcher.Download
             {
                 AppState.IsInstalling = installing;
                 Status_Label.Text = "";
-                Files_Label.Text = "";
+                //Files_Label.Text = "";
 
                 GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
                 GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
@@ -508,8 +522,9 @@ namespace launcher.Download
             {
                 Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                //Files_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 Percent_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                Main_Window.TimeLeft_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
                 ReadMore_Label.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
             });
         }

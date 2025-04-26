@@ -44,7 +44,7 @@ namespace launcher.Game
             appDispatcher.Invoke(() =>
             {
                 Progress_Bar.Maximum = files.Length;
-                Files_Label.Text = $"{AppState.FilesLeft} files left";
+                //Files_Label.Text = $"{AppState.FilesLeft} files left";
             });
 
             await Task.Run(() =>
@@ -64,7 +64,7 @@ namespace launcher.Game
                         appDispatcher.Invoke(() =>
                         {
                             Progress_Bar.Value++;
-                            Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                            //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                         });
                     }
                 });
@@ -104,7 +104,7 @@ namespace launcher.Game
             appDispatcher.Invoke(() =>
             {
                 Progress_Bar.Maximum = langFiles.files.Count;
-                Files_Label.Text = $"{AppState.FilesLeft} files left";
+                //Files_Label.Text = $"{AppState.FilesLeft} files left";
             });
 
             foreach (var langFile in langFiles.files)
@@ -122,7 +122,7 @@ namespace launcher.Game
                 appDispatcher.Invoke(() =>
                 {
                     Progress_Bar.Value++;
-                    Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                    //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                 });
             }
 
@@ -152,7 +152,7 @@ namespace launcher.Game
             appDispatcher.Invoke(() =>
             {
                 Progress_Bar.Maximum = opt_files.Length;
-                Files_Label.Text = $"{AppState.FilesLeft} files left";
+                //Files_Label.Text = $"{AppState.FilesLeft} files left";
             });
 
             await Task.Run(() =>
@@ -172,7 +172,7 @@ namespace launcher.Game
                         appDispatcher.Invoke(() =>
                         {
                             Progress_Bar.Value++;
-                            Files_Label.Text = $"{--AppState.FilesLeft} files left";
+                            //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                         });
                     }
                 });
