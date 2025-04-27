@@ -13,7 +13,7 @@
     <Border Background="{DynamicResource ThemePrimary}" CornerRadius="10">
         <Grid>
             <ScrollViewer Margin="5,65,0,95">
-                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource NunitoSansNormalMedium}" Background="{DynamicResource ThemePrimary}" BorderThickness="0" IsReadOnly="True" />
+                <TextBox x:Name="EULATextBox" TextWrapping="Wrap" Text="" FontSize="16" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationRegular}" Background="{DynamicResource ThemePrimary}" BorderThickness="0" IsReadOnly="True" />
             </ScrollViewer>
 
             <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="60" VerticalAlignment="Top" CornerRadius="10, 10, 0, 0">
@@ -21,8 +21,8 @@
                     <DropShadowEffect Direction="270" ShadowDepth="11" Opacity="0.1" BlurRadius="8" />
                 </Border.Effect>
                 <Grid>
-                    <TextBlock Text="End-User License Agreement" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Margin="20,0,77,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
+                    <TextBlock Text="End-User License Agreement" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Margin="20,0,77,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
 
@@ -32,8 +32,8 @@
                 </Border.Effect>
 
                 <Grid>
-                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
-                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
+                    <Button x:Name="acknowledge" Style="{DynamicResource ackBtnStyle}" Margin="380,0,27,0" Content="ACKNOWLEDGE" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Click="acknowledge_Click" />
+                    <Button x:Name="close" Style="{DynamicResource closeBtnStyle}" Margin="290,0,190,0" Content="Close" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
         </Grid>

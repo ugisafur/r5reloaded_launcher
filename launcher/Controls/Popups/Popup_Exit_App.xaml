@@ -11,17 +11,17 @@
         <Grid>
             <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="55" VerticalAlignment="Top"  CornerRadius="10, 10, 0, 0">
                 <Grid>
-                    <TextBlock Text="Exit Application" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Margin="15,0,280,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
+                    <TextBlock Text="Exit Application" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Margin="15,0,280,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="Would you like to exit the application completely or minimize it to the system tray?" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
-            <TextBlock Text="Please note: This prompt will only appear once, you change this setting in the Settings menu at any time." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,121,15,0" />
+            <TextBlock Text="Would you like to exit the application completely or minimize it to the system tray?" Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="{StaticResource SansationRegular}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
+            <TextBlock Text="Please note: This prompt will only appear once, you change this setting in the Settings menu at any time." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,121,15,0" />
             <Border Height="55" VerticalAlignment="Bottom">
                 <Grid>
-                    <Button x:Name="Exit" Style="{DynamicResource checkBtnStyle}" Margin="462,0,10,0" Content="EXIT" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Exit_Click" />
-                    <Button x:Name="Tray" Style="{DynamicResource checkBtnStyle}" Margin="225,0,104,0" Content="MINIMIZE TO SYSTEM TRAY" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Tray_Click" />
+                    <Button x:Name="Exit" Style="{DynamicResource checkBtnStyle}" Margin="462,0,10,0" Content="EXIT" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Exit_Click" />
+                    <Button x:Name="Tray" Style="{DynamicResource checkBtnStyle}" Margin="205,0,104,0" Content="MINIMIZE TO SYSTEM TRAY" Background="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemeSecondaryAltText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Tray_Click" />
                 </Grid>
             </Border>
         </Grid>

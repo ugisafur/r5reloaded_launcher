@@ -144,7 +144,7 @@ namespace launcher
                 {
                     Content = new CultureInfo("en-US").TextInfo.ToTitleCase(lang),
                     IsChecked = lang.ToLower(new CultureInfo("en-US")) == "english" ? true : DoesLangFileExist(branch, lang),
-                    FontFamily = new System.Windows.Media.FontFamily("{StaticResource NunitoSansNormalSemiBold}"),
+                    FontFamily = new System.Windows.Media.FontFamily("{StaticResource SansationBold}"),
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     FontSize = 14,

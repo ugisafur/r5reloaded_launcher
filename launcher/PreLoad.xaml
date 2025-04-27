@@ -19,7 +19,7 @@
                     <TranslateTransform X="20" Y="15" />
                 </Image.RenderTransform>
             </Image>
-            <TextBlock x:Name="LoadingText" Text="Loading..." Foreground="{DynamicResource ThemePrimaryText}" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource NunitoSansNormal}" FontWeight="Bold" FontSize="20" TextAlignment="Right" Margin="0,0,5,5" />
+            <TextBlock x:Name="LoadingText" Text="Loading..." Foreground="{DynamicResource ThemePrimaryText}" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="20" TextAlignment="Right" Margin="0,0,5,5" />
         </Grid>
     </Border>
 </Window>

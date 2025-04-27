@@ -11,21 +11,21 @@
         <Grid>
             <Border Background="{DynamicResource ThemeSecondaryAlt}" Height="55" VerticalAlignment="Top"  CornerRadius="10, 10, 0, 0">
                 <Grid>
-                    <TextBlock Text="Install Optional Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Margin="15,0,280,0" />
-                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
+                    <TextBlock Text="Install Optional Files" Foreground="{DynamicResource ThemePrimaryText}" FontSize="24" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Margin="15,0,280,0" />
+                    <Button x:Name="closeX" Style="{DynamicResource closeBtnStyle}" Margin="520,0,10,0" Content="X" Background="Transparent" BorderBrush="Transparent" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="30" Width="30" Foreground="{DynamicResource ThemePrimaryText}" Click="close_Click" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="For an enhanced visual experience, you can download the optional HD Texture files. These files improve the quality of in-game textures." Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
+            <TextBlock Text="For an enhanced visual experience, you can download the optional HD Texture files. These files improve the quality of in-game textures." Foreground="{DynamicResource ThemePrimaryText}" FontSize="18" FontFamily="{StaticResource SansationRegular}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,69,55,0" />
 
             <Border Height="55" VerticalAlignment="Bottom">
                 <Grid>
-                    <Button x:Name="Download" Style="{DynamicResource downloadBtnStyle}" Margin="422,0,10,0" Content="DOWNLOAD" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Download_Click" />
-                    <Button x:Name="Later" Style="{DynamicResource laterBtnStyle}" Margin="328,0,150,0" Content="LATER" Background="{DynamicResource ThemeOtherButtonText}" BorderBrush="{DynamicResource ThemeOtherButtonText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalSemiBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Later_Click" />
+                    <Button x:Name="Download" Style="{DynamicResource downloadBtnStyle}" Margin="422,0,10,0" Content="DOWNLOAD" Background="{DynamicResource ThemeOtherButtonAltText}" BorderBrush="{DynamicResource ThemeOtherButtonAltText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Foreground="{DynamicResource ThemePrimaryAltText}" Height="42" Click="Download_Click" />
+                    <Button x:Name="Later" Style="{DynamicResource laterBtnStyle}" Margin="328,0,150,0" Content="LATER" Background="{DynamicResource ThemeOtherButtonText}" BorderBrush="{DynamicResource ThemeOtherButtonText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Later_Click" />
                 </Grid>
             </Border>
-            <TextBlock Text="Download Size: Approximately 20 GB" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
-            <TextBlock Text="Note: This is entirely optional and not required to play the game. The base game will function perfectly without it." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource NunitoSansNormalMedium}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,177,15,0" />
+            <TextBlock Text="Download Size: Approximately 20 GB" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
+            <TextBlock Text="Note: This is entirely optional and not required to play the game. The base game will function perfectly without it." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,177,15,0" />
         </Grid>
     </Border>
 </UserControl>

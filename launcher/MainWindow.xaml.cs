@@ -31,8 +31,8 @@ namespace launcher
         public ICommand ShowWindowCommand { get; }
 
         public List<Button> NewsButtons = [];
-        public List<double> NewsButtonsX = [-174, -45.5, 64, 170];
-        public List<double> NewsButtonsWidth = [95, 118, 66, 105];
+        public List<double> NewsButtonsX = [-175, -49, 61, 165];
+        public List<double> NewsButtonsWidth = [95, 115, 66, 102];
 
         public MainWindow()
         {
@@ -186,7 +186,7 @@ namespace launcher
             PreLoad_Window.Close();
 
             //TextOptions.SetTextFormattingMode(Main_Window, TextFormattingMode.Display);
-            TextOptions.SetTextRenderingMode(Main_Window, TextRenderingMode.ClearType);
+            //TextOptions.SetTextRenderingMode(Main_Window, TextRenderingMode.ClearType);
 
             // Show window open animation
             await OnOpen();
