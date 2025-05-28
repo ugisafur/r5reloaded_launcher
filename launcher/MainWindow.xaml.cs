@@ -76,6 +76,22 @@ namespace launcher
             this.Opacity = 0;
 
             Launcher.wineEnv = Managers.App.IsWineEnvironment();
+            if (Launcher.wineEnv)
+            {
+                LogInfo(Source.Launcher, "Wine environment detected, disabling background video");
+
+                // Hide the video element
+                Background_Video.Source = null;
+                Background_Video.Close();
+                Background_Video.Visibility = Visibility.Collapsed;
+                Background_Video.MediaEnded -= mediaElement_MediaEnded;
+
+                // Remove the video element from the parent grid
+                Grid parent = Background_Video.Parent as Grid;
+                parent?.Children.Remove(Background_Video);
+
+                Background_Video = null;
+            }
 
             var app = (App)Application.Current;
             if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
@@ -139,23 +155,9 @@ namespace launcher
 
             if (Launcher.wineEnv)
             {
-                LogInfo(Source.Launcher, "Wine environment detected, disabling background video");
-
                 // Force disable background video
                 Ini.Set(Ini.Vars.Disable_Background_Video, true);
                 useStaticImage = true;
-
-                // Hide the video element
-                Background_Video.Source = null;
-                Background_Video.Close();
-                Background_Video.Visibility = Visibility.Collapsed;
-                Background_Video.MediaEnded -= mediaElement_MediaEnded;
-
-                // Remove the video element from the parent grid
-                Grid parent = Background_Video.Parent as Grid;
-                parent?.Children.Remove(Background_Video);
-
-                Background_Video = null;
             }
             else
             {

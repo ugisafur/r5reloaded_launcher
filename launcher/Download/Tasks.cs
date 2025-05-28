@@ -1,15 +1,16 @@
 ﻿using launcher.Game;
 using launcher.Global;
-using Polly.Retry;
-using Polly;
-using System.IO;
-using System.Net;
 using launcher.Network;
-using static launcher.Global.Logger;
+using Polly;
+using Polly.Retry;
+using System.IO;
+using System.IO.Pipes;
+using System.Net;
 using System.Net.Http;
-using ZstdSharp;
-using static launcher.Global.References;
 using System.Windows;
+using ZstdSharp;
+using static launcher.Global.Logger;
+using static launcher.Global.References;
 
 namespace launcher.Download
 {
@@ -29,12 +30,22 @@ namespace launcher.Download
         public static string timeLeftText = "";
     }
 
+    public class MultiPartFile
+    {
+        public long totalBytes = 0;
+        public long downloadedBytes = 0;
+        public DateTime lastUpdate = DateTime.Now;
+    }
+
     public static class Tasks
     {
         public static long _downloadSpeedLimit = 0;
         public static SemaphoreSlim _downloadSemaphore;
         public static DownloadSpeedMonitor _speedMonitor;
         public static double currentDownloadSpeed = 0;
+
+        private const long MultiPartThreshold = 1L * 1024 * 1024 * 1024; // 1 GiB
+        private const long PartSize = 1L * 1024 * 1024 * 1024; // 1 GiB
 
         public static int UpdateType = 0; // 0 = install, 1 = repair, 2 = uninstall
 
@@ -180,6 +191,7 @@ namespace launcher.Download
                         destinationPath,
                         file.name,
                         file.checksum,
+                        file.size,
                         checkForExistingFiles: true
                     )
                 );
@@ -228,7 +240,7 @@ namespace launcher.Download
             return downloadTasks;
         }
 
-        private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", bool checkForExistingFiles = false)
+        private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", long size = 0, bool checkForExistingFiles = false)
         {
             await _downloadSemaphore.WaitAsync();
 
@@ -255,7 +267,7 @@ namespace launcher.Download
                 //Download the file
                 await CreateRetryPolicy(destinationPath, 15, downloadItem).ExecuteAsync(async () =>
                 {
-                    await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem);
+                    await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem, size);
                 });
 
                 //Decompress the file
@@ -399,7 +411,150 @@ namespace launcher.Download
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 OPR/109.0.0.0",
         };
 
-        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
+        private static async Task DownloadFileInPartsAsync(string fileUrl, string destinationPath, long totalBytes, DownloadItem downloadItem)
+        {
+            int partCount = (int)Math.Ceiling((double)totalBytes / PartSize);
+            var tempFiles = new string[partCount];
+            var partTasks = new List<Task>();
+
+            MultiPartFile multiPartFile = new();
+            multiPartFile.totalBytes = totalBytes;
+
+            for (int i = 0; i < partCount; i++)
+            {
+                long start = i * (long)PartSize;
+                long end = Math.Min(start + PartSize - 1, totalBytes - 1);
+
+                string tempPath = destinationPath + $".part{i}";
+                tempFiles[i] = tempPath;
+
+                partTasks.Add(DownloadPartAsync(fileUrl, tempPath, start, end, downloadItem, multiPartFile, i));
+            }
+
+            // download all parts in parallel
+            await Task.WhenAll(partTasks);
+
+            // merge
+            using var dest = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            {
+                int currentPart = 0;
+                foreach (var temp in tempFiles)
+                {
+                    await appDispatcher.InvokeAsync(() =>
+                    {
+                        downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPart++} / {partCount + 1}";
+                        downloadItem.downloadFileProgress.Value = currentPart / partCount + 1;
+                    });
+
+                    using var partStream = new FileStream(temp, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    {
+                        await partStream.CopyToAsync(dest);
+                    }
+
+                    await Task.Delay(100);
+                }
+            }
+
+            foreach (var temp in tempFiles)
+            {
+                File.Delete(temp);
+            }
+        }
+
+        private static async Task DownloadPartAsync(string fileUrl, string tempPath, long from, long to, DownloadItem downloadItem, MultiPartFile multiPartFile, int partnumbver)
+        {
+            Random r = new Random();
+
+            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
+            request.Method = "GET";
+            request.AllowAutoRedirect = true;
+            request.AddRange("bytes", from, to);
+            request.Host = request.RequestUri.Host;
+            request.UserAgent = UserAgents[r.Next(0, UserAgents.Count - 1)];
+
+            using var resp = (HttpWebResponse)await request.GetResponseAsync();
+            if (resp.StatusCode != HttpStatusCode.PartialContent && resp.StatusCode != HttpStatusCode.OK)
+                throw new WebException($"Unexpected status code {resp.StatusCode} for range {from}-{to}");
+
+            using var responseStream = resp.GetResponseStream();
+            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+            using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+
+            DateTime speedCheckStart = DateTime.Now;
+            long bytesAtStart = 0;
+
+            byte[] buffer = new byte[8192];
+            long bytesRemaining = (to - from) + 1;
+            while (bytesRemaining > 0)
+            {
+                int toRead = (int)Math.Min(buffer.Length, bytesRemaining);
+                int bytesRead = await throttledStream.ReadAsync(buffer, 0, toRead);
+                if (bytesRead == 0) break;
+
+                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                multiPartFile.downloadedBytes += bytesRead;
+
+                DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+
+                Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
+
+                bytesRemaining -= bytesRead;
+
+                if ((DateTime.Now - multiPartFile.lastUpdate).TotalMilliseconds > 200)
+                {
+                    multiPartFile.lastUpdate = DateTime.Now;
+                    if (downloadItem != null && multiPartFile.totalBytes > 0)
+                    {
+                        double totalSize = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? multiPartFile.totalBytes / (1024.0 * 1024 * 1024) : multiPartFile.totalBytes / (1024.0 * 1024.0);
+                        string totalText = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
+
+                        double downloadedSize = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? multiPartFile.downloadedBytes / (1024.0 * 1024 * 1024) : multiPartFile.downloadedBytes / (1024.0 * 1024.0);
+                        string downloadedText = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                        await appDispatcher.InvokeAsync(() =>
+                        {
+                            downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
+                            downloadItem.downloadFileProgress.Value = (double)multiPartFile.downloadedBytes / multiPartFile.totalBytes * 100;
+                        });
+                    }
+
+                    if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
+                    {
+                        long delta = multiPartFile.downloadedBytes - bytesAtStart;
+                        if (delta == 0)
+                        {
+                            throw new TimeoutException("Download stalled (no data received for 5s).");
+                        }
+
+                        bytesAtStart = multiPartFile.downloadedBytes;
+                        speedCheckStart  = DateTime.Now;
+                    }
+                }
+            }
+
+            await fileStream.FlushAsync();
+        }
+
+        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, long size)
+        {
+            var headReq = (HttpWebRequest)WebRequest.Create(fileUrl);
+            headReq.Method = "HEAD";
+            headReq.AllowAutoRedirect = true;
+            using var headResp = (HttpWebResponse)await headReq.GetResponseAsync();
+            long totalBytes = headResp.ContentLength;
+            headResp.Close();
+
+            if (totalBytes > MultiPartThreshold)
+            {
+                await DownloadFileInPartsAsync(fileUrl, destinationPath, totalBytes, downloadItem);
+            }
+            else
+            {
+                await DownloadSingleStreamAsync(fileUrl, destinationPath, downloadItem);
+            }
+        }
+
+        private static async Task DownloadSingleStreamAsync(string fileUrl, string destinationPath, DownloadItem downloadItem)
         {
             Random r = new Random();
 
@@ -418,6 +573,8 @@ namespace launcher.Download
                 long totalBytes = response.ContentLength;
                 long downloadedBytes = 0;
                 DateTime lastUpdate = DateTime.Now;
+                DateTime speedCheckStart = DateTime.Now;
+                long bytesAtStart = 0;
 
                 using var responseStream = response.GetResponseStream();
 
@@ -454,6 +611,18 @@ namespace launcher.Download
                                 downloadItem.downloadFileProgress.Value = (double)downloadedBytes / totalBytes * 100;
                             });
                         }
+                    }
+
+                    if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
+                    {
+                        long delta = downloadedBytes - bytesAtStart;
+                        if (delta == 0)
+                        {
+                            throw new TimeoutException("Download stalled (no data received for 5s).");
+                        }
+
+                        bytesAtStart = downloadedBytes;
+                        speedCheckStart  = DateTime.Now;
                     }
                 }
 

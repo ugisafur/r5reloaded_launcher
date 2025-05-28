@@ -31,9 +31,9 @@ namespace launcher.Game
                 Task.Run(() => { Repair.Start(); });
                 return;
             }
-
+            long extraSpace = 30L * (1024 * 1024 * 1024); // ( 30 GiB ) add extra required storage to compinsate for decompressing files
             GameFiles uncompressedgameFiles = await Fetch.GameFiles(false, false);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size) + extraSpace;
             if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
             {
                 MessageBox.Show($"Not enough free space to install R5Reloaded.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
