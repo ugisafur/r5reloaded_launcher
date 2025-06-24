@@ -131,7 +131,7 @@ namespace launcher.Download
                 {
                     Progress_Bar.Value = GlobalDownloadStats.DownloadedBytes;
                     Progress_Bar.Maximum = GlobalDownloadStats.TotalBytes;
-                    Percent_Label.Text = $"{(GlobalDownloadStats.DownloadedBytes / (double)GlobalDownloadStats.TotalBytes * 100):F2}%";
+                    Percent_Label.Text = $"{(Math.Min(GlobalDownloadStats.DownloadedBytes / (double)GlobalDownloadStats.TotalBytes * 100, 99)):F2}%";
 
                     double totalSize = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.TotalBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.TotalBytes / (1024.0 * 1024.0);
                     string totalText = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";

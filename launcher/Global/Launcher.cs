@@ -16,7 +16,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.0.2";
 
         #region Public Keys
 
