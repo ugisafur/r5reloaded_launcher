@@ -1,28 +1,23 @@
 ﻿namespace patch_creator
 {
-    internal class Patch
-    {
-        public List<PatchFile>? files { get; set; }
-    }
-
-    internal class PatchFile
-    {
-        public string? Name { get; set; }
-        public string? Action { get; set; }
-    }
-
     public class GameChecksums
     {
         public string? game_version { get; set; }
-        public int? compression_level { get; set; }
         public List<GameFile>? files { get; set; }
     }
 
     public class GameFile
     {
-        public string? name { get; set; }
+        public string? destinationPath { get; set; }
+        public long? sizeInBytes { get; set; }
         public string? checksum { get; set; }
-        public long? size { get; set; }
+        public List<FilePart>? parts { get; set; }
+    }
+
+    public class FilePart
+    {
+        public string? path { get; set; }
+        public string? checksum { get; set; }
     }
 
     public class Branch

@@ -48,12 +48,12 @@
             PurgeAllBtn = new Button();
             groupBox2 = new GroupBox();
             label6 = new Label();
-            compressionLevel = new NumericUpDown();
+            concurrentTasks = new NumericUpDown();
             versionTxt = new TextBox();
             label5 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)compressionLevel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)concurrentTasks).BeginInit();
             SuspendLayout();
             // 
             // textBox1
@@ -164,8 +164,10 @@
             // richTextBox2
             // 
             richTextBox2.DetectUrls = false;
+            richTextBox2.Enabled = false;
             richTextBox2.Location = new Point(12, 34);
             richTextBox2.Name = "richTextBox2";
+            richTextBox2.ReadOnly = true;
             richTextBox2.Size = new Size(345, 272);
             richTextBox2.TabIndex = 14;
             richTextBox2.Text = "";
@@ -225,7 +227,7 @@
             // groupBox2
             // 
             groupBox2.Controls.Add(label6);
-            groupBox2.Controls.Add(compressionLevel);
+            groupBox2.Controls.Add(concurrentTasks);
             groupBox2.Controls.Add(versionTxt);
             groupBox2.Controls.Add(label5);
             groupBox2.Location = new Point(12, 312);
@@ -240,17 +242,17 @@
             label6.AutoSize = true;
             label6.Location = new Point(6, 84);
             label6.Name = "label6";
-            label6.Size = new Size(241, 15);
+            label6.Size = new Size(175, 15);
             label6.TabIndex = 23;
-            label6.Text = "Compression Amount | 0 = None - 22 = Max";
+            label6.Text = "Max Concurrent Tasks ( 1 - 500 )";
             // 
-            // compressionLevel
+            // concurrentTasks
             // 
-            compressionLevel.Location = new Point(6, 102);
-            compressionLevel.Maximum = new decimal(new int[] { 22, 0, 0, 0 });
-            compressionLevel.Name = "compressionLevel";
-            compressionLevel.Size = new Size(333, 23);
-            compressionLevel.TabIndex = 22;
+            concurrentTasks.Location = new Point(6, 102);
+            concurrentTasks.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
+            concurrentTasks.Name = "concurrentTasks";
+            concurrentTasks.Size = new Size(333, 23);
+            concurrentTasks.TabIndex = 22;
             // 
             // versionTxt
             // 
@@ -297,7 +299,7 @@
             groupBox1.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)compressionLevel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)concurrentTasks).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -326,6 +328,6 @@
         private TextBox versionTxt;
         private Label label5;
         private Label label6;
-        private NumericUpDown compressionLevel;
+        private NumericUpDown concurrentTasks;
     }
 }
