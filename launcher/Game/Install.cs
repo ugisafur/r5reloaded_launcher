@@ -1,9 +1,10 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using launcher.Global;
+using System.Text.Json;
+using System.Windows;
+using System.Windows.Controls;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using System.Windows.Controls;
-using launcher.Global;
-using System.Windows;
 
 namespace launcher.Game
 {
@@ -31,9 +32,10 @@ namespace launcher.Game
                 Task.Run(() => { Repair.Start(); });
                 return;
             }
-            long extraSpace = 30L * (1024 * 1024 * 1024); // ( 30 GiB ) add extra required storage to compinsate for decompressing files
-            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false, false);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size) + extraSpace;
+
+            long extraSpace = 30L * (1024 * 1024 * 1024); // ( 10 GiB ) add extra required storage
+            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes) + extraSpace;
             if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
             {
                 MessageBox.Show($"Not enough free space to install R5Reloaded.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -49,7 +51,7 @@ namespace launcher.Game
             string branchDirectory = GetBranch.Directory();
 
             Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Installer);
-            GameFiles gameFiles = await Fetch.GameFiles(true, false);
+            GameFiles gameFiles = await Fetch.GameFiles(false);
 
             Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
             var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
@@ -102,8 +104,8 @@ namespace launcher.Game
             if (GetBranch.IsLocalBranch())
                 return;
 
-            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false, true);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            GameFiles uncompressedgameFiles = await Fetch.GameFiles(true);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes);
             if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
             {
                 MessageBox.Show($"Not enough free space to install HD Textures.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -118,7 +120,7 @@ namespace launcher.Game
             string branchDirectory = GetBranch.Directory();
 
             Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Installer);
-            GameFiles optionalGameFiles = await Fetch.GameFiles(true, true);
+            GameFiles optionalGameFiles = await Fetch.GameFiles(true);
 
             Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Installer);
             var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
@@ -168,8 +170,8 @@ namespace launcher.Game
                 return;
             }
 
-            GameFiles uncompressedgameFiles = await Fetch.LanguageFiles(langs, false);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.size);
+            GameFiles uncompressedgameFiles = await Fetch.LanguageFiles(langs);
+            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes);
             if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
             {
                 MessageBox.Show($"Not enough free space to install Language File.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);

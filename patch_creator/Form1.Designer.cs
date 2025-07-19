@@ -253,6 +253,7 @@
             concurrentTasks.Name = "concurrentTasks";
             concurrentTasks.Size = new Size(333, 23);
             concurrentTasks.TabIndex = 22;
+            concurrentTasks.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // versionTxt
             // 

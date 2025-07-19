@@ -96,7 +96,7 @@ namespace launcher.Game
 
             Download.Tasks.SetInstallState(true, "UNINSTALLING");
 
-            GameFiles langFiles = await Fetch.LanguageFiles(lang, false);
+            GameFiles langFiles = await Fetch.LanguageFiles(lang);
 
             Download.Tasks.UpdateStatusLabel("Removing game files", Source.Uninstaller);
             AppState.FilesLeft = langFiles.files.Count;
@@ -109,14 +109,14 @@ namespace launcher.Game
 
             foreach (var langFile in langFiles.files)
             {
-                if (File.Exists($"{GetBranch.Directory()}\\{langFile.name}"))
+                if (File.Exists($"{GetBranch.Directory()}\\{langFile.destinationPath}"))
                 {
-                    LogInfo(Source.Uninstaller, $"Removing file: {GetBranch.Directory()}\\{langFile.name}");
-                    File.Delete($"{GetBranch.Directory()}\\{langFile.name}");
+                    LogInfo(Source.Uninstaller, $"Removing file: {GetBranch.Directory()}\\{langFile.destinationPath}");
+                    File.Delete($"{GetBranch.Directory()}\\{langFile.destinationPath}");
                 }
                 else
                 {
-                    LogInfo(Source.Uninstaller, $"File not found: {GetBranch.Directory()}\\{langFile.name}");
+                    LogInfo(Source.Uninstaller, $"File not found: {GetBranch.Directory()}\\{langFile.destinationPath}");
                 }
 
                 appDispatcher.Invoke(() =>

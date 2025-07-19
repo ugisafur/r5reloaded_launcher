@@ -8,6 +8,7 @@ using System.IO.Pipes;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Shell;
 using ZstdSharp;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
@@ -177,27 +178,25 @@ namespace launcher.Download
 
             foreach (var file in gameFiles.files)
             {
-                if (file.name.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                if (file.destinationPath.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                string fileUrl = $"{GetBranch.GameURL()}/{file.name}";
-                string destinationPath = Path.Combine(branchDirectory, file.name);
+                string fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
+                string finalPath = Path.Combine(branchDirectory, file.destinationPath);
 
-                EnsureDirectoryExists(destinationPath);
+                EnsureDirectoryExists(finalPath);
 
                 downloadTasks.Add(
                     DownloadFileAsync(
                         fileUrl,
-                        destinationPath,
-                        file.name,
-                        file.checksum,
-                        file.size,
+                        finalPath,
+                        file,
                         checkForExistingFiles: true
                     )
                 );
             }
 
-            GlobalDownloadStats.TotalBytes = gameFiles.files.Sum(f => f.size);
+            GlobalDownloadStats.TotalBytes = gameFiles.files.Sum(f => f.sizeInBytes);
             GlobalDownloadStats.DownloadedBytes = 0;
             GlobalDownloadStats.StartTime = DateTime.Now;
 
@@ -215,68 +214,50 @@ namespace launcher.Download
 
             foreach (var file in DataCollections.BadFiles)
             {
-                if (file.name.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.name.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
+                if (file.destinationPath.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                string fileUrl = $"{GetBranch.GameURL()}/{file.name}";
-                string destinationPath = Path.Combine(branchDirectory, file.name);
+                string fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
+                string finalPath = Path.Combine(branchDirectory, file.destinationPath);
 
-                EnsureDirectoryExists(destinationPath);
+                EnsureDirectoryExists(finalPath);
 
                 downloadTasks.Add(
                     DownloadFileAsync(
                         fileUrl,
-                        destinationPath,
-                        file.name,
+                        finalPath,
+                        file,
                         checkForExistingFiles: false
                     )
                 );
             }
 
-            GlobalDownloadStats.TotalBytes = DataCollections.BadFiles.Sum(f => f.size);
+            GlobalDownloadStats.TotalBytes = DataCollections.BadFiles.Sum(f => f.sizeInBytes);
             GlobalDownloadStats.DownloadedBytes = 0;
             GlobalDownloadStats.StartTime = DateTime.Now;
 
             return downloadTasks;
         }
 
-        private static async Task<string> DownloadFileAsync(string fileUrl, string destinationPath, string fileName, string checksum = "", long size = 0, bool checkForExistingFiles = false)
+        private static async Task<string> DownloadFileAsync(string fileUrl, string finalPath, GameFile file, bool checkForExistingFiles = false)
         {
             await _downloadSemaphore.WaitAsync();
 
-            DownloadItem downloadItem = await AddDownloadItemAsync(fileName);
+            DownloadItem downloadItem = await AddDownloadItemAsync(file.destinationPath);
 
             await Task.Delay(2000);
 
             try
             {
-                if (File.Exists(destinationPath.Replace(".zst", "")))
-                    File.Delete(destinationPath.Replace(".zst", ""));
+                if (checkForExistingFiles && !string.IsNullOrWhiteSpace(file.checksum) && ShouldSkipDownload(finalPath, file.checksum))
+                    return finalPath;
 
-                if (checkForExistingFiles && !string.IsNullOrWhiteSpace(checksum) && ShouldSkipDownload(destinationPath, checksum))
+                await CreateRetryPolicy(finalPath, 15, downloadItem).ExecuteAsync(async () =>
                 {
-                    //Decompress the file
-                    await CreateRetryPolicy(destinationPath, 5, downloadItem).ExecuteAsync(async () =>
-                    {
-                        await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
-                    });
-
-                    return destinationPath;
-                }
-
-                //Download the file
-                await CreateRetryPolicy(destinationPath, 15, downloadItem).ExecuteAsync(async () =>
-                {
-                    await DownloadWithThrottlingAsync(fileUrl, destinationPath, downloadItem, size);
+                    await DownloadWithThrottlingAsync(fileUrl, finalPath, downloadItem, file);
                 });
 
-                //Decompress the file
-                await CreateRetryPolicy(destinationPath, 5, downloadItem).ExecuteAsync(async () =>
-                {
-                    await DecompressFileAsync(destinationPath, destinationPath.Replace(".zst", ""), downloadItem);
-                });
-
-                return destinationPath;
+                return finalPath;
             }
             catch (Exception ex)
             {
@@ -293,9 +274,6 @@ namespace launcher.Download
                     //Files_Label.Text = $"{--AppState.FilesLeft} files left";
                     //Percent_Label.Text = $"{(Progress_Bar.Value / Progress_Bar.Maximum * 100):F2}%";
                 });
-
-                if (File.Exists(destinationPath))
-                    File.Delete(destinationPath);
 
                 _downloadSemaphore.Release();
 
@@ -388,7 +366,7 @@ namespace launcher.Download
 
         private static async Task<DownloadItem> AddDownloadItemAsync(string fileName)
         {
-            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName.Replace(".zst", "")));
+            return await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(fileName));
         }
 
         private static async Task RemoveDownloadItemAsync(DownloadItem downloadItem)
@@ -411,24 +389,23 @@ namespace launcher.Download
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 OPR/109.0.0.0",
         };
 
-        private static async Task DownloadFileInPartsAsync(string fileUrl, string destinationPath, long totalBytes, DownloadItem downloadItem)
+        private static async Task DownloadFileInPartsAsync(string fileUrl, string destinationPath, GameFile file, DownloadItem downloadItem)
         {
-            int partCount = (int)Math.Ceiling((double)totalBytes / PartSize);
-            var tempFiles = new string[partCount];
+            int partCount = file.parts.Count;
             var partTasks = new List<Task>();
 
             MultiPartFile multiPartFile = new();
-            multiPartFile.totalBytes = totalBytes;
+            multiPartFile.totalBytes = file.sizeInBytes;
 
-            for (int i = 0; i < partCount; i++)
+            foreach (Part part in file.parts)
             {
-                long start = i * (long)PartSize;
-                long end = Math.Min(start + PartSize - 1, totalBytes - 1);
+                if (ShouldSkipDownload(Path.Combine(GetBranch.Directory(), part.path), part.checksum))
+                {
+                    multiPartFile.downloadedBytes += part.sizeInBytes;
+                    continue;
+                }
 
-                string tempPath = destinationPath + $".part{i}";
-                tempFiles[i] = tempPath;
-
-                partTasks.Add(DownloadPartAsync(fileUrl, tempPath, start, end, downloadItem, multiPartFile, i));
+                partTasks.Add(DownloadMultiStreamAsync($"{GetBranch.GameURL()}/{part.path}", Path.Combine(GetBranch.Directory(), part.path), downloadItem, multiPartFile));
             }
 
             // download all parts in parallel
@@ -438,7 +415,7 @@ namespace launcher.Download
             using var dest = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
             {
                 int currentPart = 0;
-                foreach (var temp in tempFiles)
+                foreach (Part part in file.parts)
                 {
                     await appDispatcher.InvokeAsync(() =>
                     {
@@ -446,7 +423,7 @@ namespace launcher.Download
                         downloadItem.downloadFileProgress.Value = currentPart / partCount + 1;
                     });
 
-                    using var partStream = new FileStream(temp, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using var partStream = new FileStream(Path.Combine(GetBranch.Directory(), part.path), FileMode.Open, FileAccess.Read, FileShare.Read);
                     {
                         await partStream.CopyToAsync(dest);
                     }
@@ -455,102 +432,95 @@ namespace launcher.Download
                 }
             }
 
-            foreach (var temp in tempFiles)
+            foreach (Part part in file.parts)
             {
-                File.Delete(temp);
+                File.Delete(Path.Combine(GetBranch.Directory(), part.path));
             }
         }
 
-        private static async Task DownloadPartAsync(string fileUrl, string tempPath, long from, long to, DownloadItem downloadItem, MultiPartFile multiPartFile, int partnumbver)
+        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, GameFile file)
+        {
+            if (file.parts.Count > 0)
+            {
+                await DownloadFileInPartsAsync(fileUrl, destinationPath, file, downloadItem);
+            }
+            else
+            {
+                await DownloadSingleStreamAsync(fileUrl, destinationPath, downloadItem);
+            }
+        }
+
+        private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, MultiPartFile multiPartFile)
         {
             Random r = new Random();
 
             var request = (HttpWebRequest)WebRequest.Create(fileUrl);
             request.Method = "GET";
+            request.Timeout = 10000;
             request.AllowAutoRedirect = true;
-            request.AddRange("bytes", from, to);
             request.Host = request.RequestUri.Host;
             request.UserAgent = UserAgents[r.Next(0, UserAgents.Count - 1)];
 
-            using var resp = (HttpWebResponse)await request.GetResponseAsync();
-            if (resp.StatusCode != HttpStatusCode.PartialContent && resp.StatusCode != HttpStatusCode.OK)
-                throw new WebException($"Unexpected status code {resp.StatusCode} for range {from}-{to}");
-
-            using var responseStream = resp.GetResponseStream();
-            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
-            using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.Read);
-
-            DateTime speedCheckStart = DateTime.Now;
-            long bytesAtStart = 0;
-
-            byte[] buffer = new byte[8192];
-            long bytesRemaining = (to - from) + 1;
-            while (bytesRemaining > 0)
+            using (var response = (HttpWebResponse)await request.GetResponseAsync())
             {
-                int toRead = (int)Math.Min(buffer.Length, bytesRemaining);
-                int bytesRead = await throttledStream.ReadAsync(buffer, 0, toRead);
-                if (bytesRead == 0) break;
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new WebException($"Failed to download: {response.StatusCode}");
 
-                await fileStream.WriteAsync(buffer, 0, bytesRead);
-                multiPartFile.downloadedBytes += bytesRead;
+                DateTime lastUpdate = DateTime.Now;
+                DateTime speedCheckStart = DateTime.Now;
+                long bytesAtStart = 0;
 
-                DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+                using var responseStream = response.GetResponseStream();
 
-                Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
+                using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
 
-                bytesRemaining -= bytesRead;
+                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
-                if ((DateTime.Now - multiPartFile.lastUpdate).TotalMilliseconds > 200)
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+
+                while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
-                    multiPartFile.lastUpdate = DateTime.Now;
-                    if (downloadItem != null && multiPartFile.totalBytes > 0)
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    multiPartFile.downloadedBytes += bytesRead;
+
+                    DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
+
+                    Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
+
+                    if ((DateTime.Now - multiPartFile.lastUpdate).TotalMilliseconds > 200)
                     {
-                        double totalSize = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? multiPartFile.totalBytes / (1024.0 * 1024 * 1024) : multiPartFile.totalBytes / (1024.0 * 1024.0);
-                        string totalText = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                        double downloadedSize = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? multiPartFile.downloadedBytes / (1024.0 * 1024 * 1024) : multiPartFile.downloadedBytes / (1024.0 * 1024.0);
-                        string downloadedText = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                        await appDispatcher.InvokeAsync(() =>
+                        multiPartFile.lastUpdate = DateTime.Now;
+                        if (downloadItem != null && multiPartFile.totalBytes > 0)
                         {
-                            downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
-                            downloadItem.downloadFileProgress.Value = (double)multiPartFile.downloadedBytes / multiPartFile.totalBytes * 100;
-                        });
-                    }
+                            double totalSize = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? multiPartFile.totalBytes / (1024.0 * 1024 * 1024) : multiPartFile.totalBytes / (1024.0 * 1024.0);
+                            string totalText = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
 
-                    if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
-                    {
-                        long delta = multiPartFile.downloadedBytes - bytesAtStart;
-                        if (delta == 0)
-                        {
-                            throw new TimeoutException("Download stalled (no data received for 5s).");
+                            double downloadedSize = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? multiPartFile.downloadedBytes / (1024.0 * 1024 * 1024) : multiPartFile.downloadedBytes / (1024.0 * 1024.0);
+                            string downloadedText = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
+
+                            await appDispatcher.InvokeAsync(() =>
+                            {
+                                downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
+                                downloadItem.downloadFileProgress.Value = (double)multiPartFile.downloadedBytes / multiPartFile.totalBytes * 100;
+                            });
                         }
 
-                        bytesAtStart = multiPartFile.downloadedBytes;
-                        speedCheckStart  = DateTime.Now;
+                        if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
+                        {
+                            long delta = multiPartFile.downloadedBytes - bytesAtStart;
+                            if (delta == 0)
+                            {
+                                throw new TimeoutException("Download stalled (no data received for 5s).");
+                            }
+
+                            bytesAtStart = multiPartFile.downloadedBytes;
+                            speedCheckStart  = DateTime.Now;
+                        }
                     }
                 }
-            }
 
-            await fileStream.FlushAsync();
-        }
-
-        private static async Task DownloadWithThrottlingAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, long size)
-        {
-            var headReq = (HttpWebRequest)WebRequest.Create(fileUrl);
-            headReq.Method = "HEAD";
-            headReq.AllowAutoRedirect = true;
-            using var headResp = (HttpWebResponse)await headReq.GetResponseAsync();
-            long totalBytes = headResp.ContentLength;
-            headResp.Close();
-
-            if (totalBytes > MultiPartThreshold)
-            {
-                await DownloadFileInPartsAsync(fileUrl, destinationPath, totalBytes, downloadItem);
-            }
-            else
-            {
-                await DownloadSingleStreamAsync(fileUrl, destinationPath, downloadItem);
+                await fileStream.FlushAsync();
             }
         }
 
@@ -708,48 +678,6 @@ namespace launcher.Download
                 Downloads_Control.Speed_Label.Text = "";
                 Main_Window.TimeLeft_Label.Text = "";
             });
-        }
-
-        public static async Task DecompressFileAsync(string compressedFilePath, string decompressedFilePath, DownloadItem downloadItem)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(decompressedFilePath));
-
-            long totalBytes = new FileInfo(compressedFilePath).Length;
-            long processedBytes = 0;
-            DateTime lastUpdate = DateTime.Now;
-
-            using var input = File.OpenRead(compressedFilePath);
-            using var output = File.OpenWrite(decompressedFilePath);
-            using var decompressionStream = new DecompressionStream(input);
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = await decompressionStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                await output.WriteAsync(buffer, 0, bytesRead);
-                processedBytes += bytesRead;
-
-                if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
-                {
-                    lastUpdate = DateTime.Now;
-
-                    double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
-                    string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                    double downloadedSize = processedBytes >= 1024L * 1024 * 1024 ? processedBytes / (1024.0 * 1024 * 1024) : processedBytes / (1024.0 * 1024.0);
-                    string downloadedText = processedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        downloadItem.downloadFilePercent.Text = $"decompressing...";
-                        downloadItem.downloadFileProgress.Value = (double)processedBytes / totalBytes * 100;
-                    });
-                }
-            }
-
-            decompressionStream.Close();
-            output.Close();
-            input.Close();
         }
     }
 }

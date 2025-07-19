@@ -1,22 +1,23 @@
-﻿using SoftCircuits.IniFileParser;
-using System.Globalization;
-using static launcher.Global.Logger;
-using static launcher.Global.References;
+﻿using DiscordRPC;
 using launcher.Game;
+using SoftCircuits.IniFileParser;
+using System.Globalization;
 using System.IO;
-using System.Numerics;
-using System.Windows;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using DiscordRPC;
+using System.Windows;
+using static launcher.Global.Logger;
+using static launcher.Global.References;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "1.0.2";
+        public const string VERSION = "1.0.5";
 
         #region Public Keys
 
@@ -214,18 +215,13 @@ namespace launcher.Global
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        public static async Task<GameFiles> GameFiles(bool compressed, bool optional)
+        public static async Task<GameFiles> GameFiles(bool optional)
         {
-            string fileName = compressed ? "checksums_zst.json" : "checksums.json";
-            string endingString = compressed ? "opt.starpak.zst" : "opt.starpak";
-
             JsonSerializerOptions jsonSerializerOptions = new() { AllowTrailingCommas = true };
 
-            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\{fileName}", jsonSerializerOptions);
+            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", jsonSerializerOptions);
 
             List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
-
-            // Remove english from the list of languages as english is always included
             excludedLanguages.Remove("english");
 
             string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
@@ -233,32 +229,18 @@ namespace launcher.Global
 
             if (!optional)
             {
-                gameFiles.files = gameFiles.files
-                .Where(file =>
-                    !file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase) &&
-                    !excludeLangRegex.IsMatch(file.name)
-                )
-                .ToList();
+                gameFiles.files = gameFiles.files.Where(file => !file.optional && !excludeLangRegex.IsMatch(file.destinationPath)).ToList();
             }
             else
             {
-                gameFiles.files = gameFiles.files
-                .Where(file =>
-                    file.name.EndsWith(endingString, StringComparison.OrdinalIgnoreCase) &&
-                    !excludeLangRegex.IsMatch(file.name)
-                )
-                .ToList(); ;
+                gameFiles.files = gameFiles.files.Where(file => file.optional && !excludeLangRegex.IsMatch(file.destinationPath)).ToList();
             }
 
             return gameFiles;
         }
 
-        public static async Task<GameFiles> LanguageFiles(List<string> languages, bool compressed = true)
+        public static async Task<GameFiles> LanguageFiles(List<string> languages)
         {
-            string fileName = compressed ? "checksums_zst.json" : "checksums.json";
-            string endingstring = compressed ? "mstr.zst" : "mstr";
-
-            // Remove english from the list of languages as english is always included
             languages.Remove("english");
 
             string languagesPattern = string.Join("|", languages.Select(Regex.Escape));
@@ -269,9 +251,9 @@ namespace launcher.Global
                 AllowTrailingCommas = true
             };
 
-            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\{fileName}", jsonSerializerOptions);
+            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", jsonSerializerOptions);
 
-            gameFiles.files = gameFiles.files.Where(file => excludeLangRegex.IsMatch(file.name)).ToList();
+            gameFiles.files = gameFiles.files.Where(file => excludeLangRegex.IsMatch(file.destinationPath)).ToList();
 
             return gameFiles;
         }

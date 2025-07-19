@@ -46,7 +46,7 @@ namespace launcher.Game
             await Task.WhenAll(checksumTasks);
 
             Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Update);
-            GameFiles gameFiles = await Fetch.GameFiles(false, false);
+            GameFiles gameFiles = await Fetch.GameFiles(false);
 
             Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
@@ -103,7 +103,7 @@ namespace launcher.Game
             await Task.WhenAll(checksumTasks);
 
             Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Update);
-            GameFiles gameFiles = await Fetch.GameFiles(false, true);
+            GameFiles gameFiles = await Fetch.GameFiles(true);
 
             Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
@@ -137,7 +137,7 @@ namespace launcher.Game
 
             string[] files = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
 
-            GameFiles gameFiles = await Fetch.GameFiles(false, optfiles);
+            GameFiles gameFiles = await Fetch.GameFiles(optfiles);
 
             foreach (var file in files)
             {
@@ -149,7 +149,7 @@ namespace launcher.Game
                 {
                     try
                     {
-                        if (!gameFiles.files.Exists(f => f.name.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                        if (!gameFiles.files.Exists(f => f.destinationPath.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
                         {
                             string languagesPattern = string.Join("|", GetBranch.Branch().mstr_languages.Select(Regex.Escape));
                             Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);

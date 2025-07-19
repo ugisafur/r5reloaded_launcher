@@ -139,8 +139,10 @@ namespace patch_creator
 
             UpdateProgressLabel("Getting server checksums");
             var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
-            GameChecksums server_checksums = new GameChecksums(); //JsonConvert.DeserializeObject<GameChecksums>(response);
-            server_checksums.files = new List<GameFile>();
+            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);  //new GameChecksums();
+
+            //For Debug
+            //server_checksums.files = new List<GameFile>();
 
             UpdateProgressLabel("Generating local checksums");
             GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text);
@@ -186,7 +188,8 @@ namespace patch_creator
                             fileParts.Add(new FilePart
                             {
                                 path = partFileName,
-                                checksum = part_checksum
+                                checksum = part_checksum,
+                                sizeInBytes = bytesToReadForPart
                             });
 
                             Console.WriteLine($"Created part: {partFileName} ({bytesToReadForPart / 1024 / 1024} MB)");
@@ -371,13 +374,16 @@ namespace patch_creator
                 try
                 {
                     string relativePath = Path.GetRelativePath(directory, filePath);
+                    string filename = Path.GetFileName($"{directory}\\{filePath}");
                     string checksum = await CalculateChecksumAsync(filePath);
 
                     var gameFile = new GameFile
                     {
                         destinationPath = relativePath,
                         checksum = checksum,
+                        optional = filename.Contains(".opt.starpak"),
                         sizeInBytes = new FileInfo(filePath).Length
+                        
                     };
 
                     resultsBag.Add(gameFile);

@@ -25,17 +25,19 @@ namespace launcher.Game
 
             foreach (var file in gameFiles.files)
             {
-                string filePath = Path.Combine(branchDirectory, file.name);
+                string filePath = Path.Combine(branchDirectory, file.destinationPath);
 
-                if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.name, out var calculatedChecksum) || file.checksum != calculatedChecksum)
+                if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.destinationPath, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.name}" : $"Bad file found: {file.name}");
+                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.destinationPath}" : $"Bad file found: {file.destinationPath}");
 
                     GameFile gameFile = new GameFile
                     {
-                        name = $"{file.name}.zst",
+                        destinationPath = $"{file.destinationPath}",
                         checksum = file.checksum,
-                        size = file.size
+                        sizeInBytes = file.sizeInBytes,
+                        optional = file.optional,
+                        parts = file.parts
                     };
 
                     DataCollections.BadFiles.Add(gameFile);
@@ -56,10 +58,7 @@ namespace launcher.Game
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
-                        .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories).Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {
@@ -92,8 +91,7 @@ namespace launcher.Game
             Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
 
             var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories).Where(
-                f => excludeLangRegex.IsMatch(f) &&
-                !f.Contains(".zst", StringComparison.OrdinalIgnoreCase)).ToArray();
+                f => excludeLangRegex.IsMatch(f)).ToArray();
 
             appDispatcher.Invoke(() =>
             {
@@ -116,10 +114,7 @@ namespace launcher.Game
         {
             var checksumTasks = new List<Task<FileChecksum>>();
 
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
-                        .Where(f => f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".zst", StringComparison.OrdinalIgnoreCase) &&
-                        !f.Contains(".delta", StringComparison.OrdinalIgnoreCase)).ToArray();
+            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories).Where(f => f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase)).ToArray();
 
             appDispatcher.Invoke(() =>
             {

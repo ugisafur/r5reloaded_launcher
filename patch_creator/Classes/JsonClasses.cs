@@ -11,6 +11,7 @@
         public string? destinationPath { get; set; }
         public long? sizeInBytes { get; set; }
         public string? checksum { get; set; }
+        public bool? optional { get; set; }
         public List<FilePart>? parts { get; set; }
     }
 
@@ -18,6 +19,7 @@
     {
         public string? path { get; set; }
         public string? checksum { get; set; }
+        public long? sizeInBytes { get; set; }
     }
 
     public class Branch

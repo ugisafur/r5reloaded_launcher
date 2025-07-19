@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using DiscordRPC;
+using launcher.Global;
+using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 using static launcher.Game.LaunchParameters;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using launcher.Global;
-using System.Windows.Forms;
 
 namespace launcher.Game
 {
@@ -120,14 +121,24 @@ namespace launcher.Game
 
     public class GameFiles
     {
+        public string game_version { get; set; }
         public List<GameFile> files { get; set; }
     }
 
     public class GameFile
     {
-        public string name { get; set; }
+        public string destinationPath { get; set; }
+        public long sizeInBytes { get; set; }
         public string checksum { get; set; }
-        public long size { get; set; }
+        public bool optional { get; set; }
+        public List<Part> parts { get; set; }
+    }
+
+    public class Part
+    {
+        public string path { get; set; }
+        public string checksum { get; set; }
+        public long sizeInBytes { get; set; }
     }
 
     public class ServerConfig

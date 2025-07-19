@@ -49,7 +49,7 @@ namespace launcher.Game
             await Task.WhenAll(checksumTasks);
 
             Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Repair);
-            GameFiles gameFiles = await Fetch.GameFiles(false, false);
+            GameFiles gameFiles = await Fetch.GameFiles(false);
 
             Download.Tasks.UpdateStatusLabel("Finding bad files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
@@ -85,9 +85,14 @@ namespace launcher.Game
             Managers.App.SetupAdvancedMenu();
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been repaired!", BalloonIcon.Info);
 
-            if (Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories).Length > 0)
+            var allOptFiles = Directory
+                .GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories)
+                .Where(path => !path.Split(Path.DirectorySeparatorChar).Any(segment => segment.Equals("mods", StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+
+            if (allOptFiles.Length > 0)
             {
-                foreach (string file in Directory.GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories))
+                foreach (string file in allOptFiles)
                 {
                     LogInfo(Source.Repair, $"Found HD Texture file: {file}");
                 }
@@ -122,7 +127,7 @@ namespace launcher.Game
             await Task.WhenAll(checksumTasks);
 
             Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Repair);
-            GameFiles gameFiles = await Fetch.GameFiles(false, true);
+            GameFiles gameFiles = await Fetch.GameFiles(true);
 
             Download.Tasks.UpdateStatusLabel("Finding bad optional files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
@@ -164,7 +169,7 @@ namespace launcher.Game
             var checksumTasks = Checksums.PrepareLangChecksumTasks(branchDirectory, langs);
 
             Download.Tasks.UpdateStatusLabel("Fetching language files", Source.Repair);
-            GameFiles langFiles = await Fetch.LanguageFiles(langs, false);
+            GameFiles langFiles = await Fetch.LanguageFiles(langs);
 
             Download.Tasks.UpdateStatusLabel("Finding bad language files", Source.Repair);
             int badFileCount = Checksums.IdentifyBadFiles(langFiles, checksumTasks, branchDirectory);
