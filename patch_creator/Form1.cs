@@ -139,10 +139,7 @@ namespace patch_creator
 
             UpdateProgressLabel("Getting server checksums");
             var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
-            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);  //new GameChecksums();
-
-            //For Debug
-            //server_checksums.files = new List<GameFile>();
+            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
 
             UpdateProgressLabel("Generating local checksums");
             GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text);
@@ -154,6 +151,16 @@ namespace patch_creator
             int processedCount = 0;
             await Parallel.ForEachAsync(local_checksums.files, parallelOptions, async (file, cancellationToken) =>
             {
+                if (!changedFiles.Any(f => f.destinationPath == file.destinationPath))
+                {
+                    GameFile serverFile = server_checksums.files.FirstOrDefault(f => f.destinationPath == file.destinationPath);
+                    file.parts = serverFile.parts;
+                    file.checksum = serverFile.checksum;
+                    file.sizeInBytes = serverFile.sizeInBytes;
+                    file.optional = serverFile.optional;
+                    return;
+                }
+
                 List<FilePart> fileParts = new List<FilePart>();
                 string sourceFilePath = Path.Combine(textBox1.Text, file.destinationPath);
 
@@ -207,6 +214,7 @@ namespace patch_creator
                         Console.WriteLine($"Copied file: {file.destinationPath}");
                     }
 
+
                     file.parts = fileParts;
 
                     int currentCount = Interlocked.Increment(ref processedCount);
@@ -218,11 +226,8 @@ namespace patch_creator
                 }
             });
 
-            UpdateProgressLabel("Creating new checksums.json");
-            var updated_checksums = UpdateGameChecksums(server_checksums, local_checksums);
-
-            updated_checksums.game_version = versionTxt.Text;
-            var game_checksums_file = JsonSerializer.Serialize(updated_checksums, new JsonSerializerOptions { WriteIndented = true });
+            local_checksums.game_version = versionTxt.Text;
+            var game_checksums_file = JsonSerializer.Serialize(local_checksums, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
      
             UpdateProgressLabel("Updating clear cache list");
@@ -383,7 +388,6 @@ namespace patch_creator
                         checksum = checksum,
                         optional = filename.Contains(".opt.starpak"),
                         sizeInBytes = new FileInfo(filePath).Length
-                        
                     };
 
                     resultsBag.Add(gameFile);
