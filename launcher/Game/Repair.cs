@@ -34,7 +34,7 @@ namespace launcher.Game
 
             bool repairSuccess = true;
 
-            Download.Tasks.CreateDownloadMontior();
+            Download.Tasks.CreateDownloadMonitor();
             Download.Tasks.ConfigureConcurrency();
             Download.Tasks.ConfigureDownloadSpeed();
 

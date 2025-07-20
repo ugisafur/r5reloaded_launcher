@@ -26,7 +26,7 @@ namespace launcher.Game
                 }
             }
 
-            Download.Tasks.CreateDownloadMontior();
+            Download.Tasks.CreateDownloadMonitor();
 
             SetBranch.UpdateAvailable(false);
 

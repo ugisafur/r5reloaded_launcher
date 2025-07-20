@@ -16,6 +16,11 @@ namespace launcher.Network
             Interlocked.Add(ref _totalDownloadedBytes, bytes);
         }
 
+        public static void RemoveDownloadedBytes(long bytes)
+        {
+            Interlocked.Add(ref _totalDownloadedBytes, -bytes);
+        }
+
         public static void Reset()
         {
             Interlocked.Exchange(ref _totalDownloadedBytes, 0);

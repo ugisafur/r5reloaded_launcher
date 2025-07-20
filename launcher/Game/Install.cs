@@ -42,7 +42,7 @@ namespace launcher.Game
                 return;
             }
 
-            Download.Tasks.CreateDownloadMontior();
+            Download.Tasks.CreateDownloadMonitor();
             Download.Tasks.ConfigureConcurrency();
             Download.Tasks.ConfigureDownloadSpeed();
 

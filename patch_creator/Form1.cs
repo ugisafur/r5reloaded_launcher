@@ -241,39 +241,6 @@ namespace patch_creator
             SetAppState(false);
         }
 
-        private GameChecksums UpdateGameChecksums(GameChecksums server_checksums, GameChecksums local_checksums)
-        {
-            SetProgressBarMax(local_checksums.files.Count);
-            SetProgressBarValue(0);
-
-            List<GameFile> removedFiles = server_checksums.files.Where(currentFile => !local_checksums.files.Any(updatedFile => updatedFile.destinationPath == currentFile.destinationPath)).ToList();
-
-            List<GameFile> finalFiles = server_checksums.files.Where(file => !removedFiles.Any(removed => removed.destinationPath == file.destinationPath)).ToList();
-
-            int i = 0;
-            foreach (var updatedFile in local_checksums.files)
-            {
-                // Check if the file already exists in the final list
-                var existingFile = finalFiles.FirstOrDefault(f => f.destinationPath == updatedFile.destinationPath);
-                if (existingFile != null)
-                {
-                    // Replace the existing file
-                    finalFiles.Remove(existingFile);
-                }
-                // Add the updated file
-                finalFiles.Add(updatedFile);
-
-                SetProgressBarValue(i++);
-            }
-
-            GameChecksums new_checksums = new()
-            {
-                files = finalFiles
-            };
-
-            return new_checksums;
-        }
-
         private async Task CopyStreamSegmentAsync(Stream source, Stream destination, long count)
         {
             byte[] buffer = new byte[81920];
@@ -530,7 +497,7 @@ namespace patch_creator
 
     public class CFConfig
     {
-        public string zoneID { get; set; }
-        public string authKey { get; set; }
+        public string? zoneID { get; set; }
+        public string? authKey { get; set; }
     }
 }
