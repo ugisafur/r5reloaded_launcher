@@ -31,9 +31,9 @@ namespace launcher.Global
                 Pages[1].Add(new NewsItem("Follow Us On X", "Follow us on x to stay up to date with the latest news and updates!", "", DateTime.Now.ToShortDateString(), "https://x.com/r5reloaded", "", true, "Follow Us"));
             }
 
-            // Populate the comms category
+            // Populate the support-us category
             if (Pages[2].Count == 0)
-                PopulateNewsCatagory("comms", 2, false);
+                PopulateNewsCatagory("support-us", 2, false);
 
             // Populate the patch notes category
             if (!GetBranch.IsLocalBranch())

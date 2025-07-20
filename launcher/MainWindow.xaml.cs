@@ -31,8 +31,8 @@ namespace launcher
         public ICommand ShowWindowCommand { get; }
 
         public List<Button> NewsButtons = [];
-        public List<double> NewsButtonsX = [-175, -49, 61, 165];
-        public List<double> NewsButtonsWidth = [95, 115, 66, 102];
+        public List<double> NewsButtonsX = [-203, -77, 48, 165];
+        public List<double> NewsButtonsWidth = [95, 115, 94, 102];
 
         public MainWindow()
         {
