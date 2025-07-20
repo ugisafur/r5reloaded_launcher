@@ -90,7 +90,7 @@ namespace launcher
 
             if (!isMSUP)
             {
-                LogError(Source.API, "Master Server is down.");
+                LogError(LogSource.API, "Master Server is down.");
 
                 await Dispatcher.InvokeAsync(() =>
                 {
@@ -109,7 +109,7 @@ namespace launcher
                     lblPlayersCount.Text = "error";
                     lblServerCount.Text = "error";
                 });
-                LogError(Source.API, "Failed to get server list from API.");
+                LogError(LogSource.API, "Failed to get server list from API.");
                 return;
             }
 
@@ -122,7 +122,7 @@ namespace launcher
                     lblPlayersCount.Text = "error";
                     lblServerCount.Text = "error";
                 });
-                LogError(Source.API, "Failed to get server list from API.");
+                LogError(LogSource.API, "Failed to get server list from API.");
                 return;
             }
 

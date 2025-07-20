@@ -275,7 +275,7 @@ namespace launcher.Global
             }
 
             file.Save(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(LogSource.Ini, $"Setting {setting} to: {value}");
         }
 
         public static void Set(string section, string setting, object value)
@@ -305,7 +305,7 @@ namespace launcher.Global
             }
 
             file.Save(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            LogInfo(Source.Ini, $"Setting {setting} to: {value}");
+            LogInfo(LogSource.Ini, $"Setting {setting} to: {value}");
         }
 
         public static object Get(string section, string setting, object defaultValue)

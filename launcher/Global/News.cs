@@ -1,10 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using System.IO;
+using System.Net.Http.Json;
 using System.Text.Json;
-using System.Windows.Media.Animation;
 using System.Windows;
-using static launcher.Global.References;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.IO;
+using static launcher.Global.Logger;
+using static launcher.Global.References;
 
 namespace launcher.Global
 {
@@ -161,7 +162,7 @@ namespace launcher.Global
             }
             catch
             {
-                Logger.LogWarning(Logger.Source.Launcher, "Failed to fetch news items.");
+                LogWarning(LogSource.Launcher, "Failed to fetch news items.");
             }
 
             if (shouldCache)
@@ -175,11 +176,11 @@ namespace launcher.Global
                     File.WriteAllText(filePath, JsonSerializer.Serialize(root));
                     blogItemsCached[slug] = true;
 
-                    Logger.LogInfo(Logger.Source.Launcher, $"Cached news items for {slug}.");
+                    LogInfo(LogSource.Launcher, $"Cached news items for {slug}.");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(Logger.Source.Launcher, $"Failed to cache news items: {ex.Message}");
+                    LogError(LogSource.Launcher, $"Failed to cache news items: {ex.Message}");
                 }
             }
 
@@ -205,7 +206,7 @@ namespace launcher.Global
             }
             catch (JsonException ex)
             {
-                Logger.LogError(Logger.Source.Launcher, $"Failed to deserialize JSON: {ex.Message}");
+                LogError(LogSource.Launcher, $"Failed to deserialize JSON: {ex.Message}");
             }
 
             return root;

@@ -1,4 +1,5 @@
-﻿using launcher.Game;
+﻿using DiscordRPC;
+using launcher.Game;
 using launcher.Global;
 using launcher.Network;
 using Polly;
@@ -12,602 +13,420 @@ using System.Windows.Shell;
 using ZstdSharp;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
+using static launcher.Network.DownloadSpeedTracker;
 
 namespace launcher.Download
 {
-    public static class GlobalDownloadStats
-    {
-        public static long TotalBytes = 0;
-        public static long DownloadedBytes = 0;
-        public static DateTime StartTime;
-        public static string totalText = "";
-        public static string downloadedText = "";
-        public static string timeLeftText = "";
-    }
-
-    public class FileDownload
-    {
-        public long downloadedBytes = 0;
-    }
-
-    public class MultiPartFile
-    {
-        public long totalBytes = 0;
-        public long downloadedBytes = 0;
-        public DateTime lastUpdate = DateTime.Now;
-    }
-
     public static class Tasks
     {
-        public static long _downloadSpeedLimit = 0;
-        public static SemaphoreSlim _downloadSemaphore;
-        public static DownloadSpeedMonitor _speedMonitor;
-        public static double currentDownloadSpeed = 0;
-        public static int UpdateType = 0; // 0 = install, 1 = repair, 2 = uninstall
-
-        public static void CreateDownloadMonitor()
+        private static readonly HttpClient httpClient = new HttpClient()
         {
-            if (_speedMonitor != null)
-            {
-                _speedMonitor.OnSpeedUpdated -= UpdateDownloadSpeedUI;
-                _speedMonitor.Dispose();
-                _speedMonitor = null;
-            }
-
-            _speedMonitor = new DownloadSpeedMonitor();
-            _speedMonitor.OnSpeedUpdated += UpdateDownloadSpeedUI;
-        }
-
-        private static void UpdateDownloadSpeedUI(double speedBytesPerSecond)
-        {
-            string speedText;
-            double speed = speedBytesPerSecond;
-            currentDownloadSpeed = speed;
-
-            if (speed >= 1024 * 1024)
-            {
-                speed /= (1024 * 1024);
-                speedText = $"{speed:F2} MB/s";
-            }
-            else if (speed >= 1024)
-            {
-                speed /= 1024;
-                speedText = $"{speed:F2} KB/s";
-            }
-            else
-            {
-                speedText = $"{speed} B/s";
-            }
-
-            appDispatcher.Invoke(() =>
-            {
-                Speed_Label.Text = $"{speedText}";
-                Downloads_Control.Speed_Label.Text = $"{GlobalDownloadStats.timeLeftText}  |  {GlobalDownloadStats.downloadedText}/{GlobalDownloadStats.totalText}  |  {speedText}";
-            });
-        }
-
-        public static void ConfigureConcurrency()
-        {
-            int maxConcurrentDownloads = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
-            _downloadSemaphore?.Dispose();
-            _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
-        }
-
-        public static void ConfigureDownloadSpeed()
-        {
-            int speedLimitKb = (int)Ini.Get(Ini.Vars.Download_Speed_Limit);
-            _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
-            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
-        }
-
-
-        public static async Task UpdateGlobalDownloadProgressAsync(CancellationToken token)
-        {
-            DateTime lastPresenceUpdate = DateTime.MinValue;
-
-            while (!token.IsCancellationRequested)
-            {
-                var elapsed = DateTime.Now - GlobalDownloadStats.StartTime;
-                double avgSpeed = elapsed.TotalSeconds > 0
-                    ? GlobalDownloadStats.DownloadedBytes / elapsed.TotalSeconds
-                    : 0;
-
-                // Use the current speed if available, otherwise fall back to average
-                double currentSpeed = Tasks.currentDownloadSpeed; // in bytes/sec
-                double effectiveSpeed = currentSpeed > 0
-                    ? (avgSpeed + currentSpeed) / 2   // blend average + current
-                    : avgSpeed;
-
-                long remainingBytes = GlobalDownloadStats.TotalBytes - GlobalDownloadStats.DownloadedBytes;
-                TimeSpan estimatedRemaining = effectiveSpeed > 0
-                    ? TimeSpan.FromSeconds(remainingBytes / effectiveSpeed)
-                    : TimeSpan.Zero;
-
-                await appDispatcher.InvokeAsync(() =>
-                {
-                    Progress_Bar.Value = GlobalDownloadStats.DownloadedBytes;
-                    Progress_Bar.Maximum = GlobalDownloadStats.TotalBytes;
-                    Percent_Label.Text = $"{(Math.Min(GlobalDownloadStats.DownloadedBytes / (double)GlobalDownloadStats.TotalBytes * 100, 99)):F2}%";
-
-                    double totalSize = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.TotalBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.TotalBytes / (1024.0 * 1024.0);
-                    string totalText = GlobalDownloadStats.TotalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                    double downloadedSize = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024 * 1024) : GlobalDownloadStats.DownloadedBytes / (1024.0 * 1024.0);
-                    string downloadedText = GlobalDownloadStats.DownloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                    string timeLeft = estimatedRemaining.TotalHours >= 1 ? estimatedRemaining.ToString(@"h\:mm\:ss") : estimatedRemaining.ToString(@"m\:ss");
-
-                    Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {timeLeft}";
-
-                    GlobalDownloadStats.timeLeftText = $"Time Left: {timeLeft}";
-                    GlobalDownloadStats.totalText = totalText;
-                    GlobalDownloadStats.downloadedText = downloadedText;
-
-                    if ((DateTime.UtcNow - lastPresenceUpdate).TotalSeconds >= 5)
-                    {
-
-                        string UpdateTypeString = UpdateType == 0 ? "Downloading" : "Repairing";
-
-                        AppState.SetRichPresence($"{UpdateTypeString} {GetBranch.Name()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
-                        lastPresenceUpdate = DateTime.UtcNow;
-                    }
-                });
-
-                await Task.Delay(100, token);
-            }
-
-            Main_Window.TimeLeft_Label.Text = "";
-        }
-
+            Timeout = TimeSpan.FromSeconds(10)
+        };
 
         public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
         {
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
             if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
-            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
-
-            var downloadTasks = new List<Task<string>>(gameFiles.files.Count);
-
-            foreach (var file in gameFiles.files)
-            {
-                if (file.destinationPath.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                string fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
-                string finalPath = Path.Combine(branchDirectory, file.destinationPath);
-
-                EnsureDirectoryExists(finalPath);
-
-                downloadTasks.Add(
-                    DownloadFileAsync(
-                        fileUrl,
-                        finalPath,
-                        file,
-                        checkForExistingFiles: true
-                    )
-                );
-            }
-
-            SetGlobalDownloadStats(gameFiles.files.Sum(f => f.sizeInBytes), 0, DateTime.Now);
-
-            return downloadTasks;
+            return CreateDownloadTasks(gameFiles.files, branchDirectory, checkForExistingFiles: true);
         }
 
         public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
         {
-            var downloadTasks = new List<Task<string>>(DataCollections.BadFiles.Count);
+            return CreateDownloadTasks(DataCollections.BadFiles, branchDirectory, checkForExistingFiles: false);
+        }
 
-            foreach (var file in DataCollections.BadFiles)
-            {
-                if (file.destinationPath.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.destinationPath.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
-                    continue;
+        private static List<Task<string>> CreateDownloadTasks(IEnumerable<GameFile> files, string branchDirectory, bool checkForExistingFiles)
+        {
+            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
-                string fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
-                string finalPath = Path.Combine(branchDirectory, file.destinationPath);
+            var downloadTasks = files
+                .Where(file => !IsUserGeneratedContent(file))
+                .Select(file =>
+                {
+                    file.downloadMetadata.fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
+                    file.downloadMetadata.finalPath = Path.Combine(branchDirectory, file.destinationPath);
+                    EnsureDirectoryExists(file);
 
-                EnsureDirectoryExists(finalPath);
+                    return DownloadFileAsync(file, checkForExistingFiles);
+                })
+                .ToList();
 
-                downloadTasks.Add(
-                    DownloadFileAsync(
-                        fileUrl,
-                        finalPath,
-                        file,
-                        checkForExistingFiles: false
-                    )
-                );
-            }
-
-            SetGlobalDownloadStats(DataCollections.BadFiles.Sum(f => f.sizeInBytes), 0, DateTime.Now);
+            long totalSize = files.Sum(f => f.sizeInBytes);
+            SetGlobalDownloadStats(totalSize, 0, DateTime.Now);
 
             return downloadTasks;
         }
 
-        private static void SetGlobalDownloadStats(long totalBytes, long downloadedBytes, DateTime startTime)
+        private static bool IsUserGeneratedContent(GameFile file)
         {
-            GlobalDownloadStats.TotalBytes = totalBytes;
-            GlobalDownloadStats.DownloadedBytes = downloadedBytes;
-            GlobalDownloadStats.StartTime = startTime;
+            string path = file.destinationPath;
+            return path.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) ||
+                   path.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) ||
+                   path.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static async Task<string> DownloadFileAsync(string fileUrl, string finalPath, GameFile file, bool checkForExistingFiles = false)
+        private static async Task<string> DownloadFileAsync(GameFile file, bool checkForExistingFiles = false)
         {
-            await _downloadSemaphore.WaitAsync();
+            // ✅ For multi-part files, we skip the semaphore here and let each part get one.
+            if (file.parts.Count > 0)
+            {
+                // This is now an orchestrator task.
+                return await DownloadFileInPartsAsync(file, checkForExistingFiles);
+            }
 
-            DownloadItem downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file.destinationPath));
-
-            await Task.Delay(2000);
-
+            // For single files, the logic remains the same: acquire a semaphore and download.
+            await GetSemaphoreSlim().WaitAsync();
             try
             {
-                if (checkForExistingFiles && !string.IsNullOrWhiteSpace(file.checksum) && ShouldSkipDownload(finalPath, file.checksum))
-                    return finalPath;
+                file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
 
-                FileDownload fileDownload = new();
-
-                await CreateRetryPolicy(finalPath, 15, downloadItem, fileDownload).ExecuteAsync(async () =>
+                bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.destinationPath, file.checksum);
+                if (isSkipped)
                 {
-                    await (file.parts.Count > 0
-                        ? DownloadFileInPartsAsync(fileUrl, finalPath, file, downloadItem, fileDownload)
-                        : DownloadSingleStreamAsync(fileUrl, finalPath, downloadItem, fileDownload));
-                });
-
-                return finalPath;
+                    AddDownloadedBytes(file.sizeInBytes, file);
+                }
+                else
+                {
+                    var retryPolicy = CreateRetryPolicy(file, 15);
+                    await retryPolicy.ExecuteAsync(() => DownloadSingleStreamAsync(file));
+                }
+                return file.downloadMetadata.finalPath;
             }
             catch (Exception ex)
             {
-                LogException($"All retries failed for {fileUrl}", Source.Download, ex);
-
+                LogException($"All retries failed for {file.downloadMetadata.fileUrl}", LogSource.Download, ex);
                 AppState.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
             {
-                _downloadSemaphore.Release();
-                await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(downloadItem));
+                GetSemaphoreSlim().Release();
+                if (file.downloadMetadata.downloadItem != null)
+                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadMetadata.downloadItem));
             }
         }
 
-        private static bool ShouldSkipDownload(string destinationPath, string expectedChecksum)
+        private static async Task<bool> ShouldSkipDownloadAsync(string destinationPath, string checksum)
         {
+            await Task.Delay(1);
             if (File.Exists(destinationPath))
             {
+                // Use `await` to get the string result from the Task<string>.
                 string actualChecksum = Checksums.CalculateChecksum(destinationPath);
-                if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
+
+                // Check for null in case the checksum calculation failed.
+                if (actualChecksum != null && string.Equals(actualChecksum, checksum, StringComparison.OrdinalIgnoreCase))
+                {
                     return true;
+                }
             }
 
             return false;
         }
 
-        private static void EnsureDirectoryExists(string filePath)
+        private static void EnsureDirectoryExists(GameFile file)
         {
-            string directory = Path.GetDirectoryName(filePath);
+            string directory = Path.GetDirectoryName(file.downloadMetadata.finalPath);
             if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
-            {
                 Directory.CreateDirectory(directory);
-            }
         }
 
-        private static AsyncRetryPolicy CreateRetryPolicy(string fileUrl, int maxRetryAttempts, DownloadItem downloadItem, FileDownload fileDownload)
+        private static AsyncRetryPolicy CreateRetryPolicy(GameFile file, int maxRetryAttempts)
         {
-            int retryDelaySeconds = 5;
+            var random = new Random();
 
             return Policy
-                .Handle<Exception>(ex =>
-                {
-                    if (ex is WebException webEx && webEx.Response is HttpWebResponse httpWebResponse)
-                    {
-                        if (httpWebResponse.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            LogWarning(Source.Download, $"(404) Not Found: {fileUrl}");
-                            return false;
-                        }
-                    }
-                    else if (ex is HttpRequestException httpEx && httpEx.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        LogWarning(Source.Download, $"(404) Not Found: {fileUrl}");
-                        return false;
-                    }
-
-                    return true;
-                })
+                .Handle<Exception>(ex => ShouldRetry(ex, file))
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(1),
-                    onRetryAsync: async (exception, timeSpan, retryNumber, context) =>
+                    sleepDurationProvider: retryAttempt =>
+                        TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(random.Next(0, 500)),
+
+                    onRetryAsync: async (exception, calculatedDelay, retryNumber, context) =>
                     {
-                        Log(
-                            Logger.Type.Warning,
-                            Source.Download,
-                            $"Retry #{retryNumber} for '{fileUrl}' due to: {exception.Message}."
-                        );
+                        LogWarning(LogSource.Download, $"Retry #{retryNumber} for '{file.downloadMetadata.fileUrl}' in {calculatedDelay.TotalSeconds:F1}s due to: {exception.Message}");
 
-                        DownloadSpeedTracker.RemoveDownloadedBytes(fileDownload.downloadedBytes);
-                        Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, -fileDownload.downloadedBytes);
-                        fileDownload.downloadedBytes = 0;
+                        RemoveDownloadedBytes(file.downloadMetadata.fileDownload.downloadedBytes);
+                        file.downloadMetadata.fileDownload.downloadedBytes = 0;
 
-                        for (int remaining = retryDelaySeconds; remaining > 0; remaining--)
+                        await appDispatcher.InvokeAsync(() =>
                         {
-                            appDispatcher.Invoke(() =>
-                            {
-                                downloadItem.downloadFilePercent.Text = $"Retrying in {remaining} second{(remaining > 1 ? "s" : "")}...";
-                                downloadItem.downloadFileProgress.Value = 0;
-                            });
-
-                            await Task.Delay(1000);
-                        }
+                            file.downloadMetadata.downloadItem.downloadFilePercent.Text = $"Download failed. Retrying...";
+                            file.downloadMetadata.downloadItem.downloadFileProgress.Value = 0;
+                        });
                     }
                 );
         }
 
-        private static async Task DownloadFileInPartsAsync(string fileUrl, string destinationPath, GameFile file, DownloadItem downloadItem, FileDownload fileDownload)
+        private static bool ShouldRetry(Exception ex, GameFile file)
         {
-            int partCount = file.parts.Count;
-            var partTasks = new List<Task>();
-
-            MultiPartFile multiPartFile = new();
-            multiPartFile.totalBytes = file.sizeInBytes;
-
-            foreach (Part part in file.parts)
+            if (ex is HttpRequestException { StatusCode: HttpStatusCode.NotFound } ||
+                ex is WebException { Response: HttpWebResponse { StatusCode: HttpStatusCode.NotFound } })
             {
-                if (ShouldSkipDownload(Path.Combine(GetBranch.Directory(), part.path), part.checksum))
-                {
-                    multiPartFile.downloadedBytes += part.sizeInBytes;
-                    fileDownload.downloadedBytes += part.sizeInBytes;
-                    DownloadSpeedTracker.AddDownloadedBytes(part.sizeInBytes);
-                    Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, part.sizeInBytes);
-                    continue;
-                }
-
-                partTasks.Add(DownloadMultiStreamAsync($"{GetBranch.GameURL()}/{part.path}", Path.Combine(GetBranch.Directory(), part.path), downloadItem, multiPartFile, fileDownload));
+                LogWarning(LogSource.Download, $"(404) Not Found, will not retry: {file.downloadMetadata.fileUrl}");
+                return false; // Do NOT retry for 404 errors.
             }
 
-            await Task.WhenAll(partTasks);
+            return true; // Retry for all other exceptions.
+        }
 
-            using var dest = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        private static async Task<string> DownloadFileInPartsAsync(GameFile file, bool checkForExistingFiles)
+        {
+            try
             {
-                int currentPart = 0;
-                foreach (Part part in file.parts)
-                {
-                    await appDispatcher.InvokeAsync(() =>
-                    {
-                        downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPart++} / {partCount + 1}";
-                        downloadItem.downloadFileProgress.Value = currentPart / partCount + 1;
-                    });
+                file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
+                file.downloadMetadata.fileDownload.totalBytes = file.sizeInBytes;
 
-                    using var partStream = new FileStream(Path.Combine(GetBranch.Directory(), part.path), FileMode.Open, FileAccess.Read, FileShare.Read);
-                    {
-                        await partStream.CopyToAsync(dest);
-                    }
+                await DownloadMissingPartsAsync(file, checkForExistingFiles);
+                await MergePartsAsync(file);
+                CleanupPartFiles(file);
 
-                    await Task.Delay(100);
-                }
+                return file.downloadMetadata.finalPath;
             }
-
-            foreach (Part part in file.parts)
+            catch (Exception ex)
             {
-                File.Delete(Path.Combine(GetBranch.Directory(), part.path));
+                LogException($"Failed to process multi-part file {file.destinationPath}", LogSource.Download, ex);
+                AppState.BadFilesDetected = true;
+                return string.Empty;
+            }
+            finally
+            {
+                if (file.downloadMetadata.downloadItem != null)
+                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadMetadata.downloadItem));
             }
         }
 
-        private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, MultiPartFile multiPartFile, FileDownload fileDownload)
+        private static async Task DownloadPartAsync(GameFile parentFile, Part part, string partUrl, string partPath)
         {
-            Random r = new Random();
-
-            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
-            request.Method = "GET";
-            request.Timeout = 10000;
-            request.AllowAutoRedirect = true;
-            request.Host = request.RequestUri.Host;
-            request.UserAgent = $"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)";
-
-            using (var response = (HttpWebResponse)await request.GetResponseAsync())
+            await GetSemaphoreSlim().WaitAsync();
+            try
             {
-                if (response.StatusCode != HttpStatusCode.OK)
-                    throw new WebException($"Failed to download: {response.StatusCode}");
-
-                DateTime lastUpdate = DateTime.Now;
-                DateTime speedCheckStart = DateTime.Now;
-                long bytesAtStart = 0;
-
-                using var responseStream = response.GetResponseStream();
-
-                using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
-
-                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-
-                while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                    multiPartFile.downloadedBytes += bytesRead;
-                    fileDownload.downloadedBytes += bytesRead;
-
-                    DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
-
-                    Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
-
-                    if ((DateTime.Now - multiPartFile.lastUpdate).TotalMilliseconds > 200)
-                    {
-                        multiPartFile.lastUpdate = DateTime.Now;
-                        if (downloadItem != null && multiPartFile.totalBytes > 0)
-                        {
-                            double totalSize = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? multiPartFile.totalBytes / (1024.0 * 1024 * 1024) : multiPartFile.totalBytes / (1024.0 * 1024.0);
-                            string totalText = multiPartFile.totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                            double downloadedSize = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? multiPartFile.downloadedBytes / (1024.0 * 1024 * 1024) : multiPartFile.downloadedBytes / (1024.0 * 1024.0);
-                            string downloadedText = multiPartFile.downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                            await appDispatcher.InvokeAsync(() =>
-                            {
-                                downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
-                                downloadItem.downloadFileProgress.Value = (double)multiPartFile.downloadedBytes / multiPartFile.totalBytes * 100;
-                            });
-                        }
-
-                        if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
-                        {
-                            long delta = multiPartFile.downloadedBytes - bytesAtStart;
-                            if (delta == 0)
-                                throw new TimeoutException("Download stalled (no data received for 5s).");
-
-                            bytesAtStart = multiPartFile.downloadedBytes;
-                            speedCheckStart  = DateTime.Now;
-                        }
-                    }
-                }
-
-                await fileStream.FlushAsync();
+                // Each part gets its own retry policy.
+                var retryPolicy = CreateRetryPolicy(parentFile, 15); // Pass parent file for logging context.
+                await retryPolicy.ExecuteAsync(() => DownloadMultiStreamAsync(partUrl, partPath, parentFile));
+            }
+            catch (Exception ex)
+            {
+                LogException($"Failed to download part {part.path}: {ex.Message}", LogSource.Download, ex);
+                // Re-throw to fail the Task.WhenAll in the caller.
+                throw;
+            }
+            finally
+            {
+                GetSemaphoreSlim().Release();
             }
         }
 
-        private static async Task DownloadSingleStreamAsync(string fileUrl, string destinationPath, DownloadItem downloadItem, FileDownload fileDownload)
+        private static Task DownloadMissingPartsAsync(GameFile file, bool checkForExistingFiles)
         {
-            Random r = new Random();
+            string branchDirectory = GetBranch.Directory();
+            string gameUrl = GetBranch.GameURL();
 
-            var request = (HttpWebRequest)WebRequest.Create(fileUrl);
-            request.Method = "GET";
-            request.Timeout = 10000;
-            request.AllowAutoRedirect = true;
-            request.Host = request.RequestUri.Host;
-            request.UserAgent = $"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)";
-
-            using (var response = (HttpWebResponse)await request.GetResponseAsync())
+            // ✅ Each part is now mapped to its own concurrent download task.
+            var downloadTasks = file.parts.Select(async part =>
             {
-                if (response.StatusCode != HttpStatusCode.OK)
-                    throw new WebException($"Failed to download: {response.StatusCode}");
-
-                long totalBytes = response.ContentLength;
-                long downloadedBytes = 0;
-                DateTime lastUpdate = DateTime.Now;
-                DateTime speedCheckStart = DateTime.Now;
-                long bytesAtStart = 0;
-
-                using var responseStream = response.GetResponseStream();
-
-                using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
-
-                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-
-                while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                string partPath = Path.Combine(branchDirectory, part.path);
+                if (checkForExistingFiles && await ShouldSkipDownloadAsync(partPath, part.checksum))
                 {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                    downloadedBytes += bytesRead;
-                    fileDownload.downloadedBytes += bytesRead;
-
-                    DownloadSpeedTracker.AddDownloadedBytes(bytesRead);
-
-                    Interlocked.Add(ref GlobalDownloadStats.DownloadedBytes, bytesRead);
-
-                    if ((DateTime.Now - lastUpdate).TotalMilliseconds > 200)
-                    {
-                        lastUpdate = DateTime.Now;
-                        if (downloadItem != null && totalBytes > 0)
-                        {
-                            double totalSize = totalBytes >= 1024L * 1024 * 1024 ? totalBytes / (1024.0 * 1024 * 1024) : totalBytes / (1024.0 * 1024.0);
-                            string totalText = totalBytes >= 1024L * 1024 * 1024 ? $"{totalSize:F2} GB" : $"{totalSize:F2} MB";
-
-                            double downloadedSize = downloadedBytes >= 1024L * 1024 * 1024 ? downloadedBytes / (1024.0 * 1024 * 1024) : downloadedBytes / (1024.0 * 1024.0);
-                            string downloadedText = downloadedBytes >= 1024L * 1024 * 1024 ? $"{downloadedSize:F2} GB" : $"{downloadedSize:F2} MB";
-
-                            await appDispatcher.InvokeAsync(() =>
-                            {
-                                downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
-                                downloadItem.downloadFileProgress.Value = (double)downloadedBytes / totalBytes * 100;
-                            });
-                        }
-                    }
-
-                    if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
-                    {
-                        long delta = downloadedBytes - bytesAtStart;
-                        if (delta == 0)
-                            throw new TimeoutException("Download stalled (no data received for 5s).");
-
-                        bytesAtStart = downloadedBytes;
-                        speedCheckStart  = DateTime.Now;
-                    }
+                    AddDownloadedBytes(part.sizeInBytes, file);
                 }
+                else
+                {
+                    string partUrl = $"{gameUrl}/{part.path}";
+                    await DownloadPartAsync(file, part, partUrl, partPath);
+                }
+            }).ToList();
 
-                await fileStream.FlushAsync();
+            return Task.WhenAll(downloadTasks);
+        }
+
+        private static async Task MergePartsAsync(GameFile file)
+        {
+            string branchDirectory = GetBranch.Directory();
+            using var finalStream = new FileStream(file.downloadMetadata.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            for (int i = 0; i < file.parts.Count; i++)
+            {
+                var part = file.parts[i];
+                int currentPartNumber = i + 1;
+
+                await appDispatcher.InvokeAsync(() =>
+                {
+                    file.downloadMetadata.downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPartNumber} / {file.parts.Count}";
+                    file.downloadMetadata.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
+                });
+
+                string partPath = Path.Combine(branchDirectory, part.path);
+                using var partStream = new FileStream(partPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                await partStream.CopyToAsync(finalStream);
             }
         }
 
-        public static void SetInstallState(bool installing, string buttonText = "PLAY")
+        private static void CleanupPartFiles(GameFile file)
         {
-            LogInfo(Source.Launcher, $"Setting install state to: {installing}");
+            string branchDirectory = GetBranch.Directory();
+            foreach (var part in file.parts)
+            {
+                string partPath = Path.Combine(branchDirectory, part.path);
+                if (File.Exists(partPath))
+                {
+                    File.Delete(partPath);
+                }
+            }
+        }
+
+        private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, GameFile file)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, fileUrl);
+            request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
+
+            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            await ProcessDownloadStreamAsync(file, responseStream, destinationPath, file.downloadMetadata.fileDownload.totalBytes);
+        }
+
+        private static async Task DownloadSingleStreamAsync(GameFile file)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, file.downloadMetadata.fileUrl);
+            request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
+
+            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            long totalBytes = response.Content.Headers.ContentLength ?? 0;
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            await ProcessDownloadStreamAsync(file, responseStream, file.downloadMetadata.finalPath, totalBytes);
+        }
+
+        private static async Task ProcessDownloadStreamAsync(GameFile file, Stream responseStream, string destinationPath, long totalBytes)
+        {
+            long bytesAtStart = 0;
+            DateTime speedCheckStart = DateTime.Now;
+            var metadata = file.downloadMetadata;
+
+            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+            using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+            byte[] buffer = new byte[8192]; // Using a slightly larger buffer (e.g., 8KB) can be more efficient.
+            int bytesRead;
+
+            while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await fileStream.WriteAsync(buffer, 0, bytesRead);
+
+                // Update total downloaded bytes
+                AddDownloadedBytes(bytesRead, file);
+
+                // --- Progress Reporting (Throttled to 200ms) ---
+                if ((DateTime.Now - metadata.fileDownload.lastUpdate).TotalMilliseconds > 200)
+                {
+                    metadata.fileDownload.lastUpdate = DateTime.Now;
+                    if (metadata.downloadItem != null && totalBytes > 0)
+                    {
+                        string downloadedText = FormatBytes(metadata.fileDownload.downloadedBytes);
+                        string totalText = FormatBytes(totalBytes);
+                        double percentage = (double)metadata.fileDownload.downloadedBytes / totalBytes * 100;
+
+                        await appDispatcher.InvokeAsync(() =>
+                        {
+                            metadata.downloadItem.downloadFilePercent.Text = $"{downloadedText} / {totalText}";
+                            metadata.downloadItem.downloadFileProgress.Value = percentage;
+                        });
+                    }
+                }
+
+                // --- Stall Detection (Checked every 5 seconds) ---
+                if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
+                {
+                    long delta = metadata.fileDownload.downloadedBytes - bytesAtStart;
+                    if (delta == 0)
+                        throw new TimeoutException("Download stalled (no data received for 5s).");
+
+                    bytesAtStart = metadata.fileDownload.downloadedBytes;
+                    speedCheckStart = DateTime.Now;
+                }
+            }
+
+            await fileStream.FlushAsync();
+        }
+
+        private static string FormatBytes(long bytes)
+        {
+            const long GIGABYTE = 1024L * 1024 * 1024;
+            const long MEGABYTE = 1024L * 1024;
+
+            if (bytes >= GIGABYTE)
+            {
+                return $"{(double)bytes / GIGABYTE:F2} GB";
+            }
+            return $"{(double)bytes / MEGABYTE:F2} MB";
+        }
+
+        public static void SetInstallState(bool isInstalling, string buttonText = "PLAY")
+        {
+            LogInfo(LogSource.Launcher, $"Setting install state to: {isInstalling}");
 
             appDispatcher.Invoke(() =>
             {
-                AppState.IsInstalling = installing;
-                AppState.BlockLanguageInstall = installing;
+                bool isUiEnabled = !isInstalling;
+                bool areGameOptionsEnabled = isUiEnabled && GetBranch.Installed();
 
+                // --- Update Application State ---
+                AppState.IsInstalling = isInstalling;
+                AppState.BlockLanguageInstall = isInstalling;
+
+                // --- Update Main UI Controls ---
                 Play_Button.Content = buttonText;
-                Branch_Combobox.IsEnabled = !installing;
-                Play_Button.IsEnabled = !installing;
+                Play_Button.IsEnabled = isUiEnabled;
+                Branch_Combobox.IsEnabled = isUiEnabled;
                 Status_Label.Text = "";
 
-                GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
-                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
-                GameSettings_Control.OpenDir_Button.IsEnabled = !installing && GetBranch.Installed();
-                GameSettings_Control.AdvancedMenu_Button.IsEnabled = !installing && GetBranch.Installed();
+                // --- Update Game Settings Controls ---
+                GameSettings_Control.RepairGame_Button.IsEnabled = areGameOptionsEnabled;
+                GameSettings_Control.UninstallGame_Button.IsEnabled = areGameOptionsEnabled;
+                GameSettings_Control.OpenDir_Button.IsEnabled = areGameOptionsEnabled;
+                GameSettings_Control.AdvancedMenu_Button.IsEnabled = areGameOptionsEnabled;
 
+                // --- Update Other Components ---
                 Settings_Control.gameInstalls.UpdateGameItems();
             });
 
-            ShowProgressBar(installing);
+            ShowProgressBar(isInstalling);
         }
 
-        public static void SetOptionalInstallState(bool installing)
-        {
-            LogInfo(Source.Launcher, $"Setting optional install state to: {installing}");
-
-            appDispatcher.Invoke(() =>
-            {
-                AppState.IsInstalling = installing;
-                Status_Label.Text = "";
-
-                GameSettings_Control.RepairGame_Button.IsEnabled = !installing && GetBranch.Installed();
-                GameSettings_Control.UninstallGame_Button.IsEnabled = !installing && GetBranch.Installed();
-
-                Settings_Control.gameInstalls.UpdateGameItems();
-            });
-
-            ShowProgressBar(installing);
-        }
-
-        public static void UpdateStatusLabel(string statusText, Source source)
+        public static void UpdateStatusLabel(string statusText, LogSource source)
         {
             AppState.SetRichPresence($"Branch: {GetBranch.Name()}", statusText);
-            LogInfo(source, $"Updating status label: {statusText}");
             appDispatcher.Invoke(() => {  Status_Label.Text = statusText; });
+            LogInfo(source, $"Updating status label: {statusText}");
         }
 
         private static void ShowProgressBar(bool isVisible)
         {
             appDispatcher.Invoke(() =>
             {
-                Progress_Bar.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Status_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Percent_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                Main_Window.TimeLeft_Label.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                ReadMore_Label.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
+                var primaryVisibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+                var inverseVisibility = isVisible ? Visibility.Hidden : Visibility.Visible;
+
+                Progress_Bar.Visibility = primaryVisibility;
+                Status_Label.Visibility = primaryVisibility;
+                Percent_Label.Visibility = primaryVisibility;
+                Main_Window.TimeLeft_Label.Visibility = primaryVisibility;
+                ReadMore_Label.Visibility = inverseVisibility;
             });
         }
 
-        public static void ShowSpeedLabels(bool Speed_Label_isVisible, bool Downloads_Control_Speed_Label_isVisible)
+        public static void ShowSpeedLabels(bool isMainSpeedVisible, bool isDownloadSpeedVisible)
         {
             appDispatcher.Invoke(() =>
             {
-                Speed_Label.Visibility = Speed_Label_isVisible ? Visibility.Visible : Visibility.Hidden;
-                Downloads_Control.Speed_Label.Visibility = Downloads_Control_Speed_Label_isVisible ? Visibility.Visible : Visibility.Hidden;
+                // --- Set Visibility ---
+                Speed_Label.Visibility = isMainSpeedVisible ? Visibility.Visible : Visibility.Hidden;
+                Downloads_Control.Speed_Label.Visibility = isDownloadSpeedVisible ? Visibility.Visible : Visibility.Hidden;
+
+                // --- Clear Text ---
                 Speed_Label.Text = "";
                 Downloads_Control.Speed_Label.Text = "";
                 Main_Window.TimeLeft_Label.Text = "";

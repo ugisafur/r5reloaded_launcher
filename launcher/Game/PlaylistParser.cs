@@ -25,7 +25,7 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogException($"Playlist Parsing Failed", Source.VDF, ex);
+                LogException($"Playlist Parsing Failed", LogSource.VDF, ex);
             }
             finally
             {
@@ -58,7 +58,7 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogException($"Playlist Get Maps Failed", Source.VDF, ex);
+                LogException($"Playlist Get Maps Failed", LogSource.VDF, ex);
             }
 
             return maps;
@@ -81,7 +81,7 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogException($"Playlist Get Gamemodes Failed", Source.VDF, ex);
+                LogException($"Playlist Get Gamemodes Failed", LogSource.VDF, ex);
             }
 
             return playlistnames;

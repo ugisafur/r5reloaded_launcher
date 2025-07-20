@@ -1,221 +1,177 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using launcher.Global;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using launcher.Global;
-using System.Windows;
 
 namespace launcher.Game
 {
     public static class Uninstall
     {
-        public static async void Start()
+        public static async Task Start()
         {
-            if (!Directory.Exists(GetBranch.Directory()))
+            if (!await RunPreUninstallChecksAsync()) return;
+
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            try
             {
+                var allFiles = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
+                await RunUninstallProcessAsync(allFiles, "Removing game files");
+
+                // After deleting files, remove the now-empty directories.
+                Directory.Delete(GetBranch.Directory(), true);
+
+                // Reset all branch-specific settings.
                 SetBranch.Installed(false);
                 SetBranch.DownloadHDTextures(false);
                 SetBranch.Version("");
-                return;
+
+                Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
+            }
+            catch (Exception ex)
+            {
+                LogError(LogSource.Uninstaller, $"A critical error occurred during uninstall: {ex.Message}");
+            }
+            finally
+            {
+                // ✅ Ensures the UI is always reset.
+                Download.Tasks.SetInstallState(false, "INSTALL");
+                AppState.SetRichPresence("", "Idle");
+            }
+        }
+
+        public static async Task LangFile(CheckBox checkBox, List<string> langs)
+        {
+            if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory())) return;
+
+            appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            try
+            {
+                GameFiles langFilesManifest = await Fetch.LanguageFiles(langs);
+                var filesToDelete = langFilesManifest.files
+                    .Select(f => Path.Combine(GetBranch.Directory(), f.destinationPath))
+                    .Where(File.Exists)
+                    .ToArray();
+
+                await RunUninstallProcessAsync(filesToDelete, "Removing language files");
+            }
+            finally
+            {
+                Download.Tasks.SetInstallState(false);
+                appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = true; });
+            }
+        }
+
+        public static async Task HDTextures(Branch branch)
+        {
+            if (!GetBranch.Installed(branch) || !Directory.Exists(GetBranch.Directory(branch))) return;
+
+            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            try
+            {
+                var optFiles = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
+                await RunUninstallProcessAsync(optFiles, "Removing HD textures");
+
+                SetBranch.DownloadHDTextures(false, branch);
+                Managers.App.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) have been uninstalled!", BalloonIcon.Info);
+            }
+            finally
+            {
+                Download.Tasks.SetInstallState(false, "PLAY");
+            }
+        }
+
+        // ============================================================================================
+        // Private Helper Methods
+        // ============================================================================================
+
+        private static async Task RunUninstallProcessAsync(IReadOnlyCollection<string> filesToDelete, string statusLabel)
+        {
+            Download.Tasks.UpdateStatusLabel(statusLabel,LogSource.Uninstaller);
+
+            await appDispatcher.InvokeAsync(() => { Progress_Bar.Maximum = filesToDelete.Count; Progress_Bar.Value = 0; });
+
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(filesToDelete, file =>
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogException($"Failed to delete file: {file}",LogSource.Uninstaller, ex);
+                    }
+                    finally
+                    {
+                        // Safely update the progress bar on the UI thread.
+                        appDispatcher.Invoke(() => Progress_Bar.Value++);
+                    }
+                });
+            });
+        }
+
+        private static async Task<bool> RunPreUninstallChecksAsync()
+        {
+            await Task.Delay(1);
+
+            string branchDir = GetBranch.Directory();
+            if (!Directory.Exists(branchDir))
+            {
+                // If directory is already gone, just clean up the state.
+                SetBranch.Installed(false);
+                SetBranch.DownloadHDTextures(false);
+                SetBranch.Version("");
+                return false;
             }
 
             if (Managers.App.IsR5ApexOpen())
             {
-                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to uninstall.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                var result = MessageBox.Show("R5Reloaded must be closed to uninstall.\n\nClose the game now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
                 {
                     Managers.App.CloseR5Apex();
                 }
                 else
                 {
-                    return;
+                    return false;
                 }
             }
 
-            if (AnyFilesOpen(GetBranch.Directory()))
-                return;
-
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
-
-            string[] files = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
-
-            Download.Tasks.UpdateStatusLabel("Removing game files", Source.Uninstaller);
-            AppState.FilesLeft = files.Length;
-
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Maximum = files.Length;
-                //Files_Label.Text = $"{AppState.FilesLeft} files left";
-            });
-
-            await Task.Run(() =>
-            {
-                Parallel.ForEach(files, file =>
-                {
-                    try
-                    {
-                        File.Delete(file);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException($"Failed to delete file: {file}", Source.Uninstaller, ex);
-                    }
-                    finally
-                    {
-                        appDispatcher.Invoke(() =>
-                        {
-                            Progress_Bar.Value++;
-                            //Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                        });
-                    }
-                });
-            });
-
-            Directory.Delete(GetBranch.Directory(), true);
-
-            SetBranch.Installed(false);
-            SetBranch.DownloadHDTextures(false);
-            SetBranch.Version("");
-
-            AppState.SetRichPresence("", "Idle");
-
-            Download.Tasks.SetInstallState(false, "INSTALL");
-
-            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
+            return !IsAnyFileLocked(branchDir);
         }
 
-        public static async void LangFile(System.Windows.Controls.CheckBox checkbox, List<string> lang)
+        private static bool IsAnyFileLocked(string directoryPath)
         {
-            if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory()))
-                return;
-
-            appDispatcher.Invoke(() =>
-            {
-                if (checkbox != null)
-                    checkbox.IsEnabled = false;
-            });
-
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
-
-            GameFiles langFiles = await Fetch.LanguageFiles(lang);
-
-            Download.Tasks.UpdateStatusLabel("Removing game files", Source.Uninstaller);
-            AppState.FilesLeft = langFiles.files.Count;
-
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Maximum = langFiles.files.Count;
-                //Files_Label.Text = $"{AppState.FilesLeft} files left";
-            });
-
-            foreach (var langFile in langFiles.files)
-            {
-                if (File.Exists($"{GetBranch.Directory()}\\{langFile.destinationPath}"))
-                {
-                    LogInfo(Source.Uninstaller, $"Removing file: {GetBranch.Directory()}\\{langFile.destinationPath}");
-                    File.Delete($"{GetBranch.Directory()}\\{langFile.destinationPath}");
-                }
-                else
-                {
-                    LogInfo(Source.Uninstaller, $"File not found: {GetBranch.Directory()}\\{langFile.destinationPath}");
-                }
-
-                appDispatcher.Invoke(() =>
-                {
-                    Progress_Bar.Value++;
-                    //Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                });
-            }
-
-            Download.Tasks.SetInstallState(false);
-
-            AppState.SetRichPresence("", "Idle");
-
-            appDispatcher.Invoke(() =>
-            {
-                if (checkbox != null)
-                    checkbox.IsEnabled = true;
-            });
-        }
-
-        public static async void HDTextures(Branch branch)
-        {
-            if (!GetBranch.Installed(branch) || !Directory.Exists(GetBranch.Directory(branch)))
-                return;
-
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
-
-            string[] opt_files = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
-
-            Download.Tasks.UpdateStatusLabel("Removing hd textures", Source.Uninstaller);
-            AppState.FilesLeft = opt_files.Length;
-
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Maximum = opt_files.Length;
-                //Files_Label.Text = $"{AppState.FilesLeft} files left";
-            });
-
-            await Task.Run(() =>
-            {
-                Parallel.ForEach(opt_files, file =>
-                {
-                    try
-                    {
-                        File.Delete(file);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException($"Failed to delete file: {file}", Source.Uninstaller, ex);
-                    }
-                    finally
-                    {
-                        appDispatcher.Invoke(() =>
-                        {
-                            Progress_Bar.Value++;
-                            //Files_Label.Text = $"{--AppState.FilesLeft} files left";
-                        });
-                    }
-                });
-            });
-
-            SetBranch.DownloadHDTextures(false, branch);
-
-            Download.Tasks.SetInstallState(false, "PLAY");
-
-            Managers.App.SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) has been uninstalled!", BalloonIcon.Info);
-        }
-
-        private static bool AnyFilesOpen(string path)
-        {
-            bool anyFileInUse = false;
-
-            foreach (string file in Directory.GetFiles(path))
+            // This check can be slow on large directories. Consider if it's essential.
+            foreach (string file in Directory.GetFiles(directoryPath))
             {
                 if (IsFileLocked(file))
                 {
-                    MessageBox.Show($"The file '{Path.GetFileName(file)}' is currently in use. Please close it before uninstalling.",
-                                    "File In Use",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Warning);
-                    anyFileInUse = true;
-                    break;
+                    MessageBox.Show($"The file '{Path.GetFileName(file)}' is in use. Please close any programs using it.", "File In Use", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return true;
                 }
             }
-
-            return anyFileInUse;
+            return false;
         }
 
         private static bool IsFileLocked(string filePath)
         {
             try
             {
-                using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-                {
-                    // If we get here, the file is not locked.
-                }
+                using (new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) { }
             }
             catch (IOException)
             {
+                // The file is unavailable because it is still being written to,
+                // or being processed by another thread, or does not exist.
                 return true;
             }
             return false;

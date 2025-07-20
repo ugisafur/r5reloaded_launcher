@@ -1,141 +1,145 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace launcher.Global
 {
     public static class Logger
     {
-        private static readonly string LogFileName = "launcher_log.log";
-        public static string LogFileUUID = "";
-        public static string LogFilePath = "";
+        // ✅ Use a private static object for thread-safe locking.
+        private static readonly object _logLock = new object();
+        public static readonly string LogFilePath;
+        public static string LogFileUUID { get; private set; }
 
-        public enum Type
-        {
-            Info,
-            Warning,
-            Error
-        }
-
-        public enum Source
-        {
-            Launcher,
-            Download,
-            API,
-            Installer,
-            Uninstaller,
-            Update,
-            UpdateChecker,
-            Repair,
-            Patcher,
-            Checksums,
-            Decompression,
-            Ini,
-            VDF,
-            Unknown,
-            Pipe,
-            DiscordRPC,
-        }
+        public enum LogType { Info, Warning, Error }
+        public enum LogSource { Launcher, Download, API, Installer, Uninstaller, Update, Repair, Checksums, Patcher, Ini, VDF, Pipe, DiscordRPC, UpdateChecker, Unknown }
 
         static Logger()
         {
-            if (!(bool)Ini.Get(Ini.Vars.Keep_All_Logs))
+            try
             {
-                string[] folders = Directory.GetDirectories(Path.Combine(Launcher.PATH, $"launcher_data\\logs\\"), "*");
-                foreach (string folder in folders)
+                string logsDirectory = Path.Combine(Launcher.PATH, "launcher_data", "logs");
+
+                if (!(bool)Ini.Get(Ini.Vars.Keep_All_Logs))
+                {
+                    CleanupOldLogs(logsDirectory);
+                }
+
+                // ✅ Assign the new Guid to the public property here.
+                LogFileUUID = Guid.NewGuid().ToString();
+                string sessionLogDir = Path.Combine(logsDirectory, LogFileUUID);
+
+                Directory.CreateDirectory(sessionLogDir);
+                LogFilePath = Path.Combine(sessionLogDir, "launcher_log.log");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"FATAL: Could not initialize logger. {ex.Message}");
+                LogFilePath = "launcher_log.log";
+            }
+        }
+
+        private static void CleanupOldLogs(string logsDirectory)
+        {
+            if (!Directory.Exists(logsDirectory)) return;
+
+            foreach (string folder in Directory.GetDirectories(logsDirectory))
+            {
+                try
                 {
                     Directory.Delete(folder, true);
                 }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Could not delete old log directory {folder}: {ex.Message}");
+                }
             }
-
-            LogFileUUID = GenerateFolderUUID();
-            LogFilePath = Path.Combine(Launcher.PATH, $"launcher_data\\logs\\{LogFileUUID}", LogFileName);
-
-            string logDirectory = Path.GetDirectoryName(LogFilePath);
-            if (!Directory.Exists(logDirectory))
-                Directory.CreateDirectory(logDirectory);
         }
 
-        public static void LogCrashToFile(Exception ex)
+        public static async Task LogCrashToFileAsync(Exception ex)
         {
-            if ((bool)Ini.Get(Ini.Vars.Upload_Crashes))
-                Backtrace.Send(ex, Source.Unknown);
+            //if ((bool)Ini.Get(Ini.Vars.Upload_Crashes))
+            //{
+                //Disable For Now
+                //Backtrace.Send(ex, LogSource.Unknown);
+            //}
 
-            string filePath = Path.Combine(Path.GetDirectoryName(LogFilePath), "crash.log");
+            var sb = new StringBuilder();
+            sb.AppendLine("===========================================");
+            sb.AppendLine("=== CRASH LOG =============================");
+            sb.AppendLine("===========================================");
+            sb.AppendLine($"Date: {DateTime.Now}");
+            sb.AppendLine($"Message: {ex.Message}");
+            sb.AppendLine();
+            sb.AppendLine("--- Stack Trace ---");
+            sb.AppendLine(ex.StackTrace);
+            sb.AppendLine();
+            sb.AppendLine("--- Inner Exception ---");
+            sb.AppendLine(ex.InnerException?.ToString() ?? "None");
+            sb.AppendLine("===========================================");
 
-            string log = $@"
-===========================================
-=== CRASH LOG ============================
-===========================================
-Date: {DateTime.Now}
-Message: {ex.Message}
+            string crashLogPath = Path.Combine(Path.GetDirectoryName(LogFilePath), "crash.log");
+            await WriteTextToFileAsync(crashLogPath, sb.ToString());
+        }
 
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}
-
-===========================================
-";
-
-            try
+        public static async Task LogAsync(LogType type, LogSource source, string message)
+        {
+            var logEntry = new
             {
-                File.AppendAllText(filePath, log + Environment.NewLine);
-            }
-            catch
-            {
-                // failed: file is probably locked but we don't want to crash the app
-            }
-        }
+                time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                level = type.ToString().ToUpperInvariant(),
+                source = source.ToString().ToUpperInvariant(),
+                message
+            };
 
-        public static string GenerateFolderUUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        public static void Log(Type type, Source source, string message)
-        {
-            string typeString = Enum.GetName(typeof(Type), type).ToUpper(new CultureInfo("en-US"));
-            string sourceString = Enum.GetName(typeof(Source), source).ToUpper(new CultureInfo("en-US"));
-            string logMessage = $"{{ \"time\":\"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\", \"[{typeString}] \": \"[{sourceString}] - {message} }},";
+            string jsonLogMessage = JsonSerializer.Serialize(logEntry);
 
 #if DEBUG
-            Console.WriteLine(logMessage);
+            Console.WriteLine(jsonLogMessage);
 #endif
+            await WriteTextToFileAsync(LogFilePath, jsonLogMessage + Environment.NewLine);
+        }
 
+        private static async Task WriteTextToFileAsync(string filePath, string text)
+        {
             try
             {
-                File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
+                // Task.Run ensures the lock doesn't hold up an async-context thread.
+                await Task.Run(() =>
+                {
+                    lock (_logLock)
+                    {
+                        File.AppendAllText(filePath, text);
+                    }
+                });
             }
             catch
             {
-                // failed: file is probably locked but we don't want to crash the app
+                // Failed: file is probably locked, but we don't want to crash the app.
             }
         }
 
-        public static void LogException(string title, Source source, Exception ex)
+        public static async Task LogExceptionAsync(string title, LogSource source, Exception ex)
         {
-            LogError(source, $@"
-==============================================================
-{title}
-==============================================================
-Message: {ex.Message}
+            var sb = new StringBuilder();
+            sb.AppendLine(title);
+            sb.AppendLine("==============================================================");
+            sb.AppendLine($"Message: {ex.Message}");
+            sb.AppendLine("--- Stack Trace ---");
+            sb.AppendLine(ex.StackTrace);
+            sb.AppendLine("--- Inner Exception ---");
+            sb.AppendLine(ex.InnerException?.ToString() ?? "None");
 
---- Stack Trace ---
-{ex.StackTrace}
-
---- Inner Exception ---
-{(ex.InnerException != null ? ex.InnerException.Message : "None")}");
+            await LogAsync(LogType.Error, source, sb.ToString());
         }
 
         #region Logging Helpers
-
-        public static void LogInfo(Source source, string message) => Log(Type.Info, source, message);
-
-        public static void LogWarning(Source source, string message) => Log(Type.Warning, source, message);
-
-        public static void LogError(Source source, string message) => Log(Type.Error, source, message);
-
-        #endregion Logging Helpers
+        public static void LogInfo(LogSource source, string message) => _ = LogAsync(LogType.Info, source, message);
+        public static void LogWarning(LogSource source, string message) => _ = LogAsync(LogType.Warning, source, message);
+        public static void LogError(LogSource source, string message) => _ = LogAsync(LogType.Error, source, message);
+        public static void LogException(string title, LogSource source, Exception ex) => _ = LogExceptionAsync(title, source, ex);
+        #endregion
     }
 }

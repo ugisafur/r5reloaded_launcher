@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using launcher.Game;
 using launcher.Global;
@@ -37,6 +38,20 @@ namespace launcher
         {
             Managers.App.HideDownloadOptlFiles();
             SetBranch.DownloadHDTextures(false);
+        }
+
+        public void SetDownloadSize(GameFiles game)
+        {
+            
+            long size = game.files.Sum(f => f.sizeInBytes);
+            this.DownloadSize.Text = $"Download Size: {FormatBytesToGB(size)}";
+        }
+
+        private static string FormatBytesToGB(long bytes)
+        {
+            const double bytesInGB = 1024.0 * 1024.0 * 1024.0;
+            double gigabytes = bytes / bytesInGB;
+            return $"{gigabytes:F2} GB";
         }
     }
 }

@@ -78,7 +78,7 @@ namespace launcher
             Launcher.wineEnv = Managers.App.IsWineEnvironment();
             if (Launcher.wineEnv)
             {
-                LogInfo(Source.Launcher, "Wine environment detected, disabling background video");
+                LogInfo(LogSource.Launcher, "Wine environment detected, disabling background video");
 
                 // Hide the video element
                 Background_Video.Source = null;
@@ -238,13 +238,13 @@ namespace launcher
         {
             if (e.ExceptionObject is Exception ex)
             {
-                Logger.LogCrashToFile(ex);
+                LogCrashToFileAsync(ex);
             }
         }
 
         private static void TaskScheduler_UnobservedTaskException(object sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
         {
-            Logger.LogCrashToFile(e.Exception);
+            LogCrashToFileAsync(e.Exception);
             e.SetObserved();
         }
 
@@ -361,7 +361,7 @@ namespace launcher
             }
             catch (System.Exception ex)
             {
-                LogException($"Failed to load theme:", Source.Launcher, ex);
+                LogException($"Failed to load theme:", LogSource.Launcher, ex);
             }
             e.Handled = true;
         }
@@ -600,7 +600,7 @@ namespace launcher
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo)))
                 {
                     Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
-                    LogInfo(Source.Launcher, "Loading local video background");
+                    LogInfo(LogSource.Launcher, "Loading local video background");
                 }
                 else
                 {
@@ -619,18 +619,18 @@ namespace launcher
 
                     Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
 
-                    LogInfo(Source.Launcher, $"Loaded video background from server");
+                    LogInfo(LogSource.Launcher, $"Loaded video background from server");
                 }
             }
             else if ((bool)Ini.Get(Ini.Vars.Stream_Video) && string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Server_Video_Name)) && File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name))))
             {
                 Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name)), UriKind.Absolute);
-                LogInfo(Source.Launcher, "Loading local video background");
+                LogInfo(LogSource.Launcher, "Loading local video background");
             }
             else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
             {
                 Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
-                LogInfo(Source.Launcher, "Loading local video background");
+                LogInfo(LogSource.Launcher, "Loading local video background");
             }
 
             Background_Video.MediaOpened += (sender, e) =>
@@ -642,7 +642,7 @@ namespace launcher
 
             Background_Video.MediaFailed += (sender, e) =>
             {
-                LogInfo(Source.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
+                LogInfo(LogSource.Launcher, $"Failed to load video: {e.ErrorException?.Message}");
                 Background_Video.Visibility = Visibility.Hidden;
             };
         }

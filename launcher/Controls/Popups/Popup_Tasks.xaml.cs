@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using static launcher.Global.References;
 using launcher.Global;
+using launcher.Game;
 
 namespace launcher
 {
@@ -17,10 +18,10 @@ namespace launcher
             InitializeComponent();
         }
 
-        public DownloadItem AddDownloadItem(string fileName)
+        public DownloadItem AddDownloadItem(GameFile file)
         {
             DownloadItem downloadItem = new();
-            downloadItem.downloadFileName.Text = fileName;
+            downloadItem.downloadFileName.Text = file.destinationPath;
             downloadItem.downloadFilePercent.Text = "waiting...";
             downloadItem.downloadFileProgress.Value = 0;
             downloadItems.Add(downloadItem);

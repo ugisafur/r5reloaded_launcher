@@ -63,7 +63,7 @@ namespace launcher
             if (Launcher.wineEnv)
                 return;
 
-            LogInfo(Source.Launcher, $"Toggling background video: {disabled}");
+            LogInfo(LogSource.Launcher, $"Toggling background video: {disabled}");
             Background_Video.Visibility = disabled ? Visibility.Hidden : Visibility.Visible;
         }
     }

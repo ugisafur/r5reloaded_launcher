@@ -3,6 +3,7 @@ using launcher.Game;
 using SoftCircuits.IniFileParser;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Numerics;
@@ -17,7 +18,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "1.0.7";
+        public const string VERSION = "1.0.2";
 
         #region Public Keys
 
@@ -53,18 +54,21 @@ namespace launcher.Global
             string version = (bool)Ini.Get(Ini.Vars.Nightly_Builds) ? (string)Ini.Get(Ini.Vars.Launcher_Version) : Launcher.VERSION;
             appDispatcher.Invoke(() => Version_Label.Text = version);
 
-            LogInfo(Source.Launcher, $"Launcher Version: {version}");
+            LogInfo(LogSource.Launcher, $"Launcher Version: {version}");
 
             Launcher.PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            LogInfo(Source.Launcher, $"Launcher path: {Launcher.PATH}");
+            LogInfo(LogSource.Launcher, $"Launcher path: {Launcher.PATH}");
 
             ServerConfig = AppState.IsOnline ? Fetch.Config() : null;
 
             LauncherConfig = Ini.GetConfig();
-            LogInfo(Source.Launcher, $"Launcher config found");
+            LogInfo(LogSource.Launcher, $"Launcher config found");
 
             cultureInfo = CultureInfo.CurrentCulture;
             language_name = cultureInfo.Parent.EnglishName.ToLower(new CultureInfo("en-US"));
+
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
     }
 
@@ -205,7 +209,7 @@ namespace launcher.Global
     {
         public static ServerConfig Config()
         {
-            LogInfo(Source.API, $"request: https://cdn.r5r.org/launcher/config.json");
+            LogInfo(LogSource.API, $"request: https://cdn.r5r.org/launcher/config.json");
             return Networking.HttpClient.GetFromJsonAsync<ServerConfig>("https://cdn.r5r.org/launcher/config.json").Result;
         }
 

@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
+using static launcher.Network.DownloadSpeedTracker;
 
 namespace launcher.Game
 {
@@ -29,7 +30,7 @@ namespace launcher.Game
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.destinationPath, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(isUpdate ? Source.Update : Source.Repair, isUpdate ? $"Updated file found: {file.destinationPath}" : $"Bad file found: {file.destinationPath}");
+                    LogWarning(isUpdate ? LogSource.Update : LogSource.Repair, isUpdate ? $"Updated file found: {file.destinationPath}" : $"Bad file found: {file.destinationPath}");
 
                     GameFile gameFile = new GameFile
                     {
@@ -137,7 +138,7 @@ namespace launcher.Game
         {
             return Task.Run(async () =>
             {
-                await Download.Tasks._downloadSemaphore.WaitAsync();
+                await _downloadSemaphore.WaitAsync();
 
                 var fileChecksum = new FileChecksum();
                 try
@@ -156,12 +157,12 @@ namespace launcher.Game
                 }
                 catch (Exception ex)
                 {
-                    LogException($"Failed Generating Checksum For {file}", Source.Checksums, ex);
+                    LogException($"Failed Generating Checksum For {file}", LogSource.Checksums, ex);
                     return fileChecksum;
                 }
                 finally
                 {
-                    Download.Tasks._downloadSemaphore.Release();
+                    _downloadSemaphore.Release();
                 }
             });
         }

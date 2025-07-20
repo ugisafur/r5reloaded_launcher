@@ -106,27 +106,27 @@ namespace launcher.Managers
 
             RPC_client.OnReady += (sender, e) =>
             {
-                LogInfo(Source.DiscordRPC, $"Discord RPC connected as {e.User.Username}");
+                LogInfo(LogSource.DiscordRPC, $"Discord RPC connected as {e.User.Username}");
             };
 
             //RPC_client.OnPresenceUpdate += (sender, e) =>
             //{
-            //    //LogInfo(Source.DiscordRPC, $"Received Update! {e.Presence}");
+            //    //LogInfo(LogSource.DiscordRPC, $"Received Update! {e.Presence}");
             //};
 
             RPC_client.OnError += (sender, e) =>
             {
-                LogError(Source.DiscordRPC, $"Discord RPC Error: {e.Message}");
+                LogError(LogSource.DiscordRPC, $"Discord RPC Error: {e.Message}");
             };
 
             RPC_client.OnConnectionFailed += (sender, e) =>
             {
-                LogError(Source.DiscordRPC, $"Discord RPC Connection Failed");
+                LogError(LogSource.DiscordRPC, $"Discord RPC Connection Failed");
             };
 
             RPC_client.OnConnectionEstablished += (sender, e) =>
             {
-                LogInfo(Source.DiscordRPC, $"Discord RPC Connection Established");
+                LogInfo(LogSource.DiscordRPC, $"Discord RPC Connection Established");
             };
 
             RPC_client.Initialize();
@@ -181,18 +181,18 @@ namespace launcher.Managers
                         if (installLocationValue != null)
                         {
                             EADesktopPath = installLocationValue.ToString();
-                            LogInfo(Source.Launcher, "Found EA Desktop App");
+                            LogInfo(LogSource.Launcher, "Found EA Desktop App");
                         }
                     }
                 }
 
                 if (string.IsNullOrEmpty(EADesktopPath))
                 {
-                    LogError(Source.Launcher, "Failed to find EA Desktop App");
+                    LogError(LogSource.Launcher, "Failed to find EA Desktop App");
                     return;
                 }
 
-                LogInfo(Source.Launcher, "Starting EA Desktop App");
+                LogInfo(LogSource.Launcher, "Starting EA Desktop App");
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
@@ -204,7 +204,7 @@ namespace launcher.Managers
             }
             else
             {
-                LogInfo(Source.Launcher, "EA Desktop App is already running");
+                LogInfo(LogSource.Launcher, "EA Desktop App is already running");
             }
         }
 
@@ -240,7 +240,7 @@ namespace launcher.Managers
                 gamemodes = ["No Selection"];
                 Advanced_Control.serverPage.SetMapList(maps);
                 Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                LogInfo(Source.Launcher, "Branch not installed, skipping playlist file");
+                LogInfo(LogSource.Launcher, "Branch not installed, skipping playlist file");
                 return;
             }
 
@@ -253,19 +253,19 @@ namespace launcher.Managers
                     maps = PlaylistFile.GetMaps(playlistRoot);
                     Advanced_Control.serverPage.SetMapList(maps);
                     Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                    LogInfo(Source.Launcher, $"Loaded playlist file for branch {GetBranch.Name()}");
+                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {GetBranch.Name()}");
                 }));
             }
             catch (Exception ex)
             {
-                LogException($"Failed to load playlist file", Source.Launcher, ex);
+                LogException($"Failed to load playlist file", LogSource.Launcher, ex);
             }
         }
 
         private static void CheckInternetConnection()
         {
             bool isOnline = Networking.CDNTest().Result;
-            LogInfo(Source.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
+            LogInfo(LogSource.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
             AppState.IsOnline = isOnline;
         }
 
@@ -274,10 +274,10 @@ namespace launcher.Managers
             appDispatcher.BeginInvoke(new Action(() =>
             {
                 Settings_Control.SetupSettingsMenu();
-                LogInfo(Source.Launcher, $"Settings menu initialized");
+                LogInfo(LogSource.Launcher, $"Settings menu initialized");
 
                 Advanced_Control.SetupAdvancedSettings();
-                LogInfo(Source.Launcher, $"Advanced settings initialized");
+                LogInfo(LogSource.Launcher, $"Advanced settings initialized");
             }));
         }
 
@@ -289,7 +289,7 @@ namespace launcher.Managers
                 {
                     if (GetBranch.Installed(branch) && !Directory.Exists(GetBranch.Directory(branch)))
                     {
-                        LogWarning(Source.Launcher, $"Branch {branch.branch} is set as installed but directory is missing");
+                        LogWarning(LogSource.Launcher, $"Branch {branch.branch} is set as installed but directory is missing");
                         SetBranch.Installed(false, branch);
                         SetBranch.DownloadHDTextures(false, branch);
                         SetBranch.Version("", branch);
@@ -314,7 +314,7 @@ namespace launcher.Managers
 
                 Branch_Combobox.SelectedIndex = selectedIndex;
 
-                LogInfo(Source.Launcher, "Game branches initialized");
+                LogInfo(LogSource.Launcher, "Game branches initialized");
             }));
         }
 
@@ -347,7 +347,7 @@ namespace launcher.Managers
                             patch_notes_blog_slug = "null",
                         };
                         DataCollections.FolderBranches.Add(branch);
-                        LogInfo(Source.Launcher, $"Local branch found: {folder}");
+                        LogInfo(LogSource.Launcher, $"Local branch found: {folder}");
                     }
                 }
             }
@@ -388,7 +388,7 @@ namespace launcher.Managers
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
                     File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
 
-                LogInfo(Source.Launcher, "Downloading launcher updater");
+                LogInfo(LogSource.Launcher, "Downloading launcher updater");
                 Networking.HttpClient.GetAsync(Launcher.ServerConfig.launcherSelfUpdater)
                     .ContinueWith(response =>
                     {
@@ -617,7 +617,7 @@ namespace launcher.Managers
             }
             catch (Exception ex)
             {
-                LogException($"Failed to send notification", Source.Launcher, ex);
+                LogException($"Failed to send notification", LogSource.Launcher, ex);
             }
         }
 

@@ -1,168 +1,168 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using System.IO;
-using static launcher.Global.Logger;
 using launcher.Global;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using static launcher.Global.Logger;
 
 namespace launcher.Game
 {
     public static class Update
     {
-        public static async void Start()
+        public static async Task Start()
         {
+            try
+            {
+                if (!await RunPreUpdateChecksAsync()) return;
+
+                Download.Tasks.SetInstallState(true, "UPDATING");
+
+                await ExecuteMainUpdateAsync();
+                await PerformPostUpdateActionsAsync();
+            }
+            catch (Exception ex)
+            {
+                LogError(LogSource.Update, $"A critical error occurred during update: {ex.Message}");
+            }
+            finally
+            {
+                Download.Tasks.SetInstallState(false);
+                AppState.SetRichPresence("", "Idle");
+            }
+        }
+
+        // ============================================================================================
+        // Private Helper Methods
+        // ============================================================================================
+        private static async Task RunUpdateProcessAsync(bool forOptionalFiles)
+        {
+            string branchDirectory = GetBranch.Directory();
+            string fileType = forOptionalFiles ? "optional" : "local";
+
+            await CheckForDeletedFilesAsync(forOptionalFiles);
+
+            Download.Tasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
+            var checksumTasks = forOptionalFiles
+                ? Checksums.PrepareOptChecksumTasks(branchDirectory)
+                : Checksums.PrepareBranchChecksumTasks(branchDirectory);
+            await Task.WhenAll(checksumTasks);
+
+            Download.Tasks.UpdateStatusLabel($"Fetching latest {fileType} files", LogSource.Update);
+            var gameFiles = await Fetch.GameFiles(forOptionalFiles);
+
+            Download.Tasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
+            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
+
+            if (changedFileCount > 0)
+            {
+                Download.Tasks.UpdateStatusLabel($"Downloading updated {fileType} files", LogSource.Update);
+                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
+
+                using var cts = new CancellationTokenSource();
+                Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
+
+                Download.Tasks.ShowSpeedLabels(true, true);
+                await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
+                await cts.CancelAsync();
+            }
+        }
+
+        private static async Task<bool> RunPreUpdateChecksAsync()
+        {
+            await Task.Delay(1);
+
             if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch() || !GetBranch.UpdateAvailable() || GetBranch.LocalVersion() == GetBranch.ServerVersion())
-                return;
+                return false;
 
             if (Managers.App.IsR5ApexOpen())
             {
-                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to update.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                var result = MessageBox.Show("R5Reloaded must be closed to update.\n\nClose the game now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
                 {
                     Managers.App.CloseR5Apex();
                 }
                 else
                 {
-                    return;
+                    return false;
                 }
             }
 
-            Download.Tasks.CreateDownloadMonitor();
-
             SetBranch.UpdateAvailable(false);
+            return true;
+        }
 
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
+        private static async Task ExecuteMainUpdateAsync()
+        {
+            Network.DownloadSpeedTracker.CreateDownloadMonitor();
+            Network.DownloadSpeedTracker.ConfigureConcurrency();
+            Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
+            await RunUpdateProcessAsync(forOptionalFiles: false);
+        }
 
-            Download.Tasks.SetInstallState(true, "UPDATING");
-
-            string branchDirectory = GetBranch.Directory();
-
-            await CheckForDeletedFiles(false);
-
-            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Update);
-            var checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
-
-            Download.Tasks.UpdateStatusLabel("Checking local files", Source.Update);
-            await Task.WhenAll(checksumTasks);
-
-            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Update);
-            GameFiles gameFiles = await Fetch.GameFiles(false);
-
-            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
-            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
-
-            if (changedFileCount > 0)
-            {
-                Download.Tasks.UpdateStatusLabel("Preparing downloads", Source.Update);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-                Download.Tasks.UpdateStatusLabel("Downloading updated files", Source.Update);
-                Download.Tasks.ShowSpeedLabels(true, true);
-                await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
-
-                cts.Cancel();
-            }
+        private static async Task PerformPostUpdateActionsAsync()
+        {
+            await Task.Delay(1);
 
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
-            string sigCacheFile = Path.Combine(branchDirectory, "cfg\\startup.bin");
-            if (File.Exists(sigCacheFile))
-                File.Delete(sigCacheFile);
+            string sigCacheFile = Path.Combine(GetBranch.Directory(), "cfg", "startup.bin");
+            if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
             Managers.App.SetupAdvancedMenu();
 
-            Download.Tasks.SetInstallState(false);
-
-            AppState.SetRichPresence("", "Idle");
-
             if (GetBranch.DownloadHDTextures())
-                Task.Run(() => UpdateOptionalWithoutPatching());
-        }
-
-        private static async Task UpdateOptionalWithoutPatching()
-        {
-            Download.Tasks.SetOptionalInstallState(true);
-
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            string branchDirectory = GetBranch.Directory();
-
-            await CheckForDeletedFiles(true);
-
-            Download.Tasks.UpdateStatusLabel("Preparing update", Source.Update);
-            var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
-
-            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Update);
-            await Task.WhenAll(checksumTasks);
-
-            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Update);
-            GameFiles gameFiles = await Fetch.GameFiles(true);
-
-            Download.Tasks.UpdateStatusLabel("Checking for updated files", Source.Update);
-            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
-
-            if (changedFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Update);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-                Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Update);
-                Download.Tasks.ShowSpeedLabels(true, true);
-                await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
-
-                cts.Cancel();
+                // Asynchronously update optional files without waiting.
+                await UpdateOptionalFilesAsync();
             }
-
-            Download.Tasks.SetOptionalInstallState(false);
-
-            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
-
-            AppState.SetRichPresence("", "Idle");
         }
 
-        private static async Task CheckForDeletedFiles(bool optfiles)
+        private static async Task UpdateOptionalFilesAsync()
+        {
+            await RunUpdateProcessAsync(forOptionalFiles: true);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
+        }
+
+        private static async Task CheckForDeletedFilesAsync(bool forOptionalFiles)
         {
             string branchDirectory = GetBranch.Directory();
+            var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
+            var serverFileManifest = await Fetch.GameFiles(forOptionalFiles);
 
-            string[] files = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
+            // Pre-compile the regex for performance if there are many languages.
+            string languagesPattern = string.Join("|", GetBranch.Branch().mstr_languages.Select(Regex.Escape));
+            var excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-            GameFiles gameFiles = await Fetch.GameFiles(optfiles);
-
-            foreach (var file in files)
+            foreach (var localFile in allLocalFiles)
             {
-                string relativePath = Path.GetRelativePath(branchDirectory, file);
-
+                string relativePath = Path.GetRelativePath(branchDirectory, localFile);
                 bool isOptFile = relativePath.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase);
 
-                if (optfiles && isOptFile || !optfiles && !isOptFile)
+                // Skip files that don't match the current mode (optional vs. non-optional).
+                if (forOptionalFiles != isOptFile) continue;
+
+                // If the file exists locally but not on the server manifest, delete it.
+                bool existsOnServer = serverFileManifest.files.Exists(f => f.destinationPath.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
+                if (!existsOnServer)
                 {
                     try
                     {
-                        if (!gameFiles.files.Exists(f => f.destinationPath.Equals(relativePath, StringComparison.OrdinalIgnoreCase)))
+                        // Extra check to avoid deleting language files that weren't fetched in the manifest.
+                        if (!excludeLangRegex.IsMatch(Path.GetFileName(localFile)) && File.Exists(localFile))
                         {
-                            string languagesPattern = string.Join("|", GetBranch.Branch().mstr_languages.Select(Regex.Escape));
-                            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
-
-                            string fileName = Path.GetFileName(file);
-
-                            if (!excludeLangRegex.IsMatch(fileName) && File.Exists(file))
-                                File.Delete(file);
+                            File.Delete(localFile);
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogException($"Failed to delete file: {relativePath}", Source.Update, ex);
+                        LogException($"Failed to delete obsolete file: {relativePath}", LogSource.Update, ex);
                     }
                 }
             }

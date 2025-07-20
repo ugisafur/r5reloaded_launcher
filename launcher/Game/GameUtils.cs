@@ -19,13 +19,13 @@ namespace launcher.Game
             {
                 if (eaAppStatus == Managers.App.EAAppCodes.Not_Installed)
                 {
-                    LogError(Source.Launcher, "EA App is not installed. Please install the EA App and try again.");
+                    LogError(LogSource.Launcher, "EA App is not installed. Please install the EA App and try again.");
                     MessageBox.Show(new Form { TopMost = true }, "EA App is not installed. Please install the EA App and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 if (eaAppStatus == Managers.App.EAAppCodes.Installed_And_Not_Running)
                 {
-                    LogError(Source.Launcher, "EA App is not running. Please launch the EA App and try again.");
+                    LogError(LogSource.Launcher, "EA App is not running. Please launch the EA App and try again.");
                     MessageBox.Show(new Form { TopMost = true }, "EA App is not running. Please launch the EA App and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }));
@@ -70,7 +70,7 @@ namespace launcher.Game
             if (gameProcess != null)
                 SetProcessorAffinity(gameProcess);
 
-            LogInfo(Source.Launcher, $"Launched game with arguments: {gameArguments}");
+            LogInfo(LogSource.Launcher, $"Launched game with arguments: {gameArguments}");
 
             appDispatcher.Invoke(new Action(() =>
             {
@@ -101,16 +101,23 @@ namespace launcher.Game
 
                     gameProcess.ProcessorAffinity = affinityMask;
 
-                    LogInfo(Source.Launcher, $"Processor affinity set to the first {coreCount} cores.");
+                    LogInfo(LogSource.Launcher, $"Processor affinity set to the first {coreCount} cores.");
                 }
                 else
-                    LogError(Source.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
+                    LogError(LogSource.Launcher, $"Invalid core index: {coreCount}. Must be between -1 and {processorCount}.");
             }
             catch (Exception ex)
             {
-                LogException($"Failed to set processor affinity", Source.Launcher, ex);
+                LogException($"Failed to set processor affinity", LogSource.Launcher, ex);
             }
         }
+    }
+
+    public class FileDownload
+    {
+        public long totalBytes = 0;
+        public long downloadedBytes = 0;
+        public DateTime lastUpdate = DateTime.Now;
     }
 
     public class FileChecksum
@@ -125,6 +132,14 @@ namespace launcher.Game
         public List<GameFile> files { get; set; }
     }
 
+    public class DownloadMetadata
+    {
+        public FileDownload fileDownload = new();
+        public DownloadItem downloadItem { get; set; }
+        public string finalPath { get; set; }
+        public string fileUrl { get; set; }
+    }
+
     public class GameFile
     {
         public string destinationPath { get; set; }
@@ -132,7 +147,8 @@ namespace launcher.Game
         public string checksum { get; set; }
         public bool optional { get; set; }
         public List<Part> parts { get; set; }
-    }
+        public DownloadMetadata downloadMetadata = new();
+}
 
     public class Part
     {

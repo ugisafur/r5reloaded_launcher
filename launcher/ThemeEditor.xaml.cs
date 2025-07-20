@@ -169,7 +169,7 @@ namespace launcher
         {
             string exportPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml");
             ExportFullTheme(exportPath);
-            Logger.LogInfo(Logger.Source.Launcher, $"Theme changes exported to {exportPath}");
+            LogInfo(LogSource.Launcher, $"Theme changes exported to {exportPath}");
         }
 
         private void StartupImage_Click(object sender, RoutedEventArgs e)
@@ -187,7 +187,7 @@ namespace launcher
 
                 File.Copy(directoryDialog.FileName, System.IO.Path.Combine(Launcher.PATH, "launcher_data\\assets", "startup.png"), true);
 
-                LogInfo(Source.Launcher, "Loading local startup image");
+                LogInfo(LogSource.Launcher, "Loading local startup image");
             }
         }
 
@@ -216,7 +216,7 @@ namespace launcher
                 File.Copy(directoryDialog.FileName, System.IO.Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), true);
 
                 Background_Video.Source = new Uri(System.IO.Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4"), UriKind.Absolute);
-                LogInfo(Source.Launcher, "Loading local video background");
+                LogInfo(LogSource.Launcher, "Loading local video background");
             }
         }
 
@@ -250,7 +250,7 @@ namespace launcher
                     Background_Image.Source = bitmap;
                 }
 
-                LogInfo(Source.Launcher, "Loading local image background");
+                LogInfo(LogSource.Launcher, "Loading local image background");
             }
         }
 

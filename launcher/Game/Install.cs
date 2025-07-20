@@ -1,8 +1,12 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using launcher.Global;
-using System.Text.Json;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
 
@@ -10,203 +14,191 @@ namespace launcher.Game
 {
     public static class Install
     {
-        public static async void Start()
+        public static async Task Start()
         {
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch())
-                return;
-
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            try
             {
-                appDispatcher.Invoke(new Action(() => { Managers.App.ShowInstallLocation(); }));
-                return;
-            }
+                if (!await RunPreFlightChecksAsync()) return;
 
-            if (!GetBranch.EULAAccepted())
+                Download.Tasks.SetInstallState(true, "INSTALLING");
+
+                await ExecuteDownloadAndRepairAsync();
+                await PerformPostInstallActionsAsync();
+            }
+            catch (Exception ex)
             {
-                appDispatcher.Invoke(new Action(() => { Managers.App.ShowEULA(); }));
-                return;
+                LogError(LogSource.Installer, $"A critical error occurred during installation: {ex.Message}");
             }
-
-            if (GetBranch.ExeExists())
+            finally
             {
-                Task.Run(() => { Repair.Start(); });
-                return;
+                Download.Tasks.SetInstallState(false);
+                AppState.SetRichPresence("", "Idle");
             }
-
-            long extraSpace = 30L * (1024 * 1024 * 1024); // ( 10 GiB ) add extra required storage
-            GameFiles uncompressedgameFiles = await Fetch.GameFiles(false);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes) + extraSpace;
-            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
-            {
-                MessageBox.Show($"Not enough free space to install R5Reloaded.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            Download.Tasks.CreateDownloadMonitor();
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            Download.Tasks.SetInstallState(true, "INSTALLING");
-
-            string branchDirectory = GetBranch.Directory();
-
-            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Installer);
-            GameFiles gameFiles = await Fetch.GameFiles(false);
-
-            Download.Tasks.UpdateStatusLabel("Preparing game download", Source.Installer);
-            var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
-
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-            Download.Tasks.ShowSpeedLabels(true, true);
-            Download.Tasks.UpdateStatusLabel("Downloading game files", Source.Installer);
-            await Task.WhenAll(downloadTasks);
-            Download.Tasks.ShowSpeedLabels(false, false);
-
-            cts.Cancel();
-
-            if (AppState.BadFilesDetected)
-            {
-                Download.Tasks.UpdateStatusLabel("Reparing game files", Source.Installer);
-                await AttemptGameRepair();
-            }
-
-            LogInfo(Source.Installer, $"Checking system language against available game languages");
-            if (GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase) && Launcher.language_name != "english")
-            {
-                LogInfo(Source.Installer, $"game language found ({Launcher.language_name}), installing language files");
-                await LangFile(null, [Launcher.language_name], true);
-            }
-
-            SetBranch.Installed(true);
-            SetBranch.Version(GetBranch.ServerVersion());
-
-            appDispatcher.Invoke(new Action(() => { Managers.App.SetupAdvancedMenu(); }));
-
-            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
-
-            AppState.SetRichPresence("", "Idle");
-
-            Download.Tasks.SetInstallState(false);
-
-            appDispatcher.Invoke(new Action(() => { Managers.App.ShowDownloadOptlFiles(); }));
         }
 
         public static async Task HDTextures()
         {
-            if (AppState.IsInstalling)
-                return;
+            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return;
 
-            if (!AppState.IsOnline)
-                return;
+            GameFiles gameFiles = await Fetch.GameFiles(optional: true);
+            if (!await CheckForSufficientSpaceAsync(gameFiles, "HD Textures")) return;
 
-            if (GetBranch.IsLocalBranch())
-                return;
-
-            GameFiles uncompressedgameFiles = await Fetch.GameFiles(true);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes);
-            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
+            Download.Tasks.SetInstallState(true);
+            try
             {
-                MessageBox.Show($"Not enough free space to install HD Textures.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                await RunDownloadProcessAsync(gameFiles, "Downloading optional files");
+
+                SetBranch.DownloadHDTextures(true);
+                appDispatcher.Invoke(() => Settings_Control.gameInstalls.UpdateGameItems());
+                Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
             }
+            finally
+            {
+                Download.Tasks.SetInstallState(false);
+                AppState.SetRichPresence("", "Idle");
+            }
+        }
 
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
+        public static async Task LangFile(CheckBox checkBox, string[] langs, bool bypass_block = false)
+        {
+            if (!AppState.IsOnline || (AppState.BlockLanguageInstall && !bypass_block)) return;
 
-            Download.Tasks.SetOptionalInstallState(true);
+            GameFiles gameFiles = await Fetch.LanguageFiles([.. langs]);
+            if (!await CheckForSufficientSpaceAsync(gameFiles, "Language File")) return;
+
+            appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
+            try
+            {
+                await RunDownloadProcessAsync(gameFiles, "Downloading language files", showMainSpeed: false);
+            }
+            finally
+            {
+                appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = true; });
+            }
+        }
+
+        // ============================================================================================
+        // Private Helper Methods
+        // ============================================================================================
+        private static async Task RunDownloadProcessAsync(GameFiles gameFiles, string statusLabel, bool showMainSpeed = true)
+        {
+            Network.DownloadSpeedTracker.CreateDownloadMonitor();
+            Network.DownloadSpeedTracker.ConfigureConcurrency();
+            Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
 
             string branchDirectory = GetBranch.Directory();
+            var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
-            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Installer);
-            GameFiles optionalGameFiles = await Fetch.GameFiles(true);
+            using var cts = new CancellationTokenSource();
+            Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-            Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Installer);
-            var optionaldownloadTasks = Download.Tasks.InitializeDownloadTasks(optionalGameFiles, branchDirectory);
+            Download.Tasks.ShowSpeedLabels(showMainSpeed, true);
+            Download.Tasks.UpdateStatusLabel(statusLabel, LogSource.Installer);
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
+            await Task.WhenAll(downloadTasks);
 
-            Download.Tasks.ShowSpeedLabels(true, true);
-            Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Installer);
-            await Task.WhenAll(optionaldownloadTasks);
             Download.Tasks.ShowSpeedLabels(false, false);
+            await cts.CancelAsync();
+        }
 
-            cts.Cancel();
+        private static async Task<bool> RunPreFlightChecksAsync()
+        {
+            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return false;
 
-            Download.Tasks.SetOptionalInstallState(false);
+            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            {
+                appDispatcher.Invoke(() => Managers.App.ShowInstallLocation());
+                return false;
+            }
 
-            SetBranch.DownloadHDTextures(true);
+            if (!GetBranch.EULAAccepted())
+            {
+                appDispatcher.Invoke(() => Managers.App.ShowEULA());
+                return false;
+            }
 
-            appDispatcher.Invoke(new Action(() => { Settings_Control.gameInstalls.UpdateGameItems(); }));
+            if (GetBranch.ExeExists())
+            {
+                await Task.Run(() => Repair.Start());
+                return false; // Pivoted to repair, so stop the install flow.
+            }
 
-            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
+            GameFiles gameFiles = await Fetch.GameFiles(optional: false);
+            const long extraSpaceBuffer = 30L * 1024 * 1024 * 1024; // 30 GB
+            return await CheckForSufficientSpaceAsync(gameFiles, "R5Reloaded", extraSpaceBuffer);
+        }
 
-            AppState.SetRichPresence("", "Idle");
+        private static async Task<bool> CheckForSufficientSpaceAsync(GameFiles gameFiles, string installName, long extraBuffer = 0)
+        {
+            await Task.Delay(1);
+
+            long requiredSpace = gameFiles.files.Sum(f => f.sizeInBytes) + extraBuffer;
+            string libraryLocation = (string)Ini.Get(Ini.Vars.Library_Location);
+
+            if (string.IsNullOrEmpty(libraryLocation))
+            {
+                appDispatcher.Invoke(() => Managers.App.ShowInstallLocation());
+                return false;
+            }
+
+            if (!Managers.App.HasEnoughFreeSpace(libraryLocation, requiredSpace))
+            {
+                MessageBox.Show($"Not enough free space to install {installName}.\n\nRequired: {FormatBytes(requiredSpace)}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            return true;
+        }
+
+        private static async Task ExecuteDownloadAndRepairAsync()
+        {
+            GameFiles gameFiles = await Fetch.GameFiles(optional: false);
+            await RunDownloadProcessAsync(gameFiles, "Downloading game files");
+
+            if (AppState.BadFilesDetected)
+            {
+                Download.Tasks.UpdateStatusLabel("Repairing game files", LogSource.Installer);
+                await AttemptGameRepair();
+            }
+        }
+
+        private static async Task PerformPostInstallActionsAsync()
+        {
+            bool languageAvailable = GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
+            if (languageAvailable && Launcher.language_name != "english")
+            {
+                await LangFile(null, new[] { Launcher.language_name }, bypass_block: true);
+            }
+
+            SetBranch.Installed(true);
+            SetBranch.Version(GetBranch.ServerVersion());
+            appDispatcher.Invoke(() => Managers.App.SetupAdvancedMenu());
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
+
+            GameFiles optFiles = await Fetch.GameFiles(optional: true);
+            appDispatcher.Invoke(() =>
+            {
+                OptFiles_Control.SetDownloadSize(optFiles);
+                Managers.App.ShowDownloadOptlFiles();
+            });
         }
 
         private static async Task AttemptGameRepair()
         {
             bool isRepaired = false;
-
-            for (int i = 0; i < Launcher.MAX_REPAIR_ATTEMPTS; i++)
+            for (int i = 0; i < Launcher.MAX_REPAIR_ATTEMPTS && !isRepaired; i++)
             {
                 isRepaired = await Repair.Start();
-                if (isRepaired) break;
             }
-
             AppState.BadFilesDetected = !isRepaired;
         }
 
-        public static async Task LangFile(CheckBox checkBox, List<string> langs, bool bypass_block = false)
+        private static string FormatBytes(long bytes)
         {
-            if (!AppState.IsOnline || (AppState.BlockLanguageInstall && !bypass_block))
-                return;
-
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
-            {
-                appDispatcher.Invoke(new Action(() => { Managers.App.ShowInstallLocation(); }));
-                return;
-            }
-
-            GameFiles uncompressedgameFiles = await Fetch.LanguageFiles(langs);
-            long requiredSpace = uncompressedgameFiles.files.Sum(f => f.sizeInBytes);
-            if (!Managers.App.HasEnoughFreeSpace((string)Ini.Get(Ini.Vars.Library_Location), requiredSpace))
-            {
-                MessageBox.Show($"Not enough free space to install Language File.\n\nRequired: {requiredSpace / 1024 / 1024} MB", "R5Reloaded", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            appDispatcher.Invoke(() =>
-            {
-                if (checkBox != null)
-                    checkBox.IsEnabled = false;
-            });
-
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            string branchDirectory = GetBranch.Directory();
-
-            GameFiles langFiles = await Fetch.LanguageFiles(langs);
-
-            var langdownloadTasks = Download.Tasks.InitializeDownloadTasks(langFiles, branchDirectory);
-
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-            Download.Tasks.ShowSpeedLabels(false, true);
-            await Task.WhenAll(langdownloadTasks);
-            Download.Tasks.ShowSpeedLabels(false, false);
-
-            cts.Cancel();
-
-            appDispatcher.Invoke(new Action(() =>
-            {
-                if (checkBox != null)
-                    checkBox.IsEnabled = true;
-            }));
+            if (bytes == 0) return "0 B";
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 2);
+            return $"{num} {suffixes[place]}";
         }
     }
 }

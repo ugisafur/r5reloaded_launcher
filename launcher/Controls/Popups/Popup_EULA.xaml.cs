@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using launcher.Game;
 using launcher.Global;
 using static launcher.Global.References;
+using static launcher.Global.Logger;
 
 namespace launcher
 {
@@ -27,14 +28,14 @@ namespace launcher
         {
             if (!AppState.IsOnline)
             {
-                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA, no internet connection");
+                LogError( LogSource.Launcher, "Failed to get EULA, no internet connection");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no internet connection"));
                 return;
             }
 
             if (!Networking.MasterServerTest().Result)
             {
-                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA, no reponse from master server");
+                LogError( LogSource.Launcher, "Failed to get EULA, no reponse from master server");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no reponse from master server"));
                 return;
             }
@@ -44,13 +45,13 @@ namespace launcher
 
             if (response.IsSuccessStatusCode)
             {
-                Logger.LogInfo(Logger.Source.Launcher, "Successfully got EULA");
+                LogInfo( LogSource.Launcher, "Successfully got EULA");
                 EULAData euladata = JsonConvert.DeserializeObject<EULAData>(response.Content.ReadAsStringAsync().Result);
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = euladata.data.contents));
             }
             else
             {
-                Logger.LogError(Logger.Source.Launcher, "Failed to get EULA");
+                LogError( LogSource.Launcher, "Failed to get EULA");
             }
         }
 

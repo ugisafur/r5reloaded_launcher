@@ -24,7 +24,7 @@
                     <Button x:Name="Later" Style="{DynamicResource laterBtnStyle}" Margin="328,0,150,0" Content="LATER" Background="{DynamicResource ThemeOtherButtonText}" BorderBrush="{DynamicResource ThemeOtherButtonText}" FontSize="18" FontFamily="{StaticResource SansationBold}" VerticalAlignment="Center" Cursor="Hand" Height="42" Foreground="{DynamicResource ThemePrimaryAltText}" Click="Later_Click" />
                 </Grid>
             </Border>
-            <TextBlock Text="Download Size: Approximately 20 GB" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
+            <TextBlock x:Name="DownloadSize" Text="Download Size: Approximately 20 GB" Foreground="{DynamicResource ThemeSecondaryText}" FontSize="18" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,150,15,0" />
             <TextBlock Text="Note: This is entirely optional and not required to play the game. The base game will function perfectly without it." Foreground="{DynamicResource ThemeSecondaryText}" FontSize="16" FontFamily="{StaticResource SansationLight}" VerticalAlignment="Top" TextWrapping="Wrap" Margin="15,177,15,0" />
         </Grid>
     </Border>

@@ -1,9 +1,13 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using System.IO;
-using static launcher.Global.Logger;
-using System.Windows;
-using static launcher.Global.References;
 using launcher.Global;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using static launcher.Global.Logger;
+using static launcher.Global.References;
 
 namespace launcher.Game
 {
@@ -11,12 +15,70 @@ namespace launcher.Game
     {
         public static async Task<bool> Start()
         {
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch())
+            try
+            {
+                if (!await RunPreRepairChecksAsync()) return false;
+
+                Download.Tasks.SetInstallState(true, "REPAIRING");
+
+                bool repairNeeded = await ExecuteMainRepairAsync();
+                await PerformPostRepairActionsAsync();
+
+                return !repairNeeded || !AppState.BadFilesDetected;
+            }
+            catch (Exception ex)
+            {
+                LogError(LogSource.Repair, $"A critical error occurred during repair: {ex.Message}");
                 return false;
+            }
+            finally
+            {
+                Download.Tasks.SetInstallState(false);
+                AppState.SetRichPresence("", "Idle");
+            }
+        }
+
+        // ============================================================================================
+        // Private Helper Methods
+        // ============================================================================================
+        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<List<Task<FileChecksum>>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string downloadStatus)
+        {
+            Download.Tasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
+            var checksumTasks = await prepareChecksums();
+            await Task.WhenAll(checksumTasks);
+
+            var gameFiles = await fetchFileManifest();
+            // This call will now compile correctly.
+            int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+
+            if (badFileCount > 0)
+            {
+                Download.Tasks.UpdateStatusLabel(downloadStatus, LogSource.Repair);
+                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
+
+                using var cts = new CancellationTokenSource();
+                Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
+
+                Download.Tasks.ShowSpeedLabels(true, true);
+                await Task.WhenAll(downloadTasks);
+                Download.Tasks.ShowSpeedLabels(false, false);
+                await cts.CancelAsync();
+                return true; // Indicates that a repair was attempted.
+            }
+
+            return false; // No repair was needed.
+        }
+
+        private static async Task<bool> RunPreRepairChecksAsync()
+        {
+            await Task.Delay(1);
+
+            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return false;
 
             if (Managers.App.IsR5ApexOpen())
             {
-                if (MessageBox.Show("R5Reloaded is currently running. The game must be closed to repair.\n\nDo you want to close any open game proccesses now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                var result = MessageBox.Show("R5Reloaded must be closed to repair.\n\nClose the game now?", "R5Reloaded", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
                 {
                     Managers.App.CloseR5Apex();
                 }
@@ -31,164 +93,83 @@ namespace launcher.Game
                 Update_Button.Visibility = Visibility.Hidden;
                 SetBranch.UpdateAvailable(false);
             }
+            return true;
+        }
 
-            bool repairSuccess = true;
-
-            Download.Tasks.CreateDownloadMonitor();
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            Download.Tasks.SetInstallState(true, "REPAIRING");
-
+        private static async Task<bool> ExecuteMainRepairAsync()
+        {
             string branchDirectory = GetBranch.Directory();
+            Network.DownloadSpeedTracker.CreateDownloadMonitor();
+            Network.DownloadSpeedTracker.ConfigureConcurrency();
+            Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
 
-            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
-            var checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
+            return await RunRepairProcessAsync(
+                branchDirectory,
+                () => Task.FromResult(Checksums.PrepareBranchChecksumTasks(branchDirectory)),
+                () => Fetch.GameFiles(optional: false),
+                "Checking core files...",
+                "Downloading core files..."
+            );
+        }
 
-            Download.Tasks.UpdateStatusLabel("Checking files", Source.Repair);
-            await Task.WhenAll(checksumTasks);
-
-            Download.Tasks.UpdateStatusLabel("Fetching latest files", Source.Repair);
-            GameFiles gameFiles = await Fetch.GameFiles(false);
-
-            Download.Tasks.UpdateStatusLabel("Finding bad files", Source.Repair);
-            int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
-
-            if (badFileCount > 0)
+        private static async Task PerformPostRepairActionsAsync()
+        {
+            // Check and repair language files if necessary.
+            bool languageAvailable = GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
+            if (languageAvailable && Launcher.language_name != "english")
             {
-                repairSuccess = false;
-
-                Download.Tasks.UpdateStatusLabel("Preparing downloads", Source.Repair);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-                Download.Tasks.UpdateStatusLabel("Downloading files", Source.Repair);
-                Download.Tasks.ShowSpeedLabels(true, true);
-                await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
-
-                cts.Cancel();
+                await RepairLanguageFilesAsync(new List<string> { Launcher.language_name });
             }
 
-            if (GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase) && Launcher.language_name != "english")
-                await Task.Run(() => LangFile([Launcher.language_name], true));
-
+            // Update local state.
             SetBranch.Installed(true);
             SetBranch.Version(GetBranch.ServerVersion());
 
-            string sigCacheFile = Path.Combine(branchDirectory, "cfg\\startup.bin");
-            if (File.Exists(sigCacheFile))
-                File.Delete(sigCacheFile);
+            // Clean up cache files.
+            string sigCacheFile = Path.Combine(GetBranch.Directory(), "cfg", "startup.bin");
+            if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
+            // Update UI and send notification.
             Managers.App.SetupAdvancedMenu();
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) has been repaired!", BalloonIcon.Info);
 
-            var allOptFiles = Directory
-                .GetFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories)
-                .Where(path => !path.Split(Path.DirectorySeparatorChar).Any(segment => segment.Equals("mods", StringComparison.OrdinalIgnoreCase)))
-                .ToArray();
-
-            if (allOptFiles.Length > 0)
+            // Check for existing HD Textures.
+            if (CheckForHDTextures(GetBranch.Directory()))
             {
-                foreach (string file in allOptFiles)
-                {
-                    LogInfo(Source.Repair, $"Found HD Texture file: {file}");
-                }
-
                 SetBranch.DownloadHDTextures(true);
+                // Asynchronously repair optional files without waiting.
+                await RepairOptionalFilesAsync();
             }
-
-            Download.Tasks.SetInstallState(false);
-            AppState.SetRichPresence("", "Idle");
-
-            if (GetBranch.DownloadHDTextures())
-                Task.Run(() => RepairOptionalFiles());
-
-            return repairSuccess;
         }
 
-        private static async Task RepairOptionalFiles()
+        private static async Task RepairOptionalFilesAsync()
         {
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            Download.Tasks.SetOptionalInstallState(true);
-
-            AppState.SetRichPresence($"Repairing {GetBranch.Name()}", $"Getting Ready");
-
-            string branchDirectory = GetBranch.Directory();
-
-            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
-            var checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
-
-            Download.Tasks.UpdateStatusLabel("Checking optional files", Source.Repair);
-            await Task.WhenAll(checksumTasks);
-
-            Download.Tasks.UpdateStatusLabel("Fetching optional files", Source.Repair);
-            GameFiles gameFiles = await Fetch.GameFiles(true);
-
-            Download.Tasks.UpdateStatusLabel("Finding bad optional files", Source.Repair);
-            int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
-
-            if (badFileCount > 0)
-            {
-                Download.Tasks.UpdateStatusLabel("Preparing optional downloads", Source.Repair);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-                Download.Tasks.UpdateStatusLabel("Downloading optional files", Source.Repair);
-                Download.Tasks.ShowSpeedLabels(true, true);
-                await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
-
-                cts.Cancel();
-            }
-
-            AppState.SetRichPresence("", "Idle");
-
+            await RunRepairProcessAsync(
+                GetBranch.Directory(),
+                () => Task.FromResult(Checksums.PrepareOptChecksumTasks(GetBranch.Directory())),
+                () => Fetch.GameFiles(optional: true),
+                "Checking optional files...",
+                "Downloading optional files..."
+            );
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
-
-            Download.Tasks.SetOptionalInstallState(false);
         }
 
-        private static async Task LangFile(List<string> langs, bool bypass_block = false)
+        private static async Task RepairLanguageFilesAsync(List<string> langs)
         {
-            if (!AppState.IsOnline || (AppState.BlockLanguageInstall && !bypass_block))
-                return;
+            if (!AppState.IsOnline) return;
+            await RunRepairProcessAsync(
+                GetBranch.Directory(),
+                () => Task.FromResult(Checksums.PrepareLangChecksumTasks(GetBranch.Directory(), langs)),
+                () => Fetch.LanguageFiles(langs),
+                "Checking language files...",
+                "Downloading language files..."
+            );
+        }
 
-            Download.Tasks.ConfigureConcurrency();
-            Download.Tasks.ConfigureDownloadSpeed();
-
-            string branchDirectory = GetBranch.Directory();
-
-            Download.Tasks.UpdateStatusLabel("Preparing to repair", Source.Repair);
-            var checksumTasks = Checksums.PrepareLangChecksumTasks(branchDirectory, langs);
-
-            Download.Tasks.UpdateStatusLabel("Fetching language files", Source.Repair);
-            GameFiles langFiles = await Fetch.LanguageFiles(langs);
-
-            Download.Tasks.UpdateStatusLabel("Finding bad language files", Source.Repair);
-            int badFileCount = Checksums.IdentifyBadFiles(langFiles, checksumTasks, branchDirectory);
-
-            if (badFileCount > 0)
-            {
-                Download.Tasks.UpdateStatusLabel("Preparing language downloads", Source.Repair);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Task updateTask = Download.Tasks.UpdateGlobalDownloadProgressAsync(cts.Token);
-
-                Download.Tasks.UpdateStatusLabel("Downloading language files", Source.Repair);
-                Download.Tasks.ShowSpeedLabels(false, true);
-                await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
-
-                cts.Cancel();
-            }
+        private static bool CheckForHDTextures(string branchDirectory)
+        {
+            return Directory.EnumerateFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories)
+                .Any(path => !path.Contains(Path.DirectorySeparatorChar + "mods" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
