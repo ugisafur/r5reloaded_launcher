@@ -19,7 +19,7 @@ namespace launcher.Game
             {
                 if (!await RunPreRepairChecksAsync()) return false;
 
-                Download.Tasks.SetInstallState(true, "REPAIRING");
+                Tasks.SetInstallState(true, "REPAIRING");
 
                 bool repairNeeded = await ExecuteMainRepairAsync();
                 await PerformPostRepairActionsAsync();
@@ -33,7 +33,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false);
+                Tasks.SetInstallState(false);
                 AppState.SetRichPresence("", "Idle");
             }
         }
@@ -43,7 +43,7 @@ namespace launcher.Game
         // ============================================================================================
         private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<List<Task<FileChecksum>>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string downloadStatus)
         {
-            Download.Tasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
+            Tasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
             var checksumTasks = await prepareChecksums();
             await Task.WhenAll(checksumTasks);
 
@@ -53,15 +53,15 @@ namespace launcher.Game
 
             if (badFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel(downloadStatus, LogSource.Repair);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
+                Tasks.UpdateStatusLabel(downloadStatus, LogSource.Repair);
+                var downloadTasks = Tasks.InitializeRepairTasks(branchDirectory);
 
                 using var cts = new CancellationTokenSource();
                 Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-                Download.Tasks.ShowSpeedLabels(true, true);
+                Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
+                Tasks.ShowSpeedLabels(false, false);
                 await cts.CancelAsync();
                 return true; // Indicates that a repair was attempted.
             }

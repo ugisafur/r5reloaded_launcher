@@ -19,7 +19,7 @@ namespace launcher.Game
             {
                 if (!await RunPreUpdateChecksAsync()) return;
 
-                Download.Tasks.SetInstallState(true, "UPDATING");
+                Tasks.SetInstallState(true, "UPDATING");
 
                 await ExecuteMainUpdateAsync();
                 await PerformPostUpdateActionsAsync();
@@ -30,7 +30,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false);
+                Tasks.SetInstallState(false);
                 AppState.SetRichPresence("", "Idle");
             }
         }
@@ -45,29 +45,29 @@ namespace launcher.Game
 
             await CheckForDeletedFilesAsync(forOptionalFiles);
 
-            Download.Tasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
+            Tasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
             var checksumTasks = forOptionalFiles
                 ? Checksums.PrepareOptChecksumTasks(branchDirectory)
                 : Checksums.PrepareBranchChecksumTasks(branchDirectory);
             await Task.WhenAll(checksumTasks);
 
-            Download.Tasks.UpdateStatusLabel($"Fetching latest {fileType} files", LogSource.Update);
+            Tasks.UpdateStatusLabel($"Fetching latest {fileType} files", LogSource.Update);
             var gameFiles = await Fetch.GameFiles(forOptionalFiles);
 
-            Download.Tasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
+            Tasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
-                Download.Tasks.UpdateStatusLabel($"Downloading updated {fileType} files", LogSource.Update);
-                var downloadTasks = Download.Tasks.InitializeRepairTasks(branchDirectory);
+                Tasks.UpdateStatusLabel($"Downloading updated {fileType} files", LogSource.Update);
+                var downloadTasks = Tasks.InitializeRepairTasks(branchDirectory);
 
                 using var cts = new CancellationTokenSource();
                 Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-                Download.Tasks.ShowSpeedLabels(true, true);
+                Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
-                Download.Tasks.ShowSpeedLabels(false, false);
+                Tasks.ShowSpeedLabels(false, false);
                 await cts.CancelAsync();
             }
         }

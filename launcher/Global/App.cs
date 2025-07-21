@@ -70,7 +70,7 @@ namespace launcher.Managers
             await Task.Delay(100);
             Task.Run(() => Status_Control.StartStatusTimer());
 
-            Download.Tasks.ShowSpeedLabels(false, false);
+            Tasks.ShowSpeedLabels(false, false);
 
             PreLoad_Window.SetLoadingText("Checking for news");
             await Task.Delay(100);

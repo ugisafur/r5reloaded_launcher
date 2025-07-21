@@ -17,7 +17,7 @@ namespace launcher.Game
         {
             if (!await RunPreUninstallChecksAsync()) return;
 
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            Tasks.SetInstallState(true, "UNINSTALLING");
             try
             {
                 var allFiles = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
@@ -40,7 +40,7 @@ namespace launcher.Game
             finally
             {
                 // ✅ Ensures the UI is always reset.
-                Download.Tasks.SetInstallState(false, "INSTALL");
+                Tasks.SetInstallState(false, "INSTALL");
                 AppState.SetRichPresence("", "Idle");
             }
         }
@@ -50,7 +50,7 @@ namespace launcher.Game
             if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory())) return;
 
             appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            Tasks.SetInstallState(true, "UNINSTALLING");
             try
             {
                 GameFiles langFilesManifest = await Fetch.LanguageFiles(langs);
@@ -63,7 +63,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false);
+                Tasks.SetInstallState(false);
                 appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = true; });
             }
         }
@@ -72,7 +72,7 @@ namespace launcher.Game
         {
             if (!GetBranch.Installed(branch) || !Directory.Exists(GetBranch.Directory(branch))) return;
 
-            Download.Tasks.SetInstallState(true, "UNINSTALLING");
+            Tasks.SetInstallState(true, "UNINSTALLING");
             try
             {
                 var optFiles = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
@@ -83,7 +83,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false, "PLAY");
+                Tasks.SetInstallState(false, "PLAY");
             }
         }
 
@@ -93,7 +93,7 @@ namespace launcher.Game
 
         private static async Task RunUninstallProcessAsync(IReadOnlyCollection<string> filesToDelete, string statusLabel)
         {
-            Download.Tasks.UpdateStatusLabel(statusLabel,LogSource.Uninstaller);
+            Tasks.UpdateStatusLabel(statusLabel,LogSource.Uninstaller);
 
             await appDispatcher.InvokeAsync(() => { Progress_Bar.Maximum = filesToDelete.Count; Progress_Bar.Value = 0; });
 

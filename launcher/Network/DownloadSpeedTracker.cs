@@ -1,5 +1,4 @@
-﻿using launcher.Download;
-using launcher.Game;
+﻿using launcher.Game;
 using launcher.Global;
 using static launcher.Global.References;
 

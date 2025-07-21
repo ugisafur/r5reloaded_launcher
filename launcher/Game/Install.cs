@@ -20,7 +20,7 @@ namespace launcher.Game
             {
                 if (!await RunPreFlightChecksAsync()) return;
 
-                Download.Tasks.SetInstallState(true, "INSTALLING");
+                Tasks.SetInstallState(true, "INSTALLING");
 
                 await ExecuteDownloadAndRepairAsync();
                 await PerformPostInstallActionsAsync();
@@ -31,7 +31,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false);
+                Tasks.SetInstallState(false);
                 AppState.SetRichPresence("", "Idle");
             }
         }
@@ -43,7 +43,7 @@ namespace launcher.Game
             GameFiles gameFiles = await Fetch.GameFiles(optional: true);
             if (!await CheckForSufficientSpaceAsync(gameFiles, "HD Textures")) return;
 
-            Download.Tasks.SetInstallState(true);
+            Tasks.SetInstallState(true);
             try
             {
                 await RunDownloadProcessAsync(gameFiles, "Downloading optional files");
@@ -54,7 +54,7 @@ namespace launcher.Game
             }
             finally
             {
-                Download.Tasks.SetInstallState(false);
+                Tasks.SetInstallState(false);
                 AppState.SetRichPresence("", "Idle");
             }
         }
@@ -87,17 +87,17 @@ namespace launcher.Game
             Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
 
             string branchDirectory = GetBranch.Directory();
-            var downloadTasks = Download.Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
+            var downloadTasks = Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             using var cts = new CancellationTokenSource();
             Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
-            Download.Tasks.ShowSpeedLabels(showMainSpeed, true);
-            Download.Tasks.UpdateStatusLabel(statusLabel, LogSource.Installer);
+            Tasks.ShowSpeedLabels(showMainSpeed, true);
+            Tasks.UpdateStatusLabel(statusLabel, LogSource.Installer);
 
             await Task.WhenAll(downloadTasks);
 
-            Download.Tasks.ShowSpeedLabels(false, false);
+            Tasks.ShowSpeedLabels(false, false);
             await cts.CancelAsync();
         }
 
@@ -156,7 +156,7 @@ namespace launcher.Game
 
             if (AppState.BadFilesDetected)
             {
-                Download.Tasks.UpdateStatusLabel("Repairing game files", LogSource.Installer);
+                Tasks.UpdateStatusLabel("Repairing game files", LogSource.Installer);
                 await AttemptGameRepair();
             }
         }

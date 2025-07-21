@@ -1,5 +1,4 @@
 ﻿using DiscordRPC;
-using launcher.Game;
 using launcher.Global;
 using launcher.Network;
 using Polly;
@@ -15,7 +14,7 @@ using static launcher.Global.Logger;
 using static launcher.Global.References;
 using static launcher.Network.DownloadSpeedTracker;
 
-namespace launcher.Download
+namespace launcher.Game
 {
     public static class Tasks
     {
