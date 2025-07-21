@@ -41,14 +41,14 @@ namespace launcher.Game
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<List<Task<FileChecksum>>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string downloadStatus)
+        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<List<Task<FileChecksum>>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
         {
             Tasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
             var checksumTasks = await prepareChecksums();
             await Task.WhenAll(checksumTasks);
 
+            Tasks.UpdateStatusLabel(compareStatus, LogSource.Repair);
             var gameFiles = await fetchFileManifest();
-            // This call will now compile correctly.
             int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
@@ -108,6 +108,7 @@ namespace launcher.Game
                 () => Task.FromResult(Checksums.PrepareBranchChecksumTasks(branchDirectory)),
                 () => Fetch.GameFiles(optional: false),
                 "Checking core files...",
+                "Comparing core files...",
                 "Downloading core files..."
             );
         }
@@ -149,6 +150,7 @@ namespace launcher.Game
                 () => Task.FromResult(Checksums.PrepareOptChecksumTasks(GetBranch.Directory())),
                 () => Fetch.GameFiles(optional: true),
                 "Checking optional files...",
+                "Comparing optional files...",
                 "Downloading optional files..."
             );
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
@@ -162,6 +164,7 @@ namespace launcher.Game
                 () => Task.FromResult(Checksums.PrepareLangChecksumTasks(GetBranch.Directory(), langs)),
                 () => Fetch.LanguageFiles(langs),
                 "Checking language files...",
+                "Comparing language files...",
                 "Downloading language files..."
             );
         }
