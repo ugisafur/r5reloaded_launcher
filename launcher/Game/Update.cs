@@ -149,7 +149,7 @@ namespace launcher.Game
                 if (forOptionalFiles != isOptFile) continue;
 
                 // If the file exists locally but not on the server manifest, delete it.
-                bool existsOnServer = serverFileManifest.files.Exists(f => f.destinationPath.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
+                bool existsOnServer = serverFileManifest.files.Exists(f => f.path.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
                 if (!existsOnServer)
                 {
                     try

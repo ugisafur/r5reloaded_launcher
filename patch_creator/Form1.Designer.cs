@@ -164,10 +164,8 @@
             // richTextBox2
             // 
             richTextBox2.DetectUrls = false;
-            richTextBox2.Enabled = false;
             richTextBox2.Location = new Point(12, 34);
             richTextBox2.Name = "richTextBox2";
-            richTextBox2.ReadOnly = true;
             richTextBox2.Size = new Size(345, 272);
             richTextBox2.TabIndex = 14;
             richTextBox2.Text = "";
@@ -178,9 +176,9 @@
             label4.AutoSize = true;
             label4.Location = new Point(12, 16);
             label4.Name = "label4";
-            label4.Size = new Size(151, 15);
+            label4.Size = new Size(145, 15);
             label4.TabIndex = 15;
-            label4.Text = "File Override - One Per Line";
+            label4.Text = "Iqnore Files - One Per Line";
             // 
             // groupBox1
             // 

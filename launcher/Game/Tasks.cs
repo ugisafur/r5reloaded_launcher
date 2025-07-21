@@ -42,15 +42,15 @@ namespace launcher.Game
                 .Where(file => !IsUserGeneratedContent(file))
                 .Select(file =>
                 {
-                    file.downloadMetadata.fileUrl = $"{GetBranch.GameURL()}/{file.destinationPath}";
-                    file.downloadMetadata.finalPath = Path.Combine(branchDirectory, file.destinationPath);
+                    file.downloadMetadata.fileUrl = $"{GetBranch.GameURL()}/{file.path}";
+                    file.downloadMetadata.finalPath = Path.Combine(branchDirectory, file.path);
                     EnsureDirectoryExists(file);
 
                     return DownloadFileAsync(file, checkForExistingFiles);
                 })
                 .ToList();
 
-            long totalSize = files.Sum(f => f.sizeInBytes);
+            long totalSize = files.Sum(f => f.size);
             SetGlobalDownloadStats(totalSize, 0, DateTime.Now);
 
             return downloadTasks;
@@ -58,7 +58,7 @@ namespace launcher.Game
 
         private static bool IsUserGeneratedContent(GameFile file)
         {
-            string path = file.destinationPath;
+            string path = file.path;
             return path.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) ||
                    path.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) ||
                    path.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase);
@@ -79,10 +79,10 @@ namespace launcher.Game
             {
                 file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
 
-                bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.destinationPath, file.checksum);
+                bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.path, file.checksum);
                 if (isSkipped)
                 {
-                    AddDownloadedBytes(file.sizeInBytes, file);
+                    AddDownloadedBytes(file.size, file);
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace launcher.Game
             try
             {
                 file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
-                file.downloadMetadata.fileDownload.totalBytes = file.sizeInBytes;
+                file.downloadMetadata.fileDownload.totalBytes = file.size;
 
                 await DownloadMissingPartsAsync(file, checkForExistingFiles);
                 await MergePartsAsync(file);
@@ -184,7 +184,7 @@ namespace launcher.Game
             }
             catch (Exception ex)
             {
-                LogException($"Failed to process multi-part file {file.destinationPath}", LogSource.Download, ex);
+                LogException($"Failed to process multi-part file {file.path}", LogSource.Download, ex);
                 AppState.BadFilesDetected = true;
                 return string.Empty;
             }
@@ -195,7 +195,7 @@ namespace launcher.Game
             }
         }
 
-        private static async Task DownloadPartAsync(GameFile parentFile, Part part, string partUrl, string partPath)
+        private static async Task DownloadPartAsync(GameFile parentFile, FilePart part, string partUrl, string partPath)
         {
             await GetSemaphoreSlim().WaitAsync();
             try
@@ -227,7 +227,7 @@ namespace launcher.Game
                 string partPath = Path.Combine(branchDirectory, part.path);
                 if (checkForExistingFiles && await ShouldSkipDownloadAsync(partPath, part.checksum))
                 {
-                    AddDownloadedBytes(part.sizeInBytes, file);
+                    AddDownloadedBytes(part.size, file);
                 }
                 else
                 {

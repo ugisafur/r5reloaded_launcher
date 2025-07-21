@@ -26,17 +26,17 @@ namespace launcher.Game
 
             foreach (var file in gameFiles.files)
             {
-                string filePath = Path.Combine(branchDirectory, file.destinationPath);
+                string filePath = Path.Combine(branchDirectory, file.path);
 
-                if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.destinationPath, out var calculatedChecksum) || file.checksum != calculatedChecksum)
+                if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.path, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(isUpdate ? LogSource.Update : LogSource.Repair, isUpdate ? $"Updated file found: {file.destinationPath}" : $"Bad file found: {file.destinationPath}");
+                    LogWarning(isUpdate ? LogSource.Update : LogSource.Repair, isUpdate ? $"Updated file found: {file.path}" : $"Bad file found: {file.path}");
 
                     GameFile gameFile = new GameFile
                     {
-                        destinationPath = $"{file.destinationPath}",
+                        path = $"{file.path}",
                         checksum = file.checksum,
-                        sizeInBytes = file.sizeInBytes,
+                        size = file.size,
                         optional = file.optional,
                         parts = file.parts
                     };

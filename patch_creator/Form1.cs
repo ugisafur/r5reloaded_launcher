@@ -5,6 +5,8 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows.Forms.VisualStyles;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace patch_creator
@@ -21,7 +23,7 @@ namespace patch_creator
 
         ParallelOptions parallelOptions = new ParallelOptions
         {
-            MaxDegreeOfParallelism = 100 // Start with half the CPU cores, minimum of 1
+            MaxDegreeOfParallelism = 500 // Start with half the CPU cores, minimum of 1
         };
 
         public Form1()
@@ -42,9 +44,19 @@ namespace patch_creator
                 comboBox1.Items.Add(branch.branch);
             }
 
+            comboBox1.SelectedIndexChanged +=ComboBox1_SelectedIndexChanged;
             comboBox1.SelectedIndex = 0;
 
+            concurrentTasks.Value = 500;
+
             LoadConfig();
+        }
+
+        private void ComboBox1_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            var response = Global.HTTP_CLIENT.GetAsync($"{Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].game_url}/version.txt").Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+            versionTxt.Text = responseString;
         }
 
         private void LoadConfig()
@@ -133,36 +145,64 @@ namespace patch_creator
             var final_game_dir = textBox2.Text;
             Directory.CreateDirectory(final_game_dir);
 
-            //TODO LATER ONCE EVERYTHING WORKS WELL
-            //List<string> IgnoreStrings = [];
-            //richTextBox2.Invoke(() => { IgnoreStrings = richTextBox2.Lines.ToList(); });
+            string[] IgnoreStrings = [];
+            richTextBox2.Invoke(() => { IgnoreStrings = richTextBox2.Lines; });
 
             UpdateProgressLabel("Getting server checksums");
             var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
             GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
 
             UpdateProgressLabel("Generating local checksums");
-            GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text);
+            GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text, IgnoreStrings);
 
             UpdateProgressLabel("Finding changed files");
-            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.destinationPath == updatedFile.destinationPath && currentFile.checksum == updatedFile.checksum)).ToList();
+            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.path == updatedFile.path && currentFile.checksum == updatedFile.checksum)).ToList();
 
             UpdateProgressLabel("Copying over files");
             int processedCount = 0;
             await Parallel.ForEachAsync(local_checksums.files, parallelOptions, async (file, cancellationToken) =>
             {
-                if (!changedFiles.Any(f => f.destinationPath == file.destinationPath))
+                if (!changedFiles.Any(f => f.path == file.path) || file.checksum == "ignore")
                 {
-                    GameFile serverFile = server_checksums.files.FirstOrDefault(f => f.destinationPath == file.destinationPath);
-                    file.parts = serverFile.parts;
+                    GameFile serverFile = server_checksums.files.FirstOrDefault(f => f.path == file.path);
+
+                    if (serverFile == null)
+                        return;
+
                     file.checksum = serverFile.checksum;
-                    file.sizeInBytes = serverFile.sizeInBytes;
-                    file.optional = serverFile.optional;
+                    file.size = serverFile.size;
+
+                    if (serverFile.optional != null && (bool)serverFile.optional)
+                        file.optional = serverFile.optional;
+                    else
+                        file.optional = null;
+
+                    if (serverFile.parts != null && serverFile.parts.Count > 0)
+                        file.parts = serverFile.parts;
+                    else
+                        file.parts = null;
+
+                    if (file.path.Contains("audio\\ship\\") && !Global.audioFiles.Contains(file.path))
+                    {
+                        string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "").Replace("_patch_2", "").Replace("_patch_3", "").Replace("_patch_4", "");
+                        if (!local_checksums.languages.Contains(lang_name))
+                        {
+                            Console.WriteLine($"Adding language: {lang_name}");
+                            local_checksums.languages.Add(lang_name);
+                        }
+
+                        file.language = lang_name;
+                    }
+                    else
+                    {
+                        file.language = null;
+                    }
+
                     return;
                 }
 
                 List<FilePart> fileParts = new List<FilePart>();
-                string sourceFilePath = Path.Combine(textBox1.Text, file.destinationPath);
+                string sourceFilePath = Path.Combine(textBox1.Text, file.path);
 
                 try
                 {
@@ -172,15 +212,15 @@ namespace patch_creator
                         return;
                     }
 
-                    if (file.sizeInBytes > PartSize)
+                    if (file.size > PartSize)
                     {
                         await using var sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
-                        long remainingBytes = (long)file.sizeInBytes;
+                        long remainingBytes = (long)file.size;
                         int partNumber = 0;
                         while (remainingBytes > 0)
                         {
                             long bytesToReadForPart = Math.Min(remainingBytes, PartSize);
-                            string partFileName = $"{file.destinationPath}.p{partNumber}";
+                            string partFileName = $"{file.path}.p{partNumber}";
                             string partFilePath = Path.Combine(final_game_dir, partFileName);
 
                             Directory.CreateDirectory(Path.GetDirectoryName(partFilePath));
@@ -196,7 +236,7 @@ namespace patch_creator
                             {
                                 path = partFileName,
                                 checksum = part_checksum,
-                                sizeInBytes = bytesToReadForPart
+                                size = bytesToReadForPart
                             });
 
                             Console.WriteLine($"Created part: {partFileName} ({bytesToReadForPart / 1024 / 1024} MB)");
@@ -206,16 +246,35 @@ namespace patch_creator
                     }
                     else
                     {
-                        string partFilePath = Path.Combine(final_game_dir, file.destinationPath);
+                        string partFilePath = Path.Combine(final_game_dir, file.path);
                         Directory.CreateDirectory(Path.GetDirectoryName(partFilePath));
 
                         File.Copy(sourceFilePath, partFilePath, true); 
 
-                        Console.WriteLine($"Copied file: {file.destinationPath}");
+                        Console.WriteLine($"Copied file: {file.path}");
                     }
 
 
-                    file.parts = fileParts;
+                    if (fileParts.Count > 0)
+                        file.parts = fileParts;
+                    else
+                        file.parts = null;
+
+                    if (file.path.Contains("audio\\ship\\") && !Global.audioFiles.Contains(file.path))
+                    {
+                        string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "").Replace("_patch_2", "").Replace("_patch_3", "").Replace("_patch_4", "");
+                        if (!local_checksums.languages.Contains(lang_name))
+                        {
+                            Console.WriteLine($"Adding language: {lang_name}");
+                            local_checksums.languages.Add(lang_name);
+                        }
+
+                        file.language = lang_name;
+                    }
+                    else
+                    {
+                        file.language = null;
+                    }
 
                     int currentCount = Interlocked.Increment(ref processedCount);
                     SetProgressBarValue(currentCount);
@@ -227,11 +286,18 @@ namespace patch_creator
             });
 
             local_checksums.game_version = versionTxt.Text;
-            var game_checksums_file = JsonSerializer.Serialize(local_checksums, new JsonSerializerOptions { WriteIndented = true });
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            var game_checksums_file = JsonSerializer.Serialize(local_checksums, options);
             await File.WriteAllTextAsync(final_game_dir + "\\checksums.json", game_checksums_file);
      
             UpdateProgressLabel("Updating clear cache list");
-            UpdateClearCacheList(selected_index, changedFiles, final_game_dir);
+            UpdateClearCacheList(selected_index, changedFiles, final_game_dir, IgnoreStrings);
 
             if (!string.IsNullOrEmpty(versionTxt.Text))
                 File.WriteAllText(final_game_dir + "\\version.txt", versionTxt.Text);
@@ -272,6 +338,7 @@ namespace patch_creator
                 button2.Enabled = !running;
                 button3.Enabled = !running;
                 comboBox1.Enabled = !running;
+                richTextBox2.ReadOnly = running;
             });
         }
 
@@ -300,9 +367,9 @@ namespace patch_creator
             });
         }
 
-        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files, string final_dir)
+        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files, string final_dir, string[] IgnoreStrings)
         {
-            SetProgressBarMax(changed_files.Count);
+            SetProgressBarMax(changed_files.Count - 1);
             SetProgressBarValue(0);
 
             List<string> changed_files_txt = [
@@ -310,9 +377,15 @@ namespace patch_creator
                 $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/version.txt"
             ];
 
+            int i = 0;
             foreach (var file in changed_files)
             {
-                changed_files_txt.Add($"{Global.SERVER_CONFIG.branches[selected_index].game_url}/{file.destinationPath}");
+                bool shouldIgnore = IgnoreStrings.Any(s => file.path.Contains(s.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                if(!shouldIgnore)
+                    changed_files_txt.Add($"{Global.SERVER_CONFIG.branches[selected_index].game_url}/{file.path}");
+
+                SetProgressBarValue(i++);
             }
 
             File.WriteAllLines(final_dir + "\\clearcache.txt", changed_files_txt);
@@ -328,11 +401,10 @@ namespace patch_creator
             Console.WriteLine(message);
         }
 
-        public async Task<GameChecksums> GenerateMetadataAsync(string directory)
+        public async Task<GameChecksums> GenerateMetadataAsync(string directory, string[] IgnoreStrings)
         {
             string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
                 .Where(file => !Global.BLACKLIST.Any(blacklistItem => file.Contains(blacklistItem, StringComparison.OrdinalIgnoreCase)))
-                //.Where(file => !ignoreList.Any(ignoreItem => file.Contains(ignoreItem, StringComparison.OrdinalIgnoreCase)))
                 .ToArray();
 
             SetProgressBarMax(files.Length);
@@ -347,18 +419,31 @@ namespace patch_creator
                 {
                     string relativePath = Path.GetRelativePath(directory, filePath);
                     string filename = Path.GetFileName($"{directory}\\{filePath}");
-                    string checksum = await CalculateChecksumAsync(filePath);
+                    string checksum = "ignore";
+
+                    bool shouldIgnore = IgnoreStrings.Any(s => relativePath.Contains(s.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                    if (!shouldIgnore)
+                        checksum = await CalculateChecksumAsync(filePath);
 
                     var gameFile = new GameFile
                     {
-                        destinationPath = relativePath,
+                        path = relativePath,
                         checksum = checksum,
-                        optional = filename.Contains(".opt.starpak"),
-                        sizeInBytes = new FileInfo(filePath).Length
+                        optional = filename.Contains(".opt.starpak") ? true : null,
+                        size = new FileInfo(filePath).Length
                     };
 
                     resultsBag.Add(gameFile);
-                    Log($"Processed file: {relativePath} ({checksum})");
+
+                    if(shouldIgnore)
+                    {
+                        Log($"Ignoring Checksum check on file: {relativePath}");
+                    }
+                    else
+                    {
+                        Log($"Processed file: {relativePath} ({checksum})");
+                    }
                 }
                 catch (Exception ex)
                 {

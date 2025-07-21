@@ -55,7 +55,7 @@ namespace launcher.Game
             {
                 GameFiles langFilesManifest = await Fetch.LanguageFiles(langs);
                 var filesToDelete = langFilesManifest.files
-                    .Select(f => Path.Combine(GetBranch.Directory(), f.destinationPath))
+                    .Select(f => Path.Combine(GetBranch.Directory(), f.path))
                     .Where(File.Exists)
                     .ToArray();
 

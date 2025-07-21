@@ -1,17 +1,21 @@
-﻿namespace patch_creator
+﻿using Newtonsoft.Json;
+
+namespace patch_creator
 {
     public class GameChecksums
     {
         public string? game_version { get; set; }
+        public List<string>? languages { get; set; } = [];
         public List<GameFile>? files { get; set; }
     }
 
     public class GameFile
     {
-        public string? destinationPath { get; set; }
-        public long? sizeInBytes { get; set; }
+        public string? path { get; set; }
+        public long? size { get; set; }
         public string? checksum { get; set; }
         public bool? optional { get; set; }
+        public string? language { get; set; }
         public List<FilePart>? parts { get; set; }
     }
 
@@ -19,7 +23,7 @@
     {
         public string? path { get; set; }
         public string? checksum { get; set; }
-        public long? sizeInBytes { get; set; }
+        public long? size { get; set; }
     }
 
     public class Branch

@@ -43,7 +43,7 @@ namespace launcher
         public void SetDownloadSize(GameFiles game)
         {
             
-            long size = game.files.Sum(f => f.sizeInBytes);
+            long size = game.files.Sum(f => f.size);
             this.DownloadSize.Text = $"Download Size: {FormatBytesToGB(size)}";
         }
 

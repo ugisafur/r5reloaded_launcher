@@ -132,7 +132,7 @@ namespace launcher.Game
         {
             await Task.Delay(1);
 
-            long requiredSpace = gameFiles.files.Sum(f => f.sizeInBytes) + extraBuffer;
+            long requiredSpace = gameFiles.files.Sum(f => f.size) + extraBuffer;
             string libraryLocation = (string)Ini.Get(Ini.Vars.Library_Location);
 
             if (string.IsNullOrEmpty(libraryLocation))

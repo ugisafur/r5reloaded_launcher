@@ -15,6 +15,7 @@ namespace patch_creator
             "platform\\logs",
             "platform\\screenshots",
             "platform\\user",
+            "platform\\cfg\\user",
             "launcher.exe",
             "bin\\updater.exe",
             "cfg\\startup.bin",
@@ -26,6 +27,17 @@ namespace patch_creator
             "checksums.json",
             "checksums_zst.json",
             "clearcache.txt"
+        };
+
+        public static List<string> audioFiles = new()
+        {
+            "audio\\ship\\audio.mprj",
+            "audio\\ship\\general.mbnk",
+            "audio\\ship\\general.mbnk_digest",
+            "audio\\ship\\general_stream.mstr",
+            "audio\\ship\\general_stream_patch_1.mstr",
+            "audio\\ship\\general_english.mstr",
+            "audio\\ship\\general_english_patch_1.mstr"
         };
     }
 }

@@ -18,7 +18,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.2";
 
         #region Public Keys
 
@@ -221,43 +221,18 @@ namespace launcher.Global
 
         public static async Task<GameFiles> GameFiles(bool optional)
         {
-            JsonSerializerOptions jsonSerializerOptions = new() { AllowTrailingCommas = true };
+            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
-            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", jsonSerializerOptions);
-
-            List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
-            excludedLanguages.Remove("english");
-
-            string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
-            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
-
-            if (!optional)
-            {
-                gameFiles.files = gameFiles.files.Where(file => !file.optional && !excludeLangRegex.IsMatch(file.destinationPath)).ToList();
-            }
-            else
-            {
-                gameFiles.files = gameFiles.files.Where(file => file.optional && !excludeLangRegex.IsMatch(file.destinationPath)).ToList();
-            }
+            gameFiles.files = gameFiles.files.Where(file => file.optional == optional && string.IsNullOrEmpty(file.language)).ToList();
 
             return gameFiles;
         }
 
         public static async Task<GameFiles> LanguageFiles(List<string> languages)
         {
-            languages.Remove("english");
+            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
-            string languagesPattern = string.Join("|", languages.Select(Regex.Escape));
-            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
-
-            JsonSerializerOptions jsonSerializerOptions = new()
-            {
-                AllowTrailingCommas = true
-            };
-
-            GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", jsonSerializerOptions);
-
-            gameFiles.files = gameFiles.files.Where(file => excludeLangRegex.IsMatch(file.destinationPath)).ToList();
+            gameFiles.files = gameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
 
             return gameFiles;
         }

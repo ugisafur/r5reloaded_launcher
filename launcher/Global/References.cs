@@ -179,12 +179,6 @@ namespace launcher.Global
         public string checksum { get; set; }
     }
 
-    public class GameFiles
-    {
-        public string game_version { get; set; }
-        public List<GameFile> files { get; set; }
-    }
-
     public class DownloadMetadata
     {
         public FileDownload fileDownload = new();
@@ -193,21 +187,29 @@ namespace launcher.Global
         public string fileUrl { get; set; }
     }
 
+    public class GameFiles
+    {
+        public string game_version { get; set; }
+        public List<string> languages { get; set; } = [];
+        public List<GameFile> files { get; set; }
+    }
+
     public class GameFile
     {
-        public string destinationPath { get; set; }
-        public long sizeInBytes { get; set; }
-        public string checksum { get; set; }
+        public string path { get; set; } = string.Empty;
+        public long size { get; set; } = 0;
+        public string checksum { get; set; } = string.Empty;
         public bool optional { get; set; }
-        public List<Part> parts { get; set; }
+        public string language { get; set; } = string.Empty;
+        public List<FilePart> parts { get; set; } = [];
         public DownloadMetadata downloadMetadata = new();
     }
 
-    public class Part
+    public class FilePart
     {
         public string path { get; set; }
         public string checksum { get; set; }
-        public long sizeInBytes { get; set; }
+        public long size { get; set; }
     }
 
     public class ServerConfig

@@ -21,7 +21,7 @@ namespace launcher
         public DownloadItem AddDownloadItem(GameFile file)
         {
             DownloadItem downloadItem = new();
-            downloadItem.downloadFileName.Text = file.destinationPath;
+            downloadItem.downloadFileName.Text = file.path;
             downloadItem.downloadFilePercent.Text = "waiting...";
             downloadItem.downloadFileProgress.Value = 0;
             downloadItems.Add(downloadItem);
