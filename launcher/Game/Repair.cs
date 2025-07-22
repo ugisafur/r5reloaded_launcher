@@ -57,7 +57,7 @@ namespace launcher.Game
                 var downloadTasks = Tasks.InitializeRepairTasks(branchDirectory);
 
                 using var cts = new CancellationTokenSource();
-                Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
+                Task progressUpdateTask = Network.DownloadTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
                 Tasks.ShowSpeedLabels(true, true);
                 await Task.WhenAll(downloadTasks);
@@ -99,9 +99,9 @@ namespace launcher.Game
         private static async Task<bool> ExecuteMainRepairAsync()
         {
             string branchDirectory = GetBranch.Directory();
-            Network.DownloadSpeedTracker.CreateDownloadMonitor();
-            Network.DownloadSpeedTracker.ConfigureConcurrency();
-            Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
+            Network.DownloadTracker.CreateDownloadMonitor();
+            Network.DownloadTracker.ConfigureConcurrency();
+            Network.DownloadTracker.ConfigureDownloadSpeed();
 
             return await RunRepairProcessAsync(
                 branchDirectory,

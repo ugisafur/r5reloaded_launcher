@@ -24,7 +24,7 @@ namespace launcher.Network
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                long currentTotal = DownloadSpeedTracker.GetTotalDownloadedBytes();
+                long currentTotal = DownloadTracker.GetTotalDownloadedBytes();
                 long bytesThisInterval = currentTotal - _previousTotalBytes;
                 _previousTotalBytes = currentTotal;
 

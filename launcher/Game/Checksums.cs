@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
-using static launcher.Network.DownloadSpeedTracker;
+using static launcher.Network.DownloadTracker;
 
 namespace launcher.Game
 {

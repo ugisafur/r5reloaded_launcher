@@ -14,7 +14,7 @@ namespace launcher.Network
         public static string timeLeftText = "";
     }
 
-    public static class DownloadSpeedTracker
+    public static class DownloadTracker
     {
         public static int UpdateType = 0; // 0 = install, 1 = repair, 2 = uninstall
 

@@ -84,15 +84,15 @@ namespace launcher.Game
         // ============================================================================================
         private static async Task RunDownloadProcessAsync(GameFiles gameFiles, string statusLabel, bool showMainSpeed = true)
         {
-            Network.DownloadSpeedTracker.CreateDownloadMonitor();
-            Network.DownloadSpeedTracker.ConfigureConcurrency();
-            Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
+            Network.DownloadTracker.CreateDownloadMonitor();
+            Network.DownloadTracker.ConfigureConcurrency();
+            Network.DownloadTracker.ConfigureDownloadSpeed();
 
             string branchDirectory = GetBranch.Directory();
             var downloadTasks = Tasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             using var cts = new CancellationTokenSource();
-            Task progressUpdateTask = Network.DownloadSpeedTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
+            Task progressUpdateTask = Network.DownloadTracker.UpdateGlobalDownloadProgressAsync(cts.Token);
 
             Tasks.ShowSpeedLabels(showMainSpeed, true);
             Tasks.UpdateStatusLabel(statusLabel, LogSource.Installer);
