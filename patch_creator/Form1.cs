@@ -264,7 +264,7 @@ namespace patch_creator
 
                     if (file.path.Contains("audio\\ship\\") && !Global.audioFiles.Contains(file.path))
                     {
-                        string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "").Replace("_patch_2", "").Replace("_patch_3", "").Replace("_patch_4", "");
+                        string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "");
                         if (!local_checksums.languages.Contains(lang_name))
                         {
                             Console.WriteLine($"Adding language: {lang_name}");
@@ -342,6 +342,8 @@ namespace patch_creator
                 button3.Enabled = !running;
                 comboBox1.Enabled = !running;
                 richTextBox2.ReadOnly = running;
+                versionTxt.ReadOnly = running;
+                blogslugTxt.ReadOnly = running;
             });
         }
 
