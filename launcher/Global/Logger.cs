@@ -60,12 +60,6 @@ namespace launcher.Global
 
         public static async Task LogCrashToFileAsync(Exception ex)
         {
-            //if ((bool)Ini.Get(Ini.Vars.Upload_Crashes))
-            //{
-                //Disable For Now
-                //Backtrace.Send(ex, LogSource.Unknown);
-            //}
-
             var sb = new StringBuilder();
             sb.AppendLine("===========================================");
             sb.AppendLine("=== CRASH LOG =============================");

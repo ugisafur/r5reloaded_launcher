@@ -49,7 +49,6 @@ namespace launcher.Global
             Updater_Version,
             Nightly_Builds,
             Launcher_Version,
-            Upload_Crashes,
             Server_Video_Name,
             Auto_Launch_EA_App,
             Enable_Discord_Rich_Presence,
@@ -68,7 +67,6 @@ namespace launcher.Global
             { Vars.Library_Location, "Settings" },
             { Vars.Keep_All_Logs, "Settings" },
             { Vars.Stream_Video, "Settings" },
-            { Vars.Upload_Crashes, "Settings" },
             { Vars.Auto_Launch_EA_App, "Settings" },
 
             { Vars.Enable_Cheats, "Advanced_Options" },
@@ -145,7 +143,6 @@ namespace launcher.Global
             { Vars.Stream_Video, true },
             { Vars.Ask_For_Tour, true },
             { Vars.Nightly_Builds, false },
-            { Vars.Upload_Crashes, true },
             { Vars.Auto_Launch_EA_App, true },
             { Vars.Enable_Discord_Rich_Presence, true },
 

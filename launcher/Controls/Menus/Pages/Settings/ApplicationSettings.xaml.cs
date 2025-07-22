@@ -25,7 +25,6 @@ namespace launcher
             KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
             StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
             NightlyBuilds.IsChecked = (bool)Ini.Get(Ini.Vars.Nightly_Builds);
-            UploadCrashes.IsChecked = false; //(bool)Ini.Get(Ini.Vars.Upload_Crashes);
             OpenEAApp.IsChecked = (bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App);
             EnabledRichPresence.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Discord_Rich_Presence);
 
@@ -34,7 +33,6 @@ namespace launcher
             KeepAllLogs.Checked += KeepAllLogs_Unchecked;
             StreamVideo.Checked += StreamVideo_Unchecked;
             NightlyBuilds.Checked += NightlyBuilds_Unchecked;
-            //UploadCrashes.Checked += UploadCrashes_Unchecked;
             OpenEAApp.Checked += OpenEAApp_Unchecked;
             EnabledRichPresence.Checked += EnabledRichPresence_Unchecked;
 
@@ -43,11 +41,8 @@ namespace launcher
             KeepAllLogs.Unchecked += KeepAllLogs_Unchecked;
             StreamVideo.Unchecked += StreamVideo_Unchecked;
             NightlyBuilds.Unchecked += NightlyBuilds_Unchecked;
-            //UploadCrashes.Unchecked += UploadCrashes_Unchecked;
             OpenEAApp.Unchecked += OpenEAApp_Unchecked;
             EnabledRichPresence.Unchecked += EnabledRichPresence_Unchecked;
-
-            UploadCrashes.IsEnabled = false;
         }
 
         private void EnabledRichPresence_Unchecked(object sender, RoutedEventArgs e)
@@ -74,11 +69,6 @@ namespace launcher
         private void ClearCache_Click(object sender, RoutedEventArgs e)
         {
             //TODO
-        }
-
-        private void UploadCrashes_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Ini.Set(Ini.Vars.Upload_Crashes, UploadCrashes.IsChecked.Value);
         }
 
         private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)
