@@ -194,7 +194,7 @@ namespace launcher.Global
                 {
                     appDispatcher.BeginInvoke(() =>
                     {
-                        LauncherUpdate_Control.SetUpdateText("A new nightly version of the launcher is available. Would you like to update now?");
+                        LauncherUpdate_Control.SetUpdateText($"A new nightly version of the launcher is available. Would you like to update now?\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newGithubConfig[0].tag_name}", null);
                         Managers.App.ShowLauncherUpdatePopup();
                     });
                     
@@ -228,7 +228,8 @@ namespace launcher.Global
             {
                 appDispatcher.BeginInvoke(() =>
                 {
-                    LauncherUpdate_Control.SetUpdateText("A new version of the launcher is available. Would you like to update now?");
+                    string postUpdateMessage = newServerConfig.launcherforceUpdates ? "This update is required." : "Would you like to update now?";
+                    LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newServerConfig.launcherVersion}", newServerConfig);
                     Managers.App.ShowLauncherUpdatePopup();
                 });
 

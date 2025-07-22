@@ -219,6 +219,7 @@ namespace launcher.Global
         public string launcherSelfUpdater { get; set; }
         public string launcherBackgroundVideo { get; set; }
         public bool launcherallowUpdates { get; set; }
+        public bool launcherforceUpdates { get; set; }
         public List<Branch> branches { get; set; }
     }
 

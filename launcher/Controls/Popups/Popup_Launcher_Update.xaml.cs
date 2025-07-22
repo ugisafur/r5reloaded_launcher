@@ -12,9 +12,15 @@ namespace launcher
             InitializeComponent();
         }
 
-        public void SetUpdateText(string text)
+        public void SetUpdateText(string text, ServerConfig serverConfig)
         {
             Msg.Text = text;
+
+            if (serverConfig != null)
+            {
+                UpdateLater.Visibility = serverConfig.launcherforceUpdates ? Visibility.Hidden : Visibility.Visible;
+                closeX.Visibility = serverConfig.launcherforceUpdates ? Visibility.Hidden : Visibility.Visible;
+            }
         }
 
         private void UpdateLauncher_Click(object sender, RoutedEventArgs e)
