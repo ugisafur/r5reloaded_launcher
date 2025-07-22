@@ -1,145 +1,143 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static launcher.Global.References;
-using System.Globalization;
 using launcher.Game;
 using launcher.Global;
+using static launcher.Global.References;
 
 namespace launcher
 {
     public partial class GameSettings : UserControl
     {
-        public List<GameItem> gameItems = [];
-        private bool firstTime = true;
+        private readonly List<GameItem> _gameItems = [];
+        private bool _isFirstLoad = true;
 
         public GameSettings()
         {
             InitializeComponent();
         }
 
-        public void SetupGameSettings()
+        /// <summary>
+        /// Asynchronously clears and populates the list of game branches.
+        /// </summary>
+        public async Task SetupGameSettingsAsync()
         {
-            gameItems.Clear();
+            _gameItems.Clear();
             BranchPanel.Children.Clear();
 
             LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
 
-            List<Branch> branches = Launcher.ServerConfig.branches;
+            var branchesToShow = Launcher.ServerConfig.branches
+                .Where(b => !b.is_local_branch && b.show_in_launcher)
+                .ToList();
 
-            int index = 0;
-
-            for (int i = 0; i < branches.Count; i++)
+            for (int i = 0; i < branchesToShow.Count; i++)
             {
-                // Skip local branches
-                if (branches[i].is_local_branch)
-                    continue;
+                var branch = branchesToShow[i];
+                var gameItem = new GameItem
+                {
+                    IsFirstItem = (i == 0),
+                    IsLastItem = (i == branchesToShow.Count - 1),
+                    Index = i
+                };
 
-                if (!branches[i].show_in_launcher)
-                    continue;
-
-                GameItem gameItem = new();
-                gameItem.SetupGameItem(branches[i]);
-                gameItem.isFirstItem = i == 0;
-                gameItem.isLastItem = i == branches.Count - 1;
-                gameItem.index = index;
-
-                index++;
+                await gameItem.InitializeAsync(branch);
 
                 BranchPanel.Children.Add(gameItem);
-
-                if (gameItem.isLastItem)
-                {
-                    Separator separator = new()
-                    {
-                        Opacity = 0,
-                        Height = 20
-                    };
-
-                    BranchPanel.Children.Add(separator);
-                }
-
-                gameItems.Add(gameItem);
+                _gameItems.Add(gameItem);
             }
+
+            BranchPanel.Children.Add(new Separator { Opacity = 0, Height = 20 });
         }
 
-        //I hate this, but it's the only way to get the first item to collapse on first load
-        //otherwise i cant set the corner radius of the top bars button as it dosnt exist until the item is loaded
-        public void FirstTime()
+        /// <summary>
+        /// Collapses all game items on the initial load. This is a workaround for a
+        /// common WPF lifecycle issue where a control's template must be loaded
+        /// before its animated properties can be reliably set.
+        /// </summary>
+        public void CollapseItemsOnFirstLoad()
         {
-            if (firstTime)
+            if (_isFirstLoad)
             {
-                firstTime = false;
-                foreach (GameItem gameItem in gameItems)
+                _isFirstLoad = false;
+                foreach (GameItem gameItem in _gameItems)
                 {
-                    gameItem.CollapseItem();
+                    gameItem.AnimateExpansion(false);
                 }
             }
         }
+
+        /// <summary>
+        /// Updates all game items to reflect the current application state.
+        /// </summary>
+        public void UpdateGameItems()
+        {
+            foreach (var item in _gameItems)
+            {
+                item.Refresh();
+            }
+        }
+
+        #region Library Path Logic
 
         private void ChangePath_Click(object sender, RoutedEventArgs e)
         {
             var directoryDialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
-                Title = "Select Folder"
+                Title = "Select R5R Library Folder"
             };
 
             if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                LibraryPath.Text = directoryDialog.FileName;
-
-                SetLibaryPath();
+                SetLibraryPath(directoryDialog.FileName);
             }
         }
 
-        private void InputTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            SetLibaryPath();
-        }
-
+        private void LibraryPath_LostFocus(object sender, RoutedEventArgs e) => SetLibraryPath();
         private void LibraryPath_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                SetLibaryPath();
+                SetLibraryPath();
             }
         }
 
-        private void SetLibaryPath()
+        /// <summary>
+        /// Public method to set the library path from an external call.
+        /// </summary>
+        public void SetLibraryPath(string newPath)
         {
-            if ((string)Ini.Get(Ini.Vars.Library_Location) == LibraryPath.Text)
-                return;
+            LibraryPath.Text = newPath;
+            UpdateLibraryPath(newPath);
+        }
 
-            Ini.Set(Ini.Vars.Library_Location, LibraryPath.Text);
-
-            foreach (var item in gameItems)
+        /// <summary>
+        /// Sets the library path from the UI TextBox if it has changed.
+        /// </summary>
+        private void SetLibraryPath()
+        {
+            string newPath = LibraryPath.Text;
+            if ((string)Ini.Get(Ini.Vars.Library_Location) != newPath)
             {
-                item.InstallPath.Text = $"{LibraryPath.Text}\\R5R Library\\{item.branchName.ToUpper(new CultureInfo("en-US"))}";
+                UpdateLibraryPath(newPath);
             }
+        }
 
+        /// <summary>
+        /// Core logic to save the new path and refresh all game items.
+        /// </summary>
+        private void UpdateLibraryPath(string newPath)
+        {
+            Ini.Set(Ini.Vars.Library_Location, newPath);
+            UpdateGameItems();
             Main_Window.SetButtonState();
         }
 
-        public void SetLibaryPath(string path)
-        {
-            LibraryPath.Text = path;
-
-            foreach (var item in gameItems)
-            {
-                item.InstallPath.Text = $"{LibraryPath.Text}\\R5R Library\\{item.branchName.ToUpper(new CultureInfo("en-US"))}";
-            }
-
-            Main_Window.SetButtonState();
-        }
-
-        public void UpdateGameItems()
-        {
-            foreach (var item in gameItems)
-            {
-                item.UpdateGameItem();
-            }
-        }
+        #endregion
     }
 }

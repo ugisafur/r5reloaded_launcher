@@ -115,12 +115,8 @@ namespace launcher.Game
 
         private static async Task PerformPostRepairActionsAsync()
         {
-            // Check and repair language files if necessary.
-            bool languageAvailable = GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
-            if (languageAvailable && Launcher.language_name != "english")
-            {
-                await RepairLanguageFilesAsync(new List<string> { Launcher.language_name });
-            }
+            // Check and repair language files.
+            await RepairLanguageFilesAsync();
 
             // Update local state.
             SetBranch.Installed(true);
@@ -156,13 +152,49 @@ namespace launcher.Game
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
         }
 
-        private static async Task RepairLanguageFilesAsync(List<string> langs)
+        private static async Task RepairLanguageFilesAsync()
         {
             if (!AppState.IsOnline) return;
+
+            string branchDirectory = GetBranch.Directory();
+
+            GameFiles serverManifest = await Fetch.LanguageFiles();
+
+            var existingLocalFiles = serverManifest.files
+                .Where(file => File.Exists(Path.Combine(branchDirectory, file.path)))
+                .ToList();
+
+            if (!existingLocalFiles.Any())
+            {
+                LogInfo(LogSource.Repair, "No local language files found to verify.");
+                return;
+            }
+
+            var manifestForRepair = new GameFiles { files = existingLocalFiles };
+
+            Func<Task<List<Task<FileChecksum>>>> prepareChecksums = () =>
+            {
+                appDispatcher.Invoke(() =>
+                {
+                    Progress_Bar.Maximum = existingLocalFiles.Count;
+                    Progress_Bar.Value = 0;
+                    Percent_Label.Text = "0%";
+                });
+                AppState.FilesLeft = existingLocalFiles.Count;
+
+                var checksumTasks = new List<Task<FileChecksum>>();
+                foreach (var file in existingLocalFiles)
+                {
+                    string fullPath = Path.Combine(branchDirectory, file.path);
+                    checksumTasks.Add(Checksums.GenerateAndReturnFileChecksum(fullPath, branchDirectory));
+                }
+                return Task.FromResult(checksumTasks);
+            };
+
             await RunRepairProcessAsync(
-                GetBranch.Directory(),
-                () => Task.FromResult(Checksums.PrepareLangChecksumTasks(GetBranch.Directory(), langs)),
-                () => Fetch.LanguageFiles(langs),
+                branchDirectory,
+                prepareChecksums,
+                () => Task.FromResult(manifestForRepair),
                 "Checking language files...",
                 "Comparing language files...",
                 "Downloading language files..."

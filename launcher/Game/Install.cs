@@ -59,14 +59,16 @@ namespace launcher.Game
             }
         }
 
-        public static async Task LangFile(CheckBox checkBox, string[] langs, bool bypass_block = false)
+        public static async Task LangFile(CheckBox checkBox, GameFiles gameFiles, string language, bool bypass_block = false)
         {
             if (!AppState.IsOnline || (AppState.BlockLanguageInstall && !bypass_block)) return;
 
-            GameFiles gameFiles = await Fetch.LanguageFiles([.. langs]);
             if (!await CheckForSufficientSpaceAsync(gameFiles, "Language File")) return;
 
+            gameFiles.files = gameFiles.files.Where(file => file.path.Contains(language)).ToList();
+
             appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
+
             try
             {
                 await RunDownloadProcessAsync(gameFiles, "Downloading language files", showMainSpeed: false);
@@ -163,10 +165,11 @@ namespace launcher.Game
 
         private static async Task PerformPostInstallActionsAsync()
         {
-            bool languageAvailable = GetBranch.Branch().mstr_languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
+            GameFiles gameFiles = await Fetch.LanguageFiles();
+            bool languageAvailable = gameFiles.languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
             if (languageAvailable && Launcher.language_name != "english")
             {
-                await LangFile(null, new[] { Launcher.language_name }, bypass_block: true);
+                await LangFile(null, gameFiles, Launcher.language_name, bypass_block: true);
             }
 
             SetBranch.Installed(true);

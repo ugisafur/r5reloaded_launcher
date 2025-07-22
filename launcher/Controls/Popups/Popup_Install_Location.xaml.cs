@@ -42,7 +42,7 @@ namespace launcher
             Directory.CreateDirectory(FolderLocation.Text);
             Task.Run(() => Install.Start());
             Managers.App.HideInstallLocation();
-            Settings_Control.gamePage.SetLibaryPath(FolderLocation.Text);
+            Settings_Control.gamePage.SetLibraryPath(FolderLocation.Text);
         }
 
         private void Browse_Click(object sender, RoutedEventArgs e)

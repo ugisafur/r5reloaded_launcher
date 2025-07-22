@@ -45,7 +45,7 @@ namespace launcher.Game
             }
         }
 
-        public static async Task LangFile(CheckBox checkBox, List<string> langs)
+        public static async Task LangFile(CheckBox checkBox, string language)
         {
             if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory())) return;
 
@@ -53,11 +53,15 @@ namespace launcher.Game
             Tasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                GameFiles langFilesManifest = await Fetch.LanguageFiles(langs);
-                var filesToDelete = langFilesManifest.files
-                    .Select(f => Path.Combine(GetBranch.Directory(), f.path))
-                    .Where(File.Exists)
-                    .ToArray();
+                GameFiles langFilesManifest = await Fetch.LanguageFiles();
+                langFilesManifest.files = langFilesManifest.files.Where(file => file.path.Contains(language)).ToList();
+
+                List<string> filesToDelete = new();
+                foreach(GameFile file in langFilesManifest.files)
+                {
+                    string finalPath = Path.Combine(GetBranch.Directory(), file.path);
+                    filesToDelete.Add(finalPath);
+                }
 
                 await RunUninstallProcessAsync(filesToDelete, "Removing language files");
             }

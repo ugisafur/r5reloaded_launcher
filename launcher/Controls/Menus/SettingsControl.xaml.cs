@@ -108,7 +108,7 @@ namespace launcher
 
             accessibilityPage.SetupAccessibilitySettings();
             applicationPage.SetupApplicationSettings();
-            gamePage.SetupGameSettings();
+            gamePage.SetupGameSettingsAsync();
             downloadPage.SetupDownloadSettings();
             aboutPage.SetupAboutSettings();
 

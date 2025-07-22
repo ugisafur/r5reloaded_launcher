@@ -18,7 +18,7 @@ namespace launcher.Global
 {
     public static class Launcher
     {
-        public const string VERSION = "1.1.2";
+        public const string VERSION = "1.1.3";
 
         #region Public Keys
 
@@ -228,8 +228,17 @@ namespace launcher.Global
             return gameFiles;
         }
 
-        public static async Task<GameFiles> LanguageFiles(List<string> languages)
+        public static async Task<GameFiles> LanguageFiles(Branch branch = null)
         {
+            if (branch != null)
+            {
+                GameFiles branchgameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{branch.game_url}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+
+                branchgameFiles.files = branchgameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
+
+                return branchgameFiles;
+            }
+
             GameFiles gameFiles = await Networking.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
             gameFiles.files = gameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();

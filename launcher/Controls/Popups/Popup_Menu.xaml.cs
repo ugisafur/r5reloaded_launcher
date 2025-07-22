@@ -43,7 +43,7 @@ namespace launcher
                 Managers.App.ShowSettingsControl();
 
                 //i hate this
-                Settings_Control.gameInstalls.FirstTime();
+                Settings_Control.gameInstalls.CollapseItemsOnFirstLoad();
             }
         }
 

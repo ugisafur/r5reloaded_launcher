@@ -1,138 +1,123 @@
 ﻿using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using static launcher.Global.References;
-using System.IO;
+using System.Diagnostics;
 using launcher.Game;
 using launcher.Global;
-using System.Diagnostics;
+using static launcher.Global.References;
 
 namespace launcher
 {
-    /// <summary>
-    /// Interaction logic for GameItem.xaml
-    /// </summary>
     public partial class GameItem : UserControl
     {
+        #region Dependency Properties and Properties
+
+        private const double CollapsedHeight = 65;
+        private const double ExpandedHeight = 663;
+        private const int AnimationDurationMs = 500;
+
         public static readonly DependencyProperty CornerRadiusValueProperty =
-        DependencyProperty.Register("CornerRadiusValue", typeof(CornerRadius), typeof(GameItem), new PropertyMetadata(new CornerRadius(0)));
+            DependencyProperty.Register("CornerRadiusValue", typeof(CornerRadius), typeof(GameItem), new PropertyMetadata(new CornerRadius(0)));
 
         public CornerRadius CornerRadiusValue
         {
-            get { return (CornerRadius)GetValue(CornerRadiusValueProperty); }
-            set { SetValue(CornerRadiusValueProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusValueProperty);
+            set => SetValue(CornerRadiusValueProperty, value);
         }
 
-        private bool isExpanded = true;
-        public bool isFirstItem = false;
-        public bool isLastItem = false;
-        public string branchName = "";
-        public int index = 0;
-        public Branch gameBranch { get; set; }
+        public bool IsFirstItem { get; set; }
+        public bool IsLastItem { get; set; }
+        public int Index { get; set; } = 0;
+        public Branch GameBranch { get; private set; }
+
+        private bool _isExpanded = true;
+
+        #endregion
 
         public GameItem()
         {
             InitializeComponent();
         }
 
-        public void UpdateGameItem()
+        /// <summary>
+        /// Initializes the GameItem with branch data and populates its UI.
+        /// Changed to `async Task` to follow best practices (avoid `async void`).
+        /// </summary>
+        public async Task InitializeAsync(Branch branch)
         {
-            BranchName.Text = $"{GetBranch.Name(true, gameBranch)}";
-            InstallPath.Text = $"{GetBranch.Directory(gameBranch)}";
+            GameBranch = branch;
 
-            Dedi.IsEnabled = !string.IsNullOrEmpty(GetBranch.DediURL(gameBranch));
-            UninstallGame.IsEnabled = !AppState.IsInstalling;
-            InstallGame.IsEnabled = !AppState.IsInstalling;
-            VerifyGame.IsEnabled = !AppState.IsInstalling;
-            InstallOpt.IsEnabled = !AppState.IsInstalling;
+            UpdateUI();
 
-            if (gameBranch.enabled)
-            {
-                UninstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Visible : Visibility.Hidden;
-                InstallGame.Visibility = GetBranch.Installed(gameBranch) ? Visibility.Hidden : Visibility.Visible;
-                VerifyGame.Visibility = Visibility.Visible;
-                BranchDisabledTxt.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                UninstallGame.Visibility = Visibility.Hidden;
-                InstallGame.Visibility = Visibility.Hidden;
-                VerifyGame.Visibility = Visibility.Hidden;
-                BranchDisabledTxt.Visibility = Visibility.Visible;
-            }
-
-            InstallOpt.Visibility = Visibility.Hidden;
-
-            if (GetBranch.Enabled(gameBranch) && GetBranch.Installed(gameBranch))
-            {
-                InstallOpt.Visibility = Visibility.Visible;
-                InstallOpt.Content = GetBranch.DownloadHDTextures(gameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
-            }
-
-            if (!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
-            {
-                string[] dedisplit = GetBranch.DediURL(gameBranch).Replace("https://", "").Split('/');
-                dediName.Text = dedisplit[dedisplit.Length - 1].Replace(".zip", "").Replace(".rar", "").Replace(".7z", "");
-            }
-            else
-            {
-                dediName.Text = "";
-            }
+            GameFiles langFiles = await Fetch.LanguageFiles(branch);
+            PopulateLanguageCheckboxes(langFiles);
         }
 
-        public void SetupGameItem(Branch branch)
+        /// <summary>
+        /// Public method to trigger a UI refresh from outside.
+        /// </summary>
+        public void Refresh()
         {
-            gameBranch = branch;
-            branchName = branch.branch;
+            UpdateUI();
+        }
 
-            BranchName.Text = $"R5Reloaded - {GetBranch.Name(true, branch)}";
-            InstallPath.Text = $"{GetBranch.Directory(branch)}";
-            
-            Dedi.IsEnabled = !string.IsNullOrEmpty(GetBranch.DediURL(gameBranch));
-            UninstallGame.IsEnabled = !AppState.IsInstalling;
-            InstallGame.IsEnabled = !AppState.IsInstalling;
-            VerifyGame.IsEnabled = !AppState.IsInstalling;
-            InstallOpt.IsEnabled = !AppState.IsInstalling;
+        #region UI Update Logic
 
-            if(gameBranch.enabled)
-            {
-                UninstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Visible : Visibility.Hidden;
-                InstallGame.Visibility = GetBranch.Installed(branch) ? Visibility.Hidden : Visibility.Visible;
-                VerifyGame.Visibility = Visibility.Visible;
-                BranchDisabledTxt.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                UninstallGame.Visibility = Visibility.Hidden;
-                InstallGame.Visibility = Visibility.Hidden;
-                VerifyGame.Visibility = Visibility.Hidden;
-                BranchDisabledTxt.Visibility = Visibility.Visible;
-            }
+        /// <summary>
+        /// Centralized method to update all UI elements based on the current state.
+        /// This removes the code duplication between the old SetupGameItem and UpdateGameItem.
+        /// </summary>
+        private void UpdateUI()
+        {
+            if (GameBranch == null) return;
 
-            InstallOpt.Visibility = Visibility.Hidden;
-            if (GetBranch.Enabled(branch) && GetBranch.Installed(branch))
-            {
-                InstallOpt.Visibility = Visibility.Visible;
-                InstallOpt.Content = GetBranch.DownloadHDTextures(branch) ? "UINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
-            }
+            bool isInstalled = GetBranch.Installed(GameBranch);
+            bool isEnabled = GameBranch.enabled;
+            string dediUrl = GetBranch.DediURL(GameBranch);
 
-            if (!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
+            BranchName.Text = GetBranch.Name(true, GameBranch);
+            InstallPath.Text = GetBranch.Directory(GameBranch);
+
+            // Set button enabled state
+            bool canInteract = !AppState.IsInstalling;
+            UninstallGame.IsEnabled = canInteract;
+            InstallGame.IsEnabled = canInteract;
+            VerifyGame.IsEnabled = canInteract;
+            InstallOpt.IsEnabled = canInteract;
+            Dedi.IsEnabled = !string.IsNullOrEmpty(dediUrl);
+
+            // Set visibility based on branch enabled/installed status
+            UninstallGame.Visibility = isEnabled && isInstalled ? Visibility.Visible : Visibility.Hidden;
+            InstallGame.Visibility = isEnabled && !isInstalled ? Visibility.Visible : Visibility.Hidden;
+            VerifyGame.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
+            BranchDisabledTxt.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
+
+            bool canShowOpt = isEnabled && isInstalled;
+            InstallOpt.Visibility = canShowOpt ? Visibility.Visible : Visibility.Hidden;
+            if (canShowOpt)
             {
-                string[] dedisplit = GetBranch.DediURL(branch).Replace("https://", "").Split('/');
-                dediName.Text = dedisplit[dedisplit.Length - 1].Replace(".zip", "").Replace(".rar", "").Replace(".7z", "");
-            }
-            else
-            {
-                dediName.Text = "";
+                InstallOpt.Content = GetBranch.DownloadHDTextures(GameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
 
-            int row = 0;
-            int column = 0;
+            // Set Dedi Name
+            dediName.Text = !string.IsNullOrEmpty(dediUrl) ? Path.GetFileNameWithoutExtension(dediUrl) : "";
+        }
 
+        /// <summary>
+        /// Clears and populates the language selection grid.
+        /// </summary>
+        private void PopulateLanguageCheckboxes(GameFiles langFiles)
+        {
             LangBox.Children.Clear();
 
-            foreach (string lang in branch.mstr_languages)
+            // English is always present and checked by default
+            LangBox.Children.Add(CreateLanguageCheckbox("english", isEnabled: false, isChecked: true));
+
+            int row = 0;
+            int column = 1;
+            foreach (string lang in langFiles.languages)
             {
                 if (column > 4)
                 {
@@ -140,235 +125,209 @@ namespace launcher
                     row++;
                 }
 
-                CheckBox langCheckBox = new CheckBox
-                {
-                    Content = new CultureInfo("en-US").TextInfo.ToTitleCase(lang),
-                    IsChecked = lang.ToLower(new CultureInfo("en-US")) == "english" ? true : DoesLangFileExist(branch, lang),
-                    FontFamily = new System.Windows.Media.FontFamily("{StaticResource SansationBold}"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    FontSize = 14,
-                    Foreground = System.Windows.Media.Brushes.White,
-                };
+                var langCheckBox = CreateLanguageCheckbox(lang, isChecked: DoesLangFileExist(lang));
 
-                if (AppState.IsInstalling)
-                {
-                    langCheckBox.IsEnabled = false;
-                }
-                else
-                {
-                    langCheckBox.IsEnabled = lang.ToLower(new CultureInfo("en-US")) == "english" ? false : GetBranch.Installed(branch);
-                }
+                langCheckBox.Checked += (sender, e) => HandleLanguageAction(async () => await Install.LangFile((CheckBox)sender, langFiles, lang));
+                langCheckBox.Unchecked += (sender, e) => HandleLanguageAction(async () => await Uninstall.LangFile((CheckBox)sender, lang));
 
-                langCheckBox.Checked += (sender, e) =>
-                {
-                    Branch_Combobox.SelectedIndex = index;
-                    Task.Run(() => Install.LangFile(langCheckBox, [lang]));
-                    Downloads_Popup.IsOpen = true;
-                };
-
-                langCheckBox.Unchecked += (sender, e) =>
-                {
-                    Branch_Combobox.SelectedIndex = index;
-                    Task.Run(() => Uninstall.LangFile(langCheckBox, [lang]));
-                };
-
-                LangBox.Children.Add(langCheckBox);
                 langCheckBox.SetValue(Grid.RowProperty, row);
                 langCheckBox.SetValue(Grid.ColumnProperty, column);
-
+                LangBox.Children.Add(langCheckBox);
                 column++;
             }
         }
 
-        private bool DoesLangFileExist(Branch branch, string lang)
+        /// <summary>
+        /// Factory method to create a styled CheckBox for a language.
+        /// </summary>
+        private CheckBox CreateLanguageCheckbox(string lang, bool isEnabled = true, bool isChecked = false)
         {
-            if (!File.Exists($"{GetBranch.Directory(gameBranch)}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}.mstr"))
-                return false;
+            bool canInteract = !AppState.IsInstalling && isEnabled && GetBranch.Installed(GameBranch);
 
-            if (!File.Exists($"{GetBranch.Directory(gameBranch)}\\audio\\ship\\general_{lang.ToLower(new CultureInfo("en-US"))}_patch_1.mstr"))
-                return false;
-
-            return true;
+            return new CheckBox
+            {
+                Content = new CultureInfo("en-US").TextInfo.ToTitleCase(lang),
+                IsChecked = isChecked,
+                IsEnabled = canInteract,
+                FontFamily = new System.Windows.Media.FontFamily("{StaticResource SansationBold}"),
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                FontSize = 14,
+                Foreground = System.Windows.Media.Brushes.White
+            };
         }
+
+        /// <summary>
+        /// Checks if both required files for a given language exist.
+        /// </summary>
+        private bool DoesLangFileExist(string lang)
+        {
+            string dir = GetBranch.Directory(GameBranch);
+            string langLower = lang.ToLower(CultureInfo.InvariantCulture);
+
+            // Use Path.Combine for safe and correct path building.
+            string path1 = Path.Combine(dir, "audio", "ship", $"general_{langLower}.mstr");
+            string path2 = Path.Combine(dir, "audio", "ship", $"general_{langLower}_patch_1.mstr");
+
+            return File.Exists(path1) && File.Exists(path2);
+        }
+
+        #endregion
+
+        #region Expansion Animation
 
         private void TopButton_Click(object sender, RoutedEventArgs e)
         {
+            AnimateExpansion(!_isExpanded);
+        }
+
+        /// <summary>
+        /// Handles both expanding and collapsing animations.
+        /// </summary>
+        public void AnimateExpansion(bool expand)
+        {
+            _isExpanded = expand;
+            CollapseIcon.Text = expand ? "-" : "+";
+            double targetHeight = expand ? ExpandedHeight : CollapsedHeight;
+
+            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : AnimationDurationMs;
+            var storyboard = new Storyboard();
+            var animation = new DoubleAnimation
+            {
+                // FIX: Explicitly set the starting point of the animation.
+                From = this.ActualHeight,
+                To = targetHeight,
+                Duration = new Duration(TimeSpan.FromMilliseconds(duration)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+
+            Storyboard.SetTarget(animation, this);
+            Storyboard.SetTargetProperty(animation, new PropertyPath("Height"));
+            storyboard.Children.Add(animation);
+            storyboard.Begin();
+
+            UpdateCornerRadius(expand);
+        }
+
+        /// <summary>
+        /// Updates the corner radius of elements based on position and expansion state.
+        /// </summary>
+        private void UpdateCornerRadius(bool isExpanded)
+        {
+            // Define the standard radius values for clarity
+            var noRadius = new CornerRadius(0);
+            var topRadius = new CornerRadius(10, 10, 0, 0);
+            var bottomRadius = new CornerRadius(0, 0, 10, 10);
+            var allRadius = new CornerRadius(10);
+
+            CornerRadius itemShapeRadius;
+
+            if (IsFirstItem && IsLastItem)
+            {
+                // Case: This is the ONLY item in the list.
+                itemShapeRadius = allRadius;
+            }
+            else if (IsFirstItem)
+            {
+                // Case: This is the FIRST of multiple items.
+                itemShapeRadius = topRadius;
+            }
+            else if (IsLastItem)
+            {
+                // Case: This is the LAST of multiple items.
+                itemShapeRadius = bottomRadius;
+            }
+            else
+            {
+                // Case: This is a MIDDLE item.
+                itemShapeRadius = noRadius;
+            }
+
+            MainBG.CornerRadius = itemShapeRadius;
+
             if (isExpanded)
             {
-                CollapseItem();
+                // When EXPANDED, the TopBar only needs rounded top corners if it's the first item.
+                TopBar.CornerRadius = IsFirstItem ? topRadius : noRadius;
             }
             else
             {
-                ExpandItem();
+                // When COLLAPSED, the TopBar IS the item, so it must take the overall item shape.
+                TopBar.CornerRadius = itemShapeRadius;
+            }
+
+            if (TopButton.Template.FindName("btnborder", TopButton) is Border border)
+            {
+                border.CornerRadius = TopBar.CornerRadius;
             }
         }
 
-        public void CollapseItem()
+        #endregion
+
+        #region Click Event Handlers
+
+        /// <summary>
+        /// Helper to run before any action to prevent execution if busy and to select the branch.
+        /// </summary>
+        private bool CanExecuteAction()
         {
-            isExpanded = false;
-            CollapseIcon.Text = "+";
-
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
-
-            var storyboard = new Storyboard();
-            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
-
-            var heightAnimation = new DoubleAnimation
-            {
-                From = (int)this.Height,
-                To = 65,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(heightAnimation, this);
-            Storyboard.SetTargetProperty(heightAnimation, new PropertyPath("Height"));
-
-            storyboard.Children.Add(heightAnimation);
-
-            storyboard.Begin();
-
-            var border = TopButton.Template.FindName("btnborder", TopButton) as Border;
-
-            if (isFirstItem)
-            {
-                TopBar.CornerRadius = new CornerRadius(10, 10, 0, 0);
-                MainBG.CornerRadius = new CornerRadius(10, 10, 0, 0);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(10, 10, 0, 0);
-            }
-            else if (isLastItem)
-            {
-                TopBar.CornerRadius = new CornerRadius(0, 0, 10, 10);
-                MainBG.CornerRadius = new CornerRadius(0, 0, 10, 10);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(0, 0, 10, 10);
-            }
-            else
-            {
-                TopBar.CornerRadius = new CornerRadius(0, 0, 0, 0);
-                MainBG.CornerRadius = new CornerRadius(0, 0, 0, 0);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(0, 0, 0, 0);
-            }
+            if (AppState.IsInstalling) return false;
+            Branch_Combobox.SelectedIndex = Index;
+            Managers.App.HideSettingsControl();
+            return true;
         }
 
-        public void ExpandItem()
+        /// <summary>
+        /// Wrapper for language checkbox events to reduce code duplication.
+        /// </summary>
+        private void HandleLanguageAction(Func<Task> action)
         {
-            isExpanded = true;
-            CollapseIcon.Text = "-";
-
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : 500;
-
-            var storyboard = new Storyboard();
-            Duration animationDuration = new(TimeSpan.FromMilliseconds(duration));
-            var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
-
-            var heightAnimation = new DoubleAnimation
-            {
-                From = (int)this.Height,
-                To = 663,
-                Duration = animationDuration,
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(heightAnimation, this);
-            Storyboard.SetTargetProperty(heightAnimation, new PropertyPath("Height"));
-
-            storyboard.Children.Add(heightAnimation);
-
-            storyboard.Begin();
-
-            var border = TopButton.Template.FindName("btnborder", TopButton) as Border;
-
-            if (isFirstItem)
-            {
-                TopBar.CornerRadius = new CornerRadius(10, 10, 0, 0);
-                MainBG.CornerRadius = new CornerRadius(10, 10, 0, 0);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(10, 10, 0, 0);
-            }
-            else if (isLastItem)
-            {
-                TopBar.CornerRadius = new CornerRadius(0, 0, 0, 0);
-                MainBG.CornerRadius = new CornerRadius(0, 0, 10, 10);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(0, 0, 0, 0);
-            }
-            else
-            {
-                TopBar.CornerRadius = new CornerRadius(0, 0, 0, 0);
-                MainBG.CornerRadius = new CornerRadius(0, 0, 0, 0);
-
-                if (border != null)
-                    border.CornerRadius = new CornerRadius(0, 0, 0, 0);
-            }
+            if (AppState.IsInstalling) return;
+            Branch_Combobox.SelectedIndex = Index;
+            Downloads_Popup.IsOpen = true;
+            Task.Run(action);
         }
 
         private void VerifyGame_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
-                return;
-
-            Branch_Combobox.SelectedIndex = index;
-
-            if (GetBranch.Installed(gameBranch))
+            if (!CanExecuteAction()) return;
+            if (GetBranch.Installed(GameBranch))
                 Task.Run(() => Repair.Start());
-
-            Managers.App.HideSettingsControl();
         }
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
-                return;
-
-            Branch_Combobox.SelectedIndex = index;
-
-            if (GetBranch.Installed(gameBranch))
+            if (!CanExecuteAction()) return;
+            if (GetBranch.Installed(GameBranch))
                 Task.Run(() => Uninstall.Start());
-
-            Managers.App.HideSettingsControl();
         }
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
-                return;
-
-            Branch_Combobox.SelectedIndex = index;
-
-            if (!GetBranch.Installed(gameBranch))
+            if (!CanExecuteAction()) return;
+            if (!GetBranch.Installed(GameBranch))
                 Task.Run(() => Install.Start());
-
-            Managers.App.HideSettingsControl();
         }
 
         private void InstallOpt_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
-                return;
+            if (!CanExecuteAction()) return;
 
-            Branch_Combobox.SelectedIndex = index;
-            Managers.App.HideSettingsControl();
-
-            if (GetBranch.DownloadHDTextures(gameBranch))
-                Task.Run(() => Uninstall.HDTextures(gameBranch));
+            if (GetBranch.DownloadHDTextures(GameBranch))
+                Task.Run(() => Uninstall.HDTextures(GameBranch));
             else
                 Managers.App.ShowDownloadOptlFiles();
         }
 
         private void Dedi_Click(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrEmpty(GetBranch.DediURL(gameBranch)))
+            string url = GetBranch.DediURL(GameBranch);
+            if (!string.IsNullOrEmpty(url))
             {
-                Process.Start(new ProcessStartInfo("cmd", $"/c start {GetBranch.DediURL(gameBranch)}") { CreateNoWindow = true });
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
         }
+
+        #endregion
     }
 }

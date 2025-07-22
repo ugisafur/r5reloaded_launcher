@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Windows;
 using static launcher.Global.Logger;
 using static launcher.Global.References;
 using static launcher.Network.DownloadSpeedTracker;
@@ -75,36 +76,6 @@ namespace launcher.Game
                 if(file.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\screenshots", StringComparison.OrdinalIgnoreCase) || file.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
-            }
-
-            return checksumTasks;
-        }
-
-        public static List<Task<FileChecksum>> PrepareLangChecksumTasks(string branchFolder, List<string> lang)
-        {
-            var checksumTasks = new List<Task<FileChecksum>>();
-
-            List<string> excludedLanguages = GetBranch.Branch().mstr_languages;
-            excludedLanguages.Remove("english");
-
-            string languagesPattern = string.Join("|", excludedLanguages.Select(Regex.Escape));
-            Regex excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase);
-
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories).Where(
-                f => excludeLangRegex.IsMatch(f)).ToArray();
-
-            appDispatcher.Invoke(() =>
-            {
-                Progress_Bar.Maximum = allFiles.Length;
-                Progress_Bar.Value = 0;
-                Percent_Label.Text = "0%";
-            });
-
-            AppState.FilesLeft = allFiles.Length;
-
-            foreach (var file in allFiles)
-            {
                 checksumTasks.Add(GenerateAndReturnFileChecksum(file, branchFolder));
             }
 
