@@ -115,7 +115,6 @@ namespace launcher.Global
             appDispatcher = mainWindow.Dispatcher;
             Progress_Bar = mainWindow.ProgressBar;
             Status_Label = mainWindow.Status_Label;
-            //Files_Label = mainWindow.Files_Label;
             Speed_Label = mainWindow.Speed_Label;
             Version_Label = mainWindow.Version_Label;
             Branch_Combobox = mainWindow.Branch_Combobox;
@@ -152,15 +151,18 @@ namespace launcher.Global
             DragBarDropShadow = mainWindow.DragBarDropShadow;
             Percent_Label = mainWindow.Percent_Label;
 
+            SetInitialControlVisibility();
+        }
+
+        private static void SetInitialControlVisibility()
+        {
             appDispatcher.Invoke(() =>
             {
                 Update_Button.Visibility = Visibility.Hidden;
                 Progress_Bar.Visibility = Visibility.Hidden;
                 Status_Label.Visibility = Visibility.Hidden;
-                //Files_Label.Visibility = Visibility.Hidden;
                 Speed_Label.Visibility = Visibility.Hidden;
                 Percent_Label.Visibility = Visibility.Hidden;
-
                 ReadMore_Label.Visibility = Visibility.Visible;
             });
         }
