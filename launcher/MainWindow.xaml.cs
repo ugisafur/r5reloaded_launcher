@@ -274,25 +274,73 @@ namespace launcher
             WindowState = WindowState.Minimized;
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch())
-            {
-                Task.Run(() => GameUtils.Launch());
+            if (AppState.IsInstalling)
                 return;
-            }
 
-            if (!AppState.IsInstalling)
+            try
             {
-                if (!GetBranch.Installed() && !string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)) && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
+                bool isGameReadyToLaunch = !AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch();
+
+                if (isGameReadyToLaunch)
                 {
-                    Managers.App.ShowCheckExistingFiles();
-                }
+                    Play_Button.Content = "LAUNCHING";
+                    Play_Button.IsEnabled = false;
+					var launchResult = await GameService.LaunchAsync();
+                    HandleLaunchResult(launchResult);
+					Play_Button.Content = "PLAY";
+					Play_Button.IsEnabled = true;
+				}
                 else
                 {
-                    Task.Run(() => Install.Start());
+                    string libraryLocation = (string)Ini.Get(Ini.Vars.Library_Location);
+                    string exePath = Path.Combine(GetBranch.Directory(), "r5apex.exe");
+
+                    if (!string.IsNullOrEmpty(libraryLocation) && File.Exists(exePath))
+                    {
+                        Managers.App.ShowCheckExistingFiles();
+                    }
+                    else
+                    {
+                        await Task.Run(() => Install.Start());
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                LogError(LogSource.Launcher, $"An error occurred in btnStart_Click: {ex.Message}");
+                ShowError("An unexpected error occurred. Please check the logs.");
+            }
+            finally
+            {
+                
+            }
+        }
+
+        private void HandleLaunchResult(LaunchResult result)
+        {
+            switch (result)
+            {
+                case LaunchResult.Success:
+                    break;
+                case LaunchResult.EAAppNotInstalled:
+                    ShowError("EA App is not installed. Please install the EA App and try again.");
+                    break;
+                case LaunchResult.EAAppNotRunning:
+                    ShowError("EA App is not running. Please launch the EA App and try again.");
+                    break;
+                case LaunchResult.ExecutableNotFound:
+                case LaunchResult.LaunchFailed:
+                    ShowError("The game failed to launch. Please check the logs for more details.");
+                    break;
+            }
+        }
+
+        private void ShowError(string message)
+        {
+            //TODO: Build a new popup ui for this
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
