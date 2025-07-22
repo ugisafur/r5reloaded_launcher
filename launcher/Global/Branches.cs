@@ -12,7 +12,6 @@ namespace launcher.Global
         public static Branch Branch() { return Launcher.ServerConfig.branches[Index()]; }
 
         public static bool Enabled(Branch branch = null) { return branch != null ? branch.enabled : Branch().enabled; }
-        public static bool ShowInLauncher(Branch branch = null) { return branch != null ? branch.show_in_launcher : Branch().show_in_launcher; }
         public static bool AllowUpdates(Branch branch = null) { return branch != null ? branch.allow_updates : Branch().allow_updates; }
         public static bool IsLocalBranch(Branch branch = null) { return branch != null ? branch.is_local_branch : Branch().is_local_branch; }
         public static bool UpdateAvailable(Branch branch = null) { return branch != null ? branch.update_available : Branch().update_available; }
@@ -26,9 +25,15 @@ namespace launcher.Global
         public static string ServerVersion() { return Fetch.GameVersion(Branch().game_url); }
         public static string Directory(Branch branch = null) { return branch != null ? Path.Combine((string)Ini.Get(Ini.Vars.Library_Location), "R5R Library", Name(true, branch)) : Path.Combine((string)Ini.Get(Ini.Vars.Library_Location), "R5R Library", Name()); }
         public static string DediURL(Branch branch = null) { return branch != null ? branch.dedi_url : Branch().dedi_url; }
-        public static string BlogSlug(Branch branch = null) { return branch != null ? branch.patch_notes_blog_slug : Branch().patch_notes_blog_slug; }
         public static string Name(bool uppercase = true, Branch branch = null) { return branch != null ? (uppercase ? branch.branch.ToUpper(new CultureInfo("en-US")) : branch.branch) : (uppercase ? Branch().branch.ToUpper(new CultureInfo("en-US")) : Branch().branch); }
         public static string GameURL(Branch branch = null) { return branch != null ? branch.game_url : Branch().game_url; }
+
+        public async static Task<string> BlogSlug(Branch branch = null)
+        {
+            GameFiles gameFiles = await Fetch.GameFiles(false);
+
+            return gameFiles.blog_slug; 
+        }
     }
 
     public static class SetBranch

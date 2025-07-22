@@ -190,6 +190,7 @@ namespace launcher.Global
     public class GameFiles
     {
         public string game_version { get; set; }
+        public string blog_slug { get; set; }
         public List<string> languages { get; set; } = [];
         public List<GameFile> files { get; set; }
     }
@@ -216,10 +217,10 @@ namespace launcher.Global
     {
         public string launcherVersion { get; set; }
         public string updaterVersion { get; set; }
-        public string launcherSelfUpdater { get; set; }
-        public string launcherBackgroundVideo { get; set; }
-        public bool launcherallowUpdates { get; set; }
-        public bool launcherforceUpdates { get; set; }
+        public string selfUpdater { get; set; }
+        public string backgroundVideo { get; set; }
+        public bool allowUpdates { get; set; }
+        public bool forceUpdates { get; set; }
         public List<Branch> branches { get; set; }
     }
 
@@ -228,12 +229,8 @@ namespace launcher.Global
         public string branch { get; set; }
         public string game_url { get; set; }
         public string dedi_url { get; set; }
-        public string latest_patch_notes { get; set; }
-        public string patch_notes_blog_slug { get; set; }
         public bool enabled { get; set; }
-        public bool show_in_launcher { get; set; }
         public bool allow_updates { get; set; }
-        public List<string> mstr_languages { get; set; }
         public bool is_local_branch = false;
         public bool update_available = false;
     }

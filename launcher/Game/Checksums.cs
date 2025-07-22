@@ -1,4 +1,5 @@
 ﻿using launcher.Global;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -54,6 +55,39 @@ namespace launcher.Game
             }
 
             return DataCollections.BadFiles.Count;
+        }
+
+        public static List<Task<FileChecksum>> PrepareLangChecksumTasks(string branchFolder)
+        {
+            GameFiles languageManifest = Fetch.LanguageFiles().Result;
+
+            var existingFilePaths = new List<string>();
+            foreach (var lang in languageManifest.languages)
+            {
+                string langLower = lang.ToLower(CultureInfo.InvariantCulture);
+                string path1 = Path.Combine(branchFolder, "audio", "ship", $"general_{langLower}.mstr");
+                string path2 = Path.Combine(branchFolder, "audio", "ship", $"general_{langLower}_patch_1.mstr");
+
+                if (File.Exists(path1) && File.Exists(path2))
+                {
+                    existingFilePaths.Add(path1);
+                    existingFilePaths.Add(path2);
+                }
+            }
+
+            appDispatcher.Invoke(() =>
+            {
+                Progress_Bar.Maximum = existingFilePaths.Count;
+                Progress_Bar.Value = 0;
+                Percent_Label.Text = "0%";
+            });
+            AppState.FilesLeft = existingFilePaths.Count;
+
+            var checksumTasks = existingFilePaths
+                .Select(filePath => GenerateAndReturnFileChecksum(filePath, branchFolder))
+                .ToList();
+
+            return checksumTasks;
         }
 
         public static List<Task<FileChecksum>> PrepareBranchChecksumTasks(string branchFolder)

@@ -32,7 +32,7 @@ namespace launcher
             LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
 
             var branchesToShow = Launcher.ServerConfig.branches
-                .Where(b => !b.is_local_branch && b.show_in_launcher)
+                .Where(b => !b.is_local_branch && b.enabled)
                 .ToList();
 
             for (int i = 0; i < branchesToShow.Count; i++)

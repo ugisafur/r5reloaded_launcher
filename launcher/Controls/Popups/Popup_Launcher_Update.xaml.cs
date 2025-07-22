@@ -18,8 +18,8 @@ namespace launcher
 
             if (serverConfig != null)
             {
-                UpdateLater.Visibility = serverConfig.launcherforceUpdates ? Visibility.Hidden : Visibility.Visible;
-                closeX.Visibility = serverConfig.launcherforceUpdates ? Visibility.Hidden : Visibility.Visible;
+                UpdateLater.Visibility = serverConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
+                closeX.Visibility = serverConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
             }
         }
 

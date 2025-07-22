@@ -54,9 +54,11 @@ namespace patch_creator
 
         private void ComboBox1_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            var response = Global.HTTP_CLIENT.GetAsync($"{Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].game_url}/version.txt").Result;
-            var responseString = response.Content.ReadAsStringAsync().Result;
-            versionTxt.Text = responseString;
+            var response = Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].game_url, "checksums.json")).Result;
+            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
+
+            versionTxt.Text = server_checksums.game_version;
+            blogslugTxt.Text = server_checksums.blog_slug;
         }
 
         private void LoadConfig()
@@ -286,6 +288,7 @@ namespace patch_creator
             });
 
             local_checksums.game_version = versionTxt.Text;
+            local_checksums.blog_slug = blogslugTxt.Text;
 
             var options = new JsonSerializerOptions
             {

@@ -307,7 +307,7 @@ namespace launcher.Managers
                 string savedBranch = (string)Ini.Get(Ini.Vars.SelectedBranch);
                 string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Launcher.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)Ini.Get(Ini.Vars.SelectedBranch);
 
-                int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.show_in_launcher == true);
+                int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.enabled == true);
 
                 if (selectedIndex == -1 || selectedIndex >= Branch_Combobox.Items.Count)
                     selectedIndex = 0;
@@ -342,9 +342,7 @@ namespace launcher.Managers
                             branch = folder.ToUpper(new CultureInfo("en-US")),
                             game_url = "",
                             enabled = true,
-                            show_in_launcher = true,
                             is_local_branch = true,
-                            patch_notes_blog_slug = "null",
                         };
                         DataCollections.FolderBranches.Add(branch);
                         LogInfo(LogSource.Launcher, $"Local branch found: {folder}");
@@ -371,7 +369,7 @@ namespace launcher.Managers
             }
 
             return Launcher.ServerConfig.branches
-                .Where(branch => branch.show_in_launcher || !AppState.IsOnline)
+                .Where(branch => branch.enabled || !AppState.IsOnline)
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch.ToUpper(new CultureInfo("en-US")),
@@ -389,7 +387,7 @@ namespace launcher.Managers
                     File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
 
                 LogInfo(LogSource.Launcher, "Downloading launcher updater");
-                Networking.HttpClient.GetAsync(Launcher.ServerConfig.launcherSelfUpdater)
+                Networking.HttpClient.GetAsync(Launcher.ServerConfig.selfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)

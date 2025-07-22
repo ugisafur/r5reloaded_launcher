@@ -51,6 +51,8 @@
             concurrentTasks = new NumericUpDown();
             versionTxt = new TextBox();
             label5 = new Label();
+            blogslugTxt = new TextBox();
+            label7 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)concurrentTasks).BeginInit();
@@ -164,9 +166,9 @@
             // richTextBox2
             // 
             richTextBox2.DetectUrls = false;
-            richTextBox2.Location = new Point(12, 34);
+            richTextBox2.Location = new Point(1001, 34);
             richTextBox2.Name = "richTextBox2";
-            richTextBox2.Size = new Size(345, 272);
+            richTextBox2.Size = new Size(345, 471);
             richTextBox2.TabIndex = 14;
             richTextBox2.Text = "";
             richTextBox2.WordWrap = false;
@@ -174,7 +176,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(12, 16);
+            label4.Location = new Point(1001, 16);
             label4.Name = "label4";
             label4.Size = new Size(145, 15);
             label4.TabIndex = 15;
@@ -224,13 +226,15 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(blogslugTxt);
+            groupBox2.Controls.Add(label7);
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(concurrentTasks);
             groupBox2.Controls.Add(versionTxt);
             groupBox2.Controls.Add(label5);
-            groupBox2.Location = new Point(12, 312);
+            groupBox2.Location = new Point(12, 27);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(345, 141);
+            groupBox2.Size = new Size(345, 426);
             groupBox2.TabIndex = 19;
             groupBox2.TabStop = false;
             groupBox2.Text = "Settings";
@@ -238,7 +242,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(6, 84);
+            label6.Location = new Point(6, 124);
             label6.Name = "label6";
             label6.Size = new Size(175, 15);
             label6.TabIndex = 23;
@@ -246,7 +250,7 @@
             // 
             // concurrentTasks
             // 
-            concurrentTasks.Location = new Point(6, 102);
+            concurrentTasks.Location = new Point(6, 142);
             concurrentTasks.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             concurrentTasks.Name = "concurrentTasks";
             concurrentTasks.Size = new Size(333, 23);
@@ -255,7 +259,7 @@
             // 
             // versionTxt
             // 
-            versionTxt.Location = new Point(6, 43);
+            versionTxt.Location = new Point(6, 51);
             versionTxt.Name = "versionTxt";
             versionTxt.Size = new Size(333, 23);
             versionTxt.TabIndex = 20;
@@ -263,18 +267,34 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(6, 25);
+            label5.Location = new Point(6, 33);
             label5.Name = "label5";
             label5.Size = new Size(45, 15);
             label5.TabIndex = 21;
             label5.Text = "Version";
+            // 
+            // blogslugTxt
+            // 
+            blogslugTxt.Location = new Point(6, 95);
+            blogslugTxt.Name = "blogslugTxt";
+            blogslugTxt.Size = new Size(333, 23);
+            blogslugTxt.TabIndex = 24;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(6, 77);
+            label7.Name = "label7";
+            label7.Size = new Size(57, 15);
+            label7.TabIndex = 25;
+            label7.Text = "Blog Slug";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(1012, 513);
+            ClientSize = new Size(1358, 513);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(label4);
@@ -328,5 +348,7 @@
         private Label label5;
         private Label label6;
         private NumericUpDown concurrentTasks;
+        private TextBox blogslugTxt;
+        private Label label7;
     }
 }

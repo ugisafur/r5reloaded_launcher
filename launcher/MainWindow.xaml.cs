@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -320,7 +321,7 @@ namespace launcher
             AppState.IsLocalBranch = false;
             Ini.Set(Ini.Vars.SelectedBranch, GetBranch.Name(false));
 
-            SetTextBlockContent(comboBranch.subtext);
+            Task.Run(() => SetTextBlockContent(comboBranch.subtext));
 
             if (GetBranch.Installed())
             {
@@ -332,25 +333,26 @@ namespace launcher
             }
         }
 
-        private void SetTextBlockContent(string version)
+        private async void SetTextBlockContent(string version)
         {
-            // Clear any existing inlines
-            ReadMore_Label.Inlines.Clear();
+            string slug = await GetBranch.BlogSlug();
+            string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
+            Root root = await Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
+            string url = root.posts.Count == 0 ? "https://blog.r5reloaded.com" : root.posts[0].url;
 
-            // Add plain text
-            ReadMore_Label.Inlines.Add(new Run($"Read about {version} features, "));
-
-            string url = string.IsNullOrEmpty(GetBranch.Branch().latest_patch_notes) ? "https://blog.r5reloaded.com" : GetBranch.Branch().latest_patch_notes;
-
-            // Create a hyperlink
-            Hyperlink link = new(new Run("see patch notes"))
+            appDispatcher.BeginInvoke(() =>
             {
-                NavigateUri = new Uri(url)
-            };
-            link.RequestNavigate += Hyperlink_RequestNavigate;
+                ReadMore_Label.Inlines.Clear();
+                ReadMore_Label.Inlines.Add(new Run($"Read about {version} features, "));
 
-            // Add hyperlink to inlines
-            ReadMore_Label.Inlines.Add(link);
+                Hyperlink link = new(new Run("see patch notes"))
+                {
+                    NavigateUri = new Uri(url)
+                };
+                link.RequestNavigate += Hyperlink_RequestNavigate;
+
+                ReadMore_Label.Inlines.Add(link);
+            });
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -597,27 +599,27 @@ namespace launcher
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
-                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo)))
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo)))
                 {
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), UriKind.Absolute);
                     LogInfo(LogSource.Launcher, "Loading local video background");
                 }
                 else
                 {
                     using (var client = new HttpClient())
                     {
-                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.ServerConfig.launcherBackgroundVideo))
+                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.ServerConfig.backgroundVideo))
                         {
-                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), FileMode.OpenOrCreate))
+                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), FileMode.OpenOrCreate))
                             {
                                 s.Result.CopyTo(fs);
                             }
                         }
                     }
 
-                    Ini.Set(Ini.Vars.Server_Video_Name, Launcher.ServerConfig.launcherBackgroundVideo);
+                    Ini.Set(Ini.Vars.Server_Video_Name, Launcher.ServerConfig.backgroundVideo);
 
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.launcherBackgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), UriKind.Absolute);
 
                     LogInfo(LogSource.Launcher, $"Loaded video background from server");
                 }

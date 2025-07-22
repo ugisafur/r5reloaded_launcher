@@ -224,11 +224,11 @@ namespace launcher.Global
                 return false;
             }
 
-            if (!iqnoredLauncherUpdate && !AppState.IsInstalling && newServerConfig.launcherallowUpdates && IsNewVersion(Launcher.VERSION, newServerConfig.launcherVersion))
+            if (!iqnoredLauncherUpdate && !AppState.IsInstalling && newServerConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newServerConfig.launcherVersion))
             {
                 appDispatcher.BeginInvoke(() =>
                 {
-                    string postUpdateMessage = newServerConfig.launcherforceUpdates ? "This update is required." : "Would you like to update now?";
+                    string postUpdateMessage = newServerConfig.forceUpdates ? "This update is required." : "Would you like to update now?";
                     LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newServerConfig.launcherVersion}", newServerConfig);
                     Managers.App.ShowLauncherUpdatePopup();
                 });

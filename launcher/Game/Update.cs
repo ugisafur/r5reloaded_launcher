@@ -11,6 +11,10 @@ using static launcher.Global.Logger;
 
 namespace launcher.Game
 {
+    // NEW: Enum to represent the type of files being processed.
+    // This is much clearer and more scalable than using a boolean.
+    public enum UpdateFileType { Main, Optional, Language }
+
     public static class Update
     {
         public static async Task Start()
@@ -38,21 +42,59 @@ namespace launcher.Game
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-        private static async Task RunUpdateProcessAsync(bool forOptionalFiles)
+
+        // REFACTORED: This method now uses the UpdateFileType enum.
+        // REFACTORED: This method now uses the UpdateFileType enum.
+        private static async Task RunUpdateProcessAsync(UpdateFileType fileType)
         {
             string branchDirectory = GetBranch.Directory();
-            string fileType = forOptionalFiles ? "optional" : "local";
 
-            await CheckForDeletedFilesAsync(forOptionalFiles);
+            await CheckForDeletedFilesAsync(fileType);
 
             Tasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
-            var checksumTasks = forOptionalFiles
-                ? Checksums.PrepareOptChecksumTasks(branchDirectory)
-                : Checksums.PrepareBranchChecksumTasks(branchDirectory);
-            await Task.WhenAll(checksumTasks);
+
+            List<Task<FileChecksum>> checksumTasks;
+            switch (fileType)
+            {
+                case UpdateFileType.Main:
+                    checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
+                    break;
+                case UpdateFileType.Optional:
+                    checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
+                    break;
+                case UpdateFileType.Language:
+                    checksumTasks = Checksums.PrepareLangChecksumTasks(branchDirectory);
+                    break;
+                default:
+                    return;
+            }
 
             Tasks.UpdateStatusLabel($"Fetching latest {fileType} files", LogSource.Update);
-            var gameFiles = await Fetch.GameFiles(forOptionalFiles);
+
+            GameFiles gameFiles;
+            switch (fileType)
+            {
+                case UpdateFileType.Main:
+                    gameFiles = await Fetch.GameFiles(optional: false);
+                    break;
+                case UpdateFileType.Optional:
+                    gameFiles = await Fetch.GameFiles(optional: true);
+                    break;
+                case UpdateFileType.Language:
+                    GameFiles serverManifest = await Fetch.LanguageFiles();
+
+                    gameFiles = new GameFiles
+                    {
+                        files = serverManifest.files
+                            .Where(f => File.Exists(Path.Combine(branchDirectory, f.path)))
+                            .ToList()
+                    };
+                    break;
+                default:
+                    return;
+            }
+
+            await Task.WhenAll(checksumTasks);
 
             Tasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
             int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
@@ -101,7 +143,8 @@ namespace launcher.Game
             Network.DownloadSpeedTracker.CreateDownloadMonitor();
             Network.DownloadSpeedTracker.ConfigureConcurrency();
             Network.DownloadSpeedTracker.ConfigureDownloadSpeed();
-            await RunUpdateProcessAsync(forOptionalFiles: false);
+
+            await RunUpdateProcessAsync(UpdateFileType.Main);
         }
 
         private static async Task PerformPostUpdateActionsAsync()
@@ -119,51 +162,73 @@ namespace launcher.Game
 
             if (GetBranch.DownloadHDTextures())
             {
-                // Asynchronously update optional files without waiting.
                 await UpdateOptionalFilesAsync();
             }
+
+            await UpdateLanguageFilesAsync();
         }
 
         private static async Task UpdateOptionalFilesAsync()
         {
-            await RunUpdateProcessAsync(forOptionalFiles: true);
+            await RunUpdateProcessAsync(UpdateFileType.Optional);
             Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
         }
 
-        private static async Task CheckForDeletedFilesAsync(bool forOptionalFiles)
+        private static async Task UpdateLanguageFilesAsync()
+        {
+            await RunUpdateProcessAsync(UpdateFileType.Language);
+            Managers.App.SendNotification($"R5Reloaded ({GetBranch.Name()}) language files have been updated!", BalloonIcon.Info);
+        }
+
+        private static async Task CheckForDeletedFilesAsync(UpdateFileType fileType)
         {
             string branchDirectory = GetBranch.Directory();
-            var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories);
-            var serverFileManifest = await Fetch.GameFiles(forOptionalFiles);
+            var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories)
+                .Select(f => Path.GetRelativePath(branchDirectory, f))
+                .ToList();
 
-            // Pre-compile the regex for performance if there are many languages.
-            string languagesPattern = string.Join("|", GetBranch.Branch().mstr_languages.Select(Regex.Escape));
-            var excludeLangRegex = new Regex($"general_({languagesPattern})(?:_|\\.)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            GameFiles serverFileManifest;
+            Func<string, bool> fileTypeFilter;
 
-            foreach (var localFile in allLocalFiles)
+            switch (fileType)
             {
-                string relativePath = Path.GetRelativePath(branchDirectory, localFile);
-                bool isOptFile = relativePath.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase);
+                case UpdateFileType.Main:
+                    serverFileManifest = await Fetch.GameFiles(optional: false);
+                    fileTypeFilter = path => !path.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase) && !path.Contains(Path.Combine("audio", "ship"));
+                    break;
+                case UpdateFileType.Optional:
+                    serverFileManifest = await Fetch.GameFiles(optional: true);
+                    fileTypeFilter = path => path.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase);
+                    break;
+                case UpdateFileType.Language:
+                    serverFileManifest = await Fetch.LanguageFiles();
+                    fileTypeFilter = path => path.Contains(Path.Combine("audio", "ship"));
+                    break;
+                default:
+                    return;
+            }
 
-                // Skip files that don't match the current mode (optional vs. non-optional).
-                if (forOptionalFiles != isOptFile) continue;
+            var serverFilesSet = serverFileManifest.files
+                .Select(f => f.path.Replace('/', '\\'))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                // If the file exists locally but not on the server manifest, delete it.
-                bool existsOnServer = serverFileManifest.files.Exists(f => f.path.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
-                if (!existsOnServer)
+            var filesToDelete = allLocalFiles
+                .Where(fileTypeFilter)
+                .Where(localFile => !serverFilesSet.Contains(localFile));
+
+            foreach (var relativePath in filesToDelete)
+            {
+                try
                 {
-                    try
+                    string fullPath = Path.Combine(branchDirectory, relativePath);
+                    if (File.Exists(fullPath))
                     {
-                        // Extra check to avoid deleting language files that weren't fetched in the manifest.
-                        if (!excludeLangRegex.IsMatch(Path.GetFileName(localFile)) && File.Exists(localFile))
-                        {
-                            File.Delete(localFile);
-                        }
+                        File.Delete(fullPath);
                     }
-                    catch (Exception ex)
-                    {
-                        LogException($"Failed to delete obsolete file: {relativePath}", LogSource.Update, ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    LogException($"Failed to delete obsolete file: {relativePath}", LogSource.Update, ex);
                 }
             }
         }

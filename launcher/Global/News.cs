@@ -17,7 +17,7 @@ namespace launcher.Global
         private static int currentPage = 0;
         private static Dictionary<string, bool> blogItemsCached = [];
 
-        public static void Populate()
+        public async static void Populate()
         {
             // Populate the community category
             if (Pages[0].Count == 0)
@@ -38,7 +38,7 @@ namespace launcher.Global
 
             // Populate the patch notes category
             if (!GetBranch.IsLocalBranch())
-                PopulateNewsCatagory(GetBranch.BlogSlug(), 3, true);
+                PopulateNewsCatagory(await GetBranch.BlogSlug(), 3, true);
 
             appDispatcher.BeginInvoke(() =>
             {
