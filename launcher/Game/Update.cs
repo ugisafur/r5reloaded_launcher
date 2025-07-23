@@ -44,7 +44,6 @@ namespace launcher.Game
         // ============================================================================================
 
         // REFACTORED: This method now uses the UpdateFileType enum.
-        // REFACTORED: This method now uses the UpdateFileType enum.
         private static async Task RunUpdateProcessAsync(UpdateFileType fileType)
         {
             string branchDirectory = GetBranch.Directory();
@@ -53,17 +52,17 @@ namespace launcher.Game
 
             Tasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
 
-            List<Task<FileChecksum>> checksumTasks;
+            Task<FileChecksum[]> checksumTasks;
             switch (fileType)
             {
                 case UpdateFileType.Main:
-                    checksumTasks = Checksums.PrepareBranchChecksumTasks(branchDirectory);
+                    checksumTasks = Task.WhenAll(Checksums.PrepareBranchChecksumTasks(branchDirectory));
                     break;
                 case UpdateFileType.Optional:
-                    checksumTasks = Checksums.PrepareOptChecksumTasks(branchDirectory);
+                    checksumTasks = Task.WhenAll(Checksums.PrepareOptChecksumTasks(branchDirectory));
                     break;
                 case UpdateFileType.Language:
-                    checksumTasks = Checksums.PrepareLangChecksumTasks(branchDirectory);
+                    checksumTasks = Task.WhenAll(await Checksums.PrepareLangChecksumTasksAsync(branchDirectory));
                     break;
                 default:
                     return;
@@ -97,7 +96,7 @@ namespace launcher.Game
             await Task.WhenAll(checksumTasks);
 
             Tasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
-            int changedFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
+            int changedFileCount = await Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {

@@ -41,15 +41,14 @@ namespace launcher.Game
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<List<Task<FileChecksum>>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
+        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<Task<FileChecksum[]>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
         {
             Tasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
             var checksumTasks = await prepareChecksums();
-            await Task.WhenAll(checksumTasks);
 
             Tasks.UpdateStatusLabel(compareStatus, LogSource.Repair);
             var gameFiles = await fetchFileManifest();
-            int badFileCount = Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            int badFileCount = await Checksums.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
             {
@@ -105,7 +104,7 @@ namespace launcher.Game
 
             return await RunRepairProcessAsync(
                 branchDirectory,
-                () => Task.FromResult(Checksums.PrepareBranchChecksumTasks(branchDirectory)),
+                () => Task.FromResult(Task.WhenAll(Checksums.PrepareBranchChecksumTasks(branchDirectory))),
                 () => Fetch.GameFiles(optional: false),
                 "Checking core files...",
                 "Comparing core files...",
@@ -143,7 +142,7 @@ namespace launcher.Game
         {
             await RunRepairProcessAsync(
                 GetBranch.Directory(),
-                () => Task.FromResult(Checksums.PrepareOptChecksumTasks(GetBranch.Directory())),
+                () => Task.FromResult(Task.WhenAll(Checksums.PrepareOptChecksumTasks(GetBranch.Directory()))),
                 () => Fetch.GameFiles(optional: true),
                 "Checking optional files...",
                 "Comparing optional files...",
@@ -159,36 +158,23 @@ namespace launcher.Game
             string branchDirectory = GetBranch.Directory();
 
             GameFiles serverManifest = await Fetch.LanguageFiles();
+            GameFiles manifestForRepair = new GameFiles
+            {
+                files = serverManifest.files
+                    .Where(file => File.Exists(Path.Combine(branchDirectory, file.path)))
+                    .ToList()
+            };
 
-            var existingLocalFiles = serverManifest.files
-                .Where(file => File.Exists(Path.Combine(branchDirectory, file.path)))
-                .ToList();
-
-            if (!existingLocalFiles.Any())
+            if (!manifestForRepair.files.Any())
             {
                 LogInfo(LogSource.Repair, "No local language files found to verify.");
                 return;
             }
 
-            var manifestForRepair = new GameFiles { files = existingLocalFiles };
-
-            Func<Task<List<Task<FileChecksum>>>> prepareChecksums = () =>
+            Func<Task<Task<FileChecksum[]>>> prepareChecksums = async () =>
             {
-                appDispatcher.Invoke(() =>
-                {
-                    Progress_Bar.Maximum = existingLocalFiles.Count;
-                    Progress_Bar.Value = 0;
-                    Percent_Label.Text = "0%";
-                });
-                AppState.FilesLeft = existingLocalFiles.Count;
-
-                var checksumTasks = new List<Task<FileChecksum>>();
-                foreach (var file in existingLocalFiles)
-                {
-                    string fullPath = Path.Combine(branchDirectory, file.path);
-                    checksumTasks.Add(Checksums.GenerateAndReturnFileChecksum(fullPath, branchDirectory));
-                }
-                return Task.FromResult(checksumTasks);
+                var checksumTasks = await Checksums.PrepareLangChecksumTasksAsync(branchDirectory);
+                return Task.WhenAll(checksumTasks);
             };
 
             await RunRepairProcessAsync(

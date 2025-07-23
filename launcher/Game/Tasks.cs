@@ -111,7 +111,7 @@ namespace launcher.Game
             if (File.Exists(destinationPath))
             {
                 // Use `await` to get the string result from the Task<string>.
-                string actualChecksum = Checksums.CalculateChecksum(destinationPath);
+                string actualChecksum = await Checksums.CalculateChecksumAsync(destinationPath);
 
                 // Check for null in case the checksum calculation failed.
                 if (actualChecksum != null && string.Equals(actualChecksum, checksum, StringComparison.OrdinalIgnoreCase))
