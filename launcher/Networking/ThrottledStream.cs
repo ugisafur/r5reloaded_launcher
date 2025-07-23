@@ -9,9 +9,9 @@ namespace launcher.Networking
     public class ThrottledStream : Stream
     {
         private readonly Stream _baseStream;
-        private readonly GlobalBandwidthLimiter _baseGlobalBandwidthLimiter;
+        private readonly BandwidthThrottler _baseGlobalBandwidthLimiter;
 
-        public ThrottledStream(Stream baseStream, GlobalBandwidthLimiter baseGlobalBandwidthLimiter)
+        public ThrottledStream(Stream baseStream, BandwidthThrottler baseGlobalBandwidthLimiter)
         {
             _baseStream = baseStream;
             _baseGlobalBandwidthLimiter = baseGlobalBandwidthLimiter;
@@ -19,7 +19,7 @@ namespace launcher.Networking
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            bool acquired = await GlobalBandwidthLimiter.Instance.AcquireAsync(count, cancellationToken);
+            bool acquired = await BandwidthThrottler.Instance.AcquireAsync(count, cancellationToken);
             if (acquired)
             {
                 return await _baseStream.ReadAsync(buffer, offset, count, cancellationToken);

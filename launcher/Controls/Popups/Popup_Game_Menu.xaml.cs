@@ -37,9 +37,9 @@ namespace launcher
 
         private void OpenDir_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (GetBranch.Installed() || GetBranch.IsLocalBranch() || Directory.Exists(GetBranch.Directory()))
+            if (BranchService.IsInstalled() || BranchService.IsLocal() || Directory.Exists(BranchService.GetDirectory()))
             {
-                string dir = GetBranch.Directory();
+                string dir = BranchService.GetDirectory();
 
                 if (Directory.Exists(dir))
                     System.Diagnostics.Process.Start("explorer.exe", dir);

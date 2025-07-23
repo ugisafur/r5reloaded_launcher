@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace launcher.Networking
 {
-    public class DownloadSpeedMonitor
+    public class DownloadSpeedService
     {
         private readonly TimeSpan _monitorInterval = TimeSpan.FromSeconds(1);
         private long _previousTotalBytes = 0;
@@ -15,7 +15,7 @@ namespace launcher.Networking
 
         public event Action<double> OnSpeedUpdated;
 
-        public DownloadSpeedMonitor()
+        public DownloadSpeedService()
         {
             Task.Run(() => MonitorSpeedAsync(_cts.Token));
         }

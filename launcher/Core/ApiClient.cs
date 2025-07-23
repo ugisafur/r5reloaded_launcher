@@ -24,7 +24,7 @@ namespace launcher.Core
 
         public static async Task<GameFiles> GetGameFilesAsync(bool optional)
         {
-            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{BranchService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
             gameFiles.files = gameFiles.files.Where(file => file.optional == optional && string.IsNullOrEmpty(file.language)).ToList();
 
@@ -42,7 +42,7 @@ namespace launcher.Core
                 return branchgameFiles;
             }
 
-            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{GetBranch.GameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{BranchService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
             gameFiles.files = gameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
 

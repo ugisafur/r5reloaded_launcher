@@ -76,7 +76,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return false;
+            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal()) return false;
 
             if (IsR5ApexOpen())
             {
@@ -91,17 +91,17 @@ namespace launcher.GameManagement
                 }
             }
 
-            if (GetBranch.UpdateAvailable())
+            if (BranchService.IsUpdateAvailable())
             {
                 Update_Button.Visibility = Visibility.Hidden;
-                SetBranch.UpdateAvailable(false);
+                BranchService.SetUpdateAvailable(false);
             }
             return true;
         }
 
         private static async Task<bool> ExecuteMainRepairAsync()
         {
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             DownloadService.CreateDownloadMonitor();
             DownloadService.ConfigureConcurrency();
             DownloadService.ConfigureDownloadSpeed();
@@ -122,21 +122,21 @@ namespace launcher.GameManagement
             await RepairLanguageFilesAsync();
 
             // Update local state.
-            SetBranch.Installed(true);
-            SetBranch.Version(GetBranch.ServerVersion());
+            BranchService.SetInstalled(true);
+            BranchService.SetVersion(BranchService.GetServerVersion());
 
             // Clean up cache files.
-            string sigCacheFile = Path.Combine(GetBranch.Directory(), "cfg", "startup.bin");
+            string sigCacheFile = Path.Combine(BranchService.GetDirectory(), "cfg", "startup.bin");
             if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
             // Update UI and send notification.
             SetupAdvancedMenu();
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) has been repaired!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) has been repaired!", BalloonIcon.Info);
 
             // Check for existing HD Textures.
-            if (CheckForHDTextures(GetBranch.Directory()))
+            if (CheckForHDTextures(BranchService.GetDirectory()))
             {
-                SetBranch.DownloadHDTextures(true);
+                BranchService.SetDownloadHDTextures(true);
                 // Asynchronously repair optional files without waiting.
                 await RepairOptionalFilesAsync();
             }
@@ -145,21 +145,21 @@ namespace launcher.GameManagement
         private static async Task RepairOptionalFilesAsync()
         {
             await RunRepairProcessAsync(
-                GetBranch.Directory(),
-                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(GetBranch.Directory()))),
+                BranchService.GetDirectory(),
+                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(BranchService.GetDirectory()))),
                 () => ApiClient.GetGameFilesAsync(optional: true),
                 "Checking optional files...",
                 "Comparing optional files...",
                 "Downloading optional files..."
             );
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been repaired!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) optional files have been repaired!", BalloonIcon.Info);
         }
 
         private static async Task RepairLanguageFilesAsync()
         {
             if (!AppState.IsOnline) return;
 
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
 
             GameFiles serverManifest = await ApiClient.GetLanguageFilesAsync();
             GameFiles manifestForRepair = new GameFiles

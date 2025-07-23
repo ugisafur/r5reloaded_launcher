@@ -287,7 +287,7 @@ namespace launcher
 
             try
             {
-                bool isGameReadyToLaunch = !AppState.IsOnline || GetBranch.Installed() || GetBranch.IsLocalBranch();
+                bool isGameReadyToLaunch = !AppState.IsOnline || BranchService.IsInstalled() || BranchService.IsLocal();
 
                 if (isGameReadyToLaunch)
                 {
@@ -301,7 +301,7 @@ namespace launcher
                 else
                 {
                     string libraryLocation = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
-                    string exePath = Path.Combine(GetBranch.Directory(), "r5apex.exe");
+                    string exePath = Path.Combine(BranchService.GetDirectory(), "r5apex.exe");
 
                     if (!string.IsNullOrEmpty(libraryLocation) && File.Exists(exePath))
                     {
@@ -357,8 +357,8 @@ namespace launcher
             if (Branch_Combobox.Items[selectedBranch] is not ComboBranch comboBranch) return;
 
             SetupAdvancedMenu();
-            GameSettings_Control.OpenDir_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
-            GameSettings_Control.AdvancedMenu_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
+            GameSettings_Control.OpenDir_Button.IsEnabled = BranchService.IsInstalled() || comboBranch.isLocalBranch;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = BranchService.IsInstalled() || comboBranch.isLocalBranch;
 
             if (AppState.IsOnline && Launcher.newsOnline)
             {
@@ -373,11 +373,11 @@ namespace launcher
             }
 
             AppState.IsLocalBranch = false;
-            IniSettings.Set(IniSettings.Vars.SelectedBranch, GetBranch.Name(false));
+            IniSettings.Set(IniSettings.Vars.SelectedBranch, BranchService.GetName(false));
 
-            Task.Run(() => SetTextBlockContent(GetBranch.ServerComboVersion(GetBranch.Branch())));
+            Task.Run(() => SetTextBlockContent(BranchService.GetServerComboVersion(BranchService.GetCurrentBranch())));
 
-            if (GetBranch.Installed())
+            if (BranchService.IsInstalled())
             {
                 HandleInstalledBranch(selectedBranch);
             }
@@ -389,7 +389,7 @@ namespace launcher
 
         private async void SetTextBlockContent(string version)
         {
-            string slug = await GetBranch.BlogSlug();
+            string slug = await BranchService.GetBlogSlug();
             string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
             News root = await NetworkHealthService.HttpClient.GetFromJsonAsync<News>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
             string url = root.posts.Count == 0 ? "https://blog.r5reloaded.com" : root.posts[0].url;
@@ -424,7 +424,7 @@ namespace launcher
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (GetBranch.UpdateAvailable() && GetBranch.Installed())
+            if (BranchService.IsUpdateAvailable() && BranchService.IsInstalled())
             {
                 Task.Run(() => GameUpdater.Start());
                 Update_Button.Visibility = Visibility.Hidden;
@@ -703,9 +703,9 @@ namespace launcher
                 return;
             }
 
-            bool isUpToDate = GetBranch.LocalVersion() == GetBranch.ServerVersion();
+            bool isUpToDate = BranchService.GetLocalVersion() == BranchService.GetServerVersion();
             Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
-            SetBranch.UpdateAvailable(!isUpToDate);
+            BranchService.SetUpdateAvailable(!isUpToDate);
             SetPlayState("PLAY", true, true, true, true, true);
         }
 
@@ -720,9 +720,9 @@ namespace launcher
             }
 
             Update_Button.Visibility = Visibility.Hidden;
-            SetBranch.UpdateAvailable(false);
+            BranchService.SetUpdateAvailable(false);
 
-            bool executableExists = File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe"));
+            bool executableExists = File.Exists(Path.Combine(BranchService.GetDirectory(), "r5apex.exe"));
             SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists, executableExists, executableExists);
         }
 
@@ -756,25 +756,25 @@ namespace launcher
 
         public void SetButtonState()
         {
-            if (GetBranch.IsLocalBranch())
+            if (BranchService.IsLocal())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!GetBranch.Enabled())
+            if (!BranchService.IsEnabled())
             {
                 Play_Button.Content = "DISABLED";
                 return;
             }
 
-            if (GetBranch.Installed())
+            if (BranchService.IsInstalled())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!GetBranch.Installed() && File.Exists(Path.Combine(GetBranch.Directory(), "r5apex.exe")))
+            if (!BranchService.IsInstalled() && File.Exists(Path.Combine(BranchService.GetDirectory(), "r5apex.exe")))
             {
                 Play_Button.Content = "CHECK FILES";
                 return;

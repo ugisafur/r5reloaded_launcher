@@ -50,7 +50,7 @@ namespace launcher.GameManagement
         // REFACTORED: This method now uses the UpdateFileType enum.
         private static async Task RunUpdateProcessAsync(UpdateFileType fileType)
         {
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
 
             await CheckForDeletedFilesAsync(fileType);
 
@@ -121,7 +121,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch() || !GetBranch.UpdateAvailable() || GetBranch.LocalVersion() == GetBranch.ServerVersion())
+            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal() || !BranchService.IsUpdateAvailable() || BranchService.GetLocalVersion() == BranchService.GetServerVersion())
                 return false;
 
             if (IsR5ApexOpen())
@@ -137,7 +137,7 @@ namespace launcher.GameManagement
                 }
             }
 
-            SetBranch.UpdateAvailable(false);
+            BranchService.SetUpdateAvailable(false);
             return true;
         }
 
@@ -154,16 +154,16 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            SetBranch.Installed(true);
-            SetBranch.Version(GetBranch.ServerVersion());
+            BranchService.SetInstalled(true);
+            BranchService.SetVersion(BranchService.GetServerVersion());
 
-            string sigCacheFile = Path.Combine(GetBranch.Directory(), "cfg", "startup.bin");
+            string sigCacheFile = Path.Combine(BranchService.GetDirectory(), "cfg", "startup.bin");
             if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) has been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) has been updated!", BalloonIcon.Info);
             SetupAdvancedMenu();
 
-            if (GetBranch.DownloadHDTextures())
+            if (BranchService.ShouldDownloadHDTextures())
             {
                 await UpdateOptionalFilesAsync();
             }
@@ -174,18 +174,18 @@ namespace launcher.GameManagement
         private static async Task UpdateOptionalFilesAsync()
         {
             await RunUpdateProcessAsync(UpdateFileType.Optional);
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) optional files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task UpdateLanguageFilesAsync()
         {
             await RunUpdateProcessAsync(UpdateFileType.Language);
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) language files have been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) language files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task CheckForDeletedFilesAsync(UpdateFileType fileType)
         {
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories)
                 .Select(f => Path.GetRelativePath(branchDirectory, f))
                 .ToList();

@@ -23,7 +23,7 @@ namespace launcher
         private void close_Click(object sender, RoutedEventArgs e)
         {
             HideDownloadOptlFiles();
-            SetBranch.DownloadHDTextures(false);
+            BranchService.SetDownloadHDTextures(false);
         }
 
         private void Download_Click(object sender, RoutedEventArgs e)
@@ -41,7 +41,7 @@ namespace launcher
         private void Later_Click(object sender, RoutedEventArgs e)
         {
             HideDownloadOptlFiles();
-            SetBranch.DownloadHDTextures(false);
+            BranchService.SetDownloadHDTextures(false);
         }
 
         public void SetDownloadSize(GameFiles game)

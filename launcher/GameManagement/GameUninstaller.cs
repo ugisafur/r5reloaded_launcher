@@ -23,18 +23,18 @@ namespace launcher.GameManagement
             GameTasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                var allFiles = Directory.GetFiles(GetBranch.Directory(), "*", SearchOption.AllDirectories);
+                var allFiles = Directory.GetFiles(BranchService.GetDirectory(), "*", SearchOption.AllDirectories);
                 await RunUninstallProcessAsync(allFiles, "Removing game files");
 
                 // After deleting files, remove the now-empty directories.
-                Directory.Delete(GetBranch.Directory(), true);
+                Directory.Delete(BranchService.GetDirectory(), true);
 
                 // Reset all branch-specific settings.
-                SetBranch.Installed(false);
-                SetBranch.DownloadHDTextures(false);
-                SetBranch.Version("");
+                BranchService.SetInstalled(false);
+                BranchService.SetDownloadHDTextures(false);
+                BranchService.SetVersion("");
 
-                SendNotification($"R5Reloaded ({GetBranch.Name()}) has been uninstalled!", BalloonIcon.Info);
+                SendNotification($"R5Reloaded ({BranchService.GetName()}) has been uninstalled!", BalloonIcon.Info);
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace launcher.GameManagement
 
         public static async Task LangFile(CheckBox checkBox, string language)
         {
-            if (!GetBranch.Installed() || !Directory.Exists(GetBranch.Directory())) return;
+            if (!BranchService.IsInstalled() || !Directory.Exists(BranchService.GetDirectory())) return;
 
             appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
             GameTasks.SetInstallState(true, "UNINSTALLING");
@@ -62,7 +62,7 @@ namespace launcher.GameManagement
                 List<string> filesToDelete = new();
                 foreach(GameFile file in langFilesManifest.files)
                 {
-                    string finalPath = Path.Combine(GetBranch.Directory(), file.path);
+                    string finalPath = Path.Combine(BranchService.GetDirectory(), file.path);
                     filesToDelete.Add(finalPath);
                 }
 
@@ -77,16 +77,16 @@ namespace launcher.GameManagement
 
         public static async Task HDTextures(Branch branch)
         {
-            if (!GetBranch.Installed(branch) || !Directory.Exists(GetBranch.Directory(branch))) return;
+            if (!BranchService.IsInstalled(branch) || !Directory.Exists(BranchService.GetDirectory(branch))) return;
 
             GameTasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                var optFiles = Directory.GetFiles(GetBranch.Directory(branch), "*.opt.starpak", SearchOption.AllDirectories);
+                var optFiles = Directory.GetFiles(BranchService.GetDirectory(branch), "*.opt.starpak", SearchOption.AllDirectories);
                 await RunUninstallProcessAsync(optFiles, "Removing HD textures");
 
-                SetBranch.DownloadHDTextures(false, branch);
-                SendNotification($"HD Textures ({GetBranch.Name(true, branch)}) have been uninstalled!", BalloonIcon.Info);
+                BranchService.SetDownloadHDTextures(false, branch);
+                SendNotification($"HD Textures ({BranchService.GetName(true, branch)}) have been uninstalled!", BalloonIcon.Info);
             }
             finally
             {
@@ -129,13 +129,13 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            string branchDir = GetBranch.Directory();
+            string branchDir = BranchService.GetDirectory();
             if (!Directory.Exists(branchDir))
             {
                 // If directory is already gone, just clean up the state.
-                SetBranch.Installed(false);
-                SetBranch.DownloadHDTextures(false);
-                SetBranch.Version("");
+                BranchService.SetInstalled(false);
+                BranchService.SetDownloadHDTextures(false);
+                BranchService.SetVersion("");
                 return false;
             }
 

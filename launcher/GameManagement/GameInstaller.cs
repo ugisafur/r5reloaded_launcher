@@ -44,7 +44,7 @@ namespace launcher.GameManagement
 
         public static async Task HDTextures()
         {
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return;
+            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal()) return;
 
             GameFiles gameFiles = await ApiClient.GetGameFilesAsync(optional: true);
             if (!await CheckForSufficientSpaceAsync(gameFiles, "HD Textures")) return;
@@ -54,9 +54,9 @@ namespace launcher.GameManagement
             {
                 await RunDownloadProcessAsync(gameFiles, "Downloading optional files");
 
-                SetBranch.DownloadHDTextures(true);
+                BranchService.SetDownloadHDTextures(true);
                 appDispatcher.Invoke(() => Settings_Control.gameInstalls.UpdateGameItems());
-                SendNotification($"R5Reloaded ({GetBranch.Name()}) optional files have been installed!", BalloonIcon.Info);
+                SendNotification($"R5Reloaded ({BranchService.GetName()}) optional files have been installed!", BalloonIcon.Info);
             }
             finally
             {
@@ -94,7 +94,7 @@ namespace launcher.GameManagement
             DownloadService.ConfigureConcurrency();
             DownloadService.ConfigureDownloadSpeed();
 
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             var downloadTasks = GameTasks.InitializeDownloadTasks(gameFiles, branchDirectory);
 
             using var cts = new CancellationTokenSource();
@@ -111,7 +111,7 @@ namespace launcher.GameManagement
 
         private static async Task<bool> RunPreFlightChecksAsync()
         {
-            if (AppState.IsInstalling || !AppState.IsOnline || GetBranch.IsLocalBranch()) return false;
+            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal()) return false;
 
             if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Library_Location)))
             {
@@ -119,13 +119,13 @@ namespace launcher.GameManagement
                 return false;
             }
 
-            if (!GetBranch.EULAAccepted())
+            if (!BranchService.IsEULAAccepted())
             {
                 appDispatcher.Invoke(() => ShowEULA());
                 return false;
             }
 
-            if (GetBranch.ExeExists())
+            if (BranchService.DoesExeExist())
             {
                 await Task.Run(() => GameRepairer.Start());
                 return false; // Pivoted to repair, so stop the install flow.
@@ -178,10 +178,10 @@ namespace launcher.GameManagement
                 await LangFile(null, gameFiles, Launcher.language_name, bypass_block: true);
             }
 
-            SetBranch.Installed(true);
-            SetBranch.Version(GetBranch.ServerVersion());
+            BranchService.SetInstalled(true);
+            BranchService.SetVersion(BranchService.GetServerVersion());
             appDispatcher.Invoke(() => SetupAdvancedMenu());
-            SendNotification($"R5Reloaded ({GetBranch.Name()}) has been installed!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({BranchService.GetName()}) has been installed!", BalloonIcon.Info);
 
             GameFiles optFiles = await ApiClient.GetGameFilesAsync(optional: true);
             appDispatcher.Invoke(() =>

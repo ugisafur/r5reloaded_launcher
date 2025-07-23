@@ -237,7 +237,7 @@ namespace launcher.Core
 
         public static void SetupAdvancedMenu()
         {
-            if (!GetBranch.Installed() && !GetBranch.IsLocalBranch() || !File.Exists(Path.Combine(GetBranch.Directory(), "platform\\playlists_r5_patch.txt")))
+            if (!BranchService.IsInstalled() && !BranchService.IsLocal() || !File.Exists(Path.Combine(BranchService.GetDirectory(), "platform\\playlists_r5_patch.txt")))
             {
                 maps = ["No Selection"];
                 gamemodes = ["No Selection"];
@@ -251,12 +251,12 @@ namespace launcher.Core
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    playlistRoot = PlaylistReader.Parse(Path.Combine(GetBranch.Directory(), "platform\\playlists_r5_patch.txt"));
+                    playlistRoot = PlaylistReader.Parse(Path.Combine(BranchService.GetDirectory(), "platform\\playlists_r5_patch.txt"));
                     gamemodes = PlaylistReader.GetPlaylists(playlistRoot);
                     maps = PlaylistReader.GetMaps(playlistRoot);
                     Advanced_Control.serverPage.SetMapList(maps);
                     Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {GetBranch.Name()}");
+                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {BranchService.GetName()}");
                 }));
             }
             catch (Exception ex)
@@ -290,12 +290,12 @@ namespace launcher.Core
             {
                 foreach (var branch in Launcher.ServerConfig.branches)
                 {
-                    if (GetBranch.Installed(branch) && !Directory.Exists(GetBranch.Directory(branch)))
+                    if (BranchService.IsInstalled(branch) && !Directory.Exists(BranchService.GetDirectory(branch)))
                     {
                         LogWarning(LogSource.Launcher, $"Branch {branch.branch} is set as installed but directory is missing");
-                        SetBranch.Installed(false, branch);
-                        SetBranch.DownloadHDTextures(false, branch);
-                        SetBranch.Version("", branch);
+                        BranchService.SetInstalled(false, branch);
+                        BranchService.SetDownloadHDTextures(false, branch);
+                        BranchService.SetVersion("", branch);
                     }
                 }
             }));
@@ -376,7 +376,7 @@ namespace launcher.Core
                 .Select(branch => new ComboBranch
                 {
                     title = branch.branch.ToUpper(new CultureInfo("en-US")),
-                    subtext = GetBranch.ServerComboVersion(branch),
+                    subtext = BranchService.GetServerComboVersion(branch),
                     isLocalBranch = branch.is_local_branch
                 })
                 .ToList();

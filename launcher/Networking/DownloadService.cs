@@ -4,9 +4,9 @@ using launcher.Core;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using static launcher.Networking.GlobalDownloadStats;
 using launcher.Configuration;
 using static launcher.Core.UiReferences;
+using static launcher.Networking.DownloadProgress;
 
 namespace launcher.Networking
 {
@@ -18,7 +18,7 @@ namespace launcher.Networking
 
         public static long _downloadSpeedLimit = 0;
         public static SemaphoreSlim _downloadSemaphore;
-        public static DownloadSpeedMonitor _speedMonitor;
+        public static DownloadSpeedService _speedMonitor;
         public static double currentDownloadSpeed = 0;
 
         public static DateTime speedCheckStart = DateTime.Now;
@@ -58,7 +58,7 @@ namespace launcher.Networking
         {
             int speedLimitKb = (int)IniSettings.Get(IniSettings.Vars.Download_Speed_Limit);
             _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
-            GlobalBandwidthLimiter.Instance.UpdateLimit(_downloadSpeedLimit);
+            BandwidthThrottler.Instance.UpdateLimit(_downloadSpeedLimit);
         }
 
         public static SemaphoreSlim GetSemaphoreSlim()
@@ -66,7 +66,7 @@ namespace launcher.Networking
             return _downloadSemaphore;
         }
 
-        public static DownloadSpeedMonitor GetDownloadSpeedMonitor()
+        public static DownloadSpeedService GetDownloadSpeedService()
         {
             return _speedMonitor;
         }
@@ -105,7 +105,7 @@ namespace launcher.Networking
             appDispatcher.Invoke(() =>
             {
                 Speed_Label.Text = $"{speedText}";
-                Downloads_Control.Speed_Label.Text = $"{timeLeftText}  |  {downloadedText}/{totalText}  |  {speedText}";
+                Downloads_Control.Speed_Label.Text = $"{TimeLeftText}  |  {DownloadedText}/{TotalText}  |  {speedText}";
             });
         }
 
@@ -118,7 +118,7 @@ namespace launcher.Networking
                 _speedMonitor = null;
             }
 
-            _speedMonitor = new DownloadSpeedMonitor();
+            _speedMonitor = new DownloadSpeedService();
             _speedMonitor.OnSpeedUpdated += UpdateDownloadSpeedUI;
         }
 
@@ -160,16 +160,16 @@ namespace launcher.Networking
 
                     Main_Window.TimeLeft_Label.Text = $"{downloadedText}/{totalText} - Time Left: {timeLeft}";
 
-                    GlobalDownloadStats.timeLeftText = $"Time Left: {timeLeft}";
-                    GlobalDownloadStats.totalText = totalText;
-                    GlobalDownloadStats.downloadedText = downloadedText;
+                    TimeLeftText = $"Time Left: {timeLeft}";
+                    TotalText = totalText;
+                    DownloadedText = downloadedText;
 
                     if ((DateTime.UtcNow - lastPresenceUpdate).TotalSeconds >= 5)
                     {
 
                         string UpdateTypeString = UpdateType == 0 ? "Downloading" : "Repairing";
 
-                        AppState.SetRichPresence($"{UpdateTypeString} {GetBranch.Name()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
+                        AppState.SetRichPresence($"{UpdateTypeString} {BranchService.GetName()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
                         lastPresenceUpdate = DateTime.UtcNow;
                     }
                 });

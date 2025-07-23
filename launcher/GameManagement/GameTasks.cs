@@ -44,7 +44,7 @@ namespace launcher.GameManagement
                 .Where(file => !IsUserGeneratedContent(file))
                 .Select(file =>
                 {
-                    file.downloadMetadata.fileUrl = $"{GetBranch.GameURL()}/{file.path}";
+                    file.downloadMetadata.fileUrl = $"{BranchService.GetGameURL()}/{file.path}";
                     file.downloadMetadata.finalPath = Path.Combine(branchDirectory, file.path);
                     EnsureDirectoryExists(file);
 
@@ -220,8 +220,8 @@ namespace launcher.GameManagement
 
         private static Task DownloadMissingPartsAsync(GameFile file, bool checkForExistingFiles)
         {
-            string branchDirectory = GetBranch.Directory();
-            string gameUrl = GetBranch.GameURL();
+            string branchDirectory = BranchService.GetDirectory();
+            string gameUrl = BranchService.GetGameURL();
 
             // ✅ Each part is now mapped to its own concurrent download task.
             var downloadTasks = file.parts.Select(async part =>
@@ -243,7 +243,7 @@ namespace launcher.GameManagement
 
         private static async Task MergePartsAsync(GameFile file)
         {
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             using var finalStream = new FileStream(file.downloadMetadata.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             for (int i = 0; i < file.parts.Count; i++)
@@ -265,7 +265,7 @@ namespace launcher.GameManagement
 
         private static void CleanupPartFiles(GameFile file)
         {
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             foreach (var part in file.parts)
             {
                 string partPath = Path.Combine(branchDirectory, part.path);
@@ -307,7 +307,7 @@ namespace launcher.GameManagement
             DateTime speedCheckStart = DateTime.Now;
             var metadata = file.downloadMetadata;
 
-            using var throttledStream = new ThrottledStream(responseStream, GlobalBandwidthLimiter.Instance);
+            using var throttledStream = new ThrottledStream(responseStream, BandwidthThrottler.Instance);
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             byte[] buffer = new byte[8192]; // Using a slightly larger buffer (e.g., 8KB) can be more efficient.
@@ -372,7 +372,7 @@ namespace launcher.GameManagement
             appDispatcher.Invoke(() =>
             {
                 bool isUiEnabled = !isInstalling;
-                bool areGameOptionsEnabled = isUiEnabled && GetBranch.Installed();
+                bool areGameOptionsEnabled = isUiEnabled && BranchService.IsInstalled();
 
                 // --- Update Application State ---
                 AppState.IsInstalling = isInstalling;
@@ -399,7 +399,7 @@ namespace launcher.GameManagement
 
         public static void UpdateStatusLabel(string statusText, LogSource source)
         {
-            AppState.SetRichPresence($"Branch: {GetBranch.Name()}", statusText);
+            AppState.SetRichPresence($"Branch: {BranchService.GetName()}", statusText);
             appDispatcher.Invoke(() => {  Status_Label.Text = statusText; });
             LogInfo(source, $"Updating status label: {statusText}");
         }

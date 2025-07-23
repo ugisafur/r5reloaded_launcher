@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace launcher.Networking
 {
-    public class GlobalBandwidthLimiter
+    public class BandwidthThrottler
     {
         private long _maxBytesPerSecond;
         private long _availableBytes;
@@ -14,12 +14,12 @@ namespace launcher.Networking
         private readonly Timer _timer;
         private readonly object _lock = new object();
 
-        private static readonly Lazy<GlobalBandwidthLimiter> _instance =
-            new Lazy<GlobalBandwidthLimiter>(() => new GlobalBandwidthLimiter(10 * 1024 * 1024)); // Default: 10 MB/s
+        private static readonly Lazy<BandwidthThrottler> _instance =
+            new Lazy<BandwidthThrottler>(() => new BandwidthThrottler(10 * 1024 * 1024)); // Default: 10 MB/s
 
-        public static GlobalBandwidthLimiter Instance => _instance.Value;
+        public static BandwidthThrottler Instance => _instance.Value;
 
-        private GlobalBandwidthLimiter(long initialMaxBytesPerSecond)
+        private BandwidthThrottler(long initialMaxBytesPerSecond)
         {
             _maxBytesPerSecond = initialMaxBytesPerSecond;
             _availableBytes = initialMaxBytesPerSecond;

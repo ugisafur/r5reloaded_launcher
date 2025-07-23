@@ -77,12 +77,12 @@ namespace launcher
         {
             if (GameBranch == null) return;
 
-            bool isInstalled = GetBranch.Installed(GameBranch);
+            bool isInstalled = BranchService.IsInstalled(GameBranch);
             bool isEnabled = GameBranch.enabled;
-            string dediUrl = GetBranch.DediURL(GameBranch);
+            string dediUrl = BranchService.GetDediURL(GameBranch);
 
-            BranchName.Text = GetBranch.Name(true, GameBranch);
-            InstallPath.Text = GetBranch.Directory(GameBranch);
+            BranchName.Text = BranchService.GetName(true, GameBranch);
+            InstallPath.Text = BranchService.GetDirectory(GameBranch);
 
             // Set button enabled state
             bool canInteract = !AppState.IsInstalling;
@@ -102,7 +102,7 @@ namespace launcher
             InstallOpt.Visibility = canShowOpt ? Visibility.Visible : Visibility.Hidden;
             if (canShowOpt)
             {
-                InstallOpt.Content = GetBranch.DownloadHDTextures(GameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
+                InstallOpt.Content = BranchService.ShouldDownloadHDTextures(GameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
 
             // Set Dedi Name
@@ -146,7 +146,7 @@ namespace launcher
         /// </summary>
         private CheckBox CreateLanguageCheckbox(string lang, bool isEnabled = true, bool isChecked = false)
         {
-            bool canInteract = !AppState.IsInstalling && isEnabled && GetBranch.Installed(GameBranch);
+            bool canInteract = !AppState.IsInstalling && isEnabled && BranchService.IsInstalled(GameBranch);
 
             return new CheckBox
             {
@@ -166,7 +166,7 @@ namespace launcher
         /// </summary>
         private bool DoesLangFileExist(string lang)
         {
-            string dir = GetBranch.Directory(GameBranch);
+            string dir = BranchService.GetDirectory(GameBranch);
             string langLower = lang.ToLower(CultureInfo.InvariantCulture);
 
             // Use Path.Combine for safe and correct path building.
@@ -295,21 +295,21 @@ namespace launcher
         private void VerifyGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (GetBranch.Installed(GameBranch))
+            if (BranchService.IsInstalled(GameBranch))
                 Task.Run(() => GameRepairer.Start());
         }
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (GetBranch.Installed(GameBranch))
+            if (BranchService.IsInstalled(GameBranch))
                 Task.Run(() => GameUninstaller.Start());
         }
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (!GetBranch.Installed(GameBranch))
+            if (!BranchService.IsInstalled(GameBranch))
                 Task.Run(() => GameInstaller.Start());
         }
 
@@ -317,7 +317,7 @@ namespace launcher
         {
             if (!CanExecuteAction()) return;
 
-            if (GetBranch.DownloadHDTextures(GameBranch))
+            if (BranchService.ShouldDownloadHDTextures(GameBranch))
                 Task.Run(() => GameUninstaller.HDTextures(GameBranch));
             else
                 ShowDownloadOptlFiles();
@@ -325,7 +325,7 @@ namespace launcher
 
         private void Dedi_Click(object sender, RoutedEventArgs e)
         {
-            string url = GetBranch.DediURL(GameBranch);
+            string url = BranchService.GetDediURL(GameBranch);
             if (!string.IsNullOrEmpty(url))
             {
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });

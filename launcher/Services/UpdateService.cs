@@ -278,16 +278,16 @@ namespace launcher.Services
             if (AppState.IsInstalling)
                 return false;
 
-            if (GetBranch.IsLocalBranch())
+            if (BranchService.IsLocal())
                 return false;
 
-            if(!GetBranch.Installed())
+            if(!BranchService.IsInstalled())
                 return false;
 
-            if (!newServerConfig.branches[GetBranch.Index()].allow_updates)
+            if (!newServerConfig.branches[BranchService.GetCurrentIndex()].allow_updates)
                 return false;
 
-            if(GetBranch.LocalVersion() == GetBranch.ServerVersion())
+            if(BranchService.GetLocalVersion() == BranchService.GetServerVersion())
                 return false;
 
             return true;
@@ -322,15 +322,15 @@ namespace launcher.Services
 
         private static void HandleGameUpdate()
         {
-            if (GetBranch.IsLocalBranch())
+            if (BranchService.IsLocal())
                 return;
 
-            if (GetBranch.UpdateAvailable())
+            if (BranchService.IsUpdateAvailable())
                 return;
 
             appDispatcher.Invoke(() =>
             {
-                SetBranch.UpdateAvailable(true);
+                BranchService.SetUpdateAvailable(true);
                 Update_Button.Visibility = Visibility.Visible;
             });
         }

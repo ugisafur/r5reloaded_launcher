@@ -41,7 +41,7 @@ namespace launcher.GameManagement
 
             var mode = (eMode)(int)IniSettings.Get(IniSettings.Vars.Mode);
             string exeName = mode == eMode.SERVER ? "r5apex_ds.exe" : "r5apex.exe";
-            string branchDirectory = GetBranch.Directory();
+            string branchDirectory = BranchService.GetDirectory();
             string exePath = Path.Combine(branchDirectory, exeName);
 
             if (!File.Exists(exePath))

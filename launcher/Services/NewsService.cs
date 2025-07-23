@@ -40,8 +40,8 @@ namespace launcher.Services
                 PopulateNewsCatagory("support-us", 2, false);
 
             // Populate the patch notes category
-            if (!GetBranch.IsLocalBranch())
-                PopulateNewsCatagory(await GetBranch.BlogSlug(), 3, true);
+            if (!BranchService.IsLocal())
+                PopulateNewsCatagory(await BranchService.GetBlogSlug(), 3, true);
 
             appDispatcher.BeginInvoke(() =>
             {

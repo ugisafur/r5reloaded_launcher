@@ -59,7 +59,7 @@ namespace launcher
 
         private void acknowledge_Click(object sender, RoutedEventArgs e)
         {
-            SetBranch.EULAAccepted(true);
+            BranchService.SetEULAAccepted(true);
             Task.Run(() => GameInstaller.Start());
             HideEULA();
         }
