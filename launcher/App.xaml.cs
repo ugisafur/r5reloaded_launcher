@@ -38,7 +38,7 @@ namespace launcher
         {
             ThemeDictionary.MergedDictionaries.Clear();
             ThemeDictionary.MergedDictionaries.Add(new ResourceDictionary() { Source = uri });
-            ThemeDictionary.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri("pack://application:,,,/Controls/Extra/styles.xaml") });
+            ThemeDictionary.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri("pack://application:,,,/Controls/Styles/styles.xaml") });
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

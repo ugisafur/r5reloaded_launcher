@@ -9,8 +9,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary x:Name="ThemeDictionary">
                     <ResourceDictionary.MergedDictionaries>
-                        <ResourceDictionary Source="Controls/Extra/theme.xaml" />
-                        <ResourceDictionary Source="Controls/Extra/styles.xaml" />
+                        <ResourceDictionary Source="Controls/Styles/theme.xaml" />
+                        <ResourceDictionary Source="Controls/Styles/styles.xaml" />
                     </ResourceDictionary.MergedDictionaries>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
