@@ -58,18 +58,18 @@ namespace launcher.Services
 
         private static void PopulateNewsCatagory(string slug, int index, bool shouldCache)
         {
-            Root root = new();
+            News news = new();
 
             if (blogItemsCached.TryGetValue(slug, out bool value) && value)
-                root = GetCachedNewsItems(slug);
+                news = GetCachedNewsItems(slug);
             else
-                root = GetNewsItems(slug, shouldCache);
+                news = GetNewsItems(slug, shouldCache);
 
             appDispatcher.BeginInvoke(() =>
             {
                 Pages[index].Clear();
 
-                foreach (var post in root.posts)
+                foreach (var post in news.posts)
                 {
                     if (post.tags == null || post.tags.Count < 1)
                         continue;
@@ -153,15 +153,15 @@ namespace launcher.Services
             }
         }
 
-        private static Root GetNewsItems(string slug, bool shouldCache)
+        private static News GetNewsItems(string slug, bool shouldCache)
         {
-            Root root = new();
+            News news = new();
 
             try
             {
                 string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
                 //string order = sortByOldest ? "&order=published_at%20desc" : "&order=published_at%20asc";
-                root = NetworkHealthService.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit={MaxItemsPerCategory}&fields=title,excerpt,published_at,url,feature_image").Result;
+                news = NetworkHealthService.HttpClient.GetFromJsonAsync<News>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit={MaxItemsPerCategory}&fields=title,excerpt,published_at,url,feature_image").Result;
             }
             catch
             {
@@ -176,7 +176,7 @@ namespace launcher.Services
                     if (File.Exists(filePath))
                         File.Delete(filePath);
 
-                    File.WriteAllText(filePath, JsonSerializer.Serialize(root));
+                    File.WriteAllText(filePath, JsonSerializer.Serialize(news));
                     blogItemsCached[slug] = true;
 
                     LogInfo(LogSource.Launcher, $"Cached news items for {slug}.");
@@ -187,32 +187,32 @@ namespace launcher.Services
                 }
             }
 
-            return root;
+            return news;
         }
 
-        private static Root GetCachedNewsItems(string slug)
+        private static News GetCachedNewsItems(string slug)
         {
-            Root root = new();
+            News news = new();
 
             string filePath = System.IO.Path.Combine(Launcher.PATH, "launcher_data\\cache", $"{slug}.json");
             if (!File.Exists(filePath))
-                return root;
+                return news;
 
             string json = File.ReadAllText(filePath);
 
             if (string.IsNullOrEmpty(json))
-                return root;
+                return news;
 
             try
             {
-                root = JsonSerializer.Deserialize<Root>(json);
+                news = JsonSerializer.Deserialize<News>(json);
             }
             catch (JsonException ex)
             {
                 LogError(LogSource.Launcher, $"Failed to deserialize JSON: {ex.Message}");
             }
 
-            return root;
+            return news;
         }
 
         public static void CachedCleared()

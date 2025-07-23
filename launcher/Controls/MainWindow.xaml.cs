@@ -391,7 +391,7 @@ namespace launcher
         {
             string slug = await GetBranch.BlogSlug();
             string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
-            Root root = await NetworkHealthService.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
+            News root = await NetworkHealthService.HttpClient.GetFromJsonAsync<News>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
             string url = root.posts.Count == 0 ? "https://blog.r5reloaded.com" : root.posts[0].url;
 
             appDispatcher.BeginInvoke(() =>

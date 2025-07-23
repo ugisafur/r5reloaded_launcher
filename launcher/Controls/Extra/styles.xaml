@@ -2,20 +2,20 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <FontFamily x:Key="NunitoSansNormalExtraLight">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraLight</FontFamily>
-    <FontFamily x:Key="NunitoSansNormalLight">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Light</FontFamily>
-    <FontFamily x:Key="NunitoSansNormal">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal</FontFamily>
-    <FontFamily x:Key="NunitoSansNormalMedium">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Medium</FontFamily>
-    <FontFamily x:Key="NunitoSansNormalSemiBold">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal SemiBold</FontFamily>
-    <FontFamily x:Key="NunitoSansNormalExtraBold">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraBold</FontFamily>
-    <FontFamily x:Key="NunitoSansNormalBlack">./assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Black</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalExtraLight">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraLight</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalLight">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Light</FontFamily>
+    <FontFamily x:Key="NunitoSansNormal">.../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalMedium">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Medium</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalSemiBold">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal SemiBold</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalExtraBold">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal ExtraBold</FontFamily>
+    <FontFamily x:Key="NunitoSansNormalBlack">../../Assets/NunitoSans-VariableFont.ttf#Nunito Sans Normal Black</FontFamily>
 
-    <FontFamily x:Key="SansationBold">./assets/Sansation-Bold.ttf#Sansation Bold</FontFamily>
-    <FontFamily x:Key="SansationBoldItalic">./assets/Sansation-BoldItalic.ttf#Sansation Bold Italic</FontFamily>
-    <FontFamily x:Key="SansationItalic">./assets/Sansation-Italic.ttf#Sansation Italic</FontFamily>
-    <FontFamily x:Key="SansationLight">./assets/Sansation-Light.ttf#Sansation Light</FontFamily>
-    <FontFamily x:Key="SansationLightItalic">./assets/Sansation-LightItalic.ttf#Sansation Light Italic</FontFamily>
-    <FontFamily x:Key="SansationRegular">./assets/Sansation-Regular.ttf#Sansation Regular</FontFamily>
+    <FontFamily x:Key="SansationBold">../../Assets/Sansation-Bold.ttf#Sansation Bold</FontFamily>
+    <FontFamily x:Key="SansationBoldItalic">../../Assets/Sansation-BoldItalic.ttf#Sansation Bold Italic</FontFamily>
+    <FontFamily x:Key="SansationItalic">../../Assets/Sansation-Italic.ttf#Sansation Italic</FontFamily>
+    <FontFamily x:Key="SansationLight">../../Assets/Sansation-Light.ttf#Sansation Light</FontFamily>
+    <FontFamily x:Key="SansationLightItalic">../../Assets/Sansation-LightItalic.ttf#Sansation Light Italic</FontFamily>
+    <FontFamily x:Key="SansationRegular">../../Assets/Sansation-Regular.ttf#Sansation Regular</FontFamily>
 
     <DrawingImage x:Key="logo_main_whiteDrawingImage">
         <DrawingImage.Drawing>
