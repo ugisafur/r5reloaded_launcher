@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using launcher.Configuration;
+using launcher.Core;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using launcher.Global;
-using launcher.Managers;
+using static launcher.Core.Application;
 
 namespace launcher
 {
@@ -46,7 +47,7 @@ namespace launcher
                 _ => null,
             };
 
-            double fadeSpeed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 200;
+            double fadeSpeed = (bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions) ? 1 : 200;
 
             if (visiblePage != null && newPage != null && visiblePage != newPage)
             {
@@ -118,13 +119,13 @@ namespace launcher
         public void OpenDownloadsSettings()
         {
             SetSettingsTab(SettingsPage.Download);
-            Managers.App.ShowSettingsControl();
+            ShowSettingsControl();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (AppState.InSettingsMenu)
-                Managers.App.HideSettingsControl();
+                HideSettingsControl();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

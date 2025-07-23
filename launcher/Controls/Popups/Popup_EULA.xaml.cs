@@ -1,12 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using launcher.Core;
+using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using launcher.Game;
-using launcher.Global;
-using static launcher.Global.References;
-using static launcher.Global.Logger;
+using static launcher.Utils.Logger;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Services;
+using launcher.GameManagement;
 
 namespace launcher
 {
@@ -33,7 +35,7 @@ namespace launcher
                 return;
             }
 
-            if (!Networking.MasterServerTest().Result)
+            if (!NetworkHealthService.IsMasterServerAvailableAsync().Result)
             {
                 LogError( LogSource.Launcher, "Failed to get EULA, no reponse from master server");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no reponse from master server"));
@@ -41,7 +43,7 @@ namespace launcher
             }
 
             var content = new StringContent("{}", Encoding.UTF8, "application/json");
-            HttpResponseMessage response = Networking.HttpClient.PostAsync("https://r5r.org/eula", content).Result;
+            HttpResponseMessage response = NetworkHealthService.HttpClient.PostAsync("https://r5r.org/eula", content).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -58,13 +60,13 @@ namespace launcher
         private void acknowledge_Click(object sender, RoutedEventArgs e)
         {
             SetBranch.EULAAccepted(true);
-            Task.Run(() => Install.Start());
-            Managers.App.HideEULA();
+            Task.Run(() => GameInstaller.Start());
+            HideEULA();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideEULA();
+            HideEULA();
         }
     }
 

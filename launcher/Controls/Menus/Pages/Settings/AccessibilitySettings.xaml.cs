@@ -1,8 +1,9 @@
-﻿using System.Windows;
+﻿using launcher.Configuration;
+using launcher.Core;
+using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global.Logger;
-using static launcher.Global.References;
-using launcher.Global;
+using static launcher.Utils.Logger;
+using static launcher.Core.UiReferences;
 
 namespace launcher
 {
@@ -19,9 +20,9 @@ namespace launcher
         public void SetupAccessibilitySettings()
         {
             // Set the initial state of the toggle switches
-            DisableTransitionsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Transitions);
-            DisableAnimationsBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Animations);
-            DisableBackgroundVideoBtn.IsChecked = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
+            DisableTransitionsBtn.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions);
+            DisableAnimationsBtn.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Disable_Animations);
+            DisableBackgroundVideoBtn.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Disable_Background_Video);
 
             DisableAnimationsBtn.Checked += DisableAnimationsBtn_CheckedChanged;
             DisableTransitionsBtn.Checked += DisableTransitionsBtn_CheckedChanged;
@@ -42,20 +43,20 @@ namespace launcher
         private void DisableBackgroundVideoBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableBackgroundVideoBtn.IsChecked.Value;
-            Ini.Set(Ini.Vars.Disable_Background_Video, value);
+            IniSettings.Set(IniSettings.Vars.Disable_Background_Video, value);
             ToggleBackgroundVideo(DisableBackgroundVideoBtn.IsChecked.Value);
         }
 
         private void DisableAnimationsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableAnimationsBtn.IsChecked.Value;
-            Ini.Set(Ini.Vars.Disable_Animations, value);
+            IniSettings.Set(IniSettings.Vars.Disable_Animations, value);
         }
 
         private void DisableTransitionsBtn_CheckedChanged(object sender, RoutedEventArgs e)
         {
             bool value = DisableTransitionsBtn.IsChecked.Value;
-            Ini.Set(Ini.Vars.Disable_Transitions, value);
+            IniSettings.Set(IniSettings.Vars.Disable_Transitions, value);
         }
 
         private static void ToggleBackgroundVideo(bool disabled)

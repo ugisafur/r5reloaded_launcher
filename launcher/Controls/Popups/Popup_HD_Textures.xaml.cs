@@ -1,8 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using launcher.Game;
-using launcher.Global;
+using launcher.Core;
+using launcher.Core.Models;
+using launcher.GameManagement;
+using launcher.Services;
+
+using static launcher.Core.Application;
 
 namespace launcher
 {
@@ -18,7 +22,7 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideDownloadOptlFiles();
+            HideDownloadOptlFiles();
             SetBranch.DownloadHDTextures(false);
         }
 
@@ -26,17 +30,17 @@ namespace launcher
         {
             if (AppState.IsInstalling)
             {
-                Managers.App.HideDownloadOptlFiles();
+                HideDownloadOptlFiles();
                 return;
             }
 
-            Task.Run(() => Install.HDTextures());
-            Managers.App.HideDownloadOptlFiles();
+            Task.Run(() => GameInstaller.HDTextures());
+            HideDownloadOptlFiles();
         }
 
         private void Later_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideDownloadOptlFiles();
+            HideDownloadOptlFiles();
             SetBranch.DownloadHDTextures(false);
         }
 

@@ -2,9 +2,11 @@
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
-using static launcher.Global.References;
-using launcher.Game;
-using launcher.Global;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Configuration;
+using launcher.Core;
+using launcher.GameManagement;
 
 namespace launcher
 {
@@ -17,31 +19,31 @@ namespace launcher
 
         public void SetupInstallLocation()
         {
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Library_Location)))
             {
                 DirectoryInfo parentDir = Directory.GetParent(Launcher.PATH.TrimEnd(Path.DirectorySeparatorChar));
                 FolderLocation.Text = parentDir.FullName;
             }
             else
-                FolderLocation.Text = (string)Ini.Get(Ini.Vars.Library_Location);
+                FolderLocation.Text = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideInstallLocation();
+            HideInstallLocation();
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Library_Location)))
+            if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Library_Location)))
             {
                 DirectoryInfo parentDir = Directory.GetParent(Launcher.PATH.TrimEnd(Path.DirectorySeparatorChar));
-                Ini.Set(Ini.Vars.Library_Location, parentDir.FullName);
+                IniSettings.Set(IniSettings.Vars.Library_Location, parentDir.FullName);
             }
 
             Directory.CreateDirectory(FolderLocation.Text);
-            Task.Run(() => Install.Start());
-            Managers.App.HideInstallLocation();
+            Task.Run(() => GameInstaller.Start());
+            HideInstallLocation();
             Settings_Control.gamePage.SetLibraryPath(FolderLocation.Text);
         }
 
@@ -56,7 +58,7 @@ namespace launcher
             if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 FolderLocation.Text = directoryDialog.FileName;
-                Ini.Set(Ini.Vars.Library_Location, FolderLocation.Text);
+                IniSettings.Set(IniSettings.Vars.Library_Location, FolderLocation.Text);
             }
         }
     }

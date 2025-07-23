@@ -1,10 +1,8 @@
-﻿using System.Diagnostics;
+﻿using launcher.Configuration;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using launcher.Global;
-using static launcher.Global.Logger;
 
 namespace launcher
 {
@@ -20,11 +18,11 @@ namespace launcher
 
         public void SetupGraphicsSettings()
         {
-            HeightRes.Text = (string)Ini.Get(Ini.Vars.Resolution_Height);
-            WidthRes.Text = (string)Ini.Get(Ini.Vars.Resolution_Width);
-            MaxFPS.Text = (string)Ini.Get(Ini.Vars.Max_FPS);
-            Borderless.IsChecked = (bool)Ini.Get(Ini.Vars.Borderless);
-            Windowed.IsChecked = (bool)Ini.Get(Ini.Vars.Windowed);
+            HeightRes.Text = (string)IniSettings.Get(IniSettings.Vars.Resolution_Height);
+            WidthRes.Text = (string)IniSettings.Get(IniSettings.Vars.Resolution_Width);
+            MaxFPS.Text = (string)IniSettings.Get(IniSettings.Vars.Max_FPS);
+            Borderless.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Borderless);
+            Windowed.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Windowed);
 
             HeightRes.LostKeyboardFocus += Height_LostFocus;
             WidthRes.LostKeyboardFocus += Width_LostFocus;
@@ -62,14 +60,14 @@ namespace launcher
 
         private void Height_LostFocus(object sender, RoutedEventArgs e)
         {
-            if ((string)Ini.Get(Ini.Vars.Resolution_Height) != HeightRes.Text)
-                Ini.Set(Ini.Vars.Resolution_Height, HeightRes.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Resolution_Height) != HeightRes.Text)
+                IniSettings.Set(IniSettings.Vars.Resolution_Height, HeightRes.Text);
         }
 
         private void Width_LostFocus(object sender, RoutedEventArgs e)
         {
-            if ((string)Ini.Get(Ini.Vars.Resolution_Width) != WidthRes.Text)
-                Ini.Set(Ini.Vars.Resolution_Width, WidthRes.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Resolution_Width) != WidthRes.Text)
+                IniSettings.Set(IniSettings.Vars.Resolution_Width, WidthRes.Text);
         }
 
         private void MaxFPS_LostFocus(object sender, RoutedEventArgs e)
@@ -77,20 +75,20 @@ namespace launcher
             if (string.IsNullOrEmpty(MaxFPS.Text))
                 MaxFPS.Text = "0";
 
-            if ((string)Ini.Get(Ini.Vars.Max_FPS) != MaxFPS.Text)
-                Ini.Set(Ini.Vars.Max_FPS, MaxFPS.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Max_FPS) != MaxFPS.Text)
+                IniSettings.Set(IniSettings.Vars.Max_FPS, MaxFPS.Text);
         }
 
         private void Borderless_Unchecked(object sender, RoutedEventArgs e)
         {
-            if ((bool)Ini.Get(Ini.Vars.Borderless) != Borderless.IsChecked.Value)
-                Ini.Set(Ini.Vars.Borderless, Borderless.IsChecked.Value);
+            if ((bool)IniSettings.Get(IniSettings.Vars.Borderless) != Borderless.IsChecked.Value)
+                IniSettings.Set(IniSettings.Vars.Borderless, Borderless.IsChecked.Value);
         }
 
         private void Windowed_Unchecked(object sender, RoutedEventArgs e)
         {
-            if ((bool)Ini.Get(Ini.Vars.Windowed) != Windowed.IsChecked.Value)
-                Ini.Set(Ini.Vars.Windowed, Windowed.IsChecked.Value);
+            if ((bool)IniSettings.Get(IniSettings.Vars.Windowed) != Windowed.IsChecked.Value)
+                IniSettings.Set(IniSettings.Vars.Windowed, Windowed.IsChecked.Value);
         }
     }
 }

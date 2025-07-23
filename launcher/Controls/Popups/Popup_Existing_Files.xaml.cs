@@ -1,7 +1,7 @@
-﻿using launcher.Game;
-using launcher.Managers;
+﻿using launcher.GameManagement;
 using System.Windows;
 using System.Windows.Controls;
+using static launcher.Core.Application;
 
 namespace launcher
 {
@@ -17,13 +17,13 @@ namespace launcher
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideCheckExistingFiles();
+            HideCheckExistingFiles();
         }
 
         private void CheckFiles_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideCheckExistingFiles();
-            Task.Run(() => Repair.Start());
+            HideCheckExistingFiles();
+            Task.Run(() => GameRepairer.Start());
         }
     }
 }

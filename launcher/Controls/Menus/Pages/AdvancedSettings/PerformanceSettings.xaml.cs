@@ -3,8 +3,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using launcher.Global;
-using static launcher.Global.Logger;
+using launcher.Configuration;
 
 namespace launcher
 {
@@ -20,10 +19,10 @@ namespace launcher
 
         public void SetupPerformanceSettings()
         {
-            ThreadsWorker.Text = (string)Ini.Get(Ini.Vars.Worker_Threads);
-            AffinityProc.Text = (string)Ini.Get(Ini.Vars.Processor_Affinity);
-            ReservedCores.Text = (string)Ini.Get(Ini.Vars.Reserved_Cores);
-            NoAsync.IsChecked = (bool)Ini.Get(Ini.Vars.No_Async);
+            ThreadsWorker.Text = (string)IniSettings.Get(IniSettings.Vars.Worker_Threads);
+            AffinityProc.Text = (string)IniSettings.Get(IniSettings.Vars.Processor_Affinity);
+            ReservedCores.Text = (string)IniSettings.Get(IniSettings.Vars.Reserved_Cores);
+            NoAsync.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.No_Async);
 
             ThreadsWorker.LostKeyboardFocus += Threads_LostFocus;
             AffinityProc.LostKeyboardFocus += Affinity_LostFocus;
@@ -78,8 +77,8 @@ namespace launcher
                 ThreadsWorker.Text = "-1";
             }
 
-            if ((string)Ini.Get(Ini.Vars.Worker_Threads) != ThreadsWorker.Text)
-                Ini.Set(Ini.Vars.Worker_Threads, ThreadsWorker.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Worker_Threads) != ThreadsWorker.Text)
+                IniSettings.Set(IniSettings.Vars.Worker_Threads, ThreadsWorker.Text);
         }
 
         private void Affinity_LostFocus(object sender, RoutedEventArgs e)
@@ -87,8 +86,8 @@ namespace launcher
             if (string.IsNullOrEmpty(AffinityProc.Text))
                 AffinityProc.Text = "0";
 
-            if ((string)Ini.Get(Ini.Vars.Processor_Affinity) != AffinityProc.Text)
-                Ini.Set(Ini.Vars.Processor_Affinity, AffinityProc.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Processor_Affinity) != AffinityProc.Text)
+                IniSettings.Set(IniSettings.Vars.Processor_Affinity, AffinityProc.Text);
         }
 
         private void ReservedCores_LostFocus(object sender, RoutedEventArgs e)
@@ -103,14 +102,14 @@ namespace launcher
                 ReservedCores.Text = "-1";
             }
 
-            if ((string)Ini.Get(Ini.Vars.Reserved_Cores) != ReservedCores.Text)
-                Ini.Set(Ini.Vars.Reserved_Cores, ReservedCores.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Reserved_Cores) != ReservedCores.Text)
+                IniSettings.Set(IniSettings.Vars.Reserved_Cores, ReservedCores.Text);
         }
 
         private void NoAsync_Unchecked(object sender, RoutedEventArgs e)
         {
-            if ((bool)Ini.Get(Ini.Vars.No_Async) != NoAsync.IsChecked.Value)
-                Ini.Set(Ini.Vars.No_Async, NoAsync.IsChecked.Value);
+            if ((bool)IniSettings.Get(IniSettings.Vars.No_Async) != NoAsync.IsChecked.Value)
+                IniSettings.Set(IniSettings.Vars.No_Async, NoAsync.IsChecked.Value);
         }
     }
 }

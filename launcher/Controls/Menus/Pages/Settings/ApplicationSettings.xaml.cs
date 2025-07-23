@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using launcher.Configuration;
+using launcher.Core;
+using launcher.Services;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using launcher.Global;
-using static launcher.Global.Logger;
-using static launcher.Global.References;
+using static launcher.Core.UiReferences;
+using static launcher.Utils.Logger;
 
 namespace launcher
 {
@@ -20,13 +22,13 @@ namespace launcher
 
         public void SetupApplicationSettings()
         {
-            CloseToQuit.IsChecked = (string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "quit" ? true : false;
-            Notifications.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Notifications);
-            KeepAllLogs.IsChecked = (bool)Ini.Get(Ini.Vars.Keep_All_Logs);
-            StreamVideo.IsChecked = (bool)Ini.Get(Ini.Vars.Stream_Video);
-            NightlyBuilds.IsChecked = (bool)Ini.Get(Ini.Vars.Nightly_Builds);
-            OpenEAApp.IsChecked = (bool)Ini.Get(Ini.Vars.Auto_Launch_EA_App);
-            EnabledRichPresence.IsChecked = (bool)Ini.Get(Ini.Vars.Enable_Discord_Rich_Presence);
+            CloseToQuit.IsChecked = (string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close) == "quit" ? true : false;
+            Notifications.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Enable_Notifications);
+            KeepAllLogs.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Keep_All_Logs);
+            StreamVideo.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Stream_Video);
+            NightlyBuilds.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds);
+            OpenEAApp.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Auto_Launch_EA_App);
+            EnabledRichPresence.IsChecked = (bool)IniSettings.Get(IniSettings.Vars.Enable_Discord_Rich_Presence);
 
             CloseToQuit.Checked += CloseToQuit_Unchecked;
             Notifications.Checked += Notifications_Unchecked;
@@ -47,18 +49,18 @@ namespace launcher
 
         private void EnabledRichPresence_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Enable_Discord_Rich_Presence, EnabledRichPresence.IsChecked.Value);
+            IniSettings.Set(IniSettings.Vars.Enable_Discord_Rich_Presence, EnabledRichPresence.IsChecked.Value);
         }
 
         private void NightlyBuilds_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Nightly_Builds, NightlyBuilds.IsChecked.Value);
-            UpdateChecker.checkForUpdatesOveride = true;
+            IniSettings.Set(IniSettings.Vars.Nightly_Builds, NightlyBuilds.IsChecked.Value);
+            UpdateService.checkForUpdatesOveride = true;
         }
 
         private void OpenEAApp_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Auto_Launch_EA_App, OpenEAApp.IsChecked.Value);
+            IniSettings.Set(IniSettings.Vars.Auto_Launch_EA_App, OpenEAApp.IsChecked.Value);
         }
 
         private void GetLogs_Click(object sender, RoutedEventArgs e)
@@ -74,22 +76,22 @@ namespace launcher
         private void CloseToQuit_Unchecked(object sender, RoutedEventArgs e)
         {
             string value = CloseToQuit.IsChecked.Value ? "quit" : "tray";
-            Ini.Set(Ini.Vars.Enable_Quit_On_Close, value);
+            IniSettings.Set(IniSettings.Vars.Enable_Quit_On_Close, value);
         }
 
         private void Notifications_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Enable_Notifications, Notifications.IsChecked.Value);
+            IniSettings.Set(IniSettings.Vars.Enable_Notifications, Notifications.IsChecked.Value);
         }
 
         private void KeepAllLogs_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Keep_All_Logs, KeepAllLogs.IsChecked.Value);
+            IniSettings.Set(IniSettings.Vars.Keep_All_Logs, KeepAllLogs.IsChecked.Value);
         }
 
         private void StreamVideo_Unchecked(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Stream_Video, StreamVideo.IsChecked.Value);
+            IniSettings.Set(IniSettings.Vars.Stream_Video, StreamVideo.IsChecked.Value);
         }
 
         private void OpenThemeEditor_Click(object sender, RoutedEventArgs e)
@@ -149,7 +151,7 @@ namespace launcher
                     }
                 }
 
-                News.CachedCleared();
+                NewsService.CachedCleared();
             }
         }
 

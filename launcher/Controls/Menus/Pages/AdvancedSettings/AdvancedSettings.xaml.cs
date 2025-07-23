@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using launcher.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using launcher.Global;
-using static launcher.Global.Logger;
 
 namespace launcher
 {
@@ -20,7 +17,7 @@ namespace launcher
 
         public void SetupAdvancedSettings()
         {
-            CommandLine.Text = (string)Ini.Get(Ini.Vars.Command_Line);
+            CommandLine.Text = (string)IniSettings.Get(IniSettings.Vars.Command_Line);
 
             CommandLine.LostKeyboardFocus += CommandLine_LostFocus;
         }
@@ -36,8 +33,8 @@ namespace launcher
 
         private void CommandLine_LostFocus(object sender, RoutedEventArgs e)
         {
-            if ((string)Ini.Get(Ini.Vars.Command_Line) != CommandLine.Text)
-                Ini.Set(Ini.Vars.Command_Line, CommandLine.Text);
+            if ((string)IniSettings.Get(IniSettings.Vars.Command_Line) != CommandLine.Text)
+                IniSettings.Set(IniSettings.Vars.Command_Line, CommandLine.Text);
         }
     }
 }

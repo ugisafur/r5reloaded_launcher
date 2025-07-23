@@ -1,10 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global.References;
 using System.Windows.Media;
 using System.Numerics;
 using System.Windows.Media.Animation;
-using launcher.Global;
+using launcher.Core;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Configuration;
+using launcher.Core.Models;
 
 namespace launcher
 {
@@ -21,7 +24,7 @@ namespace launcher
         {
             if (currentIndex + 1 >= DataCollections.OnBoardingItems.Count)
             {
-                Managers.App.EndTour();
+                EndTour();
                 return;
             }
 
@@ -64,7 +67,7 @@ namespace launcher
             }
 
             // Determine animation speed
-            double speed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 400;
+            double speed = (bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions) ? 1 : 400;
 
             // Animate X property
             var moveXAnimation = new DoubleAnimation
@@ -104,7 +107,7 @@ namespace launcher
                 geo = geo.Clone();
             }
 
-            double speed = (bool)Ini.Get(Ini.Vars.Disable_Transitions) ? 1 : 400;
+            double speed = (bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions) ? 1 : 400;
 
             var rectAnimation = new RectAnimation
             {
@@ -120,7 +123,7 @@ namespace launcher
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.EndTour();
+            EndTour();
         }
     }
 }

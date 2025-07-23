@@ -1,6 +1,4 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using launcher.Game;
-using launcher.Global;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -15,8 +13,16 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using static launcher.Global.Logger;
-using static launcher.Global.References;
+using static launcher.Utils.Logger;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Utils;
+using launcher.Controls.Models;
+using launcher.Services;
+using launcher.Services.Models;
+using launcher.Core;
+using launcher.Configuration;
+using launcher.GameManagement;
 
 namespace launcher
 {
@@ -76,7 +82,7 @@ namespace launcher
             // Hide the window on startup
             this.Opacity = 0;
 
-            Launcher.wineEnv = Managers.App.IsWineEnvironment();
+            Launcher.wineEnv = IsWineEnvironment();
             if (Launcher.wineEnv)
             {
                 LogInfo(LogSource.Launcher, "Wine environment detected, disabling background video");
@@ -94,14 +100,14 @@ namespace launcher
                 Background_Video = null;
             }
 
-            var app = (App)Application.Current;
+            var app = (App)System.Windows.Application.Current;
             if (File.Exists(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")))
             {
                 app.ChangeTheme(new Uri(Path.Combine(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]), "launcher_data\\cfg\\theme.xaml")));
             }
             else
             {
-                if (await Networking.CDNTest())
+                if (await NetworkHealthService.IsCdnAvailableAsync())
                 {
                     app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
                 }
@@ -133,14 +139,14 @@ namespace launcher
 
             // Create the configuration file if it doesn't exist
             PreLoad_Window.SetLoadingText("Creating configuration file");
-            Ini.CreateConfig();
+            IniSettings.CreateConfig();
 
             // Setup the system tray
             PreLoad_Window.SetLoadingText("Setting up system tray");
             SetupSystemTray();
 
             // Setup the application
-            await Managers.App.SetupApp(this);
+            await SetupApp(this);
 
             // Setup the news buttons
             PreLoad_Window.SetLoadingText("Setting up news items");
@@ -152,12 +158,12 @@ namespace launcher
             // Setup Background
             PreLoad_Window.SetLoadingText("Finishing up");
 
-            bool useStaticImage = (bool)Ini.Get(Ini.Vars.Disable_Background_Video);
+            bool useStaticImage = (bool)IniSettings.Get(IniSettings.Vars.Disable_Background_Video);
 
             if (Launcher.wineEnv)
             {
                 // Force disable background video
-                Ini.Set(Ini.Vars.Disable_Background_Video, true);
+                IniSettings.Set(IniSettings.Vars.Disable_Background_Video, true);
                 useStaticImage = true;
             }
             else
@@ -196,15 +202,15 @@ namespace launcher
 
             if (AppState.IsOnline)
             {
-                Task.Run(() => UpdateChecker.Start());
+                Task.Run(() => UpdateService.Start());
                 SetButtonState();
             }
             else
                 Play_Button.Content = "PLAY";
 
-            if ((bool)Ini.Get(Ini.Vars.Ask_For_Tour))
+            if ((bool)IniSettings.Get(IniSettings.Vars.Ask_For_Tour))
             {
-                Managers.App.ShowOnBoardAskPopup();
+                ShowOnBoardAskPopup();
             }
 
             this.Activate();
@@ -251,20 +257,20 @@ namespace launcher
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) != "quit" && (string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) != "tray")
-                Ini.Set(Ini.Vars.Enable_Quit_On_Close, "");
+            if ((string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close) != "quit" && (string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close) != "tray")
+                IniSettings.Set(IniSettings.Vars.Enable_Quit_On_Close, "");
 
-            if (string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close)))
+            if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close)))
             {
-                Managers.App.ShowAskToQuit();
+                ShowAskToQuit();
                 return;
             }
 
-            if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "quit")
-                Application.Current.Shutdown();
-            else if ((string)Ini.Get(Ini.Vars.Enable_Quit_On_Close) == "tray")
+            if ((string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close) == "quit")
+                System.Windows.Application.Current.Shutdown();
+            else if ((string)IniSettings.Get(IniSettings.Vars.Enable_Quit_On_Close) == "tray")
             {
-                Managers.App.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+                SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
                 OnClose();
             }
         }
@@ -287,23 +293,23 @@ namespace launcher
                 {
                     Play_Button.Content = "LAUNCHING";
                     Play_Button.IsEnabled = false;
-					var launchResult = await GameService.LaunchAsync();
+					var launchResult = await GameManager.LaunchAsync();
                     HandleLaunchResult(launchResult);
 					Play_Button.Content = "PLAY";
 					Play_Button.IsEnabled = true;
 				}
                 else
                 {
-                    string libraryLocation = (string)Ini.Get(Ini.Vars.Library_Location);
+                    string libraryLocation = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
                     string exePath = Path.Combine(GetBranch.Directory(), "r5apex.exe");
 
                     if (!string.IsNullOrEmpty(libraryLocation) && File.Exists(exePath))
                     {
-                        Managers.App.ShowCheckExistingFiles();
+                        ShowCheckExistingFiles();
                     }
                     else
                     {
-                        await Task.Run(() => Install.Start());
+                        await Task.Run(() => GameInstaller.Start());
                     }
                 }
             }
@@ -348,15 +354,15 @@ namespace launcher
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
-            var comboBranch = (ComboBranch)Branch_Combobox.Items[selectedBranch];
+            if (Branch_Combobox.Items[selectedBranch] is not ComboBranch comboBranch) return;
 
-            Managers.App.SetupAdvancedMenu();
+            SetupAdvancedMenu();
             GameSettings_Control.OpenDir_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
             GameSettings_Control.AdvancedMenu_Button.IsEnabled = GetBranch.Installed() || comboBranch.isLocalBranch;
 
             if (AppState.IsOnline && Launcher.newsOnline)
             {
-                Task.Run(() => News.Populate());
+                Task.Run(() => NewsService.Populate());
             }
 
             if (comboBranch.isLocalBranch || !AppState.IsOnline)
@@ -367,9 +373,9 @@ namespace launcher
             }
 
             AppState.IsLocalBranch = false;
-            Ini.Set(Ini.Vars.SelectedBranch, GetBranch.Name(false));
+            IniSettings.Set(IniSettings.Vars.SelectedBranch, GetBranch.Name(false));
 
-            Task.Run(() => SetTextBlockContent(comboBranch.subtext));
+            Task.Run(() => SetTextBlockContent(GetBranch.ServerComboVersion(GetBranch.Branch())));
 
             if (GetBranch.Installed())
             {
@@ -385,7 +391,7 @@ namespace launcher
         {
             string slug = await GetBranch.BlogSlug();
             string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
-            Root root = await Networking.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
+            Root root = await NetworkHealthService.HttpClient.GetFromJsonAsync<Root>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
             string url = root.posts.Count == 0 ? "https://blog.r5reloaded.com" : root.posts[0].url;
 
             appDispatcher.BeginInvoke(() =>
@@ -420,14 +426,14 @@ namespace launcher
         {
             if (GetBranch.UpdateAvailable() && GetBranch.Installed())
             {
-                Task.Run(() => Update.Start());
+                Task.Run(() => GameUpdater.Start());
                 Update_Button.Visibility = Visibility.Hidden;
             }
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void VisitWebsite_Click(object sender, RoutedEventArgs e)
@@ -535,24 +541,6 @@ namespace launcher
             }
         }
 
-        public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
-        {
-            private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            private readonly Func<bool> _canExecute = canExecute;
-
-            public bool CanExecute(object parameter) =>
-                _canExecute == null || _canExecute();
-
-            public void Execute(object parameter) =>
-                _execute();
-
-            public event EventHandler CanExecuteChanged
-            {
-                add { CommandManager.RequerySuggested += value; }
-                remove { CommandManager.RequerySuggested -= value; }
-            }
-        }
-
         private void Window_LocationChanged(object sender, EventArgs e)
         {
         }
@@ -561,7 +549,7 @@ namespace launcher
         {
             Button button = (Button)sender;
             int index = NewsButtons.IndexOf(button);
-            Managers.App.MoveNewsRect(index);
+            MoveNewsRect(index);
         }
 
         private bool _isNewsRectShown = false;
@@ -643,7 +631,7 @@ namespace launcher
             if (Launcher.wineEnv)
                 return;
 
-            if ((bool)Ini.Get(Ini.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
+            if ((bool)IniSettings.Get(IniSettings.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
@@ -665,16 +653,16 @@ namespace launcher
                         }
                     }
 
-                    Ini.Set(Ini.Vars.Server_Video_Name, Launcher.ServerConfig.backgroundVideo);
+                    IniSettings.Set(IniSettings.Vars.Server_Video_Name, Launcher.ServerConfig.backgroundVideo);
 
                     Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), UriKind.Absolute);
 
                     LogInfo(LogSource.Launcher, $"Loaded video background from server");
                 }
             }
-            else if ((bool)Ini.Get(Ini.Vars.Stream_Video) && string.IsNullOrEmpty((string)Ini.Get(Ini.Vars.Server_Video_Name)) && File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name))))
+            else if ((bool)IniSettings.Get(IniSettings.Vars.Stream_Video) && string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Server_Video_Name)) && File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)IniSettings.Get(IniSettings.Vars.Server_Video_Name))))
             {
-                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)Ini.Get(Ini.Vars.Server_Video_Name)), UriKind.Absolute);
+                Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", (string)IniSettings.Get(IniSettings.Vars.Server_Video_Name)), UriKind.Absolute);
                 LogInfo(LogSource.Launcher, "Loading local video background");
             }
             else if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")))
@@ -699,7 +687,7 @@ namespace launcher
 
         private void HandleLocalBranch(string branchTitle)
         {
-            Ini.Set(Ini.Vars.SelectedBranch, branchTitle);
+            IniSettings.Set(IniSettings.Vars.SelectedBranch, branchTitle);
             Update_Button.Visibility = Visibility.Hidden;
             SetPlayState("PLAY", true, false, true, true, true);
             AppState.IsLocalBranch = true;
@@ -763,7 +751,7 @@ namespace launcher
                 ContextMenu = (ContextMenu)FindResource("tbiContextMenu")
             };
 
-            Application.Current.Exit += new ExitEventHandler(Current_Exit);
+            System.Windows.Application.Current.Exit += new ExitEventHandler(Current_Exit);
         }
 
         public void SetButtonState()
@@ -800,7 +788,7 @@ namespace launcher
             if (isOpening && this.Opacity == 1)
                 return;
 
-            if ((bool)Ini.Get(Ini.Vars.Disable_Animations))
+            if ((bool)IniSettings.Get(IniSettings.Vars.Disable_Animations))
             {
                 if (isOpening)
                 {
@@ -900,9 +888,9 @@ namespace launcher
         private void ExecuteShowWindow()
         {
             // Show the main window
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                var mainWindow = Application.Current.MainWindow;
+                var mainWindow = System.Windows.Application.Current.MainWindow;
                 if (mainWindow != null)
                 {
                     mainWindow.Show();
@@ -924,12 +912,5 @@ namespace launcher
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion functions
-    }
-
-    public class ComboBranch
-    {
-        public string title { get; set; }
-        public string subtext { get; set; }
-        public bool isLocalBranch { get; set; }
     }
 }

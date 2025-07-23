@@ -1,13 +1,10 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using launcher.Configuration;
+using launcher.Core;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using launcher.Game;
-using launcher.Global;
-using static launcher.Global.References;
+using static launcher.Core.UiReferences;
 
 namespace launcher
 {
@@ -29,7 +26,7 @@ namespace launcher
             _gameItems.Clear();
             BranchPanel.Children.Clear();
 
-            LibraryPath.Text = (string)Ini.Get(Ini.Vars.Library_Location);
+            LibraryPath.Text = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
 
             var branchesToShow = Launcher.ServerConfig.branches
                 .Where(b => !b.is_local_branch && b.enabled)
@@ -122,7 +119,7 @@ namespace launcher
         private void SetLibraryPath()
         {
             string newPath = LibraryPath.Text;
-            if ((string)Ini.Get(Ini.Vars.Library_Location) != newPath)
+            if ((string)IniSettings.Get(IniSettings.Vars.Library_Location) != newPath)
             {
                 UpdateLibraryPath(newPath);
             }
@@ -133,7 +130,7 @@ namespace launcher
         /// </summary>
         private void UpdateLibraryPath(string newPath)
         {
-            Ini.Set(Ini.Vars.Library_Location, newPath);
+            IniSettings.Set(IniSettings.Vars.Library_Location, newPath);
             UpdateGameItems();
             Main_Window.SetButtonState();
         }

@@ -1,6 +1,7 @@
-﻿using System.Windows;
+﻿using launcher.Configuration;
+using System.Windows;
 using System.Windows.Controls;
-using launcher.Global;
+using static launcher.Core.Application;
 
 namespace launcher
 {
@@ -13,16 +14,16 @@ namespace launcher
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Ask_For_Tour, false);
-            Managers.App.HideOnBoardAskPopup();
-            Managers.App.StartTour();
+            IniSettings.Set(IniSettings.Vars.Ask_For_Tour, false);
+            HideOnBoardAskPopup();
+            StartTour();
         }
 
         private void Skip_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Ask_For_Tour, false);
-            Managers.App.HideOnBoardAskPopup();
-            Managers.App.EndTour();
+            IniSettings.Set(IniSettings.Vars.Ask_For_Tour, false);
+            HideOnBoardAskPopup();
+            EndTour();
         }
     }
 }

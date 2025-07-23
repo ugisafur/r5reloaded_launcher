@@ -1,9 +1,11 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global.References;
-using launcher.Game;
-using launcher.Global;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Core;
+using launcher.GameManagement;
+using launcher.Services;
 
 namespace launcher
 {
@@ -16,7 +18,7 @@ namespace launcher
 
         private void btnRepair_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Repair.Start());
+            Task.Run(() => GameRepairer.Start());
         }
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
@@ -24,13 +26,13 @@ namespace launcher
             if (!AppState.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
-                Managers.App.ShowAdvancedControl();
+                ShowAdvancedControl();
             }
         }
 
         private void Uninstall_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Uninstall.Start());
+            Task.Run(() => GameUninstaller.Start());
         }
 
         private void OpenDir_Button_Click(object sender, RoutedEventArgs e)

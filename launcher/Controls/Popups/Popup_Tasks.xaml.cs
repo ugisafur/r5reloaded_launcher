@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global.References;
-using launcher.Global;
-using launcher.Game;
+using launcher.Core.Models;
+using launcher.Core;
+using static launcher.Core.UiReferences;
 
 namespace launcher
 {

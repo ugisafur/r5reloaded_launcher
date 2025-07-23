@@ -1,8 +1,9 @@
-﻿using launcher.Game;
-using launcher.Global;
-using launcher.Managers;
+﻿using launcher.Core.Models;
+using launcher.Services;
 using System.Windows;
 using System.Windows.Controls;
+using static launcher.Core.Application;
+
 namespace launcher
 {
     public partial class Popup_Launcher_Update : UserControl
@@ -25,15 +26,15 @@ namespace launcher
 
         private void UpdateLauncher_Click(object sender, RoutedEventArgs e)
         {
-            UpdateChecker.wantsToUpdate = true;
-            UpdateChecker.launcherPopupOpened = false;
+            UpdateService.wantsToUpdate = true;
+            UpdateService.launcherPopupOpened = false;
         }
 
         private void UpdateLater_Click(object sender, RoutedEventArgs e)
         {
-            UpdateChecker.wantsToUpdate = false;
-            UpdateChecker.launcherPopupOpened = false;
-            Managers.App.HideLauncherUpdatePopup();
+            UpdateService.wantsToUpdate = false;
+            UpdateService.launcherPopupOpened = false;
+            HideLauncherUpdatePopup();
         }
     }
 }

@@ -4,9 +4,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
-using launcher.Game;
-using launcher.Global;
-using static launcher.Global.References;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Core.Models;
+using launcher.Core;
+using launcher.Services;
+using launcher.GameManagement;
+using launcher.Configuration;
 
 namespace launcher
 {
@@ -51,7 +55,7 @@ namespace launcher
 
             UpdateUI();
 
-            GameFiles langFiles = await Fetch.LanguageFiles(branch);
+            GameFiles langFiles = await ApiClient.GetLanguageFilesAsync(branch);
             PopulateLanguageCheckboxes(langFiles);
         }
 
@@ -127,8 +131,8 @@ namespace launcher
 
                 var langCheckBox = CreateLanguageCheckbox(lang, isChecked: DoesLangFileExist(lang));
 
-                langCheckBox.Checked += (sender, e) => HandleLanguageAction(async () => await Install.LangFile((CheckBox)sender, langFiles, lang));
-                langCheckBox.Unchecked += (sender, e) => HandleLanguageAction(async () => await Uninstall.LangFile((CheckBox)sender, lang));
+                langCheckBox.Checked += (sender, e) => HandleLanguageAction(async () => await GameInstaller.LangFile((CheckBox)sender, langFiles, lang));
+                langCheckBox.Unchecked += (sender, e) => HandleLanguageAction(async () => await GameUninstaller.LangFile((CheckBox)sender, lang));
 
                 langCheckBox.SetValue(Grid.RowProperty, row);
                 langCheckBox.SetValue(Grid.ColumnProperty, column);
@@ -190,7 +194,7 @@ namespace launcher
             CollapseIcon.Text = expand ? "-" : "+";
             double targetHeight = expand ? ExpandedHeight : CollapsedHeight;
 
-            int duration = (bool)Ini.Get(Ini.Vars.Disable_Animations) ? 1 : AnimationDurationMs;
+            int duration = (bool)IniSettings.Get(IniSettings.Vars.Disable_Animations) ? 1 : AnimationDurationMs;
             var storyboard = new Storyboard();
             var animation = new DoubleAnimation
             {
@@ -273,7 +277,7 @@ namespace launcher
         {
             if (AppState.IsInstalling) return false;
             Branch_Combobox.SelectedIndex = Index;
-            Managers.App.HideSettingsControl();
+            HideSettingsControl();
             return true;
         }
 
@@ -292,21 +296,21 @@ namespace launcher
         {
             if (!CanExecuteAction()) return;
             if (GetBranch.Installed(GameBranch))
-                Task.Run(() => Repair.Start());
+                Task.Run(() => GameRepairer.Start());
         }
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
             if (GetBranch.Installed(GameBranch))
-                Task.Run(() => Uninstall.Start());
+                Task.Run(() => GameUninstaller.Start());
         }
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
             if (!GetBranch.Installed(GameBranch))
-                Task.Run(() => Install.Start());
+                Task.Run(() => GameInstaller.Start());
         }
 
         private void InstallOpt_Click(object sender, RoutedEventArgs e)
@@ -314,9 +318,9 @@ namespace launcher
             if (!CanExecuteAction()) return;
 
             if (GetBranch.DownloadHDTextures(GameBranch))
-                Task.Run(() => Uninstall.HDTextures(GameBranch));
+                Task.Run(() => GameUninstaller.HDTextures(GameBranch));
             else
-                Managers.App.ShowDownloadOptlFiles();
+                ShowDownloadOptlFiles();
         }
 
         private void Dedi_Click(object sender, RoutedEventArgs e)

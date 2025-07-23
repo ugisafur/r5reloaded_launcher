@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
-using static launcher.Global.References;
-using launcher.Global;
+using launcher.Configuration;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
 
 namespace launcher
 {
@@ -15,21 +16,21 @@ namespace launcher
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Enable_Quit_On_Close, "quit");
+            IniSettings.Set(IniSettings.Vars.Enable_Quit_On_Close, "quit");
             Application.Current.Shutdown();
         }
 
         private void Tray_Click(object sender, RoutedEventArgs e)
         {
-            Ini.Set(Ini.Vars.Enable_Quit_On_Close, "tray");
-            Managers.App.HideAskToQuit();
-            Managers.App.SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
+            IniSettings.Set(IniSettings.Vars.Enable_Quit_On_Close, "tray");
+            HideAskToQuit();
+            SendNotification("Launcher minimized to tray.", BalloonIcon.Info);
             Main_Window.OnClose();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            Managers.App.HideAskToQuit();
+            HideAskToQuit();
         }
     }
 }

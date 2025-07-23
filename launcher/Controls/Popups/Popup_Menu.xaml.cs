@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Global.References;
-using launcher.Global;
-using launcher.Managers;
+using static launcher.Core.UiReferences;
+using static launcher.Core.Application;
+using launcher.Core;
 
 namespace launcher
 {
@@ -40,7 +40,7 @@ namespace launcher
             if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
-                Managers.App.ShowSettingsControl();
+                ShowSettingsControl();
 
                 //i hate this
                 Settings_Control.gameInstalls.CollapseItemsOnFirstLoad();
@@ -60,7 +60,7 @@ namespace launcher
         private void Tour_Click(object sender, RoutedEventArgs e)
         {
             Menu_Popup.IsOpen = false;
-            Managers.App.ShowOnBoardAskPopup();
+            ShowOnBoardAskPopup();
         }
     }
 }

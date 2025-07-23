@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using launcher.Configuration;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using launcher.Global;
 
 namespace launcher
 {
@@ -40,12 +29,12 @@ namespace launcher
 
         public void SetupDownloadSettings()
         {
-            int ConDownloadsLimit = (int)Ini.Get(Ini.Vars.Concurrent_Downloads);
+            int ConDownloadsLimit = (int)IniSettings.Get(IniSettings.Vars.Concurrent_Downloads);
             if (ConDownloadsLimit > 100)
-                Ini.Set(Ini.Vars.Concurrent_Downloads, 100);
+                IniSettings.Set(IniSettings.Vars.Concurrent_Downloads, 100);
 
-            MaxSpeed.Text = $"{(int)Ini.Get(Ini.Vars.Download_Speed_Limit)}";
-            ConDownloads.SelectedIndex = Array.IndexOf(DownloadSpeeds, (int)Ini.Get(Ini.Vars.Concurrent_Downloads));
+            MaxSpeed.Text = $"{(int)IniSettings.Get(IniSettings.Vars.Download_Speed_Limit)}";
+            ConDownloads.SelectedIndex = Array.IndexOf(DownloadSpeeds, (int)IniSettings.Get(IniSettings.Vars.Concurrent_Downloads));
 
             MaxSpeed.LostFocus += MaxSpeed_LostFocus;
             MaxSpeed.PreviewTextInput += NumericTextBox_PreviewTextInput;
@@ -59,8 +48,8 @@ namespace launcher
         {
             if (e.Key == Key.Enter)
             {
-                if (((int)Ini.Get(Ini.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
-                    Ini.Set(Ini.Vars.Download_Speed_Limit, MaxSpeed.Text);
+                if (((int)IniSettings.Get(IniSettings.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
+                    IniSettings.Set(IniSettings.Vars.Download_Speed_Limit, MaxSpeed.Text);
             }
         }
 
@@ -83,14 +72,14 @@ namespace launcher
 
         private void MaxSpeed_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (((int)Ini.Get(Ini.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
-                Ini.Set(Ini.Vars.Download_Speed_Limit, MaxSpeed.Text);
+            if (((int)IniSettings.Get(IniSettings.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
+                IniSettings.Set(IniSettings.Vars.Download_Speed_Limit, MaxSpeed.Text);
         }
 
         private void ConDownloads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((int)Ini.Get(Ini.Vars.Concurrent_Downloads) != DownloadSpeeds[ConDownloads.SelectedIndex])
-                Ini.Set(Ini.Vars.Concurrent_Downloads, DownloadSpeeds[ConDownloads.SelectedIndex]);
+            if ((int)IniSettings.Get(IniSettings.Vars.Concurrent_Downloads) != DownloadSpeeds[ConDownloads.SelectedIndex])
+                IniSettings.Set(IniSettings.Vars.Concurrent_Downloads, DownloadSpeeds[ConDownloads.SelectedIndex]);
         }
     }
 }
