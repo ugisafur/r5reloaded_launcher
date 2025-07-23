@@ -1,31 +1,33 @@
-﻿using System.IO;
-using System.Windows;
-using System.Windows.Media.Animation;
+﻿using DiscordRPC;
+using DiscordRPC.Logging;
 using Hardcodet.Wpf.TaskbarNotification;
-using System.Globalization;
+using launcher.Configuration;
+using launcher.Controls.Models;
+using launcher.Core.Models;
+using launcher.GameManagement;
+using launcher.Services;
 using Microsoft.Win32;
 using System.Diagnostics;
-using DiscordRPC;
-using DiscordRPC.Logging;
-using launcher.Core.Models;
-using launcher.Services;
+using System.Globalization;
+using System.IO;
+using System.Threading.Channels;
+using System.Windows;
+using System.Windows.Media.Animation;
 using static launcher.Core.UiReferences;
-using launcher.Configuration;
 using static launcher.Utils.Logger;
-using launcher.GameManagement;
-using launcher.Controls.Models;
 
 namespace launcher.Core
 {
-    public static partial class Application
+    public static partial class AppController
     {
         #region Setup Functions
 
         public static async Task SetupApp(MainWindow mainWindow)
         {
-#if DEBUG
-            EnableDebugConsole();
-#endif
+
+            if (Launcher.DebugArg)
+                EnableDebugConsole();
+
             PreLoad_Window.SetLoadingText("Checking for EA Desktop App");
             await Task.Delay(100);
             await Task.Run(() => FindAndStartEAApp());
@@ -80,7 +82,7 @@ namespace launcher.Core
 
             Launcher.newsOnline = await NetworkHealthService.IsNewsApiAvailableAsync();
 
-            if (AppState.IsOnline && Launcher.newsOnline)
+            if (Launcher.IsOnline && Launcher.newsOnline)
             {
                 NewsService.Populate();
                 MoveNewsRect(0);
@@ -96,7 +98,7 @@ namespace launcher.Core
 
         public static void InitDiscordRPC()
         {
-            if (!AppState.IsOnline)
+            if (!Launcher.IsOnline)
                 return;
 
             if(RPC_client != null && RPC_client.IsInitialized)
@@ -134,7 +136,7 @@ namespace launcher.Core
 
             RPC_client.Initialize();
 
-            AppState.SetRichPresence("", "Idle", "embedded_cover", "");
+            DiscordService.SetRichPresence("", "Idle", "embedded_cover", "");
         }
         public static bool IsR5ApexOpen()
         {
@@ -237,7 +239,7 @@ namespace launcher.Core
 
         public static void SetupAdvancedMenu()
         {
-            if (!BranchService.IsInstalled() && !BranchService.IsLocal() || !File.Exists(Path.Combine(BranchService.GetDirectory(), "platform\\playlists_r5_patch.txt")))
+            if (!ReleaseChannelService.IsInstalled() && !ReleaseChannelService.IsLocal() || !File.Exists(Path.Combine(ReleaseChannelService.GetDirectory(), "platform\\playlists_r5_patch.txt")))
             {
                 maps = ["No Selection"];
                 gamemodes = ["No Selection"];
@@ -251,12 +253,12 @@ namespace launcher.Core
             {
                 appDispatcher.Invoke(new Action(() =>
                 {
-                    playlistRoot = PlaylistReader.Parse(Path.Combine(BranchService.GetDirectory(), "platform\\playlists_r5_patch.txt"));
+                    playlistRoot = PlaylistReader.Parse(Path.Combine(ReleaseChannelService.GetDirectory(), "platform\\playlists_r5_patch.txt"));
                     gamemodes = PlaylistReader.GetPlaylists(playlistRoot);
                     maps = PlaylistReader.GetMaps(playlistRoot);
                     Advanced_Control.serverPage.SetMapList(maps);
                     Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {BranchService.GetName()}");
+                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {ReleaseChannelService.GetName()}");
                 }));
             }
             catch (Exception ex)
@@ -269,7 +271,7 @@ namespace launcher.Core
         {
             bool isOnline = NetworkHealthService.IsCdnAvailableAsync().Result;
             LogInfo(LogSource.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
-            AppState.IsOnline = isOnline;
+            Launcher.IsOnline = isOnline;
         }
 
         private static void SetupMenus()
@@ -288,14 +290,14 @@ namespace launcher.Core
         {
             appDispatcher.BeginInvoke(new Action(() =>
             {
-                foreach (var branch in Launcher.ServerConfig.branches)
+                foreach (var channel in Launcher.RemoteConfig.branches)
                 {
-                    if (BranchService.IsInstalled(branch) && !Directory.Exists(BranchService.GetDirectory(branch)))
+                    if (ReleaseChannelService.IsInstalled(channel) && !Directory.Exists(ReleaseChannelService.GetDirectory(channel)))
                     {
-                        LogWarning(LogSource.Launcher, $"Branch {branch.branch} is set as installed but directory is missing");
-                        BranchService.SetInstalled(false, branch);
-                        BranchService.SetDownloadHDTextures(false, branch);
-                        BranchService.SetVersion("", branch);
+                        LogWarning(LogSource.Launcher, $"Branch {channel.branch} is set as installed but directory is missing");
+                        ReleaseChannelService.SetInstalled(false, channel);
+                        ReleaseChannelService.SetDownloadHDTextures(false, channel);
+                        ReleaseChannelService.SetVersion("", channel);
                     }
                 }
             }));
@@ -305,25 +307,25 @@ namespace launcher.Core
         {
             appDispatcher.BeginInvoke(new Action(() =>
             {
-                Branch_Combobox.ItemsSource = GetGameBranches();
+                ReleaseChannel_Combobox.ItemsSource = GetGameBranches();
 
-                string savedBranch = (string)IniSettings.Get(IniSettings.Vars.SelectedBranch);
-                string selectedBranch = string.IsNullOrEmpty(savedBranch) ? Launcher.ServerConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)IniSettings.Get(IniSettings.Vars.SelectedBranch);
+                string savedChannel = (string)IniSettings.Get(IniSettings.Vars.SelectedBranch);
+                string selectedChannel = string.IsNullOrEmpty(savedChannel) ? Launcher.RemoteConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)IniSettings.Get(IniSettings.Vars.SelectedBranch);
 
-                int selectedIndex = Launcher.ServerConfig.branches.FindIndex(branch => branch.branch == selectedBranch && branch.enabled == true);
+                int selectedIndex = Launcher.RemoteConfig.branches.FindIndex(channel => channel.branch == selectedChannel && channel.enabled == true);
 
-                if (selectedIndex == -1 || selectedIndex >= Branch_Combobox.Items.Count)
+                if (selectedIndex == -1 || selectedIndex >= ReleaseChannel_Combobox.Items.Count)
                     selectedIndex = 0;
 
-                Branch_Combobox.SelectedIndex = selectedIndex;
+                ReleaseChannel_Combobox.SelectedIndex = selectedIndex;
 
                 LogInfo(LogSource.Launcher, "Game branches initialized");
             }));
         }
 
-        public static List<ComboBranch> GetGameBranches()
+        public static List<ReleaseChannelViewModel> GetGameBranches()
         {
-            DataCollections.FolderBranches.Clear();
+            ReleaseChannelService.LocalFolders.Clear();
 
             if (Directory.Exists(GetBaseLibraryPath()))
             {
@@ -335,69 +337,69 @@ namespace launcher.Core
                 {
                     bool shouldAdd = true;
 
-                    if (AppState.IsOnline)
-                        shouldAdd = !Launcher.ServerConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
+                    if (Launcher.IsOnline)
+                        shouldAdd = !Launcher.RemoteConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
 
                     if (shouldAdd)
                     {
-                        Branch branch = new()
+                        ReleaseChannel channel = new()
                         {
                             branch = folder.ToUpper(new CultureInfo("en-US")),
                             game_url = "",
                             enabled = true,
                             is_local_branch = true,
                         };
-                        DataCollections.FolderBranches.Add(branch);
+                        ReleaseChannelService.LocalFolders.Add(channel);
                         LogInfo(LogSource.Launcher, $"Local branch found: {folder}");
                     }
                 }
             }
 
-            if (AppState.IsOnline)
-                Launcher.ServerConfig.branches.AddRange(DataCollections.FolderBranches);
+            if (Launcher.IsOnline)
+                Launcher.RemoteConfig.branches.AddRange(ReleaseChannelService.LocalFolders);
             else
-                Launcher.ServerConfig = new ServerConfig { branches = new List<Branch>(DataCollections.FolderBranches) };
+                Launcher.RemoteConfig = new RemoteConfig { branches = new List<ReleaseChannel>(ReleaseChannelService.LocalFolders) };
 
-            List<Branch> branches_to_remove = [];
-            for (int i = 0; i < Launcher.ServerConfig.branches.Count; i++)
+            List<ReleaseChannel> branches_to_remove = [];
+            for (int i = 0; i < Launcher.RemoteConfig.branches.Count; i++)
             {
-                if (!Launcher.ServerConfig.branches[i].enabled)
-                    branches_to_remove.Add(Launcher.ServerConfig.branches[i]);
+                if (!Launcher.RemoteConfig.branches[i].enabled)
+                    branches_to_remove.Add(Launcher.RemoteConfig.branches[i]);
             }
 
             if (branches_to_remove.Count > 0)
             {
-                foreach (Branch branch in branches_to_remove)
-                    Launcher.ServerConfig.branches.Remove(branch);
+                foreach (ReleaseChannel channel in branches_to_remove)
+                    Launcher.RemoteConfig.branches.Remove(channel);
             }
 
-            return Launcher.ServerConfig.branches
-                .Where(branch => branch.enabled || !AppState.IsOnline)
-                .Select(branch => new ComboBranch
+            return Launcher.RemoteConfig.branches
+                .Where(channel => channel.enabled || !Launcher.IsOnline)
+                .Select(channel => new ReleaseChannelViewModel
                 {
-                    title = branch.branch.ToUpper(new CultureInfo("en-US")),
-                    subtext = BranchService.GetServerComboVersion(branch),
-                    isLocalBranch = branch.is_local_branch
+                    title = channel.branch.ToUpper(new CultureInfo("en-US")),
+                    subtext = ReleaseChannelService.GetServerComboVersion(channel),
+                    isLocalBranch = channel.is_local_branch
                 })
                 .ToList();
         }
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)IniSettings.Get(IniSettings.Vars.Updater_Version) != Launcher.ServerConfig.updaterVersion)
+            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)IniSettings.Get(IniSettings.Vars.Updater_Version) != Launcher.RemoteConfig.updaterVersion)
             {
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
                     File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
 
                 LogInfo(LogSource.Launcher, "Downloading launcher updater");
-                NetworkHealthService.HttpClient.GetAsync(Launcher.ServerConfig.selfUpdater)
+                NetworkHealthService.HttpClient.GetAsync(Launcher.RemoteConfig.selfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
                             File.WriteAllBytes(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"), data);
-                            IniSettings.Set(IniSettings.Vars.Updater_Version, Launcher.ServerConfig.updaterVersion);
+                            IniSettings.Set(IniSettings.Vars.Updater_Version, Launcher.RemoteConfig.updaterVersion);
                         }
                     });
             }
@@ -424,7 +426,7 @@ namespace launcher.Core
 
         public static void ShowSettingsControl()
         {
-            AppState.InSettingsMenu = true;
+            Launcher.InSettingsMenu = true;
 
             if ((bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions))
             {
@@ -456,7 +458,7 @@ namespace launcher.Core
 
         public static void HideSettingsControl()
         {
-            AppState.InSettingsMenu = false;
+            Launcher.InSettingsMenu = false;
 
             if ((bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions))
             {
@@ -488,7 +490,7 @@ namespace launcher.Core
 
         public static void ShowAdvancedControl()
         {
-            AppState.InAdvancedMenu = true;
+            Launcher.InAdvancedMenu = true;
 
             if ((bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions))
             {
@@ -520,7 +522,7 @@ namespace launcher.Core
 
         public static void HideAdvancedControl()
         {
-            AppState.InAdvancedMenu = false;
+            Launcher.InAdvancedMenu = false;
 
             if ((bool)IniSettings.Get(IniSettings.Vars.Disable_Transitions))
             {
@@ -726,13 +728,13 @@ namespace launcher.Core
 
         public static void StartTour()
         {
-            if (AppState.InSettingsMenu)
+            if (Launcher.InSettingsMenu)
                 HideSettingsControl();
 
-            if (AppState.InAdvancedMenu)
+            if (Launcher.InAdvancedMenu)
                 HideAdvancedControl();
 
-            AppState.OnBoarding = true;
+            Launcher.OnBoarding = true;
 
             Main_Window.ResizeMode = ResizeMode.NoResize;
             Main_Window.Width = Main_Window.MinWidth;
@@ -746,7 +748,7 @@ namespace launcher.Core
 
         public static void EndTour()
         {
-            AppState.OnBoarding = false;
+            Launcher.OnBoarding = false;
 
             OnBoard_Control.Visibility = Visibility.Hidden;
             OnBoardingRect.Visibility = Visibility.Hidden;
@@ -756,8 +758,6 @@ namespace launcher.Core
             OnBoard_Control.SetItem(0);
         }
 
-#if DEBUG
-
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
 
@@ -766,7 +766,5 @@ namespace launcher.Core
             // Only in Debug build, this will open a console window
             AllocConsole();  // Opens a new console window
         }
-
-#endif
     }
 }

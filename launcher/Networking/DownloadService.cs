@@ -23,11 +23,11 @@ namespace launcher.Networking
 
         public static DateTime speedCheckStart = DateTime.Now;
 
-        public static void AddDownloadedBytes(long bytes, GameFile file)
+        public static void AddDownloadedBytes(long bytes, ManifestEntry file)
         {
             Interlocked.Add(ref _totalDownloadedBytes, bytes);
             Interlocked.Add(ref DownloadedBytes, bytes);
-            file.downloadMetadata.fileDownload.downloadedBytes += bytes;
+            file.downloadContext.downloadProgress.downloadedBytes += bytes;
         }
 
         public static void RemoveDownloadedBytes(long bytes)
@@ -169,7 +169,7 @@ namespace launcher.Networking
 
                         string UpdateTypeString = UpdateType == 0 ? "Downloading" : "Repairing";
 
-                        AppState.SetRichPresence($"{UpdateTypeString} {BranchService.GetName()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
+                        DiscordService.SetRichPresence($"{UpdateTypeString} {ReleaseChannelService.GetName()}", $"{downloadedText}/{totalText} - Time Left: {estimatedRemaining:hh\\:mm\\:ss}");
                         lastPresenceUpdate = DateTime.UtcNow;
                     }
                 });

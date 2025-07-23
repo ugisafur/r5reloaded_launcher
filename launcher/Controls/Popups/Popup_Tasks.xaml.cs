@@ -18,7 +18,7 @@ namespace launcher
             InitializeComponent();
         }
 
-        public DownloadItem AddDownloadItem(GameFile file)
+        public DownloadItem AddDownloadItem(ManifestEntry file)
         {
             DownloadItem downloadItem = new();
             downloadItem.downloadFileName.Text = file.path;
@@ -51,7 +51,7 @@ namespace launcher
 
         private void gotoDownloads_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
+            if (!Launcher.InSettingsMenu && !Launcher.InAdvancedMenu)
             {
                 Downloads_Popup.IsOpen = false;
                 Settings_Control.OpenDownloadsSettings();

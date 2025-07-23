@@ -1,4 +1,5 @@
 ﻿using DiscordRPC;
+using launcher.Configuration;
 using launcher.Core.Models;
 using launcher.Services;
 using SoftCircuits.IniFileParser;
@@ -13,13 +14,23 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using static launcher.Core.UiReferences;
 using static launcher.Utils.Logger;
-using static launcher.Configuration.IniSettings;
 
 namespace launcher.Core
 {
     public static class Launcher
     {
         public const string VERSION = "1.1.3";
+        public static bool IsOnline { get; set; } = false;
+        public static bool IsLocalBranch { get; set; } = false;
+        public static bool IsInstalling { get; set; } = false;
+        public static bool UpdateCheckLoop { get; set; } = false;
+        public static bool BadFilesDetected { get; set; } = false;
+        public static bool InSettingsMenu { get; set; } = false;
+        public static bool InAdvancedMenu { get; set; } = false;
+        public static bool OnBoarding { get; set; } = false;
+        public static bool BlockLanguageInstall { get; set; } = false;
+        public static int FilesLeft { get; set; } = 0;
+        public static bool DebugArg { get; set; } = false;
 
         #region Public Keys
 
@@ -41,7 +52,7 @@ namespace launcher.Core
 
         public const int MAX_REPAIR_ATTEMPTS = 5;
         public static string PATH { get; set; } = "";
-        public static ServerConfig ServerConfig { get; set; }
+        public static RemoteConfig RemoteConfig { get; set; }
         public static IniFile LauncherConfig { get; set; }
         public static CultureInfo cultureInfo { get; set; }
         public static string language_name { get; set; }
@@ -52,17 +63,19 @@ namespace launcher.Core
 
         public static void Init()
         {
-            string version = (bool)Get(Vars.Nightly_Builds) ? (string)Get(Vars.Launcher_Version) : Launcher.VERSION;
+            string version = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds) ? (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) : Launcher.VERSION;
             appDispatcher.Invoke(() => Version_Label.Text = version);
 
             LogInfo(LogSource.Launcher, $"Launcher Version: {version}");
 
-            Launcher.PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-            LogInfo(LogSource.Launcher, $"Launcher path: {Launcher.PATH}");
+            PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+            LogInfo(LogSource.Launcher, $"Launcher path: {PATH}");
 
-            ServerConfig = AppState.IsOnline ? ApiClient.GetServerConfig() : null;
+            RemoteConfig = IsOnline ? ApiClient.GetRemoteConfig() : null;
 
-            LauncherConfig = GetConfig();
+            IniSettings.Load();
+
+            LauncherConfig = IniSettings.IniFile;
             LogInfo(LogSource.Launcher, $"Launcher config found");
 
             cultureInfo = CultureInfo.CurrentCulture;

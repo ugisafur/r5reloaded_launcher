@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Core;
 using launcher.GameManagement;
 using launcher.Services;
@@ -23,7 +23,7 @@ namespace launcher
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.InAdvancedMenu)
+            if (!Launcher.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
                 ShowAdvancedControl();
@@ -37,9 +37,9 @@ namespace launcher
 
         private void OpenDir_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (BranchService.IsInstalled() || BranchService.IsLocal() || Directory.Exists(BranchService.GetDirectory()))
+            if (ReleaseChannelService.IsInstalled() || ReleaseChannelService.IsLocal() || Directory.Exists(ReleaseChannelService.GetDirectory()))
             {
-                string dir = BranchService.GetDirectory();
+                string dir = ReleaseChannelService.GetDirectory();
 
                 if (Directory.Exists(dir))
                     System.Diagnostics.Process.Start("explorer.exe", dir);

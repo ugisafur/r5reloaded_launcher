@@ -17,16 +17,18 @@ namespace launcher.GameManagement
 {
     public static class ChecksumManager
     {
-        public static async Task<int> IdentifyBadFiles(GameFiles gameFiles, Task<FileChecksum[]> checksumTasks, string branchDirectory, bool isUpdate = false)
+        public static List<ManifestEntry> BadFiles { get; } = [];
+
+        public static async Task<int> IdentifyBadFiles(GameManifest GameManifest, Task<LocalFileChecksum[]> checksumTasks, string branchDirectory, bool isUpdate = false)
         {
             var fileChecksums = await checksumTasks;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
 
-            InitializeProgressBar(gameFiles.files.Count);
+            InitializeProgressBar(GameManifest.files.Count);
 
-            DataCollections.BadFiles.Clear();
+            BadFiles.Clear();
 
-            foreach (var file in gameFiles.files)
+            foreach (var file in GameManifest.files)
             {
                 string filePath = Path.Combine(branchDirectory, file.path);
 
@@ -34,7 +36,7 @@ namespace launcher.GameManagement
                 {
                     LogWarning(isUpdate ? LogSource.Update : LogSource.Repair, isUpdate ? $"Updated file found: {file.path}" : $"Bad file found: {file.path}");
 
-                    GameFile gameFile = new GameFile
+                    ManifestEntry ManifestEntry = new ManifestEntry
                     {
                         path = $"{file.path}",
                         checksum = file.checksum,
@@ -43,17 +45,17 @@ namespace launcher.GameManagement
                         parts = file.parts
                     };
 
-                    DataCollections.BadFiles.Add(gameFile);
+                    BadFiles.Add(ManifestEntry);
                 }
                 UpdateProgress();
             }
 
-            return DataCollections.BadFiles.Count;
+            return BadFiles.Count;
         }
 
-        public static async Task<List<Task<FileChecksum>>> PrepareLangChecksumTasksAsync(string branchFolder)
+        public static async Task<List<Task<LocalFileChecksum>>> PrepareLangChecksumTasksAsync(string branchFolder)
         {
-            GameFiles languageManifest = await ApiClient.GetLanguageFilesAsync();
+            GameManifest languageManifest = await ApiClient.GetLanguageFilesAsync();
 
             var filePaths = languageManifest.languages
                 .Select(lang => new
@@ -68,7 +70,7 @@ namespace launcher.GameManagement
             return PrepareChecksumTasksForFiles(filePaths, branchFolder);
         }
 
-        public static List<Task<FileChecksum>> PrepareBranchChecksumTasks(string branchFolder)
+        public static List<Task<LocalFileChecksum>> PrepareBranchChecksumTasks(string branchFolder)
         {
             var excludedPaths = new[] { "platform\\cfg\\user", "platform\\screenshots", "platform\\logs" };
             var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
@@ -78,7 +80,7 @@ namespace launcher.GameManagement
             return PrepareChecksumTasksForFiles(allFiles, branchFolder);
         }
 
-        public static List<Task<FileChecksum>> PrepareOptChecksumTasks(string branchFolder)
+        public static List<Task<LocalFileChecksum>> PrepareOptChecksumTasks(string branchFolder)
         {
             var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
                 .Where(f => f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase));
@@ -86,18 +88,18 @@ namespace launcher.GameManagement
             return PrepareChecksumTasksForFiles(allFiles, branchFolder);
         }
 
-        private static List<Task<FileChecksum>> PrepareChecksumTasksForFiles(IEnumerable<string> files, string branchFolder)
+        private static List<Task<LocalFileChecksum>> PrepareChecksumTasksForFiles(IEnumerable<string> files, string branchFolder)
         {
             var fileList = files.ToList();
             InitializeProgressBar(fileList.Count);
             return fileList.Select(file => GenerateAndReturnFileChecksumAsync(file, branchFolder)).ToList();
         }
 
-        public static async Task<FileChecksum> GenerateAndReturnFileChecksumAsync(string file, string branchFolder)
+        public static async Task<LocalFileChecksum> GenerateAndReturnFileChecksumAsync(string file, string branchFolder)
         {
             //await _downloadSemaphore.WaitAsync();
 
-            var fileChecksum = new FileChecksum();
+            var fileChecksum = new LocalFileChecksum();
             try
             {
                 fileChecksum.name = file.Replace(branchFolder + Path.DirectorySeparatorChar, "");
@@ -134,7 +136,7 @@ namespace launcher.GameManagement
                 Progress_Bar.Value = 0;
                 Percent_Label.Text = "0%";
             });
-            AppState.FilesLeft = count;
+            Launcher.FilesLeft = count;
         }
 
         private static void UpdateProgress()

@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace launcher.Core.Models
 {
-    public class OnBoardingItem(string title, string description, Rect geoRect, Vector2 translatePos)
+    public class TourStep(string title, string description, Rect geoRect, Vector2 translatePos)
     {
         public string Title { get; set; } = title;
         public string Description { get; set; } = description;

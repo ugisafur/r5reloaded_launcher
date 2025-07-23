@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Windows.Media.Animation;
 using launcher.Core;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Configuration;
 using launcher.Core.Models;
 
@@ -13,6 +13,16 @@ namespace launcher
 {
     public partial class Popup_Tour : UserControl
     {
+        public static List<TourStep> OnBoardingItems { get; } = [
+            new TourStep("Launcher Menu", "Quick access to settings and useful resources can be found in this menu.", new Rect(1,1,24,14), new Vector2(6,64)),
+            new TourStep("Service Status", "Monitor the status of R5R services here. If there are any performance or service interruptions, you will see it here.", new Rect(210,1,31,14), new Vector2(600,64)),
+            new TourStep("Downloads And Tasks", "Follow the progress of your game downloads / updates.", new Rect(246,1,31,14), new Vector2(760,64)),
+            new TourStep("Branches And Installing", "Here you can select the game branch you want to install, update, or play", new Rect(20,75,71,63), new Vector2(86,538)),
+            new TourStep("Game Settings", "Clicking this allows you to access advanced settings for the selected branch, as well as verify game files or uninstall.", new Rect(75,101,16,16), new Vector2(334,455)),
+            new TourStep("News And Updates", "View latest updates, patch notes, guides, and anything else related to R5Reloaded straight from the R5R Team.", new Rect(102,77,190,116), new Vector2(455,128)),
+            new TourStep("You're All Set", "You've successfully completed the Launcher Tour. If you have any questions or need further assistance, feel free to join our discord!", new Rect(135,95,0,0), new Vector2(430,305)),
+            ];
+
         private int currentIndex = 0;
 
         public Popup_Tour()
@@ -22,7 +32,7 @@ namespace launcher
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            if (currentIndex + 1 >= DataCollections.OnBoardingItems.Count)
+            if (currentIndex + 1 >= OnBoardingItems.Count)
             {
                 EndTour();
                 return;
@@ -38,17 +48,17 @@ namespace launcher
             Next.Content = "Next";
             Skip.Visibility = Visibility.Visible;
 
-            if (currentIndex == DataCollections.OnBoardingItems.Count - 1)
+            if (currentIndex == OnBoardingItems.Count - 1)
             {
                 Next.Content = "Finish";
                 Skip.Visibility = Visibility.Hidden;
             }
 
-            OnBoardingItem item = DataCollections.OnBoardingItems[index];
+            TourStep item = OnBoardingItems[index];
 
             Title.Text = item.Title;
             Desc.Text = item.Description;
-            Page.Text = $"{index + 1} of {DataCollections.OnBoardingItems.Count}";
+            Page.Text = $"{index + 1} of {OnBoardingItems.Count}";
 
             if (OnBoard_Control.RenderTransform is TransformGroup transformGroup)
             {

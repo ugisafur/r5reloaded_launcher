@@ -10,7 +10,6 @@ namespace launcher.Utils
 {
     public static class Logger
     {
-        // ✅ Use a private static object for thread-safe locking.
         private static readonly object _logLock = new object();
         public static readonly string LogFilePath;
         public static string LogFileUUID { get; private set; }
@@ -29,7 +28,6 @@ namespace launcher.Utils
                     CleanupOldLogs(logsDirectory);
                 }
 
-                // ✅ Assign the new Guid to the public property here.
                 LogFileUUID = Guid.NewGuid().ToString();
                 string sessionLogDir = Path.Combine(logsDirectory, LogFileUUID);
 
@@ -92,9 +90,9 @@ namespace launcher.Utils
 
             string jsonLogMessage = JsonSerializer.Serialize(logEntry);
 
-#if DEBUG
-            Console.WriteLine(jsonLogMessage);
-#endif
+            if (Launcher.DebugArg)
+                Console.WriteLine(jsonLogMessage);
+
             await WriteTextToFileAsync(LogFilePath, jsonLogMessage + Environment.NewLine);
         }
 

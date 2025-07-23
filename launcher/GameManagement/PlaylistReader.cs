@@ -1,162 +1,89 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ValveKeyValue;
 using static launcher.Utils.Logger;
+using launcher.GameManagement.PlaylistModels;
 
 namespace launcher.GameManagement
 {
+    /// <summary>
+    /// Provides functionality to read and parse playlist files.
+    /// </summary>
     public class PlaylistReader
     {
+        /// <summary>
+        /// Parses a playlist file from the specified path.
+        /// </summary>
+        /// <param name="filePath">The path to the playlist file.</param>
+        /// <returns>A <see cref="PlaylistRoot"/> object representing the parsed playlist data.</returns>
         public static PlaylistRoot Parse(string filePath)
         {
-            PlaylistRoot data = new();
-            FileStream stream = File.OpenRead(filePath);
             try
             {
-                KVSerializerOptions options = new()
+                using (var stream = File.OpenRead(filePath))
                 {
-                    HasEscapeSequences = false,
-                    EnableValveNullByteBugBehavior = true,
-                };
-                options.Conditions.Clear();
-
-                KVSerializer kv = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
-                data = kv.Deserialize<PlaylistRoot>(stream, options);
-            }
-            catch (Exception ex)
-            {
-                LogException($"Playlist Parsing Failed", LogSource.VDF, ex);
-            }
-            finally
-            {
-                stream.Close();
-            }
-
-            return data;
-        }
-
-        public static List<string> GetMaps(PlaylistRoot data)
-        {
-            List<string> maps = ["No Selection"];
-
-            if (data.Playlists == null)
-                return maps;
-
-            try
-            {
-                foreach (var playlists in data.Playlists)
-                {
-                    foreach (var gamemodes in playlists.Value.Gamemodes)
-                    {
-                        foreach (var map in gamemodes.Value.Maps)
-                        {
-                            if (!maps.Contains(map.Key))
-                                maps.Add(map.Key);
-                        }
-                    }
+                    var kv = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+                    return kv.Deserialize<PlaylistRoot>(stream, new KVSerializerOptions { HasEscapeSequences = false, EnableValveNullByteBugBehavior = true });
                 }
             }
             catch (Exception ex)
             {
-                LogException($"Playlist Get Maps Failed", LogSource.VDF, ex);
+                LogException("Playlist Parsing Failed", LogSource.VDF, ex);
+                return new PlaylistRoot();
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of unique map names from the playlist data.
+        /// </summary>
+        /// <param name="data">The playlist data.</param>
+        /// <returns>A list of map names.</returns>
+        public static List<string> GetMaps(PlaylistRoot data)
+        {
+            var maps = new List<string> { "No Selection" };
+            if (data?.Playlists == null)
+                return maps;
+
+            try
+            {
+                var mapNames = data.Playlists.Values
+                    .SelectMany(p => p.Gamemodes.Values)
+                    .SelectMany(g => g.Maps.Keys)
+                    .Distinct();
+                maps.AddRange(mapNames);
+            }
+            catch (Exception ex)
+            {
+                LogException("Playlist Get Maps Failed", LogSource.VDF, ex);
             }
 
             return maps;
         }
 
+        /// <summary>
+        /// Gets a list of playlist names from the playlist data.
+        /// </summary>
+        /// <param name="data">The playlist data.</param>
+        /// <returns>A list of playlist names.</returns>
         public static List<string> GetPlaylists(PlaylistRoot data)
         {
-            List<string> playlistnames = ["No Selection"];
-
-            if (data.Playlists == null)
-                return playlistnames;
+            var playlistNames = new List<string> { "No Selection" };
+            if (data?.Playlists == null)
+                return playlistNames;
 
             try
             {
-                foreach (var playlists in data.Playlists)
-                {
-                    if (!playlistnames.Contains(playlists.Key))
-                        playlistnames.Add(playlists.Key);
-                }
+                playlistNames.AddRange(data.Playlists.Keys);
             }
             catch (Exception ex)
             {
-                LogException($"Playlist Get Gamemodes Failed", LogSource.VDF, ex);
+                LogException("Playlist Get Gamemodes Failed", LogSource.VDF, ex);
             }
 
-            return playlistnames;
+            return playlistNames;
         }
-    }
-
-    public class PlaylistRoot
-    {
-        [JsonProperty("version")]
-        public string Version { get; set; }
-
-        [JsonProperty("versionNum")]
-        public int VersionNum { get; set; }
-
-        [JsonProperty(nameof(Gamemodes))]
-        public Gamemodes Gamemodes { get; set; }
-
-        [JsonProperty(nameof(Playlists))]
-        public Dictionary<string, PlaylistDefinition> Playlists { get; set; }
-
-        [JsonProperty(nameof(LocalizedStrings))]
-        public LocalizedStrings LocalizedStrings { get; set; }
-
-        [JsonProperty(nameof(KVFileOverrides))]
-        public Dictionary<string, object> KVFileOverrides { get; set; } = [];
-    }
-
-    public class Gamemodes
-    {
-        [JsonExtensionData]
-        public Dictionary<string, GamemodeDefinition> Items { get; set; } = [];
-    }
-
-    public class GamemodeDefinition
-    {
-        [JsonProperty("inherit")]
-        public string Inherit { get; set; }
-
-        [JsonProperty("vars")]
-        public Dictionary<string, string> Vars { get; set; }
-
-        [JsonProperty("maps")]
-        public Dictionary<string, string> Maps { get; set; }
-    }
-
-    public class PlaylistDefinition
-    {
-        [JsonProperty("inherit")]
-        public string Inherit { get; set; }
-
-        [JsonProperty("vars")]
-        public Dictionary<string, string> Vars { get; set; }
-
-        [JsonProperty("gamemodes")]
-        public Dictionary<string, PlaylistGamemodeDefinition> Gamemodes { get; set; }
-    }
-
-    public class PlaylistGamemodeDefinition
-    {
-        [JsonProperty("maps")]
-        public Dictionary<string, string> Maps { get; set; }
-    }
-
-    public class LocalizedStrings
-    {
-        [JsonProperty("lang")]
-        public Lang Lang { get; set; }
-    }
-
-    public class Lang
-    {
-        [JsonProperty(nameof(Language))]
-        public string Language { get; set; }
-
-        [JsonProperty(nameof(Tokens))]
-        public Dictionary<string, string> Tokens { get; set; }
     }
 }

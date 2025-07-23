@@ -2,7 +2,7 @@
 using launcher.Services;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher
 {
@@ -13,14 +13,14 @@ namespace launcher
             InitializeComponent();
         }
 
-        public void SetUpdateText(string text, ServerConfig serverConfig)
+        public void SetUpdateText(string text, RemoteConfig RemoteConfig)
         {
             Msg.Text = text;
 
-            if (serverConfig != null)
+            if (RemoteConfig != null)
             {
-                UpdateLater.Visibility = serverConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
-                closeX.Visibility = serverConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
+                UpdateLater.Visibility = RemoteConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
+                closeX.Visibility = RemoteConfig.forceUpdates ? Visibility.Hidden : Visibility.Visible;
             }
         }
 

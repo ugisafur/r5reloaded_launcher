@@ -25,18 +25,18 @@ namespace launcher.GameManagement
             Timeout = TimeSpan.FromSeconds(10)
         };
 
-        public static List<Task<string>> InitializeDownloadTasks(GameFiles gameFiles, string branchDirectory)
+        public static List<Task<string>> InitializeDownloadTasks(GameManifest GameManifest, string branchDirectory)
         {
-            if (gameFiles == null) throw new ArgumentNullException(nameof(gameFiles));
-            return CreateDownloadTasks(gameFiles.files, branchDirectory, checkForExistingFiles: true);
+            if (GameManifest == null) throw new ArgumentNullException(nameof(GameManifest));
+            return CreateDownloadTasks(GameManifest.files, branchDirectory, checkForExistingFiles: true);
         }
 
         public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
         {
-            return CreateDownloadTasks(DataCollections.BadFiles, branchDirectory, checkForExistingFiles: false);
+            return CreateDownloadTasks(ChecksumManager.BadFiles, branchDirectory, checkForExistingFiles: false);
         }
 
-        private static List<Task<string>> CreateDownloadTasks(IEnumerable<GameFile> files, string branchDirectory, bool checkForExistingFiles)
+        private static List<Task<string>> CreateDownloadTasks(IEnumerable<ManifestEntry> files, string branchDirectory, bool checkForExistingFiles)
         {
             if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
 
@@ -44,8 +44,8 @@ namespace launcher.GameManagement
                 .Where(file => !IsUserGeneratedContent(file))
                 .Select(file =>
                 {
-                    file.downloadMetadata.fileUrl = $"{BranchService.GetGameURL()}/{file.path}";
-                    file.downloadMetadata.finalPath = Path.Combine(branchDirectory, file.path);
+                    file.downloadContext.fileUrl = $"{ReleaseChannelService.GetGameURL()}/{file.path}";
+                    file.downloadContext.finalPath = Path.Combine(branchDirectory, file.path);
                     EnsureDirectoryExists(file);
 
                     return DownloadFileAsync(file, checkForExistingFiles);
@@ -58,7 +58,7 @@ namespace launcher.GameManagement
             return downloadTasks;
         }
 
-        private static bool IsUserGeneratedContent(GameFile file)
+        private static bool IsUserGeneratedContent(ManifestEntry file)
         {
             string path = file.path;
             return path.Contains("platform\\cfg\\user", StringComparison.OrdinalIgnoreCase) ||
@@ -66,7 +66,7 @@ namespace launcher.GameManagement
                    path.Contains("platform\\logs", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static async Task<string> DownloadFileAsync(GameFile file, bool checkForExistingFiles = false)
+        private static async Task<string> DownloadFileAsync(ManifestEntry file, bool checkForExistingFiles = false)
         {
             // ✅ For multi-part files, we skip the semaphore here and let each part get one.
             if (file.parts.Count > 0)
@@ -79,7 +79,7 @@ namespace launcher.GameManagement
             await GetSemaphoreSlim().WaitAsync();
             try
             {
-                file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
+                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
 
                 bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.path, file.checksum);
                 if (isSkipped)
@@ -91,19 +91,19 @@ namespace launcher.GameManagement
                     var retryPolicy = CreateRetryPolicy(file, 15);
                     await retryPolicy.ExecuteAsync(() => DownloadSingleStreamAsync(file));
                 }
-                return file.downloadMetadata.finalPath;
+                return file.downloadContext.finalPath;
             }
             catch (Exception ex)
             {
-                LogException($"All retries failed for {file.downloadMetadata.fileUrl}", LogSource.Download, ex);
-                AppState.BadFilesDetected = true;
+                LogException($"All retries failed for {file.downloadContext.fileUrl}", LogSource.Download, ex);
+                Launcher.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
             {
                 GetSemaphoreSlim().Release();
-                if (file.downloadMetadata.downloadItem != null)
-                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadMetadata.downloadItem));
+                if (file.downloadContext.downloadItem != null)
+                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadContext.downloadItem));
             }
         }
 
@@ -125,14 +125,14 @@ namespace launcher.GameManagement
             return false;
         }
 
-        private static void EnsureDirectoryExists(GameFile file)
+        private static void EnsureDirectoryExists(ManifestEntry file)
         {
-            string directory = Path.GetDirectoryName(file.downloadMetadata.finalPath);
+            string directory = Path.GetDirectoryName(file.downloadContext.finalPath);
             if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
         }
 
-        private static AsyncRetryPolicy CreateRetryPolicy(GameFile file, int maxRetryAttempts)
+        private static AsyncRetryPolicy CreateRetryPolicy(ManifestEntry file, int maxRetryAttempts)
         {
             var random = new Random();
 
@@ -145,59 +145,59 @@ namespace launcher.GameManagement
 
                     onRetryAsync: async (exception, calculatedDelay, retryNumber, context) =>
                     {
-                        LogWarning(LogSource.Download, $"Retry #{retryNumber} for '{file.downloadMetadata.fileUrl}' in {calculatedDelay.TotalSeconds:F1}s due to: {exception.Message}");
+                        LogWarning(LogSource.Download, $"Retry #{retryNumber} for '{file.downloadContext.fileUrl}' in {calculatedDelay.TotalSeconds:F1}s due to: {exception.Message}");
 
-                        RemoveDownloadedBytes(file.downloadMetadata.fileDownload.downloadedBytes);
-                        file.downloadMetadata.fileDownload.downloadedBytes = 0;
+                        RemoveDownloadedBytes(file.downloadContext.downloadProgress.downloadedBytes);
+                        file.downloadContext.downloadProgress.downloadedBytes = 0;
 
                         await appDispatcher.InvokeAsync(() =>
                         {
-                            file.downloadMetadata.downloadItem.downloadFilePercent.Text = $"Download failed. Retrying...";
-                            file.downloadMetadata.downloadItem.downloadFileProgress.Value = 0;
+                            file.downloadContext.downloadItem.downloadFilePercent.Text = $"Download failed. Retrying...";
+                            file.downloadContext.downloadItem.downloadFileProgress.Value = 0;
                         });
                     }
                 );
         }
 
-        private static bool ShouldRetry(Exception ex, GameFile file)
+        private static bool ShouldRetry(Exception ex, ManifestEntry file)
         {
             if (ex is HttpRequestException { StatusCode: HttpStatusCode.NotFound } ||
                 ex is WebException { Response: HttpWebResponse { StatusCode: HttpStatusCode.NotFound } })
             {
-                LogWarning(LogSource.Download, $"(404) Not Found, will not retry: {file.downloadMetadata.fileUrl}");
+                LogWarning(LogSource.Download, $"(404) Not Found, will not retry: {file.downloadContext.fileUrl}");
                 return false; // Do NOT retry for 404 errors.
             }
 
             return true; // Retry for all other exceptions.
         }
 
-        private static async Task<string> DownloadFileInPartsAsync(GameFile file, bool checkForExistingFiles)
+        private static async Task<string> DownloadFileInPartsAsync(ManifestEntry file, bool checkForExistingFiles)
         {
             try
             {
-                file.downloadMetadata.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
-                file.downloadMetadata.fileDownload.totalBytes = file.size;
+                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
+                file.downloadContext.downloadProgress.totalBytes = file.size;
 
                 await DownloadMissingPartsAsync(file, checkForExistingFiles);
                 await MergePartsAsync(file);
                 CleanupPartFiles(file);
 
-                return file.downloadMetadata.finalPath;
+                return file.downloadContext.finalPath;
             }
             catch (Exception ex)
             {
                 LogException($"Failed to process multi-part file {file.path}", LogSource.Download, ex);
-                AppState.BadFilesDetected = true;
+                Launcher.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
             {
-                if (file.downloadMetadata.downloadItem != null)
-                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadMetadata.downloadItem));
+                if (file.downloadContext.downloadItem != null)
+                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadContext.downloadItem));
             }
         }
 
-        private static async Task DownloadPartAsync(GameFile parentFile, FilePart part, string partUrl, string partPath)
+        private static async Task DownloadPartAsync(ManifestEntry parentFile, FileChunk part, string partUrl, string partPath)
         {
             await GetSemaphoreSlim().WaitAsync();
             try
@@ -218,10 +218,10 @@ namespace launcher.GameManagement
             }
         }
 
-        private static Task DownloadMissingPartsAsync(GameFile file, bool checkForExistingFiles)
+        private static Task DownloadMissingPartsAsync(ManifestEntry file, bool checkForExistingFiles)
         {
-            string branchDirectory = BranchService.GetDirectory();
-            string gameUrl = BranchService.GetGameURL();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string gameUrl = ReleaseChannelService.GetGameURL();
 
             // ✅ Each part is now mapped to its own concurrent download task.
             var downloadTasks = file.parts.Select(async part =>
@@ -241,10 +241,10 @@ namespace launcher.GameManagement
             return Task.WhenAll(downloadTasks);
         }
 
-        private static async Task MergePartsAsync(GameFile file)
+        private static async Task MergePartsAsync(ManifestEntry file)
         {
-            string branchDirectory = BranchService.GetDirectory();
-            using var finalStream = new FileStream(file.downloadMetadata.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            string branchDirectory = ReleaseChannelService.GetDirectory();
+            using var finalStream = new FileStream(file.downloadContext.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             for (int i = 0; i < file.parts.Count; i++)
             {
@@ -253,8 +253,8 @@ namespace launcher.GameManagement
 
                 await appDispatcher.InvokeAsync(() =>
                 {
-                    file.downloadMetadata.downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPartNumber} / {file.parts.Count}";
-                    file.downloadMetadata.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
+                    file.downloadContext.downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPartNumber} / {file.parts.Count}";
+                    file.downloadContext.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
                 });
 
                 string partPath = Path.Combine(branchDirectory, part.path);
@@ -263,9 +263,9 @@ namespace launcher.GameManagement
             }
         }
 
-        private static void CleanupPartFiles(GameFile file)
+        private static void CleanupPartFiles(ManifestEntry file)
         {
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
             foreach (var part in file.parts)
             {
                 string partPath = Path.Combine(branchDirectory, part.path);
@@ -276,7 +276,7 @@ namespace launcher.GameManagement
             }
         }
 
-        private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, GameFile file)
+        private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, ManifestEntry file)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, fileUrl);
             request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
@@ -285,12 +285,12 @@ namespace launcher.GameManagement
             response.EnsureSuccessStatusCode();
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            await ProcessDownloadStreamAsync(file, responseStream, destinationPath, file.downloadMetadata.fileDownload.totalBytes);
+            await ProcessDownloadStreamAsync(file, responseStream, destinationPath, file.downloadContext.downloadProgress.totalBytes);
         }
 
-        private static async Task DownloadSingleStreamAsync(GameFile file)
+        private static async Task DownloadSingleStreamAsync(ManifestEntry file)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, file.downloadMetadata.fileUrl);
+            var request = new HttpRequestMessage(HttpMethod.Get, file.downloadContext.fileUrl);
             request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
 
             using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -298,14 +298,14 @@ namespace launcher.GameManagement
 
             long totalBytes = response.Content.Headers.ContentLength ?? 0;
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            await ProcessDownloadStreamAsync(file, responseStream, file.downloadMetadata.finalPath, totalBytes);
+            await ProcessDownloadStreamAsync(file, responseStream, file.downloadContext.finalPath, totalBytes);
         }
 
-        private static async Task ProcessDownloadStreamAsync(GameFile file, Stream responseStream, string destinationPath, long totalBytes)
+        private static async Task ProcessDownloadStreamAsync(ManifestEntry file, Stream responseStream, string destinationPath, long totalBytes)
         {
             long bytesAtStart = 0;
             DateTime speedCheckStart = DateTime.Now;
-            var metadata = file.downloadMetadata;
+            var metadata = file.downloadContext;
 
             using var throttledStream = new ThrottledStream(responseStream, BandwidthThrottler.Instance);
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
@@ -321,14 +321,14 @@ namespace launcher.GameManagement
                 AddDownloadedBytes(bytesRead, file);
 
                 // --- Progress Reporting (Throttled to 200ms) ---
-                if ((DateTime.Now - metadata.fileDownload.lastUpdate).TotalMilliseconds > 200)
+                if ((DateTime.Now - metadata.downloadProgress.lastUpdate).TotalMilliseconds > 200)
                 {
-                    metadata.fileDownload.lastUpdate = DateTime.Now;
+                    metadata.downloadProgress.lastUpdate = DateTime.Now;
                     if (metadata.downloadItem != null && totalBytes > 0)
                     {
-                        string downloadedText = FormatBytes(metadata.fileDownload.downloadedBytes);
+                        string downloadedText = FormatBytes(metadata.downloadProgress.downloadedBytes);
                         string totalText = FormatBytes(totalBytes);
-                        double percentage = (double)metadata.fileDownload.downloadedBytes / totalBytes * 100;
+                        double percentage = (double)metadata.downloadProgress.downloadedBytes / totalBytes * 100;
 
                         await appDispatcher.InvokeAsync(() =>
                         {
@@ -341,11 +341,11 @@ namespace launcher.GameManagement
                 // --- Stall Detection (Checked every 5 seconds) ---
                 if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
                 {
-                    long delta = metadata.fileDownload.downloadedBytes - bytesAtStart;
+                    long delta = metadata.downloadProgress.downloadedBytes - bytesAtStart;
                     if (delta == 0)
                         throw new TimeoutException("Download stalled (no data received for 5s).");
 
-                    bytesAtStart = metadata.fileDownload.downloadedBytes;
+                    bytesAtStart = metadata.downloadProgress.downloadedBytes;
                     speedCheckStart = DateTime.Now;
                 }
             }
@@ -372,16 +372,16 @@ namespace launcher.GameManagement
             appDispatcher.Invoke(() =>
             {
                 bool isUiEnabled = !isInstalling;
-                bool areGameOptionsEnabled = isUiEnabled && BranchService.IsInstalled();
+                bool areGameOptionsEnabled = isUiEnabled && ReleaseChannelService.IsInstalled();
 
                 // --- Update Application State ---
-                AppState.IsInstalling = isInstalling;
-                AppState.BlockLanguageInstall = isInstalling;
+                Launcher.IsInstalling = isInstalling;
+                Launcher.BlockLanguageInstall = isInstalling;
 
                 // --- Update Main UI Controls ---
                 Play_Button.Content = buttonText;
                 Play_Button.IsEnabled = isUiEnabled;
-                Branch_Combobox.IsEnabled = isUiEnabled;
+                ReleaseChannel_Combobox.IsEnabled = isUiEnabled;
                 Status_Label.Text = "";
 
                 // --- Update Game Settings Controls ---
@@ -399,7 +399,7 @@ namespace launcher.GameManagement
 
         public static void UpdateStatusLabel(string statusText, LogSource source)
         {
-            AppState.SetRichPresence($"Branch: {BranchService.GetName()}", statusText);
+            DiscordService.SetRichPresence($"Branch: {ReleaseChannelService.GetName()}", statusText);
             appDispatcher.Invoke(() => {  Status_Label.Text = statusText; });
             LogInfo(source, $"Updating status label: {statusText}");
         }

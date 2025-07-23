@@ -10,7 +10,7 @@ using launcher.Core.Models;
 using launcher.Services.Models;
 using launcher.Configuration;
 
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher.Services
 {
@@ -26,7 +26,7 @@ namespace launcher.Services
 
         public static async Task Start()
         {
-            if (!AppState.IsOnline)
+            if (!Launcher.IsOnline)
                 return;
 
             if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Launcher_Version)) && (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) == Launcher.VERSION)
@@ -42,26 +42,26 @@ namespace launcher.Services
 
                 try
                 {
-                    var newServerConfig = await GetServerConfigAsync();
+                    var newRemoteConfig = await GetRemoteConfigAsync();
                     var newGithubConfig = await GetGithubConfigAsync();
-                    if (newServerConfig == null || newServerConfig.branches == null)
+                    if (newRemoteConfig == null || newRemoteConfig.branches == null)
                     {
                         LogError(LogSource.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
-                    if (!otherPopupsOpened && ShouldUpdateLauncher(newServerConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
+                    if (!otherPopupsOpened && ShouldUpdateLauncher(newRemoteConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
                     {
                         HandleLauncherUpdate();
                     }
                     else
                     {
-                        string version = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds) ? (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) : Launcher.ServerConfig.launcherVersion;
+                        string version = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds) ? (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) : Launcher.RemoteConfig.launcherVersion;
                         string message = iqnoredLauncherUpdate ? "Update for launcher is available but user iqnored update" : "Update for launcher is not available";
                         LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {version})");
                     }
 
-                    if (ShouldUpdateGame(newServerConfig) && newServerConfig.branches.Count > 0)
+                    if (ShouldUpdateGame(newRemoteConfig) && newRemoteConfig.branches.Count > 0)
                     {
                         HandleGameUpdate();
                     }
@@ -104,7 +104,7 @@ namespace launcher.Services
             }
         }
 
-        private static async Task<ServerConfig> GetServerConfigAsync()
+        private static async Task<RemoteConfig> GetRemoteConfigAsync()
         {
             HttpResponseMessage response = null;
             try
@@ -112,7 +112,7 @@ namespace launcher.Services
                 response = await NetworkHealthService.HttpClient.GetAsync(Launcher.CONFIG_URL);
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ServerConfig>(responseString);
+                return JsonConvert.DeserializeObject<RemoteConfig>(responseString);
             }
             catch (HttpRequestException ex)
             {
@@ -189,13 +189,13 @@ namespace launcher.Services
             return "";
         }
 
-        private static bool ShouldUpdateLauncher(ServerConfig newServerConfig, List<GithubItems> newGithubConfig)
+        private static bool ShouldUpdateLauncher(RemoteConfig newRemoteConfig, List<GithubItems> newGithubConfig)
         {
             if ((bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds))
             {
                 newGithubConfig = newGithubConfig.Where(release => release.prerelease && release.tag_name.StartsWith("nightly")).ToList();
 
-                if (!iqnoredLauncherUpdate && !AppState.IsInstalling && IsNewNightlyVersion((string)IniSettings.Get(IniSettings.Vars.Launcher_Version), newGithubConfig))
+                if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && IsNewNightlyVersion((string)IniSettings.Get(IniSettings.Vars.Launcher_Version), newGithubConfig))
                 {
                     appDispatcher.BeginInvoke(() =>
                     {
@@ -229,12 +229,12 @@ namespace launcher.Services
                 return false;
             }
 
-            if (!iqnoredLauncherUpdate && !AppState.IsInstalling && newServerConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newServerConfig.launcherVersion))
+            if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && newRemoteConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newRemoteConfig.launcherVersion))
             {
                 appDispatcher.BeginInvoke(() =>
                 {
-                    string postUpdateMessage = newServerConfig.forceUpdates ? "This update is required." : "Would you like to update now?";
-                    LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newServerConfig.launcherVersion}", newServerConfig);
+                    string postUpdateMessage = newRemoteConfig.forceUpdates ? "This update is required." : "Would you like to update now?";
+                    LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newRemoteConfig.launcherVersion}", newRemoteConfig);
                     ShowLauncherUpdatePopup();
                 });
 
@@ -256,7 +256,7 @@ namespace launcher.Services
 
                 if (wantsToUpdate == true)
                 {
-                    IniSettings.Set(IniSettings.Vars.Launcher_Version, newServerConfig.launcherVersion);
+                    IniSettings.Set(IniSettings.Vars.Launcher_Version, newRemoteConfig.launcherVersion);
                     return true;
                 }
             }
@@ -264,30 +264,30 @@ namespace launcher.Services
             return false;
         }
 
-        private static bool ShouldUpdateGame(ServerConfig newServerConfig)
+        private static bool ShouldUpdateGame(RemoteConfig newRemoteConfig)
         {
             if (Launcher.LauncherConfig == null)
                 return false;
 
-            if (newServerConfig.branches.Count == 0)
+            if (newRemoteConfig.branches.Count == 0)
                 return false;
 
-            if(!AppState.IsOnline)
+            if(!Launcher.IsOnline)
                 return false;
 
-            if (AppState.IsInstalling)
+            if (Launcher.IsInstalling)
                 return false;
 
-            if (BranchService.IsLocal())
+            if (ReleaseChannelService.IsLocal())
                 return false;
 
-            if(!BranchService.IsInstalled())
+            if(!ReleaseChannelService.IsInstalled())
                 return false;
 
-            if (!newServerConfig.branches[BranchService.GetCurrentIndex()].allow_updates)
+            if (!newRemoteConfig.branches[ReleaseChannelService.GetCurrentIndex()].allow_updates)
                 return false;
 
-            if(BranchService.GetLocalVersion() == BranchService.GetServerVersion())
+            if(ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion())
                 return false;
 
             return true;
@@ -322,15 +322,15 @@ namespace launcher.Services
 
         private static void HandleGameUpdate()
         {
-            if (BranchService.IsLocal())
+            if (ReleaseChannelService.IsLocal())
                 return;
 
-            if (BranchService.IsUpdateAvailable())
+            if (ReleaseChannelService.IsUpdateAvailable())
                 return;
 
             appDispatcher.Invoke(() =>
             {
-                BranchService.SetUpdateAvailable(true);
+                ReleaseChannelService.SetUpdateAvailable(true);
                 Update_Button.Visibility = Visibility.Visible;
             });
         }

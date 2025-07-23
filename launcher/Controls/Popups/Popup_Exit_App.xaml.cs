@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
 using launcher.Configuration;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher
 {

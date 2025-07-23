@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Utils.Logger;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher.GameManagement
 {
@@ -28,7 +28,7 @@ namespace launcher.GameManagement
                 bool repairNeeded = await ExecuteMainRepairAsync();
                 await PerformPostRepairActionsAsync();
 
-                return !repairNeeded || !AppState.BadFilesDetected;
+                return !repairNeeded || !Launcher.BadFilesDetected;
             }
             catch (Exception ex)
             {
@@ -38,21 +38,21 @@ namespace launcher.GameManagement
             finally
             {
                 GameTasks.SetInstallState(false);
-                AppState.SetRichPresence("", "Idle");
+                DiscordService.SetRichPresence("", "Idle");
             }
         }
 
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<Task<FileChecksum[]>>> prepareChecksums, Func<Task<GameFiles>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
+        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<Task<LocalFileChecksum[]>>> prepareChecksums, Func<Task<GameManifest>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
         {
             GameTasks.UpdateStatusLabel(checkStatus, LogSource.Repair);
             var checksumTasks = await prepareChecksums();
 
             GameTasks.UpdateStatusLabel(compareStatus, LogSource.Repair);
-            var gameFiles = await fetchFileManifest();
-            int badFileCount = await ChecksumManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory);
+            var GameManifest = await fetchFileManifest();
+            int badFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, branchDirectory);
 
             if (badFileCount > 0)
             {
@@ -76,7 +76,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal()) return false;
+            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal()) return false;
 
             if (IsR5ApexOpen())
             {
@@ -91,17 +91,17 @@ namespace launcher.GameManagement
                 }
             }
 
-            if (BranchService.IsUpdateAvailable())
+            if (ReleaseChannelService.IsUpdateAvailable())
             {
                 Update_Button.Visibility = Visibility.Hidden;
-                BranchService.SetUpdateAvailable(false);
+                ReleaseChannelService.SetUpdateAvailable(false);
             }
             return true;
         }
 
         private static async Task<bool> ExecuteMainRepairAsync()
         {
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
             DownloadService.CreateDownloadMonitor();
             DownloadService.ConfigureConcurrency();
             DownloadService.ConfigureDownloadSpeed();
@@ -109,7 +109,7 @@ namespace launcher.GameManagement
             return await RunRepairProcessAsync(
                 branchDirectory,
                 () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareBranchChecksumTasks(branchDirectory))),
-                () => ApiClient.GetGameFilesAsync(optional: false),
+                () => ApiClient.GetGameManifestAsync(optional: false),
                 "Checking core files...",
                 "Comparing core files...",
                 "Downloading core files..."
@@ -122,21 +122,21 @@ namespace launcher.GameManagement
             await RepairLanguageFilesAsync();
 
             // Update local state.
-            BranchService.SetInstalled(true);
-            BranchService.SetVersion(BranchService.GetServerVersion());
+            ReleaseChannelService.SetInstalled(true);
+            ReleaseChannelService.SetVersion(ReleaseChannelService.GetServerVersion());
 
             // Clean up cache files.
-            string sigCacheFile = Path.Combine(BranchService.GetDirectory(), "cfg", "startup.bin");
+            string sigCacheFile = Path.Combine(ReleaseChannelService.GetDirectory(), "cfg", "startup.bin");
             if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
             // Update UI and send notification.
             SetupAdvancedMenu();
-            SendNotification($"R5Reloaded ({BranchService.GetName()}) has been repaired!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) has been repaired!", BalloonIcon.Info);
 
             // Check for existing HD Textures.
-            if (CheckForHDTextures(BranchService.GetDirectory()))
+            if (CheckForHDTextures(ReleaseChannelService.GetDirectory()))
             {
-                BranchService.SetDownloadHDTextures(true);
+                ReleaseChannelService.SetDownloadHDTextures(true);
                 // Asynchronously repair optional files without waiting.
                 await RepairOptionalFilesAsync();
             }
@@ -145,24 +145,24 @@ namespace launcher.GameManagement
         private static async Task RepairOptionalFilesAsync()
         {
             await RunRepairProcessAsync(
-                BranchService.GetDirectory(),
-                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(BranchService.GetDirectory()))),
-                () => ApiClient.GetGameFilesAsync(optional: true),
+                ReleaseChannelService.GetDirectory(),
+                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(ReleaseChannelService.GetDirectory()))),
+                () => ApiClient.GetGameManifestAsync(optional: true),
                 "Checking optional files...",
                 "Comparing optional files...",
                 "Downloading optional files..."
             );
-            SendNotification($"R5Reloaded ({BranchService.GetName()}) optional files have been repaired!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) optional files have been repaired!", BalloonIcon.Info);
         }
 
         private static async Task RepairLanguageFilesAsync()
         {
-            if (!AppState.IsOnline) return;
+            if (!Launcher.IsOnline) return;
 
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
 
-            GameFiles serverManifest = await ApiClient.GetLanguageFilesAsync();
-            GameFiles manifestForRepair = new GameFiles
+            GameManifest serverManifest = await ApiClient.GetLanguageFilesAsync();
+            GameManifest manifestForRepair = new GameManifest
             {
                 files = serverManifest.files
                     .Where(file => File.Exists(Path.Combine(branchDirectory, file.path)))
@@ -175,7 +175,7 @@ namespace launcher.GameManagement
                 return;
             }
 
-            Func<Task<Task<FileChecksum[]>>> prepareChecksums = async () =>
+            Func<Task<Task<LocalFileChecksum[]>>> prepareChecksums = async () =>
             {
                 var checksumTasks = await ChecksumManager.PrepareLangChecksumTasksAsync(branchDirectory);
                 return Task.WhenAll(checksumTasks);

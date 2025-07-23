@@ -1,7 +1,7 @@
 ﻿using launcher.GameManagement;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher
 {

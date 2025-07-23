@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Core.Models;
 using launcher.Core;
 using launcher.Services;
@@ -34,7 +34,7 @@ namespace launcher
         public bool IsFirstItem { get; set; }
         public bool IsLastItem { get; set; }
         public int Index { get; set; } = 0;
-        public Branch GameBranch { get; private set; }
+        public ReleaseChannel GameBranch { get; private set; }
 
         private bool _isExpanded = true;
 
@@ -49,13 +49,13 @@ namespace launcher
         /// Initializes the GameItem with branch data and populates its UI.
         /// Changed to `async Task` to follow best practices (avoid `async void`).
         /// </summary>
-        public async Task InitializeAsync(Branch branch)
+        public async Task InitializeAsync(ReleaseChannel channel)
         {
-            GameBranch = branch;
+            GameBranch = channel;
 
             UpdateUI();
 
-            GameFiles langFiles = await ApiClient.GetLanguageFilesAsync(branch);
+            GameManifest langFiles = await ApiClient.GetLanguageFilesAsync(channel);
             PopulateLanguageCheckboxes(langFiles);
         }
 
@@ -77,15 +77,15 @@ namespace launcher
         {
             if (GameBranch == null) return;
 
-            bool isInstalled = BranchService.IsInstalled(GameBranch);
+            bool isInstalled = ReleaseChannelService.IsInstalled(GameBranch);
             bool isEnabled = GameBranch.enabled;
-            string dediUrl = BranchService.GetDediURL(GameBranch);
+            string dediUrl = ReleaseChannelService.GetDediURL(GameBranch);
 
-            BranchName.Text = BranchService.GetName(true, GameBranch);
-            InstallPath.Text = BranchService.GetDirectory(GameBranch);
+            BranchName.Text = ReleaseChannelService.GetName(true, GameBranch);
+            InstallPath.Text = ReleaseChannelService.GetDirectory(GameBranch);
 
             // Set button enabled state
-            bool canInteract = !AppState.IsInstalling;
+            bool canInteract = !Launcher.IsInstalling;
             UninstallGame.IsEnabled = canInteract;
             InstallGame.IsEnabled = canInteract;
             VerifyGame.IsEnabled = canInteract;
@@ -102,7 +102,7 @@ namespace launcher
             InstallOpt.Visibility = canShowOpt ? Visibility.Visible : Visibility.Hidden;
             if (canShowOpt)
             {
-                InstallOpt.Content = BranchService.ShouldDownloadHDTextures(GameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
+                InstallOpt.Content = ReleaseChannelService.ShouldDownloadHDTextures(GameBranch) ? "UNINSTALL HD TEXTURES" : "INSTALL HD TEXTURES";
             }
 
             // Set Dedi Name
@@ -112,7 +112,7 @@ namespace launcher
         /// <summary>
         /// Clears and populates the language selection grid.
         /// </summary>
-        private void PopulateLanguageCheckboxes(GameFiles langFiles)
+        private void PopulateLanguageCheckboxes(GameManifest langFiles)
         {
             LangBox.Children.Clear();
 
@@ -146,7 +146,7 @@ namespace launcher
         /// </summary>
         private CheckBox CreateLanguageCheckbox(string lang, bool isEnabled = true, bool isChecked = false)
         {
-            bool canInteract = !AppState.IsInstalling && isEnabled && BranchService.IsInstalled(GameBranch);
+            bool canInteract = !Launcher.IsInstalling && isEnabled && ReleaseChannelService.IsInstalled(GameBranch);
 
             return new CheckBox
             {
@@ -166,7 +166,7 @@ namespace launcher
         /// </summary>
         private bool DoesLangFileExist(string lang)
         {
-            string dir = BranchService.GetDirectory(GameBranch);
+            string dir = ReleaseChannelService.GetDirectory(GameBranch);
             string langLower = lang.ToLower(CultureInfo.InvariantCulture);
 
             // Use Path.Combine for safe and correct path building.
@@ -271,12 +271,12 @@ namespace launcher
         #region Click Event Handlers
 
         /// <summary>
-        /// Helper to run before any action to prevent execution if busy and to select the branch.
+        /// Helper to run before any action to prevent execution if busy and to select the channel.
         /// </summary>
         private bool CanExecuteAction()
         {
-            if (AppState.IsInstalling) return false;
-            Branch_Combobox.SelectedIndex = Index;
+            if (Launcher.IsInstalling) return false;
+            ReleaseChannel_Combobox.SelectedIndex = Index;
             HideSettingsControl();
             return true;
         }
@@ -286,8 +286,8 @@ namespace launcher
         /// </summary>
         private void HandleLanguageAction(Func<Task> action)
         {
-            if (AppState.IsInstalling) return;
-            Branch_Combobox.SelectedIndex = Index;
+            if (Launcher.IsInstalling) return;
+            ReleaseChannel_Combobox.SelectedIndex = Index;
             Downloads_Popup.IsOpen = true;
             Task.Run(action);
         }
@@ -295,21 +295,21 @@ namespace launcher
         private void VerifyGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (BranchService.IsInstalled(GameBranch))
+            if (ReleaseChannelService.IsInstalled(GameBranch))
                 Task.Run(() => GameRepairer.Start());
         }
 
         private void UninstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (BranchService.IsInstalled(GameBranch))
+            if (ReleaseChannelService.IsInstalled(GameBranch))
                 Task.Run(() => GameUninstaller.Start());
         }
 
         private void InstallGame_Click(object sender, RoutedEventArgs e)
         {
             if (!CanExecuteAction()) return;
-            if (!BranchService.IsInstalled(GameBranch))
+            if (!ReleaseChannelService.IsInstalled(GameBranch))
                 Task.Run(() => GameInstaller.Start());
         }
 
@@ -317,7 +317,7 @@ namespace launcher
         {
             if (!CanExecuteAction()) return;
 
-            if (BranchService.ShouldDownloadHDTextures(GameBranch))
+            if (ReleaseChannelService.ShouldDownloadHDTextures(GameBranch))
                 Task.Run(() => GameUninstaller.HDTextures(GameBranch));
             else
                 ShowDownloadOptlFiles();
@@ -325,7 +325,7 @@ namespace launcher
 
         private void Dedi_Click(object sender, RoutedEventArgs e)
         {
-            string url = BranchService.GetDediURL(GameBranch);
+            string url = ReleaseChannelService.GetDediURL(GameBranch);
             if (!string.IsNullOrEmpty(url))
             {
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });

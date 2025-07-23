@@ -1,6 +1,6 @@
 namespace launcher.Core.Models
 {
-    public class FilePart
+    public class FileChunk
     {
         public string path { get; set; }
         public string checksum { get; set; }

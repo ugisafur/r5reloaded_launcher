@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using static launcher.Core.UiReferences;
 using static launcher.Utils.Logger;
 
@@ -23,18 +23,16 @@ namespace launcher.GameManagement
             GameTasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                var allFiles = Directory.GetFiles(BranchService.GetDirectory(), "*", SearchOption.AllDirectories);
+                var allFiles = Directory.GetFiles(ReleaseChannelService.GetDirectory(), "*", SearchOption.AllDirectories);
                 await RunUninstallProcessAsync(allFiles, "Removing game files");
 
-                // After deleting files, remove the now-empty directories.
-                Directory.Delete(BranchService.GetDirectory(), true);
+                Directory.Delete(ReleaseChannelService.GetDirectory(), true);
 
-                // Reset all branch-specific settings.
-                BranchService.SetInstalled(false);
-                BranchService.SetDownloadHDTextures(false);
-                BranchService.SetVersion("");
+                ReleaseChannelService.SetInstalled(false);
+                ReleaseChannelService.SetDownloadHDTextures(false);
+                ReleaseChannelService.SetVersion("");
 
-                SendNotification($"R5Reloaded ({BranchService.GetName()}) has been uninstalled!", BalloonIcon.Info);
+                SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) has been uninstalled!", BalloonIcon.Info);
             }
             catch (Exception ex)
             {
@@ -42,27 +40,26 @@ namespace launcher.GameManagement
             }
             finally
             {
-                // ✅ Ensures the UI is always reset.
                 GameTasks.SetInstallState(false, "INSTALL");
-                AppState.SetRichPresence("", "Idle");
+                DiscordService.SetRichPresence("", "Idle");
             }
         }
 
         public static async Task LangFile(CheckBox checkBox, string language)
         {
-            if (!BranchService.IsInstalled() || !Directory.Exists(BranchService.GetDirectory())) return;
+            if (!ReleaseChannelService.IsInstalled() || !Directory.Exists(ReleaseChannelService.GetDirectory())) return;
 
             appDispatcher.Invoke(() => { if (checkBox != null) checkBox.IsEnabled = false; });
             GameTasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                GameFiles langFilesManifest = await ApiClient.GetLanguageFilesAsync();
+                GameManifest langFilesManifest = await ApiClient.GetLanguageFilesAsync();
                 langFilesManifest.files = langFilesManifest.files.Where(file => file.path.Contains(language)).ToList();
 
                 List<string> filesToDelete = new();
-                foreach(GameFile file in langFilesManifest.files)
+                foreach(ManifestEntry file in langFilesManifest.files)
                 {
-                    string finalPath = Path.Combine(BranchService.GetDirectory(), file.path);
+                    string finalPath = Path.Combine(ReleaseChannelService.GetDirectory(), file.path);
                     filesToDelete.Add(finalPath);
                 }
 
@@ -75,18 +72,18 @@ namespace launcher.GameManagement
             }
         }
 
-        public static async Task HDTextures(Branch branch)
+        public static async Task HDTextures(ReleaseChannel channel)
         {
-            if (!BranchService.IsInstalled(branch) || !Directory.Exists(BranchService.GetDirectory(branch))) return;
+            if (!ReleaseChannelService.IsInstalled(channel) || !Directory.Exists(ReleaseChannelService.GetDirectory(channel))) return;
 
             GameTasks.SetInstallState(true, "UNINSTALLING");
             try
             {
-                var optFiles = Directory.GetFiles(BranchService.GetDirectory(branch), "*.opt.starpak", SearchOption.AllDirectories);
+                var optFiles = Directory.GetFiles(ReleaseChannelService.GetDirectory(channel), "*.opt.starpak", SearchOption.AllDirectories);
                 await RunUninstallProcessAsync(optFiles, "Removing HD textures");
 
-                BranchService.SetDownloadHDTextures(false, branch);
-                SendNotification($"HD Textures ({BranchService.GetName(true, branch)}) have been uninstalled!", BalloonIcon.Info);
+                ReleaseChannelService.SetDownloadHDTextures(false, channel);
+                SendNotification($"HD Textures ({ReleaseChannelService.GetName(true, channel)}) have been uninstalled!", BalloonIcon.Info);
             }
             finally
             {
@@ -129,13 +126,12 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            string branchDir = BranchService.GetDirectory();
+            string branchDir = ReleaseChannelService.GetDirectory();
             if (!Directory.Exists(branchDir))
             {
-                // If directory is already gone, just clean up the state.
-                BranchService.SetInstalled(false);
-                BranchService.SetDownloadHDTextures(false);
-                BranchService.SetVersion("");
+                ReleaseChannelService.SetInstalled(false);
+                ReleaseChannelService.SetDownloadHDTextures(false);
+                ReleaseChannelService.SetVersion("");
                 return false;
             }
 
@@ -157,7 +153,6 @@ namespace launcher.GameManagement
 
         private static bool IsAnyFileLocked(string directoryPath)
         {
-            // This check can be slow on large directories. Consider if it's essential.
             foreach (string file in Directory.GetFiles(directoryPath))
             {
                 if (IsFileLocked(file))

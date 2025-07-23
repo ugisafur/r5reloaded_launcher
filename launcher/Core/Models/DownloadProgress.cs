@@ -2,7 +2,7 @@ using System;
 
 namespace launcher.Core.Models
 {
-    public class FileDownload
+    public class DownloadProgress
     {
         public long totalBytes = 0;
         public long downloadedBytes = 0;

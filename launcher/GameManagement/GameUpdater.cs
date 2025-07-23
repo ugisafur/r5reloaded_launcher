@@ -11,12 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Utils.Logger;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher.GameManagement
 {
-    // NEW: Enum to represent the type of files being processed.
-    // This is much clearer and more scalable than using a boolean.
     public enum UpdateFileType { Main, Optional, Language }
 
     public static class GameUpdater
@@ -39,24 +37,22 @@ namespace launcher.GameManagement
             finally
             {
                 GameTasks.SetInstallState(false);
-                AppState.SetRichPresence("", "Idle");
+                DiscordService.SetRichPresence("", "Idle");
             }
         }
 
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-
-        // REFACTORED: This method now uses the UpdateFileType enum.
         private static async Task RunUpdateProcessAsync(UpdateFileType fileType)
         {
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
 
             await CheckForDeletedFilesAsync(fileType);
 
             GameTasks.UpdateStatusLabel($"Checking {fileType} files", LogSource.Update);
 
-            Task<FileChecksum[]> checksumTasks;
+            Task<LocalFileChecksum[]> checksumTasks;
             switch (fileType)
             {
                 case UpdateFileType.Main:
@@ -74,19 +70,19 @@ namespace launcher.GameManagement
 
             GameTasks.UpdateStatusLabel($"Fetching latest {fileType} files", LogSource.Update);
 
-            GameFiles gameFiles;
+            GameManifest GameManifest;
             switch (fileType)
             {
                 case UpdateFileType.Main:
-                    gameFiles = await ApiClient.GetGameFilesAsync(optional: false);
+                    GameManifest = await ApiClient.GetGameManifestAsync(optional: false);
                     break;
                 case UpdateFileType.Optional:
-                    gameFiles = await ApiClient.GetGameFilesAsync(optional: true);
+                    GameManifest = await ApiClient.GetGameManifestAsync(optional: true);
                     break;
                 case UpdateFileType.Language:
-                    GameFiles serverManifest = await ApiClient.GetLanguageFilesAsync();
+                    GameManifest serverManifest = await ApiClient.GetLanguageFilesAsync();
 
-                    gameFiles = new GameFiles
+                    GameManifest = new GameManifest
                     {
                         files = serverManifest.files
                             .Where(f => File.Exists(Path.Combine(branchDirectory, f.path)))
@@ -100,7 +96,7 @@ namespace launcher.GameManagement
             await Task.WhenAll(checksumTasks);
 
             GameTasks.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
-            int changedFileCount = await ChecksumManager.IdentifyBadFiles(gameFiles, checksumTasks, branchDirectory, true);
+            int changedFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, branchDirectory, true);
 
             if (changedFileCount > 0)
             {
@@ -121,7 +117,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (AppState.IsInstalling || !AppState.IsOnline || BranchService.IsLocal() || !BranchService.IsUpdateAvailable() || BranchService.GetLocalVersion() == BranchService.GetServerVersion())
+            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal() || !ReleaseChannelService.IsUpdateAvailable() || ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion())
                 return false;
 
             if (IsR5ApexOpen())
@@ -137,7 +133,7 @@ namespace launcher.GameManagement
                 }
             }
 
-            BranchService.SetUpdateAvailable(false);
+            ReleaseChannelService.SetUpdateAvailable(false);
             return true;
         }
 
@@ -154,16 +150,16 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            BranchService.SetInstalled(true);
-            BranchService.SetVersion(BranchService.GetServerVersion());
+            ReleaseChannelService.SetInstalled(true);
+            ReleaseChannelService.SetVersion(ReleaseChannelService.GetServerVersion());
 
-            string sigCacheFile = Path.Combine(BranchService.GetDirectory(), "cfg", "startup.bin");
+            string sigCacheFile = Path.Combine(ReleaseChannelService.GetDirectory(), "cfg", "startup.bin");
             if (File.Exists(sigCacheFile)) File.Delete(sigCacheFile);
 
-            SendNotification($"R5Reloaded ({BranchService.GetName()}) has been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) has been updated!", BalloonIcon.Info);
             SetupAdvancedMenu();
 
-            if (BranchService.ShouldDownloadHDTextures())
+            if (ReleaseChannelService.ShouldDownloadHDTextures())
             {
                 await UpdateOptionalFilesAsync();
             }
@@ -174,33 +170,33 @@ namespace launcher.GameManagement
         private static async Task UpdateOptionalFilesAsync()
         {
             await RunUpdateProcessAsync(UpdateFileType.Optional);
-            SendNotification($"R5Reloaded ({BranchService.GetName()}) optional files have been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) optional files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task UpdateLanguageFilesAsync()
         {
             await RunUpdateProcessAsync(UpdateFileType.Language);
-            SendNotification($"R5Reloaded ({BranchService.GetName()}) language files have been updated!", BalloonIcon.Info);
+            SendNotification($"R5Reloaded ({ReleaseChannelService.GetName()}) language files have been updated!", BalloonIcon.Info);
         }
 
         private static async Task CheckForDeletedFilesAsync(UpdateFileType fileType)
         {
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
             var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories)
                 .Select(f => Path.GetRelativePath(branchDirectory, f))
                 .ToList();
 
-            GameFiles serverFileManifest;
+            GameManifest serverFileManifest;
             Func<string, bool> fileTypeFilter;
 
             switch (fileType)
             {
                 case UpdateFileType.Main:
-                    serverFileManifest = await ApiClient.GetGameFilesAsync(optional: false);
+                    serverFileManifest = await ApiClient.GetGameManifestAsync(optional: false);
                     fileTypeFilter = path => !path.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase) && !path.Contains(Path.Combine("audio", "ship"));
                     break;
                 case UpdateFileType.Optional:
-                    serverFileManifest = await ApiClient.GetGameFilesAsync(optional: true);
+                    serverFileManifest = await ApiClient.GetGameManifestAsync(optional: true);
                     fileTypeFilter = path => path.EndsWith("opt.starpak", StringComparison.OrdinalIgnoreCase);
                     break;
                 case UpdateFileType.Language:

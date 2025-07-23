@@ -1,22 +1,10 @@
-using DiscordRPC;
-using System;
+﻿using DiscordRPC;
 using static launcher.Core.UiReferences;
 
-namespace launcher.Core
+namespace launcher.Services
 {
-    public static class AppState
+    class DiscordService
     {
-        public static bool IsOnline { get; set; } = false;
-        public static bool IsLocalBranch { get; set; } = false;
-        public static bool IsInstalling { get; set; } = false;
-        public static bool UpdateCheckLoop { get; set; } = false;
-        public static bool BadFilesDetected { get; set; } = false;
-        public static bool InSettingsMenu { get; set; } = false;
-        public static bool InAdvancedMenu { get; set; } = false;
-        public static bool OnBoarding { get; set; } = false;
-        public static bool BlockLanguageInstall { get; set; } = false;
-        public static int FilesLeft { get; set; } = 0;
-
         private static RichPresence richPresence;
         private static Timestamps timestamps;
 
@@ -57,4 +45,4 @@ namespace launcher.Core
             RPC_client.SetPresence(richPresence);
         }
     }
-} 
+}

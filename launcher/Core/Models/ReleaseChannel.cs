@@ -1,6 +1,6 @@
 namespace launcher.Core.Models
 {
-    public class Branch
+    public class ReleaseChannel
     {
         public string branch { get; set; }
         public string game_url { get; set; }

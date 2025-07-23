@@ -6,7 +6,7 @@ using launcher.Core.Models;
 using launcher.GameManagement;
 using launcher.Services;
 
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 
 namespace launcher
 {
@@ -23,12 +23,12 @@ namespace launcher
         private void close_Click(object sender, RoutedEventArgs e)
         {
             HideDownloadOptlFiles();
-            BranchService.SetDownloadHDTextures(false);
+            ReleaseChannelService.SetDownloadHDTextures(false);
         }
 
         private void Download_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
+            if (Launcher.IsInstalling)
             {
                 HideDownloadOptlFiles();
                 return;
@@ -41,10 +41,10 @@ namespace launcher
         private void Later_Click(object sender, RoutedEventArgs e)
         {
             HideDownloadOptlFiles();
-            BranchService.SetDownloadHDTextures(false);
+            ReleaseChannelService.SetDownloadHDTextures(false);
         }
 
-        public void SetDownloadSize(GameFiles game)
+        public void SetDownloadSize(GameManifest game)
         {
             
             long size = game.files.Sum(f => f.size);

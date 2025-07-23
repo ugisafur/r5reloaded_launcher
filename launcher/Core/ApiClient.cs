@@ -10,10 +10,10 @@ namespace launcher.Core
 {
     public static class ApiClient
     {
-        public static ServerConfig GetServerConfig()
+        public static RemoteConfig GetRemoteConfig()
         {
             LogInfo(LogSource.API, $"request: https://cdn.r5r.org/launcher/config.json");
-            return NetworkHealthService.HttpClient.GetFromJsonAsync<ServerConfig>("https://cdn.r5r.org/launcher/config.json").Result;
+            return NetworkHealthService.HttpClient.GetFromJsonAsync<RemoteConfig>("https://cdn.r5r.org/launcher/config.json").Result;
         }
 
         public static string GetGameVersion(string branch_url)
@@ -22,31 +22,31 @@ namespace launcher.Core
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        public static async Task<GameFiles> GetGameFilesAsync(bool optional)
+        public static async Task<GameManifest> GetGameManifestAsync(bool optional)
         {
-            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{BranchService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+            GameManifest gameManifest = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameManifest>($"{ReleaseChannelService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
-            gameFiles.files = gameFiles.files.Where(file => file.optional == optional && string.IsNullOrEmpty(file.language)).ToList();
+            gameManifest.files = gameManifest.files.Where(file => file.optional == optional && string.IsNullOrEmpty(file.language)).ToList();
 
-            return gameFiles;
+            return gameManifest;
         }
 
-        public static async Task<GameFiles> GetLanguageFilesAsync(Branch branch = null)
+        public static async Task<GameManifest> GetLanguageFilesAsync(ReleaseChannel channel = null)
         {
-            if (branch != null)
+            if (channel != null)
             {
-                GameFiles branchgameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{branch.game_url}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+                GameManifest gameManifest = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameManifest>($"{channel.game_url}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
-                branchgameFiles.files = branchgameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
+                gameManifest.files = gameManifest.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
 
-                return branchgameFiles;
+                return gameManifest;
             }
 
-            GameFiles gameFiles = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameFiles>($"{BranchService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
+            GameManifest GameManifest = await NetworkHealthService.HttpClient.GetFromJsonAsync<GameManifest>($"{ReleaseChannelService.GetGameURL()}\\checksums.json", new JsonSerializerOptions() { AllowTrailingCommas = true });
 
-            gameFiles.files = gameFiles.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
+            GameManifest.files = GameManifest.files.Where(file => !string.IsNullOrEmpty(file.language)).ToList();
 
-            return gameFiles;
+            return GameManifest;
         }
     }
 } 

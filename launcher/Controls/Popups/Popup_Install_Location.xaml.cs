@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Configuration;
 using launcher.Core;
 using launcher.GameManagement;

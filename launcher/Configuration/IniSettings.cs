@@ -1,13 +1,22 @@
-﻿using launcher.Core;
+﻿using launcher.Configuration.Models;
+using launcher.Core;
 using SoftCircuits.IniFileParser;
 using System.IO;
 using static launcher.Utils.Logger;
 
 namespace launcher.Configuration
 {
+    /// <summary>
+    /// Manages application settings stored in an INI file.
+    /// </summary>
     public static class IniSettings
     {
-        //Add new settings to save to this enum
+        private static readonly string IniPath = Path.Combine(Launcher.PATH, "launcher_data", "cfg", "launcherConfig.ini");
+        public static readonly IniFile IniFile = new();
+
+        /// <summary>
+        /// Represents the settings variables.
+        /// </summary>
         public enum Vars
         {
             Enable_Quit_On_Close,
@@ -55,288 +64,168 @@ namespace launcher.Configuration
             Enable_Discord_Rich_Presence,
         }
 
-        // Maps the settings to their respective sections in the INI file
-        public static Dictionary<Vars, string> VarSections = new()
+        private static readonly Dictionary<Vars, SettingInfo> SettingsMap = new()
         {
-            { Vars.Enable_Quit_On_Close, "Settings" },
-            { Vars.Enable_Notifications, "Settings" },
-            { Vars.Disable_Background_Video, "Settings" },
-            { Vars.Disable_Animations, "Settings" },
-            { Vars.Disable_Transitions, "Settings" },
-            { Vars.Concurrent_Downloads, "Settings" },
-            { Vars.Download_Speed_Limit, "Settings" },
-            { Vars.Library_Location, "Settings" },
-            { Vars.Keep_All_Logs, "Settings" },
-            { Vars.Stream_Video, "Settings" },
-            { Vars.Auto_Launch_EA_App, "Settings" },
-
-            { Vars.Enable_Cheats, "Advanced_Options" },
-            { Vars.Enable_Developer, "Advanced_Options" },
-            { Vars.Show_Console, "Advanced_Options" },
-            { Vars.Color_Console, "Advanced_Options" },
-            { Vars.Playlists_File, "Advanced_Options" },
-            { Vars.Map, "Advanced_Options" },
-            { Vars.Playlist, "Advanced_Options" },
-            { Vars.Mode, "Advanced_Options" },
-            { Vars.Visibility, "Advanced_Options" },
-            { Vars.HostName, "Advanced_Options" },
-            { Vars.Command_Line, "Advanced_Options" },
-            { Vars.Resolution_Width, "Advanced_Options" },
-            { Vars.Resolution_Height, "Advanced_Options" },
-            { Vars.Reserved_Cores, "Advanced_Options" },
-            { Vars.Worker_Threads, "Advanced_Options" },
-            { Vars.Processor_Affinity, "Advanced_Options" },
-            { Vars.No_Async, "Advanced_Options" },
-            { Vars.Encrypt_Packets, "Advanced_Options" },
-            { Vars.Queued_Packets, "Advanced_Options" },
-            { Vars.Random_Netkey, "Advanced_Options" },
-            { Vars.No_Timeout, "Advanced_Options" },
-            { Vars.Windowed, "Advanced_Options" },
-            { Vars.Borderless, "Advanced_Options" },
-            { Vars.Max_FPS, "Advanced_Options" },
-            { Vars.Offline_Mode, "Advanced_Options" },
-
-            { Vars.SelectedBranch, "Launcher" },
-            { Vars.Ask_For_Tour, "Launcher" },
-            { Vars.Updater_Version, "Launcher" },
-            { Vars.Nightly_Builds, "Launcher" },
-            { Vars.Launcher_Version, "Launcher" },
-            { Vars.Server_Video_Name, "Launcher" },
-            { Vars.Enable_Discord_Rich_Presence, "Launcher" },
+            { Vars.Enable_Quit_On_Close, new("Settings", "") },
+            { Vars.Enable_Notifications, new("Settings", true) },
+            { Vars.Disable_Background_Video, new("Settings", false) },
+            { Vars.Disable_Animations, new("Settings", false) },
+            { Vars.Disable_Transitions, new("Settings", false) },
+            { Vars.Concurrent_Downloads, new("Settings", 50) },
+            { Vars.Download_Speed_Limit, new("Settings", 0) },
+            { Vars.Library_Location, new("Settings", "") },
+            { Vars.Keep_All_Logs, new("Settings", true) },
+            { Vars.Stream_Video, new("Settings", true) },
+            { Vars.Auto_Launch_EA_App, new("Settings", true) },
+            { Vars.Enable_Cheats, new("Advanced_Options", false) },
+            { Vars.Enable_Developer, new("Advanced_Options", false) },
+            { Vars.Show_Console, new("Advanced_Options", false) },
+            { Vars.Color_Console, new("Advanced_Options", true) },
+            { Vars.Playlists_File, new("Advanced_Options", "playlists_r5_patch.txt") },
+            { Vars.Map, new("Advanced_Options", 0) },
+            { Vars.Playlist, new("Advanced_Options", 0) },
+            { Vars.Mode, new("Advanced_Options", 0) },
+            { Vars.Visibility, new("Advanced_Options", 0) },
+            { Vars.HostName, new("Advanced_Options", "") },
+            { Vars.Command_Line, new("Advanced_Options", "") },
+            { Vars.Resolution_Width, new("Advanced_Options", "") },
+            { Vars.Resolution_Height, new("Advanced_Options", "") },
+            { Vars.Reserved_Cores, new("Advanced_Options", "-1") },
+            { Vars.Worker_Threads, new("Advanced_Options", "-1") },
+            { Vars.Processor_Affinity, new("Advanced_Options", "0") },
+            { Vars.No_Async, new("Advanced_Options", false) },
+            { Vars.Encrypt_Packets, new("Advanced_Options", true) },
+            { Vars.Queued_Packets, new("Advanced_Options", true) },
+            { Vars.Random_Netkey, new("Advanced_Options", true) },
+            { Vars.No_Timeout, new("Advanced_Options", false) },
+            { Vars.Windowed, new("Advanced_Options", false) },
+            { Vars.Borderless, new("Advanced_Options", false) },
+            { Vars.Max_FPS, new("Advanced_Options", "0") },
+            { Vars.Offline_Mode, new("Advanced_Options", false) },
+            { Vars.SelectedBranch, new("Launcher", "") },
+            { Vars.Ask_For_Tour, new("Launcher", true) },
+            { Vars.Updater_Version, new("Launcher", "") },
+            { Vars.Nightly_Builds, new("Launcher", false) },
+            { Vars.Launcher_Version, new("Launcher", "") },
+            { Vars.Server_Video_Name, new("Launcher", "") },
+            { Vars.Enable_Discord_Rich_Presence, new("Launcher", true) },
         };
 
-        // Default values for each setting
-        public static Dictionary<Vars, object> VarDefaults = new()
+        public static void Load()
         {
-            { Vars.Library_Location, "" },
-            { Vars.Playlists_File, "playlists_r5_patch.txt" },
-            { Vars.HostName, "" },
-            { Vars.Command_Line, "" },
-            { Vars.Resolution_Width, "" },
-            { Vars.Resolution_Height, "" },
-            { Vars.Reserved_Cores, "-1" },
-            { Vars.Worker_Threads, "-1" },
-            { Vars.Processor_Affinity, "0" },
-            { Vars.Max_FPS, "0" },
-            { Vars.SelectedBranch, "" },
-            { Vars.Enable_Quit_On_Close, "" },
-            { Vars.Updater_Version, "" },
-            { Vars.Launcher_Version, "" },
-            { Vars.Server_Video_Name, "" },
-
-            { Vars.Keep_All_Logs, true },
-            { Vars.Enable_Notifications, true },
-            { Vars.Disable_Background_Video, false },
-            { Vars.Disable_Animations, false },
-            { Vars.Disable_Transitions, false },
-            { Vars.Enable_Cheats, false },
-            { Vars.Enable_Developer, false },
-            { Vars.Show_Console, false },
-            { Vars.Color_Console, true },
-            { Vars.No_Async, false },
-            { Vars.Encrypt_Packets, true },
-            { Vars.Queued_Packets, true },
-            { Vars.Random_Netkey, true },
-            { Vars.No_Timeout, false },
-            { Vars.Windowed, false },
-            { Vars.Borderless, false },
-            { Vars.Offline_Mode, false },
-            { Vars.Stream_Video, true },
-            { Vars.Ask_For_Tour, true },
-            { Vars.Nightly_Builds, false },
-            { Vars.Auto_Launch_EA_App, true },
-            { Vars.Enable_Discord_Rich_Presence, true },
-
-            { Vars.Mode, 0 },
-            { Vars.Visibility, 0 },
-            { Vars.Concurrent_Downloads, 50 },
-            { Vars.Download_Speed_Limit, 0 },
-            { Vars.Map, 0 },
-            { Vars.Playlist, 0 },
-        };
-
-        public static void CreateConfig()
-        {
-            Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\"));
-
-            string iniPath = Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini");
-
-            if (!File.Exists(iniPath))
+            if (File.Exists(IniPath))
             {
-                IniFile file = new();
-
-                foreach (Vars setting in Enum.GetValues(typeof(Vars)))
-                {
-                    string settings_name = Enum.GetName(typeof(Vars), setting);
-
-                    switch (VarDefaults[setting])
-                    {
-                        case string s:
-                            file.SetSetting(VarSections[setting], settings_name, s);
-                            break;
-
-                        case bool b:
-                            file.SetSetting(VarSections[setting], settings_name, b);
-                            break;
-
-                        case int i:
-                            file.SetSetting(VarSections[setting], settings_name, i);
-                            break;
-
-                        default:
-                            file.SetSetting(VarSections[setting], settings_name, (string)VarDefaults[setting]);
-                            break;
-                    }
-                }
-
-                file.Save(iniPath);
+                IniFile.Load(IniPath);
+                UpdateConfigWithNewSettings();
             }
             else
             {
-                // Check for new settings that may have been added by an update
-                IniFile file = new();
-                file.Load(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+                CreateDefaultConfig();
+            }
+        }
 
-                IEnumerable<IniSetting> settings = file.GetSectionSettings("Settings");
-                IEnumerable<IniSetting> advanced = file.GetSectionSettings("Advanced_Options");
-                IEnumerable<IniSetting> launcher = file.GetSectionSettings("Launcher");
+        public static void CreateDefaultConfig()
+        {
+            if (File.Exists(IniPath))
+                return;
 
-                foreach (Vars setting in Enum.GetValues(typeof(Vars)))
+            Directory.CreateDirectory(Path.GetDirectoryName(IniPath));
+            foreach (var (key, info) in SettingsMap)
+            {
+                Set(key, info.DefaultValue, save: false);
+            }
+            IniFile.Save(IniPath);
+        }
+
+        private static void UpdateConfigWithNewSettings()
+        {
+            var existingSettings = IniFile.GetSectionSettings("Settings")
+                .Concat(IniFile.GetSectionSettings("Advanced_Options"))
+                .Concat(IniFile.GetSectionSettings("Launcher"))
+                .Select(s => s.Name)
+                .ToHashSet();
+
+            bool wasModified = false;
+            foreach (var (key, info) in SettingsMap)
+            {
+                var settingName = Enum.GetName(typeof(Vars), key);
+                if (!existingSettings.Contains(settingName))
                 {
-                    string settings_name = Enum.GetName(typeof(Vars), setting);
-
-                    if (settings.Concat(advanced).Concat(launcher).Any(x => x.Name == settings_name))
-                        continue;
-
-                    switch (VarDefaults[setting])
-                    {
-                        case string s:
-                            file.SetSetting(VarSections[setting], settings_name, s);
-                            break;
-
-                        case bool b:
-                            file.SetSetting(VarSections[setting], settings_name, b);
-                            break;
-
-                        case int i:
-                            file.SetSetting(VarSections[setting], settings_name, i);
-                            break;
-
-                        default:
-                            file.SetSetting(VarSections[setting], settings_name, (string)VarDefaults[setting]);
-                            break;
-                    }
-
-                    file.Save(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
+                    Set(key, info.DefaultValue, save: false);
+                    wasModified = true;
                 }
             }
+
+            if (wasModified)
+            {
+                IniFile.Save(IniPath);
+            }
         }
 
-        public static IniFile GetConfig()
+        public static bool Exists() => File.Exists(IniPath);
+
+        /// <summary>
+        /// Sets a setting value.
+        /// </summary>
+        public static void Set(Vars setting, object value, bool save = true)
         {
-            IniFile file = new();
-            file.Load(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            return file;
+            var info = SettingsMap[setting];
+            var settingName = Enum.GetName(typeof(Vars), setting);
+            Set(info.Section, settingName, value, save);
         }
 
-        public static bool Exists()
+        /// <summary>
+        /// Sets a setting value in a specific section.
+        /// </summary>
+        public static void Set(string section, string setting, object value, bool save = true)
         {
-            return File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-        }
-
-        public static void Set(Vars setting, object value)
-        {
-            if (!Exists())
-                return;
-
-            IniFile file = GetConfig();
-            string settingsName = Enum.GetName(typeof(Vars), setting);
-            string section = VarSections[setting];
-
             switch (value)
             {
                 case string s:
-                    file.SetSetting(section, settingsName, s);
+                    IniFile.SetSetting(section, setting, s);
                     break;
-
                 case bool b:
-                    file.SetSetting(section, settingsName, b);
+                    IniFile.SetSetting(section, setting, b);
                     break;
-
                 case int i:
-                    file.SetSetting(section, settingsName, i);
+                    IniFile.SetSetting(section, setting, i);
                     break;
-
                 default:
-                    file.SetSetting(section, settingsName, (string)value);
+                    IniFile.SetSetting(section, setting, value.ToString());
                     break;
             }
 
-            file.Save(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
-            LogInfo(LogSource.Ini, $"Setting {setting} to: {value}");
-        }
-
-        public static void Set(string section, string setting, object value)
-        {
-            if (!Exists())
-                return;
-
-            IniFile file = GetConfig();
-
-            switch (value)
+            if (save)
             {
-                case string s:
-                    file.SetSetting(section, setting, s);
-                    break;
-
-                case bool b:
-                    file.SetSetting(section, setting, b);
-                    break;
-
-                case int i:
-                    file.SetSetting(section, setting, i);
-                    break;
-
-                default:
-                    file.SetSetting(section, setting, (string)value);
-                    break;
+                IniFile.Save(IniPath);
             }
-
-            file.Save(Path.Combine(Launcher.PATH, "launcher_data\\cfg\\launcherConfig.ini"));
             LogInfo(LogSource.Ini, $"Setting {setting} to: {value}");
         }
 
+        /// <summary>
+        /// Gets a setting value.
+        /// </summary>
+        public static object Get(Vars setting)
+        {
+            var info = SettingsMap[setting];
+            var settingName = Enum.GetName(typeof(Vars), setting);
+            return Get(info.Section, settingName, info.DefaultValue);
+        }
+
+        /// <summary>
+        /// Gets a setting value from a specific section.
+        /// </summary>
         public static object Get(string section, string setting, object defaultValue)
         {
             if (!Exists())
                 return defaultValue;
 
-            IniFile file = GetConfig();
-
             return defaultValue switch
             {
-                string s => file.GetSetting(section, setting, s),
-                bool b => file.GetSetting(section, setting, b),
-                int i => file.GetSetting(section, setting, i),
-                _ => defaultValue
-            };
-        }
-
-        public static object Get(Vars setting)
-        {
-            if (!Exists())
-                return VarDefaults[setting];
-
-            IniFile file = GetConfig();
-            object defaultValue = VarDefaults[setting];
-            string settingsName = Enum.GetName(typeof(Vars), setting);
-
-            return defaultValue switch
-            {
-                string s => file.GetSetting(VarSections[setting], settingsName, s),
-                bool b => file.GetSetting(VarSections[setting], settingsName, b),
-                int i => file.GetSetting(VarSections[setting], settingsName, i),
-                _ => defaultValue
+                string s => IniFile.GetSetting(section, setting, s),
+                bool b => IniFile.GetSetting(section, setting, b),
+                int i => IniFile.GetSetting(section, setting, i),
+                _ => defaultValue,
             };
         }
     }

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using launcher.GameManagement;
+using launcher.GameManagement.PlaylistModels;
 
 namespace launcher.Core
 {
@@ -36,7 +37,7 @@ namespace launcher.Core
 
         #region ComboBoxes
 
-        public static ComboBox Branch_Combobox = new();
+        public static ComboBox ReleaseChannel_Combobox = new();
 
         #endregion ComboBoxes
 
@@ -117,7 +118,7 @@ namespace launcher.Core
             Status_Label = mainWindow.Status_Label;
             Speed_Label = mainWindow.Speed_Label;
             Version_Label = mainWindow.Version_Label;
-            Branch_Combobox = mainWindow.Branch_Combobox;
+            ReleaseChannel_Combobox = mainWindow.ReleaseChannel_Combobox;
             Play_Button = mainWindow.Play_Button;
             Settings_Control = mainWindow.Settings_Control;
             Advanced_Control = mainWindow.Advanced_Control;

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Core;
 
 namespace launcher
@@ -37,7 +37,7 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (!AppState.InSettingsMenu && !AppState.InAdvancedMenu)
+            if (!Launcher.InSettingsMenu && !Launcher.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
                 ShowSettingsControl();

@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Configuration;
 using static launcher.Utils.Logger;
 using static launcher.GameManagement.LaunchParameterBuilder;
@@ -41,7 +41,7 @@ namespace launcher.GameManagement
 
             var mode = (eMode)(int)IniSettings.Get(IniSettings.Vars.Mode);
             string exeName = mode == eMode.SERVER ? "r5apex_ds.exe" : "r5apex.exe";
-            string branchDirectory = BranchService.GetDirectory();
+            string branchDirectory = ReleaseChannelService.GetDirectory();
             string exePath = Path.Combine(branchDirectory, exeName);
 
             if (!File.Exists(exePath))

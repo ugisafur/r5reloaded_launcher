@@ -1,6 +1,6 @@
 namespace launcher.Controls.Models
 {
-    public class ComboBranch
+    public class ReleaseChannelViewModel
     {
         public string title { get; set; }
         public string subtext { get; set; }

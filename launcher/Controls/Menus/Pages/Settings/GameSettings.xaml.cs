@@ -28,21 +28,21 @@ namespace launcher
 
             LibraryPath.Text = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
 
-            var branchesToShow = Launcher.ServerConfig.branches
+            var releaseChannelsToShow = Launcher.RemoteConfig.branches
                 .Where(b => !b.is_local_branch && b.enabled)
                 .ToList();
 
-            for (int i = 0; i < branchesToShow.Count; i++)
+            for (int i = 0; i < releaseChannelsToShow.Count; i++)
             {
-                var branch = branchesToShow[i];
+                var channel = releaseChannelsToShow[i];
                 var gameItem = new GameItem
                 {
                     IsFirstItem = (i == 0),
-                    IsLastItem = (i == branchesToShow.Count - 1),
+                    IsLastItem = (i == releaseChannelsToShow.Count - 1),
                     Index = i
                 };
 
-                await gameItem.InitializeAsync(branch);
+                await gameItem.InitializeAsync(channel);
 
                 BranchPanel.Children.Add(gameItem);
                 _gameItems.Add(gameItem);

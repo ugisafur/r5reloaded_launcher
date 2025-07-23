@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using static launcher.Utils.Logger;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Services;
 using launcher.GameManagement;
 
@@ -28,7 +28,7 @@ namespace launcher
 
         public void SetupEULA()
         {
-            if (!AppState.IsOnline)
+            if (!Launcher.IsOnline)
             {
                 LogError( LogSource.Launcher, "Failed to get EULA, no internet connection");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no internet connection"));
@@ -59,7 +59,7 @@ namespace launcher
 
         private void acknowledge_Click(object sender, RoutedEventArgs e)
         {
-            BranchService.SetEULAAccepted(true);
+            ReleaseChannelService.SetEULAAccepted(true);
             Task.Run(() => GameInstaller.Start());
             HideEULA();
         }

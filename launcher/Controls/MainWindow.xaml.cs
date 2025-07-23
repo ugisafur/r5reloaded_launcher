@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using static launcher.Utils.Logger;
 using static launcher.Core.UiReferences;
-using static launcher.Core.Application;
+using static launcher.Core.AppController;
 using launcher.Utils;
 using launcher.Controls.Models;
 using launcher.Services;
@@ -70,13 +70,14 @@ namespace launcher
                     _isMaximized = false;
                 }
 
-                if (!AppState.OnBoarding)
+                if (!Launcher.OnBoarding)
                     DragMove();
             }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Launcher.DebugArg = Environment.GetCommandLineArgs().Any(arg => arg.Equals("-debug", StringComparison.OrdinalIgnoreCase));
             RenderOptions.ProcessRenderMode = RenderMode.Default;
 
             // Hide the window on startup
@@ -139,7 +140,7 @@ namespace launcher
 
             // Create the configuration file if it doesn't exist
             PreLoad_Window.SetLoadingText("Creating configuration file");
-            IniSettings.CreateConfig();
+            IniSettings.CreateDefaultConfig();
 
             // Setup the system tray
             PreLoad_Window.SetLoadingText("Setting up system tray");
@@ -200,7 +201,7 @@ namespace launcher
             // Show window open animation
             await OnOpen();
 
-            if (AppState.IsOnline)
+            if (Launcher.IsOnline)
             {
                 Task.Run(() => UpdateService.Start());
                 SetButtonState();
@@ -282,12 +283,12 @@ namespace launcher
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (AppState.IsInstalling)
+            if (Launcher.IsInstalling)
                 return;
 
             try
             {
-                bool isGameReadyToLaunch = !AppState.IsOnline || BranchService.IsInstalled() || BranchService.IsLocal();
+                bool isGameReadyToLaunch = !Launcher.IsOnline || ReleaseChannelService.IsInstalled() || ReleaseChannelService.IsLocal();
 
                 if (isGameReadyToLaunch)
                 {
@@ -301,7 +302,7 @@ namespace launcher
                 else
                 {
                     string libraryLocation = (string)IniSettings.Get(IniSettings.Vars.Library_Location);
-                    string exePath = Path.Combine(BranchService.GetDirectory(), "r5apex.exe");
+                    string exePath = Path.Combine(ReleaseChannelService.GetDirectory(), "r5apex.exe");
 
                     if (!string.IsNullOrEmpty(libraryLocation) && File.Exists(exePath))
                     {
@@ -354,30 +355,30 @@ namespace launcher
             if (sender is not ComboBox comboBox) return;
 
             var selectedBranch = comboBox.SelectedIndex;
-            if (Branch_Combobox.Items[selectedBranch] is not ComboBranch comboBranch) return;
+            if (ReleaseChannel_Combobox.Items[selectedBranch] is not ReleaseChannelViewModel comboChannel) return;
 
             SetupAdvancedMenu();
-            GameSettings_Control.OpenDir_Button.IsEnabled = BranchService.IsInstalled() || comboBranch.isLocalBranch;
-            GameSettings_Control.AdvancedMenu_Button.IsEnabled = BranchService.IsInstalled() || comboBranch.isLocalBranch;
+            GameSettings_Control.OpenDir_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocalBranch;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocalBranch;
 
-            if (AppState.IsOnline && Launcher.newsOnline)
+            if (Launcher.IsOnline && Launcher.newsOnline)
             {
                 Task.Run(() => NewsService.Populate());
             }
 
-            if (comboBranch.isLocalBranch || !AppState.IsOnline)
+            if (comboChannel.isLocalBranch || !Launcher.IsOnline)
             {
                 ReadMore_Label.Inlines.Clear();
-                HandleLocalBranch(comboBranch.title);
+                HandleLocalBranch(comboChannel.title);
                 return;
             }
 
-            AppState.IsLocalBranch = false;
-            IniSettings.Set(IniSettings.Vars.SelectedBranch, BranchService.GetName(false));
+            Launcher.IsLocalBranch = false;
+            IniSettings.Set(IniSettings.Vars.SelectedBranch, ReleaseChannelService.GetName(false));
 
-            Task.Run(() => SetTextBlockContent(BranchService.GetServerComboVersion(BranchService.GetCurrentBranch())));
+            Task.Run(() => SetTextBlockContent(ReleaseChannelService.GetServerComboVersion(ReleaseChannelService.GetCurrentBranch())));
 
-            if (BranchService.IsInstalled())
+            if (ReleaseChannelService.IsInstalled())
             {
                 HandleInstalledBranch(selectedBranch);
             }
@@ -389,7 +390,7 @@ namespace launcher
 
         private async void SetTextBlockContent(string version)
         {
-            string slug = await BranchService.GetBlogSlug();
+            string slug = await ReleaseChannelService.GetBlogSlug();
             string filter = string.IsNullOrEmpty(slug) ? "" : $"&filter=tag:{slug}";
             News root = await NetworkHealthService.HttpClient.GetFromJsonAsync<News>($"{Launcher.NEWSURL}/posts/?key={Launcher.NEWSKEY}&include=tags,authors{filter}&limit=1&fields=url");
             string url = root.posts.Count == 0 ? "https://blog.r5reloaded.com" : root.posts[0].url;
@@ -424,7 +425,7 @@ namespace launcher
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (BranchService.IsUpdateAvailable() && BranchService.IsInstalled())
+            if (ReleaseChannelService.IsUpdateAvailable() && ReleaseChannelService.IsInstalled())
             {
                 Task.Run(() => GameUpdater.Start());
                 Update_Button.Visibility = Visibility.Hidden;
@@ -631,31 +632,31 @@ namespace launcher
             if (Launcher.wineEnv)
                 return;
 
-            if ((bool)IniSettings.Get(IniSettings.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && AppState.IsOnline)
+            if ((bool)IniSettings.Get(IniSettings.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && Launcher.IsOnline)
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
-                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo)))
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo)))
                 {
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), UriKind.Absolute);
                     LogInfo(LogSource.Launcher, "Loading local video background");
                 }
                 else
                 {
                     using (var client = new HttpClient())
                     {
-                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.ServerConfig.backgroundVideo))
+                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.RemoteConfig.backgroundVideo))
                         {
-                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), FileMode.OpenOrCreate))
+                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), FileMode.OpenOrCreate))
                             {
                                 s.Result.CopyTo(fs);
                             }
                         }
                     }
 
-                    IniSettings.Set(IniSettings.Vars.Server_Video_Name, Launcher.ServerConfig.backgroundVideo);
+                    IniSettings.Set(IniSettings.Vars.Server_Video_Name, Launcher.RemoteConfig.backgroundVideo);
 
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.ServerConfig.backgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), UriKind.Absolute);
 
                     LogInfo(LogSource.Launcher, $"Loaded video background from server");
                 }
@@ -690,39 +691,39 @@ namespace launcher
             IniSettings.Set(IniSettings.Vars.SelectedBranch, branchTitle);
             Update_Button.Visibility = Visibility.Hidden;
             SetPlayState("PLAY", true, false, true, true, true);
-            AppState.IsLocalBranch = true;
+            Launcher.IsLocalBranch = true;
         }
 
         private void HandleInstalledBranch(int selectedBranch)
         {
-            var branch = Launcher.ServerConfig.branches[selectedBranch];
+            var channel = Launcher.RemoteConfig.branches[selectedBranch];
 
-            if (!branch.enabled)
+            if (!channel.enabled)
             {
                 SetPlayState("PLAY", false, false, true, true, true);
                 return;
             }
 
-            bool isUpToDate = BranchService.GetLocalVersion() == BranchService.GetServerVersion();
+            bool isUpToDate = ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion();
             Update_Button.Visibility = isUpToDate ? Visibility.Hidden : Visibility.Visible;
-            BranchService.SetUpdateAvailable(!isUpToDate);
+            ReleaseChannelService.SetUpdateAvailable(!isUpToDate);
             SetPlayState("PLAY", true, true, true, true, true);
         }
 
         private void HandleUninstalledBranch(int selectedBranch)
         {
-            var branch = Launcher.ServerConfig.branches[selectedBranch];
+            var channel = Launcher.RemoteConfig.branches[selectedBranch];
 
-            if (!branch.enabled)
+            if (!channel.enabled)
             {
                 SetPlayState("DISABLED", false, false, false, false, false);
                 return;
             }
 
             Update_Button.Visibility = Visibility.Hidden;
-            BranchService.SetUpdateAvailable(false);
+            ReleaseChannelService.SetUpdateAvailable(false);
 
-            bool executableExists = File.Exists(Path.Combine(BranchService.GetDirectory(), "r5apex.exe"));
+            bool executableExists = File.Exists(Path.Combine(ReleaseChannelService.GetDirectory(), "r5apex.exe"));
             SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists, executableExists, executableExists);
         }
 
@@ -756,25 +757,25 @@ namespace launcher
 
         public void SetButtonState()
         {
-            if (BranchService.IsLocal())
+            if (ReleaseChannelService.IsLocal())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!BranchService.IsEnabled())
+            if (!ReleaseChannelService.IsEnabled())
             {
                 Play_Button.Content = "DISABLED";
                 return;
             }
 
-            if (BranchService.IsInstalled())
+            if (ReleaseChannelService.IsInstalled())
             {
                 Play_Button.Content = "PLAY";
                 return;
             }
 
-            if (!BranchService.IsInstalled() && File.Exists(Path.Combine(BranchService.GetDirectory(), "r5apex.exe")))
+            if (!ReleaseChannelService.IsInstalled() && File.Exists(Path.Combine(ReleaseChannelService.GetDirectory(), "r5apex.exe")))
             {
                 Play_Button.Content = "CHECK FILES";
                 return;
