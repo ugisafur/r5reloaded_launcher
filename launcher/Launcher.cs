@@ -19,17 +19,13 @@ namespace launcher
     public static class Launcher
     {
         public const string VERSION = "1.2.0";
-        public static bool IsOnline { get; set; } = false;
-        public static bool isLocal { get; set; } = false;
-        public static bool IsInstalling { get; set; } = false;
-        public static bool UpdateCheckLoop { get; set; } = false;
-        public static bool BadFilesDetected { get; set; } = false;
-        public static bool InSettingsMenu { get; set; } = false;
-        public static bool InAdvancedMenu { get; set; } = false;
-        public static bool OnBoarding { get; set; } = false;
-        public static bool BlockLanguageInstall { get; set; } = false;
-        public static int FilesLeft { get; set; } = 0;
-        public static bool DebugArg { get; set; } = false;
+
+        #region Settings
+
+        public const int MAX_REPAIR_ATTEMPTS = 5;
+        public static string PATH { get; set; } = "";
+
+        #endregion Settings
 
         #region Public Keys
 
@@ -47,19 +43,6 @@ namespace launcher
 
         #endregion Public URLs
 
-        #region Settings
-
-        public const int MAX_REPAIR_ATTEMPTS = 5;
-        public static string PATH { get; set; } = "";
-        public static RemoteConfig RemoteConfig { get; set; }
-        public static IniFile LauncherConfig { get; set; }
-        public static CultureInfo cultureInfo { get; set; }
-        public static string language_name { get; set; }
-        public static bool wineEnv { get; set; }
-        public static bool newsOnline { get; set; }
-
-        #endregion Settings
-
         public static void Init()
         {
             string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : VERSION;
@@ -70,15 +53,15 @@ namespace launcher
             PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
             LogInfo(LogSource.Launcher, $"Launcher path: {PATH}");
 
-            RemoteConfig = IsOnline ? ApiService.GetRemoteConfig() : null;
+            appState.RemoteConfig = appState.IsOnline ? ApiService.GetRemoteConfig() : null;
 
             SettingsService.Load();
 
-            LauncherConfig = SettingsService.IniFile;
+            appState.LauncherConfig = SettingsService.IniFile;
             LogInfo(LogSource.Launcher, $"Launcher config found");
 
-            cultureInfo = CultureInfo.CurrentCulture;
-            language_name = cultureInfo.Parent.EnglishName.ToLower(new CultureInfo("en-US"));
+            appState.cultureInfo = CultureInfo.CurrentCulture;
+            appState.language_name = appState.cultureInfo.Parent.EnglishName.ToLower(new CultureInfo("en-US"));
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;

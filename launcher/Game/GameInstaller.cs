@@ -42,7 +42,7 @@ namespace launcher.GameManagement
 
         public static async Task HDTextures()
         {
-            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal()) return;
+            if (appState.IsInstalling || !appState.IsOnline || ReleaseChannelService.IsLocal()) return;
 
             GameManifest GameManifest = await ApiService.GetGameManifestAsync(optional: true);
             if (!await CheckForSufficientSpaceAsync(GameManifest, "HD Textures")) return;
@@ -65,7 +65,7 @@ namespace launcher.GameManagement
 
         public static async Task LangFile(CheckBox checkBox, GameManifest GameManifest, string language, bool bypass_block = false)
         {
-            if (!Launcher.IsOnline || (Launcher.BlockLanguageInstall && !bypass_block)) return;
+            if (!appState.IsOnline || (appState.BlockLanguageInstall && !bypass_block)) return;
 
             if (!await CheckForSufficientSpaceAsync(GameManifest, "Language File")) return;
 
@@ -109,7 +109,7 @@ namespace launcher.GameManagement
 
         private static async Task<bool> RunPreFlightChecksAsync()
         {
-            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal()) return false;
+            if (appState.IsInstalling || !appState.IsOnline || ReleaseChannelService.IsLocal()) return false;
 
             if (string.IsNullOrEmpty((string)SettingsService.Get(SettingsService.Vars.Library_Location)))
             {
@@ -160,7 +160,7 @@ namespace launcher.GameManagement
             GameManifest GameManifest = await ApiService.GetGameManifestAsync(optional: false);
             await RunDownloadProcessAsync(GameManifest, "Downloading game files");
 
-            if (Launcher.BadFilesDetected)
+            if (appState.BadFilesDetected)
             {
                 GameFileManager.UpdateStatusLabel("Repairing game files", LogSource.Installer);
                 await AttemptGameRepair();
@@ -170,10 +170,10 @@ namespace launcher.GameManagement
         private static async Task PerformPostInstallActionsAsync()
         {
             GameManifest GameManifest = await ApiService.GetLanguageFilesAsync();
-            bool languageAvailable = GameManifest.languages.Contains(Launcher.language_name, StringComparer.OrdinalIgnoreCase);
-            if (languageAvailable && Launcher.language_name != "english")
+            bool languageAvailable = GameManifest.languages.Contains(appState.language_name, StringComparer.OrdinalIgnoreCase);
+            if (languageAvailable && appState.language_name != "english")
             {
-                await LangFile(null, GameManifest, Launcher.language_name, bypass_block: true);
+                await LangFile(null, GameManifest, appState.language_name, bypass_block: true);
             }
 
             ReleaseChannelService.SetInstalled(true);
@@ -196,7 +196,7 @@ namespace launcher.GameManagement
             {
                 isRepaired = await GameRepairer.Start();
             }
-            Launcher.BadFilesDetected = !isRepaired;
+            appState.BadFilesDetected = !isRepaired;
         }
 
         private static string FormatBytes(long bytes)

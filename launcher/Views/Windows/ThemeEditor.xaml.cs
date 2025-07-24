@@ -68,7 +68,7 @@ namespace launcher
                 app.ThemeDictionary[GetName(color)] = new SolidColorBrush(color.SelectedColor);
             }
 
-            if(Launcher.wineEnv)
+            if(appState.wineEnv)
             {
                 ChangeVideo.IsEnabled = false;
                 ChangeVideo.Content = "Video Disabled Under Wine";
@@ -180,7 +180,7 @@ namespace launcher
 
         private async void BackgroundVideo_Click(object sender, RoutedEventArgs e)
         {
-            if (Launcher.wineEnv)
+            if (appState.wineEnv)
                 return;
 
             var directoryDialog = new CommonOpenFileDialog

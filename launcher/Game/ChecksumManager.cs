@@ -136,7 +136,6 @@ namespace launcher.GameManagement
                 Progress_Bar.Value = 0;
                 Percent_Label.Text = "0%";
             });
-            Launcher.FilesLeft = count;
         }
 
         private static void UpdateProgress()

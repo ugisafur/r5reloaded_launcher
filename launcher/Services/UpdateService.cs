@@ -24,7 +24,7 @@ namespace launcher.Services
 
         public static async Task Start()
         {
-            if (!Launcher.IsOnline)
+            if (!appState.IsOnline)
                 return;
 
             if (string.IsNullOrEmpty((string)SettingsService.Get(SettingsService.Vars.Launcher_Version)) && (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) == Launcher.VERSION)
@@ -54,7 +54,7 @@ namespace launcher.Services
                     }
                     else
                     {
-                        string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : Launcher.RemoteConfig.launcherVersion;
+                        string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : appState.RemoteConfig.launcherVersion;
                         string message = iqnoredLauncherUpdate ? "Update for launcher is available but user iqnored update" : "Update for launcher is not available";
                         LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {version})");
                     }
@@ -193,7 +193,7 @@ namespace launcher.Services
             {
                 newGithubConfig = newGithubConfig.Where(release => release.prerelease && release.tag_name.StartsWith("nightly")).ToList();
 
-                if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && IsNewNightlyVersion((string)SettingsService.Get(SettingsService.Vars.Launcher_Version), newGithubConfig))
+                if (!iqnoredLauncherUpdate && !appState.IsInstalling && IsNewNightlyVersion((string)SettingsService.Get(SettingsService.Vars.Launcher_Version), newGithubConfig))
                 {
                     appDispatcher.BeginInvoke(() =>
                     {
@@ -227,7 +227,7 @@ namespace launcher.Services
                 return false;
             }
 
-            if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && newRemoteConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newRemoteConfig.launcherVersion))
+            if (!iqnoredLauncherUpdate && !appState.IsInstalling && newRemoteConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newRemoteConfig.launcherVersion))
             {
                 appDispatcher.BeginInvoke(() =>
                 {
@@ -264,16 +264,16 @@ namespace launcher.Services
 
         private static bool ShouldUpdateGame(RemoteConfig newRemoteConfig)
         {
-            if (Launcher.LauncherConfig == null)
+            if (appState.LauncherConfig == null)
                 return false;
 
             if (newRemoteConfig.channels.Count == 0)
                 return false;
 
-            if(!Launcher.IsOnline)
+            if(!appState.IsOnline)
                 return false;
 
-            if (Launcher.IsInstalling)
+            if (appState.IsInstalling)
                 return false;
 
             if (ReleaseChannelService.IsLocal())

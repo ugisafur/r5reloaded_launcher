@@ -24,7 +24,7 @@ namespace launcher.Core
         public static async Task SetupApp(MainWindow mainWindow)
         {
 
-            if (Launcher.DebugArg)
+            if (appState.DebugArg)
                 EnableDebugConsole();
 
             PreLoad_Window.SetLoadingText("Checking for EA Desktop App");
@@ -79,9 +79,9 @@ namespace launcher.Core
             PreLoad_Window.SetLoadingText("Checking for news");
             await Task.Delay(100);
 
-            Launcher.newsOnline = await NetworkHealthService.IsNewsApiAvailableAsync();
+            appState.newsOnline = await NetworkHealthService.IsNewsApiAvailableAsync();
 
-            if (Launcher.IsOnline && Launcher.newsOnline)
+            if (appState.IsOnline && appState.newsOnline)
             {
                 NewsService.Populate();
                 MoveNewsRect(0);
@@ -97,7 +97,7 @@ namespace launcher.Core
 
         public static void InitDiscordRPC()
         {
-            if (!Launcher.IsOnline)
+            if (!appState.IsOnline)
                 return;
 
             if(RPC_client != null && RPC_client.IsInitialized)
@@ -270,7 +270,7 @@ namespace launcher.Core
         {
             bool isOnline = NetworkHealthService.IsCdnAvailableAsync().Result;
             LogInfo(LogSource.Launcher, isOnline ? "Connected to CDN" : "Cant connect to CDN");
-            Launcher.IsOnline = isOnline;
+            appState.IsOnline = isOnline;
         }
 
         private static void SetupMenus()
@@ -289,7 +289,7 @@ namespace launcher.Core
         {
             appDispatcher.BeginInvoke(new Action(() =>
             {
-                foreach (var channel in Launcher.RemoteConfig.channels)
+                foreach (var channel in appState.RemoteConfig.channels)
                 {
                     if (ReleaseChannelService.IsInstalled(channel) && !Directory.Exists(ReleaseChannelService.GetDirectory(channel)))
                     {
@@ -309,9 +309,9 @@ namespace launcher.Core
                 ReleaseChannel_Combobox.ItemsSource = GetGamechannels();
 
                 string savedChannel = (string)SettingsService.Get(SettingsService.Vars.SelectedReleaseChannel);
-                string selectedChannel = string.IsNullOrEmpty(savedChannel) ? Launcher.RemoteConfig.channels[0].name.ToUpper(new CultureInfo("en-US")) : (string)SettingsService.Get(SettingsService.Vars.SelectedReleaseChannel);
+                string selectedChannel = string.IsNullOrEmpty(savedChannel) ? appState.RemoteConfig.channels[0].name.ToUpper(new CultureInfo("en-US")) : (string)SettingsService.Get(SettingsService.Vars.SelectedReleaseChannel);
 
-                int selectedIndex = Launcher.RemoteConfig.channels.FindIndex(channel => channel.name == selectedChannel && channel.enabled == true);
+                int selectedIndex = appState.RemoteConfig.channels.FindIndex(channel => channel.name == selectedChannel && channel.enabled == true);
 
                 if (selectedIndex == -1 || selectedIndex >= ReleaseChannel_Combobox.Items.Count)
                     selectedIndex = 0;
@@ -336,8 +336,8 @@ namespace launcher.Core
                 {
                     bool shouldAdd = true;
 
-                    if (Launcher.IsOnline)
-                        shouldAdd = !Launcher.RemoteConfig.channels.Any(b => string.Equals(b.name, folder, StringComparison.OrdinalIgnoreCase));
+                    if (appState.IsOnline)
+                        shouldAdd = !appState.RemoteConfig.channels.Any(b => string.Equals(b.name, folder, StringComparison.OrdinalIgnoreCase));
 
                     if (shouldAdd)
                     {
@@ -354,26 +354,26 @@ namespace launcher.Core
                 }
             }
 
-            if (Launcher.IsOnline)
-                Launcher.RemoteConfig.channels.AddRange(ReleaseChannelService.LocalFolders);
+            if (appState.IsOnline)
+                appState.RemoteConfig.channels.AddRange(ReleaseChannelService.LocalFolders);
             else
-                Launcher.RemoteConfig = new RemoteConfig { channels = new List<ReleaseChannel>(ReleaseChannelService.LocalFolders) };
+                appState.RemoteConfig = new RemoteConfig { channels = new List<ReleaseChannel>(ReleaseChannelService.LocalFolders) };
 
             List<ReleaseChannel> channels_to_remove = [];
-            for (int i = 0; i < Launcher.RemoteConfig.channels.Count; i++)
+            for (int i = 0; i < appState.RemoteConfig.channels.Count; i++)
             {
-                if (!Launcher.RemoteConfig.channels[i].enabled)
-                    channels_to_remove.Add(Launcher.RemoteConfig.channels[i]);
+                if (!appState.RemoteConfig.channels[i].enabled)
+                    channels_to_remove.Add(appState.RemoteConfig.channels[i]);
             }
 
             if (channels_to_remove.Count > 0)
             {
                 foreach (ReleaseChannel channel in channels_to_remove)
-                    Launcher.RemoteConfig.channels.Remove(channel);
+                    appState.RemoteConfig.channels.Remove(channel);
             }
 
-            return Launcher.RemoteConfig.channels
-                .Where(channel => channel.enabled || !Launcher.IsOnline)
+            return appState.RemoteConfig.channels
+                .Where(channel => channel.enabled || !appState.IsOnline)
                 .Select(channel => new ReleaseChannelViewModel
                 {
                     title = channel.name.ToUpper(new CultureInfo("en-US")),
@@ -385,20 +385,20 @@ namespace launcher.Core
 
         private static void GetSelfUpdater()
         {
-            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)SettingsService.Get(SettingsService.Vars.Updater_Version) != Launcher.RemoteConfig.updaterVersion)
+            if (!File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")) || (string)SettingsService.Get(SettingsService.Vars.Updater_Version) != appState.RemoteConfig.updaterVersion)
             {
                 if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe")))
                     File.Delete(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"));
 
                 LogInfo(LogSource.Launcher, "Downloading launcher updater");
-                NetworkHealthService.HttpClient.GetAsync(Launcher.RemoteConfig.selfUpdater)
+                NetworkHealthService.HttpClient.GetAsync(appState.RemoteConfig.selfUpdater)
                     .ContinueWith(response =>
                     {
                         if (response.Result.IsSuccessStatusCode)
                         {
                             byte[] data = response.Result.Content.ReadAsByteArrayAsync().Result;
                             File.WriteAllBytes(Path.Combine(Launcher.PATH, "launcher_data\\updater.exe"), data);
-                            SettingsService.Set(SettingsService.Vars.Updater_Version, Launcher.RemoteConfig.updaterVersion);
+                            SettingsService.Set(SettingsService.Vars.Updater_Version, appState.RemoteConfig.updaterVersion);
                         }
                     });
             }
@@ -425,7 +425,7 @@ namespace launcher.Core
 
         public static void ShowSettingsControl()
         {
-            Launcher.InSettingsMenu = true;
+            appState.InSettingsMenu = true;
 
             if ((bool)SettingsService.Get(SettingsService.Vars.Disable_Transitions))
             {
@@ -457,7 +457,7 @@ namespace launcher.Core
 
         public static void HideSettingsControl()
         {
-            Launcher.InSettingsMenu = false;
+            appState.InSettingsMenu = false;
 
             if ((bool)SettingsService.Get(SettingsService.Vars.Disable_Transitions))
             {
@@ -489,7 +489,7 @@ namespace launcher.Core
 
         public static void ShowAdvancedControl()
         {
-            Launcher.InAdvancedMenu = true;
+            appState.InAdvancedMenu = true;
 
             if ((bool)SettingsService.Get(SettingsService.Vars.Disable_Transitions))
             {
@@ -521,7 +521,7 @@ namespace launcher.Core
 
         public static void HideAdvancedControl()
         {
-            Launcher.InAdvancedMenu = false;
+            appState.InAdvancedMenu = false;
 
             if ((bool)SettingsService.Get(SettingsService.Vars.Disable_Transitions))
             {
@@ -727,13 +727,13 @@ namespace launcher.Core
 
         public static void StartTour()
         {
-            if (Launcher.InSettingsMenu)
+            if (appState.InSettingsMenu)
                 HideSettingsControl();
 
-            if (Launcher.InAdvancedMenu)
+            if (appState.InAdvancedMenu)
                 HideAdvancedControl();
 
-            Launcher.OnBoarding = true;
+            appState.OnBoarding = true;
 
             Main_Window.ResizeMode = ResizeMode.NoResize;
             Main_Window.Width = Main_Window.MinWidth;
@@ -747,7 +747,7 @@ namespace launcher.Core
 
         public static void EndTour()
         {
-            Launcher.OnBoarding = false;
+            appState.OnBoarding = false;
 
             OnBoard_Control.Visibility = Visibility.Hidden;
             OnBoardingRect.Visibility = Visibility.Hidden;

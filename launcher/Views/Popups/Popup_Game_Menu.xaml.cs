@@ -22,7 +22,7 @@ namespace launcher
 
         private void AdvancedOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (!Launcher.InAdvancedMenu)
+            if (!appState.InAdvancedMenu)
             {
                 GameSettings_Popup.IsOpen = false;
                 ShowAdvancedControl();

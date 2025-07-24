@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using static launcher.Core.AppControllerService;
+using static launcher.Core.UiReferences;
 
 namespace launcher
 {
@@ -123,7 +124,7 @@ namespace launcher
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Launcher.InSettingsMenu)
+            if (appState.InSettingsMenu)
                 HideSettingsControl();
         }
 

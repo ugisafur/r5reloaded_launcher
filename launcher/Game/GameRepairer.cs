@@ -27,7 +27,7 @@ namespace launcher.GameManagement
                 bool repairNeeded = await ExecuteMainRepairAsync();
                 await PerformPostRepairActionsAsync();
 
-                return !repairNeeded || !Launcher.BadFilesDetected;
+                return !repairNeeded || !appState.BadFilesDetected;
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal()) return false;
+            if (appState.IsInstalling || !appState.IsOnline || ReleaseChannelService.IsLocal()) return false;
 
             if (IsR5ApexOpen())
             {
@@ -159,7 +159,7 @@ namespace launcher.GameManagement
 
         private static async Task RepairLanguageFilesAsync()
         {
-            if (!Launcher.IsOnline) return;
+            if (!appState.IsOnline) return;
 
             string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
 

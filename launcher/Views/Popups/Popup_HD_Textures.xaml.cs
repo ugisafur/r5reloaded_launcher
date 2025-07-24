@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using launcher.GameLifecycle.Models;
 using launcher.GameManagement;
 using launcher.Services;
-
+using static launcher.Core.UiReferences;
 using static launcher.Core.AppControllerService;
 
 namespace launcher
@@ -27,7 +27,7 @@ namespace launcher
 
         private void Download_Click(object sender, RoutedEventArgs e)
         {
-            if (Launcher.IsInstalling)
+            if (appState.IsInstalling)
             {
                 HideDownloadOptlFiles();
                 return;

@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using launcher.GameManagement;
 using launcher.Services.Models;
+using launcher.Core.Models;
 
 namespace launcher.Core
 {
@@ -107,6 +108,8 @@ namespace launcher.Core
         public static List<string> maps = [];
 
         public static DiscordRPC.DiscordRpcClient RPC_client;
+
+        public static AppState appState = new();
 
         #endregion Other
 

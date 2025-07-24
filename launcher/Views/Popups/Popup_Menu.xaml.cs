@@ -36,7 +36,7 @@ namespace launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (!Launcher.InSettingsMenu && !Launcher.InAdvancedMenu)
+            if (!appState.InSettingsMenu && !appState.InAdvancedMenu)
             {
                 Menu_Popup.IsOpen = false;
                 ShowSettingsControl();

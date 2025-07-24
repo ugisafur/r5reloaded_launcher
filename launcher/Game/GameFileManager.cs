@@ -95,7 +95,7 @@ namespace launcher.GameManagement
             catch (Exception ex)
             {
                 LogException($"All retries failed for {file.downloadContext.fileUrl}", LogSource.Download, ex);
-                Launcher.BadFilesDetected = true;
+                appState.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
@@ -186,7 +186,7 @@ namespace launcher.GameManagement
             catch (Exception ex)
             {
                 LogException($"Failed to process multi-part file {file.path}", LogSource.Download, ex);
-                Launcher.BadFilesDetected = true;
+                appState.BadFilesDetected = true;
                 return string.Empty;
             }
             finally
@@ -374,8 +374,8 @@ namespace launcher.GameManagement
                 bool areGameOptionsEnabled = isUiEnabled && ReleaseChannelService.IsInstalled();
 
                 // --- Update Application State ---
-                Launcher.IsInstalling = isInstalling;
-                Launcher.BlockLanguageInstall = isInstalling;
+                appState.IsInstalling = isInstalling;
+                appState.BlockLanguageInstall = isInstalling;
 
                 // --- Update Main UI Controls ---
                 Play_Button.Content = buttonText;

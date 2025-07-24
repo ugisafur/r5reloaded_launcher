@@ -50,7 +50,7 @@ namespace launcher
 
         private void gotoDownloads_Click(object sender, RoutedEventArgs e)
         {
-            if (!Launcher.InSettingsMenu && !Launcher.InAdvancedMenu)
+            if (!appState.InSettingsMenu && !appState.InAdvancedMenu)
             {
                 Downloads_Popup.IsOpen = false;
                 Settings_Control.OpenDownloadsSettings();

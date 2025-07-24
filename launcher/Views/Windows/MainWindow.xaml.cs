@@ -68,21 +68,21 @@ namespace launcher
                     _isMaximized = false;
                 }
 
-                if (!Launcher.OnBoarding)
+                if (!appState.OnBoarding)
                     DragMove();
             }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Launcher.DebugArg = Environment.GetCommandLineArgs().Any(arg => arg.Equals("-debug", StringComparison.OrdinalIgnoreCase));
+            appState.DebugArg = Environment.GetCommandLineArgs().Any(arg => arg.Equals("-debug", StringComparison.OrdinalIgnoreCase));
             RenderOptions.ProcessRenderMode = RenderMode.Default;
 
             // Hide the window on startup
             this.Opacity = 0;
 
-            Launcher.wineEnv = IsWineEnvironment();
-            if (Launcher.wineEnv)
+            appState.wineEnv = IsWineEnvironment();
+            if (appState.wineEnv)
             {
                 LogInfo(LogSource.Launcher, "Wine environment detected, disabling background video");
 
@@ -159,7 +159,7 @@ namespace launcher
 
             bool useStaticImage = (bool)SettingsService.Get(SettingsService.Vars.Disable_Background_Video);
 
-            if (Launcher.wineEnv)
+            if (appState.wineEnv)
             {
                 // Force disable background video
                 SettingsService.Set(SettingsService.Vars.Disable_Background_Video, true);
@@ -199,7 +199,7 @@ namespace launcher
             // Show window open animation
             await OnOpen();
 
-            if (Launcher.IsOnline)
+            if (appState.IsOnline)
             {
                 Task.Run(() => UpdateService.Start());
                 SetButtonState();
@@ -233,7 +233,7 @@ namespace launcher
 
         private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            if (Launcher.wineEnv)
+            if (appState.wineEnv)
                 return;
 
             Background_Video.Position = TimeSpan.FromSeconds(0);
@@ -281,12 +281,12 @@ namespace launcher
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (Launcher.IsInstalling)
+            if (appState.IsInstalling)
                 return;
 
             try
             {
-                bool isGameReadyToLaunch = !Launcher.IsOnline || ReleaseChannelService.IsInstalled() || ReleaseChannelService.IsLocal();
+                bool isGameReadyToLaunch = !appState.IsOnline || ReleaseChannelService.IsInstalled() || ReleaseChannelService.IsLocal();
 
                 if (isGameReadyToLaunch)
                 {
@@ -359,19 +359,19 @@ namespace launcher
             GameSettings_Control.OpenDir_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocal;
             GameSettings_Control.AdvancedMenu_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocal;
 
-            if (Launcher.IsOnline && Launcher.newsOnline)
+            if (appState.IsOnline && appState.newsOnline)
             {
                 Task.Run(() => NewsService.Populate());
             }
 
-            if (comboChannel.isLocal || !Launcher.IsOnline)
+            if (comboChannel.isLocal || !appState.IsOnline)
             {
                 ReadMore_Label.Inlines.Clear();
                 HandleLocalFolder(comboChannel.title);
                 return;
             }
 
-            Launcher.isLocal = false;
+            appState.isLocal = false;
             SettingsService.Set(SettingsService.Vars.SelectedReleaseChannel, ReleaseChannelService.GetName(false));
 
             Task.Run(() => SetTextBlockContent(ReleaseChannelService.GetServerComboVersion(ReleaseChannelService.GetCurrentReleaseChannel())));
@@ -627,34 +627,34 @@ namespace launcher
 
         private async Task LoadVideoBackground()
         {
-            if (Launcher.wineEnv)
+            if (appState.wineEnv)
                 return;
 
-            if ((bool)SettingsService.Get(SettingsService.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && Launcher.IsOnline)
+            if ((bool)SettingsService.Get(SettingsService.Vars.Stream_Video) && !File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\assets", "background.mp4")) && appState.IsOnline)
             {
                 Directory.CreateDirectory(Path.Combine(Launcher.PATH, "launcher_data\\cache"));
 
-                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo)))
+                if (File.Exists(Path.Combine(Launcher.PATH, "launcher_data\\cache", appState.RemoteConfig.backgroundVideo)))
                 {
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", appState.RemoteConfig.backgroundVideo), UriKind.Absolute);
                     LogInfo(LogSource.Launcher, "Loading local video background");
                 }
                 else
                 {
                     using (var client = new HttpClient())
                     {
-                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + Launcher.RemoteConfig.backgroundVideo))
+                        using (var s = client.GetStreamAsync(Launcher.BACKGROUND_VIDEO_URL + appState.RemoteConfig.backgroundVideo))
                         {
-                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), FileMode.OpenOrCreate))
+                            using (var fs = new FileStream(Path.Combine(Launcher.PATH, "launcher_data\\cache", appState.RemoteConfig.backgroundVideo), FileMode.OpenOrCreate))
                             {
                                 s.Result.CopyTo(fs);
                             }
                         }
                     }
 
-                    SettingsService.Set(SettingsService.Vars.Server_Video_Name, Launcher.RemoteConfig.backgroundVideo);
+                    SettingsService.Set(SettingsService.Vars.Server_Video_Name, appState.RemoteConfig.backgroundVideo);
 
-                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", Launcher.RemoteConfig.backgroundVideo), UriKind.Absolute);
+                    Background_Video.Source = new Uri(Path.Combine(Launcher.PATH, "launcher_data\\cache", appState.RemoteConfig.backgroundVideo), UriKind.Absolute);
 
                     LogInfo(LogSource.Launcher, $"Loaded video background from server");
                 }
@@ -689,12 +689,12 @@ namespace launcher
             SettingsService.Set(SettingsService.Vars.SelectedReleaseChannel, name);
             Update_Button.Visibility = Visibility.Hidden;
             SetPlayState("PLAY", true, false, true, true, true);
-            Launcher.isLocal = true;
+            appState.isLocal = true;
         }
 
         private void HandleInstalledReleaseChannel(int SelectedReleaseChannel)
         {
-            var channel = Launcher.RemoteConfig.channels[SelectedReleaseChannel];
+            var channel = appState.RemoteConfig.channels[SelectedReleaseChannel];
 
             if (!channel.enabled)
             {
@@ -710,7 +710,7 @@ namespace launcher
 
         private void HandleUninstalledReleaseChannel(int SelectedReleaseChannel)
         {
-            var channel = Launcher.RemoteConfig.channels[SelectedReleaseChannel];
+            var channel = appState.RemoteConfig.channels[SelectedReleaseChannel];
 
             if (!channel.enabled)
             {

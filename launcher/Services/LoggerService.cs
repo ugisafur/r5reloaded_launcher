@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using static launcher.Core.UiReferences;
 
 namespace launcher.Services
 {
@@ -88,7 +88,7 @@ namespace launcher.Services
 
             string jsonLogMessage = JsonSerializer.Serialize(logEntry);
 
-            if (Launcher.DebugArg)
+            if (appState.DebugArg)
                 Console.WriteLine(jsonLogMessage);
 
             await WriteTextToFileAsync(LogFilePath, jsonLogMessage + Environment.NewLine);

@@ -28,7 +28,7 @@ namespace launcher
 
         public void SetupEULA()
         {
-            if (!Launcher.IsOnline)
+            if (!appState.IsOnline)
             {
                 LogError( LogSource.Launcher, "Failed to get EULA, no internet connection");
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = "Failed to get EULA, no internet connection"));

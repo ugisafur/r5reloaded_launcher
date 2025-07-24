@@ -84,7 +84,7 @@ namespace launcher
             InstallPath.Text = ReleaseChannelService.GetDirectory(ReleaseChannel);
 
             // Set button enabled state
-            bool canInteract = !Launcher.IsInstalling;
+            bool canInteract = !appState.IsInstalling;
             UninstallGame.IsEnabled = canInteract;
             InstallGame.IsEnabled = canInteract;
             VerifyGame.IsEnabled = canInteract;
@@ -145,7 +145,7 @@ namespace launcher
         /// </summary>
         private CheckBox CreateLanguageCheckbox(string lang, bool isEnabled = true, bool isChecked = false)
         {
-            bool canInteract = !Launcher.IsInstalling && isEnabled && ReleaseChannelService.IsInstalled(ReleaseChannel);
+            bool canInteract = !appState.IsInstalling && isEnabled && ReleaseChannelService.IsInstalled(ReleaseChannel);
 
             return new CheckBox
             {
@@ -274,7 +274,7 @@ namespace launcher
         /// </summary>
         private bool CanExecuteAction()
         {
-            if (Launcher.IsInstalling) return false;
+            if (appState.IsInstalling) return false;
             ReleaseChannel_Combobox.SelectedIndex = Index;
             HideSettingsControl();
             return true;
@@ -285,7 +285,7 @@ namespace launcher
         /// </summary>
         private void HandleLanguageAction(Func<Task> action)
         {
-            if (Launcher.IsInstalling) return;
+            if (appState.IsInstalling) return;
             ReleaseChannel_Combobox.SelectedIndex = Index;
             Downloads_Popup.IsOpen = true;
             Task.Run(action);

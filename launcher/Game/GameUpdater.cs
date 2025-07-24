@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Services.LoggerService;
 using static launcher.Core.AppControllerService;
+using static launcher.Core.UiReferences;
 using launcher.GameLifecycle.Models;
 
 namespace launcher.GameManagement
@@ -116,7 +117,7 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            if (Launcher.IsInstalling || !Launcher.IsOnline || ReleaseChannelService.IsLocal() || !ReleaseChannelService.IsUpdateAvailable() || ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion())
+            if (appState.IsInstalling || !appState.IsOnline || ReleaseChannelService.IsLocal() || !ReleaseChannelService.IsUpdateAvailable() || ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion())
                 return false;
 
             if (IsR5ApexOpen())

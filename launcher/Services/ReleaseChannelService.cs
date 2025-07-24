@@ -13,7 +13,7 @@ namespace launcher.Services
 
         public static int GetCurrentIndex() { return appDispatcher.Invoke(() => ReleaseChannel_Combobox.SelectedIndex); }
 
-        public static ReleaseChannel GetCurrentReleaseChannel() { return Launcher.RemoteConfig.channels[GetCurrentIndex()]; }
+        public static ReleaseChannel GetCurrentReleaseChannel() { return appState.RemoteConfig.channels[GetCurrentIndex()]; }
 
         public static bool IsEnabled(ReleaseChannel channel = null) { return channel != null ? channel.enabled : GetCurrentReleaseChannel().enabled; }
         public static bool AreUpdatesAllowed(ReleaseChannel channel = null) { return channel != null ? channel.allow_updates : GetCurrentReleaseChannel().allow_updates; }
