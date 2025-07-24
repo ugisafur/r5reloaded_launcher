@@ -1,12 +1,7 @@
-﻿using launcher.Core.Models;
+﻿using launcher.GameLifecycle.Models;
 using launcher.Services;
-using launcher.Core;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
-using launcher.Configuration;
 using static launcher.Core.UiReferences;
-using static launcher.Networking.DownloadProgress;
+using static launcher.Networking.Models.DownloadProgress;
 
 namespace launcher.Networking
 {
@@ -18,10 +13,13 @@ namespace launcher.Networking
 
         public static long _downloadSpeedLimit = 0;
         public static SemaphoreSlim _downloadSemaphore;
-        public static DownloadSpeedService _speedMonitor;
         public static double currentDownloadSpeed = 0;
 
         public static DateTime speedCheckStart = DateTime.Now;
+
+        private static readonly TimeSpan _monitorInterval = TimeSpan.FromSeconds(1);
+        private static long _previousTotalBytes = 0;
+        private static CancellationTokenSource _speedMonitorCts;
 
         public static void AddDownloadedBytes(long bytes, ManifestEntry file)
         {
@@ -49,26 +47,21 @@ namespace launcher.Networking
 
         public static void ConfigureConcurrency()
         {
-            int maxConcurrentDownloads = (int)IniSettings.Get(IniSettings.Vars.Concurrent_Downloads);
+            int maxConcurrentDownloads = (int)SettingsService.Get(SettingsService.Vars.Concurrent_Downloads);
             _downloadSemaphore?.Dispose();
             _downloadSemaphore = new SemaphoreSlim(maxConcurrentDownloads);
         }
 
-        public static void ConfigureDownloadSpeed()
+        public static async void ConfigureDownloadSpeed()
         {
-            int speedLimitKb = (int)IniSettings.Get(IniSettings.Vars.Download_Speed_Limit);
+            int speedLimitKb = (int)SettingsService.Get(SettingsService.Vars.Download_Speed_Limit);
             _downloadSpeedLimit = speedLimitKb > 0 ? speedLimitKb * 1024 : 0;
-            BandwidthThrottler.Instance.UpdateLimit(_downloadSpeedLimit);
+            await BandwidthThrottler.Instance.UpdateLimitAsync(_downloadSpeedLimit);
         }
 
         public static SemaphoreSlim GetSemaphoreSlim()
         {
             return _downloadSemaphore;
-        }
-
-        public static DownloadSpeedService GetDownloadSpeedService()
-        {
-            return _speedMonitor;
         }
 
         public static long GetDownloadSpeedLimit()
@@ -109,17 +102,52 @@ namespace launcher.Networking
             });
         }
 
-        public static void CreateDownloadMonitor()
+        public static void StartSpeedMonitor()
         {
-            if (_speedMonitor != null)
+            if (_speedMonitorCts != null && !_speedMonitorCts.IsCancellationRequested)
             {
-                _speedMonitor.OnSpeedUpdated -= UpdateDownloadSpeedUI;
-                _speedMonitor.Dispose();
-                _speedMonitor = null;
+                return; // Already running
             }
+            _speedMonitorCts?.Dispose();
+            _speedMonitorCts = new CancellationTokenSource();
+            _previousTotalBytes = GetTotalDownloadedBytes();
+            Task.Run(() => MonitorSpeedAsync(_speedMonitorCts.Token));
+        }
 
-            _speedMonitor = new DownloadSpeedService();
-            _speedMonitor.OnSpeedUpdated += UpdateDownloadSpeedUI;
+        public static void StopSpeedMonitor()
+        {
+            _speedMonitorCts?.Cancel();
+            _speedMonitorCts?.Dispose();
+            _speedMonitorCts = null;
+
+            currentDownloadSpeed = 0;
+
+            appDispatcher.Invoke(() =>
+            {
+                if (Speed_Label != null && Downloads_Control != null)
+                {
+                    Speed_Label.Text = "0.00 KB/s";
+                    Downloads_Control.Speed_Label.Text = "";
+                }
+            });
+        }
+
+        private static async Task MonitorSpeedAsync(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(_monitorInterval, cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested) break;
+
+                long currentTotal = GetTotalDownloadedBytes();
+                long bytesThisInterval = currentTotal - _previousTotalBytes;
+                _previousTotalBytes = currentTotal;
+
+                double speed = bytesThisInterval / _monitorInterval.TotalSeconds;
+
+                UpdateDownloadSpeedUI(speed);
+            }
         }
 
         public static async Task UpdateGlobalDownloadProgressAsync(CancellationToken token)

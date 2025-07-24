@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using launcher.GameManagement;
-using launcher.GameManagement.PlaylistModels;
+using launcher.Services.Models;
 
 namespace launcher.Core
 {

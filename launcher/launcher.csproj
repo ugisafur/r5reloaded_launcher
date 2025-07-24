@@ -106,31 +106,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\Menus\Pages\AdvancedSettings\NetworkSettings.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\NetworkSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Menus\Pages\AdvancedSettings\GeneralSettings.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\GeneralSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Launcher_Update.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Launcher_Update.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Start_Tour.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Start_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Tour.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Existing_Files.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Existing_Files.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Menus\AdvancedControl.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\AdvancedControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Exit_App.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Exit_App.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Install_Location.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Install_Location.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -148,20 +148,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Controls\Popups\Popup_Launcher_Update.xaml">
+    <Page Update="Views\Popups\Popup_Launcher_Update.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Popups\Popup_Tour.xaml">
+    <Page Update="Views\Popups\Popup_Tour.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Popups\Popup_Existing_Files.xaml">
+    <Page Update="Views\Popups\Popup_Existing_Files.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\MainWindow.xaml">
+    <Page Update="Views\Windows\MainWindow.xaml">
       <CopyToOutputDirectory></CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Styles\theme.xaml">
+    <Page Update="Styles\theme.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>

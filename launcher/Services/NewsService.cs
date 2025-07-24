@@ -4,11 +4,9 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using static launcher.Utils.Logger;
+using static launcher.Services.LoggerService;
 using static launcher.Core.UiReferences;
 using launcher.Services.Models;
-using launcher.Configuration;
-using launcher.Core;
 
 namespace launcher.Services
 {
@@ -99,9 +97,9 @@ namespace launcher.Services
             int i = 0;
             foreach (NewsItem newsItem in selected)
             {
-                double speed1 = (bool)IniSettings.Get(IniSettings.Vars.Disable_Animations) ? 1 : 500;
-                double speed2 = (bool)IniSettings.Get(IniSettings.Vars.Disable_Animations) ? 1 : 200;
-                double beginTime = (bool)IniSettings.Get(IniSettings.Vars.Disable_Animations) ? 0 : i * 0.1;
+                double speed1 = (bool)SettingsService.Get(SettingsService.Vars.Disable_Animations) ? 1 : 500;
+                double speed2 = (bool)SettingsService.Get(SettingsService.Vars.Disable_Animations) ? 1 : 200;
+                double beginTime = (bool)SettingsService.Get(SettingsService.Vars.Disable_Animations) ? 0 : i * 0.1;
                 i++;
 
                 newsItem.BeginAnimation(UIElement.OpacityProperty, null);

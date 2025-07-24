@@ -2,15 +2,13 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
-using static launcher.Utils.Logger;
+using static launcher.Services.LoggerService;
 using System.IO;
 using static launcher.Core.UiReferences;
-using launcher.Core;
 using launcher.Core.Models;
 using launcher.Services.Models;
-using launcher.Configuration;
 
-using static launcher.Core.AppController;
+using static launcher.Core.AppControllerService;
 
 namespace launcher.Services
 {
@@ -29,9 +27,9 @@ namespace launcher.Services
             if (!Launcher.IsOnline)
                 return;
 
-            if (string.IsNullOrEmpty((string)IniSettings.Get(IniSettings.Vars.Launcher_Version)) && (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) == Launcher.VERSION)
+            if (string.IsNullOrEmpty((string)SettingsService.Get(SettingsService.Vars.Launcher_Version)) && (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) == Launcher.VERSION)
             {
-                IniSettings.Set(IniSettings.Vars.Launcher_Version, Launcher.VERSION);
+                SettingsService.Set(SettingsService.Vars.Launcher_Version, Launcher.VERSION);
             }
 
             LogInfo(LogSource.UpdateChecker, "Update worker started");
@@ -56,7 +54,7 @@ namespace launcher.Services
                     }
                     else
                     {
-                        string version = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds) ? (string)IniSettings.Get(IniSettings.Vars.Launcher_Version) : Launcher.RemoteConfig.launcherVersion;
+                        string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : Launcher.RemoteConfig.launcherVersion;
                         string message = iqnoredLauncherUpdate ? "Update for launcher is available but user iqnored update" : "Update for launcher is not available";
                         LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {version})");
                     }
@@ -152,7 +150,7 @@ namespace launcher.Services
 
         private static bool IsNewVersion(string version, string newVersion)
         {
-            if (((string)IniSettings.Get(IniSettings.Vars.Launcher_Version)).Contains("nightly"))
+            if (((string)SettingsService.Get(SettingsService.Vars.Launcher_Version)).Contains("nightly"))
             {
                 return true;
             }
@@ -191,11 +189,11 @@ namespace launcher.Services
 
         private static bool ShouldUpdateLauncher(RemoteConfig newRemoteConfig, List<GithubItems> newGithubConfig)
         {
-            if ((bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds))
+            if ((bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds))
             {
                 newGithubConfig = newGithubConfig.Where(release => release.prerelease && release.tag_name.StartsWith("nightly")).ToList();
 
-                if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && IsNewNightlyVersion((string)IniSettings.Get(IniSettings.Vars.Launcher_Version), newGithubConfig))
+                if (!iqnoredLauncherUpdate && !Launcher.IsInstalling && IsNewNightlyVersion((string)SettingsService.Get(SettingsService.Vars.Launcher_Version), newGithubConfig))
                 {
                     appDispatcher.BeginInvoke(() =>
                     {
@@ -221,7 +219,7 @@ namespace launcher.Services
 
                     if (wantsToUpdate == true)
                     {
-                        IniSettings.Set(IniSettings.Vars.Launcher_Version, newGithubConfig[0].tag_name);
+                        SettingsService.Set(SettingsService.Vars.Launcher_Version, newGithubConfig[0].tag_name);
                         return true;
                     }
                 }
@@ -256,7 +254,7 @@ namespace launcher.Services
 
                 if (wantsToUpdate == true)
                 {
-                    IniSettings.Set(IniSettings.Vars.Launcher_Version, newRemoteConfig.launcherVersion);
+                    SettingsService.Set(SettingsService.Vars.Launcher_Version, newRemoteConfig.launcherVersion);
                     return true;
                 }
             }
@@ -307,7 +305,7 @@ namespace launcher.Services
                 return;
             }
 
-            string extraArgs = (bool)IniSettings.Get(IniSettings.Vars.Nightly_Builds) ? " -nightly" : "";
+            string extraArgs = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? " -nightly" : "";
 
             var startInfo = new ProcessStartInfo
             {
