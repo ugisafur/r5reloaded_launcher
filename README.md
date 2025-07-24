@@ -7,20 +7,17 @@
 ![GitHub issues](https://img.shields.io/github/issues/AyeZeeBB/r5reloaded_launcher)
 [![Launcher](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml/badge.svg)](https://github.com/AyeZeeBB/r5reloaded_launcher/actions/workflows/launcher_build.yml)
 
-Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed to enhance your experience with R5Reloaded. This launcher provides a seamless way to download, install, repair, and update your game, all while offering advanced features like multi-branch support, optional HD texture downloads, and customizable launch parameters.
+Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed to enhance your experience with R5Reloaded. This launcher provides a seamless way to download, install, repair, and update your game, all while offering advanced features like multi-release channel support, optional HD texture downloads, and customizable launch parameters.
 
 ## Features
 
-- **Fast Downloads with Zstandard (zstd) Compression**: 
-  - Downloads game files compressed with zstd, ensuring faster download speeds and efficient decompression.
-  
 - **Game Management**:
   - **Install**: Easily download and install the game.
   - **Repair**: Repair your game installation with a single click.
   - **Update**: Keep your game up-to-date with automatic updates.
 
-- **Multi-Branch Support**:
-  - Install and manage multiple branches of the game simultaneously. Switch between different versions effortlessly.
+- **Multi-release channel Support**:
+  - Install and manage multiple release channeles of the game simultaneously. Switch between different versions effortlessly.
 
 - **Optional Starpak Files**:
   - Download optional Starpak files to enable HD textures, enhancing your visual experience.
@@ -43,21 +40,21 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
    - Run the installer and follow the on-screen instructions.
 
 3. **Launch the Game**:
-   - Select your desired branch, and click "Install" to install the game.
+   - Select your desired release channel, and click "Install" to install the game.
 
 4. **Launch the Game**:
-   - Select your desired branch, and click "Play" to start the game.
+   - Select your desired release channel, and click "Play" to start the game.
 
 ## Usage
 
 ### Downloading and Installing the Game
 1. Open the launcher.
-2. Select the branch you want to install.
+2. Select the release channel you want to install.
 3. Click "Install" and wait for the process to complete.
 
 ### Repairing the Game
 1. Open the launcher.
-2. Click the settings button next to the branch combo box.
+2. Click the settings button next to the release channel combo box.
 3. Click "Verify Game Files" to fix any issues with your game installation.
 
 ### Updating the Game
@@ -67,13 +64,13 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
 
 ### Downloading Optional Starpak Files
 1. Open the launcher.
-2. Navigate to "Settings" then "Game Branches".
-3. Select the branch you want to install HD Textures on.
+2. Navigate to "Settings" then "Game release channeles".
+3. Select the release channel you want to install HD Textures on.
 4. Click "Install HD Textures" to add HD textures to your game.
 
 ### Advanced Launch Settings
 1. Open the launcher.
-2. Click the settings button next to the branch combo box.
+2. Click the settings button next to the release channel combo box.
 3. Customize your launch parameters as needed.
 4. Launch the game.
 
@@ -87,7 +84,7 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
 We welcome contributions from the community! If you'd like to contribute to the development of the R5Reloaded Launcher, please follow these steps:
 
 1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
+2. Create a new release channel for your feature or bug fix.
 3. Commit your changes.
 4. Submit a pull request.
 
