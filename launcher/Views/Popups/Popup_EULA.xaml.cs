@@ -8,6 +8,7 @@ using static launcher.Core.UiReferences;
 using static launcher.Core.AppControllerService;
 using launcher.Services;
 using launcher.GameManagement;
+using launcher.Views.Popups.Models.EULA;
 
 namespace launcher
 {
@@ -47,7 +48,7 @@ namespace launcher
             if (response.IsSuccessStatusCode)
             {
                 LogInfo( LogSource.Launcher, "Successfully got EULA");
-                EULAData euladata = JsonConvert.DeserializeObject<EULAData>(response.Content.ReadAsStringAsync().Result);
+                EULA euladata = JsonConvert.DeserializeObject<EULA>(response.Content.ReadAsStringAsync().Result);
                 appDispatcher.BeginInvoke(new Action(() => EULATextBox.Text = euladata.data.contents));
             }
             else
@@ -67,20 +68,5 @@ namespace launcher
         {
             HideEULA();
         }
-    }
-
-    public class Data
-    {
-        public int version { get; set; }
-        public string lang { get; set; }
-        public string contents { get; set; }
-        public DateTime modified { get; set; }
-        public string language { get; set; }
-    }
-
-    public class EULAData
-    {
-        public bool success { get; set; }
-        public Data data { get; set; }
     }
 }
