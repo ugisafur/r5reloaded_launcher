@@ -89,7 +89,7 @@
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Unleash the Full            Potential of Apex Legends" FontSize="25.5" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" Margin="25,10,25,11" />
                                 <Grid Grid.Row="1" Margin="25,0,25,0">
-                                    <TextBlock TextWrapping="Wrap" Text="Game Environment" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
+                                    <TextBlock TextWrapping="Wrap" Text="Release Channel" FontSize="14" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-2,0,0" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,23,0,0" Width="298" VerticalAlignment="Top">
                                         <ComboBox ItemContainerStyle="{DynamicResource ComboBoxItemContainerStyle}" x:Name="ReleaseChannel_Combobox" Width="243" Height="50" SelectionChanged="ReleaseChannel_SelectionChanged" ShouldPreserveUserEnteredPrefix="True" Cursor="Hand">
                                             <ComboBox.ItemTemplate>
