@@ -45,7 +45,7 @@ namespace launcher.GameManagement
         // ============================================================================================
         private static async Task RunUpdateProcessAsync(UpdateFileType fileType)
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
 
             await CheckForDeletedFilesAsync(fileType);
 
@@ -55,13 +55,13 @@ namespace launcher.GameManagement
             switch (fileType)
             {
                 case UpdateFileType.Main:
-                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareBranchChecksumTasks(branchDirectory));
+                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareChecksumTasks(releaseChannelDirectory));
                     break;
                 case UpdateFileType.Optional:
-                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(branchDirectory));
+                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(releaseChannelDirectory));
                     break;
                 case UpdateFileType.Language:
-                    checksumTasks = Task.WhenAll(await ChecksumManager.PrepareLangChecksumTasksAsync(branchDirectory));
+                    checksumTasks = Task.WhenAll(await ChecksumManager.PrepareLangChecksumTasksAsync(releaseChannelDirectory));
                     break;
                 default:
                     return;
@@ -84,7 +84,7 @@ namespace launcher.GameManagement
                     GameManifest = new GameManifest
                     {
                         files = serverManifest.files
-                            .Where(f => File.Exists(Path.Combine(branchDirectory, f.path)))
+                            .Where(f => File.Exists(Path.Combine(releaseChannelDirectory, f.path)))
                             .ToList()
                     };
                     break;
@@ -95,12 +95,12 @@ namespace launcher.GameManagement
             await Task.WhenAll(checksumTasks);
 
             GameFileManager.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
-            int changedFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, branchDirectory, true);
+            int changedFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, releaseChannelDirectory, true);
 
             if (changedFileCount > 0)
             {
                 GameFileManager.UpdateStatusLabel($"Downloading updated {fileType} files", LogSource.Update);
-                var downloadTasks = GameFileManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = GameFileManager.InitializeRepairTasks(releaseChannelDirectory);
 
                 using var cts = new CancellationTokenSource();
                 Task progressUpdateTask = DownloadService.UpdateGlobalDownloadProgressAsync(cts.Token);
@@ -180,9 +180,9 @@ namespace launcher.GameManagement
 
         private static async Task CheckForDeletedFilesAsync(UpdateFileType fileType)
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
-            var allLocalFiles = Directory.GetFiles(branchDirectory, "*", SearchOption.AllDirectories)
-                .Select(f => Path.GetRelativePath(branchDirectory, f))
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
+            var allLocalFiles = Directory.GetFiles(releaseChannelDirectory, "*", SearchOption.AllDirectories)
+                .Select(f => Path.GetRelativePath(releaseChannelDirectory, f))
                 .ToList();
 
             GameManifest serverFileManifest;
@@ -220,7 +220,7 @@ namespace launcher.GameManagement
             {
                 try
                 {
-                    string fullPath = Path.Combine(branchDirectory, relativePath);
+                    string fullPath = Path.Combine(releaseChannelDirectory, relativePath);
                     if (File.Exists(fullPath))
                     {
                         File.Delete(fullPath);

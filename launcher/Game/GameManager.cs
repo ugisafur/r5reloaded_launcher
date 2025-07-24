@@ -40,8 +40,8 @@ namespace launcher.GameManagement
 
             var mode = (eMode)(int)SettingsService.Get(SettingsService.Vars.Mode);
             string exeName = mode == eMode.SERVER ? "r5apex_ds.exe" : "r5apex.exe";
-            string branchDirectory = ReleaseChannelService.GetDirectory();
-            string exePath = Path.Combine(branchDirectory, exeName);
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
+            string exePath = Path.Combine(releaseChannelDirectory, exeName);
 
             if (!File.Exists(exePath))
             {
@@ -54,7 +54,7 @@ namespace launcher.GameManagement
                 string gameArguments = BuildParameters();
                 var startInfo = new ProcessStartInfo(exePath)
                 {
-                    WorkingDirectory = branchDirectory,
+                    WorkingDirectory = releaseChannelDirectory,
                     Arguments = gameArguments,
                     UseShellExecute = true,
                 };

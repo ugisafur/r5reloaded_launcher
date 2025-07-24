@@ -1,6 +1,6 @@
 ﻿namespace patch_creator
 {
-    partial class Form1
+    partial class MainWIndow
     {
         /// <summary>
         ///  Required designer variable.

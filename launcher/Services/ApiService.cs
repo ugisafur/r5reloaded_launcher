@@ -16,9 +16,9 @@ namespace launcher.Services
             return NetworkHealthService.HttpClient.GetFromJsonAsync<RemoteConfig>("https://cdn.r5r.org/launcher/config.json").Result;
         }
 
-        public static string GetGameVersion(string branch_url)
+        public static string GetGameVersion(string channel_url)
         {
-            var response = NetworkHealthService.HttpClient.GetAsync($"{branch_url}\\version.txt").Result;
+            var response = NetworkHealthService.HttpClient.GetAsync($"{channel_url}\\version.txt").Result;
             return response.Content.ReadAsStringAsync().Result;
         }
 

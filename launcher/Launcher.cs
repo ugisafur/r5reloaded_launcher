@@ -20,7 +20,7 @@ namespace launcher
     {
         public const string VERSION = "1.2.0";
         public static bool IsOnline { get; set; } = false;
-        public static bool IsLocalBranch { get; set; } = false;
+        public static bool isLocal { get; set; } = false;
         public static bool IsInstalling { get; set; } = false;
         public static bool UpdateCheckLoop { get; set; } = false;
         public static bool BadFilesDetected { get; set; } = false;

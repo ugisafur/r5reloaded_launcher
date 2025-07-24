@@ -1,5 +1,6 @@
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
+using patch_creator.Models;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -11,13 +12,45 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace patch_creator
 {
-    public partial class Form1 : Form
+    public partial class MainWIndow : Form
     {
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
 
         private string? AUTH_TOKEN;
         private string? ZONE_ID;
+
+        public static HttpClient HTTP_CLIENT = new();
+        public static RemoteConfig REMOTE_CONFIG = new();
+
+        public static readonly string[] BLACKLIST = {
+            "platform\\logs",
+            "platform\\screenshots",
+            "platform\\user",
+            "platform\\cfg\\user",
+            "launcher.exe",
+            "bin\\updater.exe",
+            "cfg\\startup.bin",
+            "launcher_data"
+        };
+
+        public static List<string> ignoredFiles = new()
+        {
+            "checksums.json",
+            "checksums_zst.json",
+            "clearcache.txt"
+        };
+
+        public static List<string> audioFiles = new()
+        {
+            "audio\\ship\\audio.mprj",
+            "audio\\ship\\general.mbnk",
+            "audio\\ship\\general.mbnk_digest",
+            "audio\\ship\\general_stream.mstr",
+            "audio\\ship\\general_stream_patch_1.mstr",
+            "audio\\ship\\general_english.mstr",
+            "audio\\ship\\general_english_patch_1.mstr"
+        };
 
         const long PartSize = 490 * 1024 * 1024;
 
@@ -26,7 +59,7 @@ namespace patch_creator
             MaxDegreeOfParallelism = 500 // Start with half the CPU cores, minimum of 1
         };
 
-        public Form1()
+        public MainWIndow()
         {
             InitializeComponent();
         }
@@ -35,13 +68,13 @@ namespace patch_creator
         {
             AllocConsole();
 
-            var response = Global.HTTP_CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
+            var response = HTTP_CLIENT.GetAsync("https://cdn.r5r.org/launcher/config.json").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
-            Global.SERVER_CONFIG = JsonConvert.DeserializeObject<ServerConfig>(responseString);
+            REMOTE_CONFIG = JsonConvert.DeserializeObject<RemoteConfig>(responseString);
 
-            foreach (Branch branch in Global.SERVER_CONFIG.branches)
+            foreach (ReleaseChannel channel in REMOTE_CONFIG.channels)
             {
-                comboBox1.Items.Add(branch.branch);
+                comboBox1.Items.Add(channel.name);
             }
 
             comboBox1.SelectedIndexChanged +=ComboBox1_SelectedIndexChanged;
@@ -54,8 +87,8 @@ namespace patch_creator
 
         private void ComboBox1_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            var response = Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].game_url, "checksums.json")).Result;
-            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
+            var response = HTTP_CLIENT.GetStringAsync(Path.Combine(REMOTE_CONFIG.channels[comboBox1.SelectedIndex].game_url, "checksums.json")).Result;
+            GameManifest server_checksums = JsonConvert.DeserializeObject<GameManifest>(response);
 
             versionTxt.Text = server_checksums.game_version;
             blogslugTxt.Text = server_checksums.blog_slug;
@@ -109,7 +142,7 @@ namespace patch_creator
                 if (string.IsNullOrEmpty(textBox2.Text))
                 {
                     DirectoryInfo parentDir = Directory.GetParent(directoryDialog.FileName.TrimEnd(Path.DirectorySeparatorChar));
-                    textBox2.Text = Path.Combine(parentDir.FullName, $"{Global.SERVER_CONFIG.branches[comboBox1.SelectedIndex].branch}_update");
+                    textBox2.Text = Path.Combine(parentDir.FullName, $"{REMOTE_CONFIG.channels[comboBox1.SelectedIndex].name}_update");
                 }
             }
         }
@@ -151,14 +184,14 @@ namespace patch_creator
             richTextBox2.Invoke(() => { IgnoreStrings = richTextBox2.Lines; });
 
             UpdateProgressLabel("Getting server checksums");
-            var response = await Global.HTTP_CLIENT.GetStringAsync(Path.Combine(Global.SERVER_CONFIG.branches[selected_index].game_url, "checksums.json"));
-            GameChecksums server_checksums = JsonConvert.DeserializeObject<GameChecksums>(response);
+            var response = await HTTP_CLIENT.GetStringAsync(Path.Combine(REMOTE_CONFIG.channels[selected_index].game_url, "checksums.json"));
+            GameManifest server_checksums = JsonConvert.DeserializeObject<GameManifest>(response);
 
             UpdateProgressLabel("Generating local checksums");
-            GameChecksums local_checksums = await GenerateMetadataAsync(textBox1.Text, IgnoreStrings);
+            GameManifest local_checksums = await GenerateMetadataAsync(textBox1.Text, IgnoreStrings);
 
             UpdateProgressLabel("Finding changed files");
-            List<GameFile> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.path == updatedFile.path && currentFile.checksum == updatedFile.checksum)).ToList();
+            List<ManifestEntry> changedFiles = local_checksums.files.Where(updatedFile => !server_checksums.files.Any(currentFile => currentFile.path == updatedFile.path && currentFile.checksum == updatedFile.checksum)).ToList();
 
             UpdateProgressLabel("Copying over files");
             int processedCount = 0;
@@ -166,7 +199,7 @@ namespace patch_creator
             {
                 if (!changedFiles.Any(f => f.path == file.path) || file.checksum == "ignore")
                 {
-                    GameFile serverFile = server_checksums.files.FirstOrDefault(f => f.path == file.path);
+                    ManifestEntry serverFile = server_checksums.files.FirstOrDefault(f => f.path == file.path);
 
                     if (serverFile == null)
                         return;
@@ -184,7 +217,7 @@ namespace patch_creator
                     else
                         file.parts = null;
 
-                    if (file.path.Contains("audio\\ship\\") && !Global.audioFiles.Contains(file.path))
+                    if (file.path.Contains("audio\\ship\\") && !audioFiles.Contains(file.path))
                     {
                         string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "").Replace("_patch_2", "").Replace("_patch_3", "").Replace("_patch_4", "");
                         if (!local_checksums.languages.Contains(lang_name))
@@ -203,7 +236,7 @@ namespace patch_creator
                     return;
                 }
 
-                List<FilePart> fileParts = new List<FilePart>();
+                List<FileChunk> FileChunks = new List<FileChunk>();
                 string sourceFilePath = Path.Combine(textBox1.Text, file.path);
 
                 try
@@ -234,7 +267,7 @@ namespace patch_creator
 
                             string part_checksum = await CalculateChecksumAsync(partFilePath);
 
-                            fileParts.Add(new FilePart
+                            FileChunks.Add(new FileChunk
                             {
                                 path = partFileName,
                                 checksum = part_checksum,
@@ -257,12 +290,12 @@ namespace patch_creator
                     }
 
 
-                    if (fileParts.Count > 0)
-                        file.parts = fileParts;
+                    if (FileChunks.Count > 0)
+                        file.parts = FileChunks;
                     else
                         file.parts = null;
 
-                    if (file.path.Contains("audio\\ship\\") && !Global.audioFiles.Contains(file.path))
+                    if (file.path.Contains("audio\\ship\\") && !audioFiles.Contains(file.path))
                     {
                         string lang_name = Path.GetFileNameWithoutExtension(file.path).Replace("general_", "").Replace("_patch_1", "");
                         if (!local_checksums.languages.Contains(lang_name))
@@ -372,14 +405,14 @@ namespace patch_creator
             });
         }
 
-        private void UpdateClearCacheList(int selected_index, List<GameFile> changed_files, string final_dir, string[] IgnoreStrings)
+        private void UpdateClearCacheList(int selected_index, List<ManifestEntry> changed_files, string final_dir, string[] IgnoreStrings)
         {
             SetProgressBarMax(changed_files.Count - 1);
             SetProgressBarValue(0);
 
             List<string> changed_files_txt = [
-                $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/checksums.json", 
-                $"{Global.SERVER_CONFIG.branches[selected_index].game_url}/version.txt"
+                $"{REMOTE_CONFIG.channels[selected_index].game_url}/checksums.json", 
+                $"{REMOTE_CONFIG.channels[selected_index].game_url}/version.txt"
             ];
 
             int i = 0;
@@ -388,7 +421,7 @@ namespace patch_creator
                 bool shouldIgnore = IgnoreStrings.Any(s => file.path.Contains(s.Trim(), StringComparison.OrdinalIgnoreCase));
 
                 if(!shouldIgnore)
-                    changed_files_txt.Add($"{Global.SERVER_CONFIG.branches[selected_index].game_url}/{file.path}");
+                    changed_files_txt.Add($"{REMOTE_CONFIG.channels[selected_index].game_url}/{file.path}");
 
                 SetProgressBarValue(i++);
             }
@@ -406,16 +439,16 @@ namespace patch_creator
             Console.WriteLine(message);
         }
 
-        public async Task<GameChecksums> GenerateMetadataAsync(string directory, string[] IgnoreStrings)
+        public async Task<GameManifest> GenerateMetadataAsync(string directory, string[] IgnoreStrings)
         {
             string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
-                .Where(file => !Global.BLACKLIST.Any(blacklistItem => file.Contains(blacklistItem, StringComparison.OrdinalIgnoreCase)))
+                .Where(file => !BLACKLIST.Any(blacklistItem => file.Contains(blacklistItem, StringComparison.OrdinalIgnoreCase)))
                 .ToArray();
 
             SetProgressBarMax(files.Length);
             SetProgressBarValue(0);
 
-            var resultsBag = new ConcurrentBag<GameFile>();
+            var resultsBag = new ConcurrentBag<ManifestEntry>();
 
             int processedCount = 0;
             await Parallel.ForEachAsync(files, parallelOptions, async (filePath, cancellationToken) =>
@@ -431,7 +464,7 @@ namespace patch_creator
                     if (!shouldIgnore)
                         checksum = await CalculateChecksumAsync(filePath);
 
-                    var gameFile = new GameFile
+                    var ManifestEntry = new ManifestEntry
                     {
                         path = relativePath,
                         checksum = checksum,
@@ -439,7 +472,7 @@ namespace patch_creator
                         size = new FileInfo(filePath).Length
                     };
 
-                    resultsBag.Add(gameFile);
+                    resultsBag.Add(ManifestEntry);
 
                     if(shouldIgnore)
                     {
@@ -461,12 +494,12 @@ namespace patch_creator
                 }
             });
 
-            var gameChecksums = new GameChecksums
+            var GameManifest = new GameManifest
             {
                 files = resultsBag.ToList()
             };
 
-            return gameChecksums;
+            return GameManifest;
         }
 
         private static async Task<string> CalculateChecksumAsync(string filePath)
@@ -503,7 +536,7 @@ namespace patch_creator
 
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AUTH_TOKEN);
 
-                HttpResponseMessage response = await Global.HTTP_CLIENT.SendAsync(request);
+                HttpResponseMessage response = await HTTP_CLIENT.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -556,7 +589,7 @@ namespace patch_creator
 
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AUTH_TOKEN);
 
-                    HttpResponseMessage response = await Global.HTTP_CLIENT.SendAsync(request);
+                    HttpResponseMessage response = await HTTP_CLIENT.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)
                     {

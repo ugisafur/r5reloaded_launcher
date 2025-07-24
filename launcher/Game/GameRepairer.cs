@@ -44,19 +44,19 @@ namespace launcher.GameManagement
         // ============================================================================================
         // Private Helper Methods
         // ============================================================================================
-        private static async Task<bool> RunRepairProcessAsync(string branchDirectory, Func<Task<Task<LocalFileChecksum[]>>> prepareChecksums, Func<Task<GameManifest>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
+        private static async Task<bool> RunRepairProcessAsync(string releaseChannelDirectory, Func<Task<Task<LocalFileChecksum[]>>> prepareChecksums, Func<Task<GameManifest>> fetchFileManifest, string checkStatus, string compareStatus, string downloadStatus)
         {
             GameFileManager.UpdateStatusLabel(checkStatus, LogSource.Repair);
             var checksumTasks = await prepareChecksums();
 
             GameFileManager.UpdateStatusLabel(compareStatus, LogSource.Repair);
             var GameManifest = await fetchFileManifest();
-            int badFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, branchDirectory);
+            int badFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, releaseChannelDirectory);
 
             if (badFileCount > 0)
             {
                 GameFileManager.UpdateStatusLabel(downloadStatus, LogSource.Repair);
-                var downloadTasks = GameFileManager.InitializeRepairTasks(branchDirectory);
+                var downloadTasks = GameFileManager.InitializeRepairTasks(releaseChannelDirectory);
 
                 using var cts = new CancellationTokenSource();
                 Task progressUpdateTask = DownloadService.UpdateGlobalDownloadProgressAsync(cts.Token);
@@ -100,14 +100,14 @@ namespace launcher.GameManagement
 
         private static async Task<bool> ExecuteMainRepairAsync()
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             DownloadService.StartSpeedMonitor();
             DownloadService.ConfigureConcurrency();
             DownloadService.ConfigureDownloadSpeed();
 
             var result = await RunRepairProcessAsync(
-                branchDirectory,
-                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareBranchChecksumTasks(branchDirectory))),
+                releaseChannelDirectory,
+                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareChecksumTasks(releaseChannelDirectory))),
                 () => ApiService.GetGameManifestAsync(optional: false),
                 "Checking core files...",
                 "Comparing core files...",
@@ -161,13 +161,13 @@ namespace launcher.GameManagement
         {
             if (!Launcher.IsOnline) return;
 
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
 
             GameManifest serverManifest = await ApiService.GetLanguageFilesAsync();
             GameManifest manifestForRepair = new GameManifest
             {
                 files = serverManifest.files
-                    .Where(file => File.Exists(Path.Combine(branchDirectory, file.path)))
+                    .Where(file => File.Exists(Path.Combine(releaseChannelDirectory, file.path)))
                     .ToList()
             };
 
@@ -179,12 +179,12 @@ namespace launcher.GameManagement
 
             Func<Task<Task<LocalFileChecksum[]>>> prepareChecksums = async () =>
             {
-                var checksumTasks = await ChecksumManager.PrepareLangChecksumTasksAsync(branchDirectory);
+                var checksumTasks = await ChecksumManager.PrepareLangChecksumTasksAsync(releaseChannelDirectory);
                 return Task.WhenAll(checksumTasks);
             };
 
             await RunRepairProcessAsync(
-                branchDirectory,
+                releaseChannelDirectory,
                 prepareChecksums,
                 () => Task.FromResult(manifestForRepair),
                 "Checking language files...",
@@ -193,9 +193,9 @@ namespace launcher.GameManagement
             );
         }
 
-        private static bool CheckForHDTextures(string branchDirectory)
+        private static bool CheckForHDTextures(string releaseChannelDirectory)
         {
-            return Directory.EnumerateFiles(branchDirectory, "*.opt.starpak", SearchOption.AllDirectories)
+            return Directory.EnumerateFiles(releaseChannelDirectory, "*.opt.starpak", SearchOption.AllDirectories)
                 .Any(path => !path.Contains(Path.DirectorySeparatorChar + "mods" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase));
         }
     }

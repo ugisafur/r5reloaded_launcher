@@ -126,8 +126,8 @@ namespace launcher.GameManagement
         {
             await Task.Delay(1);
 
-            string branchDir = ReleaseChannelService.GetDirectory();
-            if (!Directory.Exists(branchDir))
+            string channelDirectory = ReleaseChannelService.GetDirectory();
+            if (!Directory.Exists(channelDirectory))
             {
                 ReleaseChannelService.SetInstalled(false);
                 ReleaseChannelService.SetDownloadHDTextures(false);
@@ -148,7 +148,7 @@ namespace launcher.GameManagement
                 }
             }
 
-            return !IsAnyFileLocked(branchDir);
+            return !IsAnyFileLocked(channelDirectory);
         }
 
         private static bool IsAnyFileLocked(string directoryPath)

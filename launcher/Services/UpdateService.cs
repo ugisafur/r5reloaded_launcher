@@ -42,7 +42,7 @@ namespace launcher.Services
                 {
                     var newRemoteConfig = await GetRemoteConfigAsync();
                     var newGithubConfig = await GetGithubConfigAsync();
-                    if (newRemoteConfig == null || newRemoteConfig.branches == null)
+                    if (newRemoteConfig == null || newRemoteConfig.channels == null)
                     {
                         LogError(LogSource.UpdateChecker, "Failed to fetch new server config");
                         continue;
@@ -59,7 +59,7 @@ namespace launcher.Services
                         LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {version})");
                     }
 
-                    if (ShouldUpdateGame(newRemoteConfig) && newRemoteConfig.branches.Count > 0)
+                    if (ShouldUpdateGame(newRemoteConfig) && newRemoteConfig.channels.Count > 0)
                     {
                         HandleGameUpdate();
                     }
@@ -267,7 +267,7 @@ namespace launcher.Services
             if (Launcher.LauncherConfig == null)
                 return false;
 
-            if (newRemoteConfig.branches.Count == 0)
+            if (newRemoteConfig.channels.Count == 0)
                 return false;
 
             if(!Launcher.IsOnline)
@@ -282,7 +282,7 @@ namespace launcher.Services
             if(!ReleaseChannelService.IsInstalled())
                 return false;
 
-            if (!newRemoteConfig.branches[ReleaseChannelService.GetCurrentIndex()].allow_updates)
+            if (!newRemoteConfig.channels[ReleaseChannelService.GetCurrentIndex()].allow_updates)
                 return false;
 
             if(ReleaseChannelService.GetLocalVersion() == ReleaseChannelService.GetServerVersion())

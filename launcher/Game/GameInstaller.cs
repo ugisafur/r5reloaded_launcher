@@ -92,8 +92,8 @@ namespace launcher.GameManagement
             DownloadService.ConfigureConcurrency();
             DownloadService.ConfigureDownloadSpeed();
 
-            string branchDirectory = ReleaseChannelService.GetDirectory();
-            var downloadTasks = GameFileManager.InitializeDownloadTasks(GameManifest, branchDirectory);
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
+            var downloadTasks = GameFileManager.InitializeDownloadTasks(GameManifest, releaseChannelDirectory);
 
             using var cts = new CancellationTokenSource();
             Task progressUpdateTask = DownloadService.UpdateGlobalDownloadProgressAsync(cts.Token);

@@ -54,9 +54,9 @@ namespace launcher.Core
             await Task.Delay(100);
             await Task.Run(() => SetupMenus());
 
-            PreLoad_Window.SetLoadingText("Getting game branches");
+            PreLoad_Window.SetLoadingText("Getting game channels");
             await Task.Delay(100);
-            await Task.Run(() => SetupBranchComboBox());
+            await Task.Run(() => SetupReleaseChannelComboBox());
 
             PreLoad_Window.SetLoadingText("Checking game installs");
             await Task.Delay(100);
@@ -244,7 +244,7 @@ namespace launcher.Core
                 gamemodes = ["No Selection"];
                 Advanced_Control.serverPage.SetMapList(maps);
                 Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                LogInfo(LogSource.Launcher, "Branch not installed, skipping playlist file");
+                LogInfo(LogSource.Launcher, "Release Channel not installed, skipping playlist file");
                 return;
             }
 
@@ -257,7 +257,7 @@ namespace launcher.Core
                     maps = PlaylistService.GetMaps(playlistRoot);
                     Advanced_Control.serverPage.SetMapList(maps);
                     Advanced_Control.serverPage.SetPlaylistList(gamemodes);
-                    LogInfo(LogSource.Launcher, $"Loaded playlist file for branch {ReleaseChannelService.GetName()}");
+                    LogInfo(LogSource.Launcher, $"Loaded playlist file for release channel {ReleaseChannelService.GetName()}");
                 }));
             }
             catch (Exception ex)
@@ -289,11 +289,11 @@ namespace launcher.Core
         {
             appDispatcher.BeginInvoke(new Action(() =>
             {
-                foreach (var channel in Launcher.RemoteConfig.branches)
+                foreach (var channel in Launcher.RemoteConfig.channels)
                 {
                     if (ReleaseChannelService.IsInstalled(channel) && !Directory.Exists(ReleaseChannelService.GetDirectory(channel)))
                     {
-                        LogWarning(LogSource.Launcher, $"Branch {channel.branch} is set as installed but directory is missing");
+                        LogWarning(LogSource.Launcher, $"Release Channel ({channel.name}) is set as installed but directory is missing");
                         ReleaseChannelService.SetInstalled(false, channel);
                         ReleaseChannelService.SetDownloadHDTextures(false, channel);
                         ReleaseChannelService.SetVersion("", channel);
@@ -302,27 +302,27 @@ namespace launcher.Core
             }));
         }
 
-        private static void SetupBranchComboBox()
+        private static void SetupReleaseChannelComboBox()
         {
             appDispatcher.BeginInvoke(new Action(() =>
             {
-                ReleaseChannel_Combobox.ItemsSource = GetGameBranches();
+                ReleaseChannel_Combobox.ItemsSource = GetGamechannels();
 
-                string savedChannel = (string)SettingsService.Get(SettingsService.Vars.SelectedBranch);
-                string selectedChannel = string.IsNullOrEmpty(savedChannel) ? Launcher.RemoteConfig.branches[0].branch.ToUpper(new CultureInfo("en-US")) : (string)SettingsService.Get(SettingsService.Vars.SelectedBranch);
+                string savedChannel = (string)SettingsService.Get(SettingsService.Vars.SelectedReleaseChannel);
+                string selectedChannel = string.IsNullOrEmpty(savedChannel) ? Launcher.RemoteConfig.channels[0].name.ToUpper(new CultureInfo("en-US")) : (string)SettingsService.Get(SettingsService.Vars.SelectedReleaseChannel);
 
-                int selectedIndex = Launcher.RemoteConfig.branches.FindIndex(channel => channel.branch == selectedChannel && channel.enabled == true);
+                int selectedIndex = Launcher.RemoteConfig.channels.FindIndex(channel => channel.name == selectedChannel && channel.enabled == true);
 
                 if (selectedIndex == -1 || selectedIndex >= ReleaseChannel_Combobox.Items.Count)
                     selectedIndex = 0;
 
                 ReleaseChannel_Combobox.SelectedIndex = selectedIndex;
 
-                LogInfo(LogSource.Launcher, "Game branches initialized");
+                LogInfo(LogSource.Launcher, "Release Channels initialized");
             }));
         }
 
-        public static List<ReleaseChannelViewModel> GetGameBranches()
+        public static List<ReleaseChannelViewModel> GetGamechannels()
         {
             ReleaseChannelService.LocalFolders.Clear();
 
@@ -337,48 +337,48 @@ namespace launcher.Core
                     bool shouldAdd = true;
 
                     if (Launcher.IsOnline)
-                        shouldAdd = !Launcher.RemoteConfig.branches.Any(b => string.Equals(b.branch, folder, StringComparison.OrdinalIgnoreCase));
+                        shouldAdd = !Launcher.RemoteConfig.channels.Any(b => string.Equals(b.name, folder, StringComparison.OrdinalIgnoreCase));
 
                     if (shouldAdd)
                     {
                         ReleaseChannel channel = new()
                         {
-                            branch = folder.ToUpper(new CultureInfo("en-US")),
+                            name = folder.ToUpper(new CultureInfo("en-US")),
                             game_url = "",
                             enabled = true,
-                            is_local_branch = true,
+                            is_local = true,
                         };
                         ReleaseChannelService.LocalFolders.Add(channel);
-                        LogInfo(LogSource.Launcher, $"Local branch found: {folder}");
+                        LogInfo(LogSource.Launcher, $"Local folder found: {folder}");
                     }
                 }
             }
 
             if (Launcher.IsOnline)
-                Launcher.RemoteConfig.branches.AddRange(ReleaseChannelService.LocalFolders);
+                Launcher.RemoteConfig.channels.AddRange(ReleaseChannelService.LocalFolders);
             else
-                Launcher.RemoteConfig = new RemoteConfig { branches = new List<ReleaseChannel>(ReleaseChannelService.LocalFolders) };
+                Launcher.RemoteConfig = new RemoteConfig { channels = new List<ReleaseChannel>(ReleaseChannelService.LocalFolders) };
 
-            List<ReleaseChannel> branches_to_remove = [];
-            for (int i = 0; i < Launcher.RemoteConfig.branches.Count; i++)
+            List<ReleaseChannel> channels_to_remove = [];
+            for (int i = 0; i < Launcher.RemoteConfig.channels.Count; i++)
             {
-                if (!Launcher.RemoteConfig.branches[i].enabled)
-                    branches_to_remove.Add(Launcher.RemoteConfig.branches[i]);
+                if (!Launcher.RemoteConfig.channels[i].enabled)
+                    channels_to_remove.Add(Launcher.RemoteConfig.channels[i]);
             }
 
-            if (branches_to_remove.Count > 0)
+            if (channels_to_remove.Count > 0)
             {
-                foreach (ReleaseChannel channel in branches_to_remove)
-                    Launcher.RemoteConfig.branches.Remove(channel);
+                foreach (ReleaseChannel channel in channels_to_remove)
+                    Launcher.RemoteConfig.channels.Remove(channel);
             }
 
-            return Launcher.RemoteConfig.branches
+            return Launcher.RemoteConfig.channels
                 .Where(channel => channel.enabled || !Launcher.IsOnline)
                 .Select(channel => new ReleaseChannelViewModel
                 {
-                    title = channel.branch.ToUpper(new CultureInfo("en-US")),
+                    title = channel.name.ToUpper(new CultureInfo("en-US")),
                     subtext = ReleaseChannelService.GetServerComboVersion(channel),
-                    isLocalBranch = channel.is_local_branch
+                    isLocal = channel.is_local
                 })
                 .ToList();
         }

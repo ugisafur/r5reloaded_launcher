@@ -40,7 +40,7 @@
                         <TextBlock Text="Accessibility" Width="300" />
                     </Button>
                     <Button x:Name="GameInstallsBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource SansationBold}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
-                        <TextBlock Text="Game Branches" Width="300" />
+                        <TextBlock Text="Release Channels" Width="300" />
                     </Button>
                     <Button x:Name="DownloadBtn" Style="{DynamicResource SettingsMenuButton}" Width="330" Margin="0,5" FontFamily="{StaticResource SansationBold}" FontWeight="Bold"  FontSize="18" Background="Transparent" BorderBrush="Transparent" Height="40" Click="Button_Click" Cursor="Hand">
                         <TextBlock Text="Download" Width="300" />

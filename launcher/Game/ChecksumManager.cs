@@ -19,7 +19,7 @@ namespace launcher.GameManagement
     {
         public static List<ManifestEntry> BadFiles { get; } = [];
 
-        public static async Task<int> IdentifyBadFiles(GameManifest GameManifest, Task<LocalFileChecksum[]> checksumTasks, string branchDirectory, bool isUpdate = false)
+        public static async Task<int> IdentifyBadFiles(GameManifest GameManifest, Task<LocalFileChecksum[]> checksumTasks, string releaseChannelDirectory, bool isUpdate = false)
         {
             var fileChecksums = await checksumTasks;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
@@ -30,7 +30,7 @@ namespace launcher.GameManagement
 
             foreach (var file in GameManifest.files)
             {
-                string filePath = Path.Combine(branchDirectory, file.path);
+                string filePath = Path.Combine(releaseChannelDirectory, file.path);
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.path, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
@@ -53,56 +53,56 @@ namespace launcher.GameManagement
             return BadFiles.Count;
         }
 
-        public static async Task<List<Task<LocalFileChecksum>>> PrepareLangChecksumTasksAsync(string branchFolder)
+        public static async Task<List<Task<LocalFileChecksum>>> PrepareLangChecksumTasksAsync(string folder)
         {
             GameManifest languageManifest = await ApiService.GetLanguageFilesAsync();
 
             var filePaths = languageManifest.languages
                 .Select(lang => new
                 {
-                    path1 = Path.Combine(branchFolder, "audio", "ship", $"general_{lang.ToLower(CultureInfo.InvariantCulture)}.mstr"),
-                    path2 = Path.Combine(branchFolder, "audio", "ship", $"general_{lang.ToLower(CultureInfo.InvariantCulture)}_patch_1.mstr")
+                    path1 = Path.Combine(folder, "audio", "ship", $"general_{lang.ToLower(CultureInfo.InvariantCulture)}.mstr"),
+                    path2 = Path.Combine(folder, "audio", "ship", $"general_{lang.ToLower(CultureInfo.InvariantCulture)}_patch_1.mstr")
                 })
                 .Where(p => File.Exists(p.path1) && File.Exists(p.path2))
                 .SelectMany(p => new[] { p.path1, p.path2 })
                 .ToList();
 
-            return PrepareChecksumTasksForFiles(filePaths, branchFolder);
+            return PrepareChecksumTasksForFiles(filePaths, folder);
         }
 
-        public static List<Task<LocalFileChecksum>> PrepareBranchChecksumTasks(string branchFolder)
+        public static List<Task<LocalFileChecksum>> PrepareChecksumTasks(string folder)
         {
             var excludedPaths = new[] { "platform\\cfg\\user", "platform\\screenshots", "platform\\logs" };
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+            var allFiles = Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
                 .Where(f => !f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase) &&
                             !excludedPaths.Any(p => f.Contains(p, StringComparison.OrdinalIgnoreCase)));
 
-            return PrepareChecksumTasksForFiles(allFiles, branchFolder);
+            return PrepareChecksumTasksForFiles(allFiles, folder);
         }
 
-        public static List<Task<LocalFileChecksum>> PrepareOptChecksumTasks(string branchFolder)
+        public static List<Task<LocalFileChecksum>> PrepareOptChecksumTasks(string folder)
         {
-            var allFiles = Directory.GetFiles(branchFolder, "*", SearchOption.AllDirectories)
+            var allFiles = Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
                 .Where(f => f.Contains("opt.starpak", StringComparison.OrdinalIgnoreCase));
 
-            return PrepareChecksumTasksForFiles(allFiles, branchFolder);
+            return PrepareChecksumTasksForFiles(allFiles, folder);
         }
 
-        private static List<Task<LocalFileChecksum>> PrepareChecksumTasksForFiles(IEnumerable<string> files, string branchFolder)
+        private static List<Task<LocalFileChecksum>> PrepareChecksumTasksForFiles(IEnumerable<string> files, string folder)
         {
             var fileList = files.ToList();
             InitializeProgressBar(fileList.Count);
-            return fileList.Select(file => GenerateAndReturnFileChecksumAsync(file, branchFolder)).ToList();
+            return fileList.Select(file => GenerateAndReturnFileChecksumAsync(file, folder)).ToList();
         }
 
-        public static async Task<LocalFileChecksum> GenerateAndReturnFileChecksumAsync(string file, string branchFolder)
+        public static async Task<LocalFileChecksum> GenerateAndReturnFileChecksumAsync(string file, string folder)
         {
             //await _downloadSemaphore.WaitAsync();
 
             var fileChecksum = new LocalFileChecksum();
             try
             {
-                fileChecksum.name = file.Replace(branchFolder + Path.DirectorySeparatorChar, "");
+                fileChecksum.name = file.Replace(folder + Path.DirectorySeparatorChar, "");
                 fileChecksum.checksum = await CalculateChecksumAsync(file);
 
                 UpdateProgress();

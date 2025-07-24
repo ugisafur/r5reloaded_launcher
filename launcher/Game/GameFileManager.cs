@@ -24,27 +24,27 @@ namespace launcher.GameManagement
             Timeout = TimeSpan.FromSeconds(10)
         };
 
-        public static List<Task<string>> InitializeDownloadTasks(GameManifest GameManifest, string branchDirectory)
+        public static List<Task<string>> InitializeDownloadTasks(GameManifest GameManifest, string releaseChannelDirectory)
         {
             if (GameManifest == null) throw new ArgumentNullException(nameof(GameManifest));
-            return CreateDownloadTasks(GameManifest.files, branchDirectory, checkForExistingFiles: true);
+            return CreateDownloadTasks(GameManifest.files, releaseChannelDirectory, checkForExistingFiles: true);
         }
 
-        public static List<Task<string>> InitializeRepairTasks(string branchDirectory)
+        public static List<Task<string>> InitializeRepairTasks(string releaseChannelDirectory)
         {
-            return CreateDownloadTasks(ChecksumManager.BadFiles, branchDirectory, checkForExistingFiles: false);
+            return CreateDownloadTasks(ChecksumManager.BadFiles, releaseChannelDirectory, checkForExistingFiles: false);
         }
 
-        private static List<Task<string>> CreateDownloadTasks(IEnumerable<ManifestEntry> files, string branchDirectory, bool checkForExistingFiles)
+        private static List<Task<string>> CreateDownloadTasks(IEnumerable<ManifestEntry> files, string releaseChannelDirectory, bool checkForExistingFiles)
         {
-            if (string.IsNullOrWhiteSpace(branchDirectory)) throw new ArgumentException("Branch directory cannot be null or empty.", nameof(branchDirectory));
+            if (string.IsNullOrWhiteSpace(releaseChannelDirectory)) throw new ArgumentException("Release channel directory cannot be null or empty.", nameof(releaseChannelDirectory));
 
             var downloadTasks = files
                 .Where(file => !IsUserGeneratedContent(file))
                 .Select(file =>
                 {
                     file.downloadContext.fileUrl = $"{ReleaseChannelService.GetGameURL()}/{file.path}";
-                    file.downloadContext.finalPath = Path.Combine(branchDirectory, file.path);
+                    file.downloadContext.finalPath = Path.Combine(releaseChannelDirectory, file.path);
                     EnsureDirectoryExists(file);
 
                     return DownloadFileAsync(file, checkForExistingFiles);
@@ -219,13 +219,13 @@ namespace launcher.GameManagement
 
         private static Task DownloadMissingPartsAsync(ManifestEntry file, bool checkForExistingFiles)
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             string gameUrl = ReleaseChannelService.GetGameURL();
 
             // ✅ Each part is now mapped to its own concurrent download task.
             var downloadTasks = file.parts.Select(async part =>
             {
-                string partPath = Path.Combine(branchDirectory, part.path);
+                string partPath = Path.Combine(releaseChannelDirectory, part.path);
                 if (checkForExistingFiles && await ShouldSkipDownloadAsync(partPath, part.checksum))
                 {
                     AddDownloadedBytes(part.size, file);
@@ -242,7 +242,7 @@ namespace launcher.GameManagement
 
         private static async Task MergePartsAsync(ManifestEntry file)
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             using var finalStream = new FileStream(file.downloadContext.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             for (int i = 0; i < file.parts.Count; i++)
@@ -256,7 +256,7 @@ namespace launcher.GameManagement
                     file.downloadContext.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
                 });
 
-                string partPath = Path.Combine(branchDirectory, part.path);
+                string partPath = Path.Combine(releaseChannelDirectory, part.path);
                 using var partStream = new FileStream(partPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 await partStream.CopyToAsync(finalStream);
             }
@@ -264,10 +264,10 @@ namespace launcher.GameManagement
 
         private static void CleanupPartFiles(ManifestEntry file)
         {
-            string branchDirectory = ReleaseChannelService.GetDirectory();
+            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             foreach (var part in file.parts)
             {
-                string partPath = Path.Combine(branchDirectory, part.path);
+                string partPath = Path.Combine(releaseChannelDirectory, part.path);
                 if (File.Exists(partPath))
                 {
                     File.Delete(partPath);
@@ -398,7 +398,7 @@ namespace launcher.GameManagement
 
         public static void UpdateStatusLabel(string statusText, LogSource source)
         {
-            DiscordService.SetRichPresence($"Branch: {ReleaseChannelService.GetName()}", statusText);
+            DiscordService.SetRichPresence($"Release Channel: {ReleaseChannelService.GetName()}", statusText);
             appDispatcher.Invoke(() => {  Status_Label.Text = statusText; });
             LogInfo(source, $"Updating status label: {statusText}");
         }

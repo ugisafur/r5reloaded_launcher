@@ -18,17 +18,17 @@ namespace launcher
         }
 
         /// <summary>
-        /// Asynchronously clears and populates the list of game branches.
+        /// Asynchronously clears and populates the list of game channels.
         /// </summary>
         public async Task SetupGameSettingsAsync()
         {
             _gameItems.Clear();
-            BranchPanel.Children.Clear();
+            ReleaseChannelPanel.Children.Clear();
 
             LibraryPath.Text = (string)SettingsService.Get(SettingsService.Vars.Library_Location);
 
-            var releaseChannelsToShow = Launcher.RemoteConfig.branches
-                .Where(b => !b.is_local_branch && b.enabled)
+            var releaseChannelsToShow = Launcher.RemoteConfig.channels
+                .Where(b => !b.is_local && b.enabled)
                 .ToList();
 
             for (int i = 0; i < releaseChannelsToShow.Count; i++)
@@ -43,11 +43,11 @@ namespace launcher
 
                 await gameItem.InitializeAsync(channel);
 
-                BranchPanel.Children.Add(gameItem);
+                ReleaseChannelPanel.Children.Add(gameItem);
                 _gameItems.Add(gameItem);
             }
 
-            BranchPanel.Children.Add(new Separator { Opacity = 0, Height = 20 });
+            ReleaseChannelPanel.Children.Add(new Separator { Opacity = 0, Height = 20 });
         }
 
         /// <summary>

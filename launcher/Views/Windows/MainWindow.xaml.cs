@@ -348,41 +348,41 @@ namespace launcher
             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private void cmbBranch_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ReleaseChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is not ComboBox comboBox) return;
 
-            var selectedBranch = comboBox.SelectedIndex;
-            if (ReleaseChannel_Combobox.Items[selectedBranch] is not ReleaseChannelViewModel comboChannel) return;
+            var SelectedReleaseChannel = comboBox.SelectedIndex;
+            if (ReleaseChannel_Combobox.Items[SelectedReleaseChannel] is not ReleaseChannelViewModel comboChannel) return;
 
             SetupAdvancedMenu();
-            GameSettings_Control.OpenDir_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocalBranch;
-            GameSettings_Control.AdvancedMenu_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocalBranch;
+            GameSettings_Control.OpenDir_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocal;
+            GameSettings_Control.AdvancedMenu_Button.IsEnabled = ReleaseChannelService.IsInstalled() || comboChannel.isLocal;
 
             if (Launcher.IsOnline && Launcher.newsOnline)
             {
                 Task.Run(() => NewsService.Populate());
             }
 
-            if (comboChannel.isLocalBranch || !Launcher.IsOnline)
+            if (comboChannel.isLocal || !Launcher.IsOnline)
             {
                 ReadMore_Label.Inlines.Clear();
-                HandleLocalBranch(comboChannel.title);
+                HandleLocalFolder(comboChannel.title);
                 return;
             }
 
-            Launcher.IsLocalBranch = false;
-            SettingsService.Set(SettingsService.Vars.SelectedBranch, ReleaseChannelService.GetName(false));
+            Launcher.isLocal = false;
+            SettingsService.Set(SettingsService.Vars.SelectedReleaseChannel, ReleaseChannelService.GetName(false));
 
-            Task.Run(() => SetTextBlockContent(ReleaseChannelService.GetServerComboVersion(ReleaseChannelService.GetCurrentBranch())));
+            Task.Run(() => SetTextBlockContent(ReleaseChannelService.GetServerComboVersion(ReleaseChannelService.GetCurrentReleaseChannel())));
 
             if (ReleaseChannelService.IsInstalled())
             {
-                HandleInstalledBranch(selectedBranch);
+                HandleInstalledReleaseChannel(SelectedReleaseChannel);
             }
             else
             {
-                HandleUninstalledBranch(selectedBranch);
+                HandleUninstalledReleaseChannel(SelectedReleaseChannel);
             }
         }
 
@@ -684,17 +684,17 @@ namespace launcher
             };
         }
 
-        private void HandleLocalBranch(string branchTitle)
+        private void HandleLocalFolder(string name)
         {
-            SettingsService.Set(SettingsService.Vars.SelectedBranch, branchTitle);
+            SettingsService.Set(SettingsService.Vars.SelectedReleaseChannel, name);
             Update_Button.Visibility = Visibility.Hidden;
             SetPlayState("PLAY", true, false, true, true, true);
-            Launcher.IsLocalBranch = true;
+            Launcher.isLocal = true;
         }
 
-        private void HandleInstalledBranch(int selectedBranch)
+        private void HandleInstalledReleaseChannel(int SelectedReleaseChannel)
         {
-            var channel = Launcher.RemoteConfig.branches[selectedBranch];
+            var channel = Launcher.RemoteConfig.channels[SelectedReleaseChannel];
 
             if (!channel.enabled)
             {
@@ -708,9 +708,9 @@ namespace launcher
             SetPlayState("PLAY", true, true, true, true, true);
         }
 
-        private void HandleUninstalledBranch(int selectedBranch)
+        private void HandleUninstalledReleaseChannel(int SelectedReleaseChannel)
         {
-            var channel = Launcher.RemoteConfig.branches[selectedBranch];
+            var channel = Launcher.RemoteConfig.channels[SelectedReleaseChannel];
 
             if (!channel.enabled)
             {
@@ -725,13 +725,13 @@ namespace launcher
             SetPlayState(executableExists ? "REPAIR" : "INSTALL", true, executableExists, executableExists, executableExists, executableExists);
         }
 
-        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled, bool openBranchFolder, bool advancedsettings)
+        private void SetPlayState(string playContent, bool playEnabled, bool repairEnabled, bool uninstallEnabled, bool openFolder, bool advancedsettings)
         {
             Play_Button.Content = playContent;
             Play_Button.IsEnabled = playEnabled;
             GameSettings_Control.RepairGame_Button.IsEnabled = repairEnabled;
             GameSettings_Control.UninstallGame_Button.IsEnabled = uninstallEnabled;
-            GameSettings_Control.OpenDir_Button.IsEnabled = openBranchFolder;
+            GameSettings_Control.OpenDir_Button.IsEnabled = openFolder;
             GameSettings_Control.AdvancedMenu_Button.IsEnabled = advancedsettings;
         }
 

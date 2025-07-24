@@ -4,6 +4,6 @@ namespace launcher.Controls.Models
     {
         public string title { get; set; }
         public string subtext { get; set; }
-        public bool isLocalBranch { get; set; }
+        public bool isLocal { get; set; }
     }
 } 
