@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="launcher.Popup_Game_Menu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:launcher"
+             mc:Ignorable="d"
+             d:DesignHeight="180" d:DesignWidth="170">
+
+    <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" CornerRadius="5" Width="170" Height="180" Padding="5">
+        <StackPanel VerticalAlignment="Center">
+            <Button x:Name="AdvancedMenu_Button" Style="{DynamicResource GameMenuButton}" Content="Advanced Options" Width="160" Margin="0,2" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="AdvancedOptions_Click" Cursor="Hand" />
+            <Button x:Name="RepairGame_Button" Style="{DynamicResource GameMenuButton}" Content="Verify Files" Width="160" Margin="0,2" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Click="btnRepair_Click" Cursor="Hand" />
+            <Button x:Name="OpenDir_Button" Style="{DynamicResource GameMenuButton}" Content="Open Directory" Width="160" Margin="0,2" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="OpenDir_Button_Click" />
+            <Button x:Name="UninstallGame_Button" Style="{DynamicResource GameMenuButton}" Content="Uninstall" Width="160" Margin="0,2" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="{DynamicResource ThemeUninstallButtonText}" BorderBrush="Transparent" Height="40" Cursor="Hand" Click="Uninstall_Click" />
+        </StackPanel>
+    </Border>
+</UserControl>

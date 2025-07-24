@@ -6,30 +6,29 @@
 	<Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-	<ApplicationIcon>launcher_x64.ico</ApplicationIcon>
+	<ApplicationIcon>assets\launcher_x64.ico</ApplicationIcon>
 	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 	<NoWarn>$(NoWarn);SYSLIB0014;IDE1006;IDE0130;CA1835;SYSLIB1054;SYSLIB1045;CA1416;CS4014;CA1510;IDE0044</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\launcher_bg.jpg" />
-    <None Remove="assets\launcher_bg_autum.mp4" />
-    <None Remove="assets\launcher_bg_beach.mp4" />
-    <None Remove="assets\launcher_bg_kc.mp4" />
-    <None Remove="assets\launcher_bg_shadow.mp4" />
-    <None Remove="assets\launcher_bg_we.mp4" />
-    <None Remove="assets\launcher_x64.ico" />
-    <None Remove="assets\news_default_bg.jpg" />
-    <None Remove="assets\new_preload.png" />
-    <None Remove="assets\NunitoSans-VariableFont.ttf" />
-    <None Remove="assets\preload.gif" />
-    <None Remove="assets\preload.jpg" />
-    <None Remove="assets\Sansation-Bold.ttf" />
-    <None Remove="assets\Sansation-BoldItalic.ttf" />
-    <None Remove="assets\Sansation-Italic.ttf" />
-    <None Remove="assets\Sansation-Light.ttf" />
-    <None Remove="assets\Sansation-LightItalic.ttf" />
-    <None Remove="assets\Sansation-Regular.ttf" />
+    <None Remove="Assets\launcher_bg.jpg" />
+    <None Remove="Assets\launcher_bg_autum.mp4" />
+    <None Remove="Assets\launcher_bg_beach.mp4" />
+    <None Remove="Assets\launcher_bg_kc.mp4" />
+    <None Remove="Assets\launcher_bg_shadow.mp4" />
+    <None Remove="Assets\launcher_bg_we.mp4" />
+    <None Remove="Assets\news_default_bg.jpg" />
+    <None Remove="Assets\new_preload.png" />
+    <None Remove="Assets\NunitoSans-VariableFont.ttf" />
+    <None Remove="Assets\preload.gif" />
+    <None Remove="Assets\preload.jpg" />
+    <None Remove="Assets\Sansation-Bold.ttf" />
+    <None Remove="Assets\Sansation-BoldItalic.ttf" />
+    <None Remove="Assets\Sansation-Italic.ttf" />
+    <None Remove="Assets\Sansation-Light.ttf" />
+    <None Remove="Assets\Sansation-LightItalic.ttf" />
+    <None Remove="Assets\Sansation-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,86 +47,90 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets\launcher_bg_autum.mp4">
+    <Content Include="Assets\launcher_bg_autum.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\launcher_bg_beach.mp4">
+    <Content Include="Assets\launcher_bg_beach.mp4">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\launcher_bg_kc.mp4">
+    <Content Include="Assets\launcher_bg_kc.mp4">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\launcher_bg_shadow.mp4">
+    <Content Include="Assets\launcher_bg_shadow.mp4">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\launcher_bg_we.mp4">
+    <Content Include="Assets\launcher_bg_we.mp4">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\NunitoSans-VariableFont.ttf">
+    <Content Include="Assets\launcher_x64.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\NunitoSans-VariableFont.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-Bold.ttf">
+    <Content Include="Assets\Sansation-Bold.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-BoldItalic.ttf">
+    <Content Include="Assets\Sansation-BoldItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-Italic.ttf">
+    <Content Include="Assets\Sansation-Italic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-Light.ttf">
+    <Content Include="Assets\Sansation-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-LightItalic.ttf">
+    <Content Include="Assets\Sansation-LightItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Sansation-Regular.ttf">
+    <Content Include="Assets\Sansation-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="..\.editorconfig" Link=".editorconfig" />
-    <Resource Include="assets\launcher_bg.jpg">
+    <Page Include="App.xaml" />
+    <Resource Include="Assets\launcher_bg.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="assets\news_default_bg.jpg">
+    <Resource Include="Assets\news_default_bg.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="assets\new_preload.png">
+    <Resource Include="Assets\new_preload.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="assets\preload.jpg">
+    <Resource Include="Assets\preload.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="launcher_x64.ico">
+    <Resource Include="Assets\launcher_x64.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\Menus\Pages\AdvancedSettings\NetworkSettings.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\NetworkSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Menus\Pages\AdvancedSettings\GeneralSettings.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\GeneralSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Launcher_Update.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Launcher_Update.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Start_Tour.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Start_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Tour.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Tour.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Existing_Files.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Existing_Files.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Menus\AdvancedControl.xaml.cs">
+    <Compile Update="Views\Pages\Advanced\AdvancedControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Exit_App.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Exit_App.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Popups\Popup_Install_Location.xaml.cs">
+    <Compile Update="Views\Popups\Popup_Install_Location.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -145,20 +148,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Controls\Popups\Popup_Launcher_Update.xaml">
+    <Page Update="Views\Popups\Popup_Launcher_Update.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Popups\Popup_Tour.xaml">
+    <Page Update="Views\Popups\Popup_Tour.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Controls\Popups\Popup_Existing_Files.xaml">
+    <Page Update="Views\Popups\Popup_Existing_Files.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="MainWindow.xaml">
+    <Page Update="Views\Windows\MainWindow.xaml">
       <CopyToOutputDirectory></CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="theme.xaml">
+    <Page Update="Styles\theme.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
