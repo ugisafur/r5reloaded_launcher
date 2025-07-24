@@ -8,8 +8,8 @@ namespace patch_creator.Models
 {
     public class FileChunk
     {
-        public string? path { get; set; }
-        public string? checksum { get; set; }
-        public long? size { get; set; }
+        public string path { get; set; } = string.Empty;
+        public string checksum { get; set; } = string.Empty;
+        public long size { get; set; } = 0;
     }
 }

@@ -8,9 +8,9 @@ namespace patch_creator.Models
 {
     public class RemoteConfig
     {
-        public string? launcherVersion { get; set; }
-        public string? launcherSelfUpdater { get; set; }
-        public bool? allowUpdates { get; set; }
-        public List<ReleaseChannel>? channels { get; set; }
+        public string launcherVersion { get; set; } = string.Empty;
+        public string launcherSelfUpdater { get; set; } = string.Empty;
+        public bool allowUpdates { get; set; }
+        public List<ReleaseChannel> channels { get; set; } = [];
     }
 }

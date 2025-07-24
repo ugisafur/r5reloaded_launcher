@@ -8,11 +8,11 @@ namespace patch_creator.Models
 {
     public class ManifestEntry
     {
-        public string? path { get; set; }
-        public long? size { get; set; }
-        public string? checksum { get; set; }
+        public string path { get; set; } = string.Empty;
+        public long size { get; set; } = 0;
+        public string checksum { get; set; } = string.Empty;
         public bool? optional { get; set; }
-        public string? language { get; set; }
-        public List<FileChunk>? parts { get; set; }
+        public string language { get; set; } = string.Empty;
+        public List<FileChunk> parts { get; set; } = [];
     }
 }
