@@ -17,7 +17,7 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
   - **Update**: Keep your game up-to-date with automatic updates.
 
 - **Multi-release channel Support**:
-  - Install and manage multiple release channeles of the game simultaneously. Switch between different versions effortlessly.
+  - Install and manage multiple release channels of the game simultaneously. Switch between different versions effortlessly.
 
 - **Optional Starpak Files**:
   - Download optional Starpak files to enable HD textures, enhancing your visual experience.
@@ -84,7 +84,7 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
 We welcome contributions from the community! If you'd like to contribute to the development of the R5Reloaded Launcher, please follow these steps:
 
 1. Fork the repository.
-2. Create a new release channel for your feature or bug fix.
+2. Create a new branch for your feature or bug fix.
 3. Commit your changes.
 4. Submit a pull request.
 
