@@ -18,7 +18,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.1.3";
+        public const string VERSION = "1.2.0";
         public static bool IsOnline { get; set; } = false;
         public static bool IsLocalBranch { get; set; } = false;
         public static bool IsInstalling { get; set; } = false;
