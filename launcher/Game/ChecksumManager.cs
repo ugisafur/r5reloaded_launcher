@@ -17,16 +17,16 @@ namespace launcher.GameManagement
 {
     public static class ChecksumManager
     {
-        public static List<ManifestEntry> BadFiles { get; } = [];
+        public static List<ManifestEntry> MismatchedFiles { get; } = [];
 
-        public static async Task<int> IdentifyBadFiles(GameManifest GameManifest, Task<LocalFileChecksum[]> checksumTasks, string releaseChannelDirectory, bool isUpdate = false)
+        public static async Task<int> VerifyFileIntegrity(GameManifest GameManifest, Task<LocalFileChecksum[]> checksumTasks, string releaseChannelDirectory, bool isUpdate = false)
         {
             var fileChecksums = await checksumTasks;
             var checksumDict = fileChecksums.ToDictionary(fc => fc.name, fc => fc.checksum);
 
             InitializeProgressBar(GameManifest.files.Count);
 
-            BadFiles.Clear();
+            MismatchedFiles.Clear();
 
             foreach (var file in GameManifest.files)
             {
@@ -34,7 +34,9 @@ namespace launcher.GameManagement
 
                 if (!File.Exists(filePath) || !checksumDict.TryGetValue(file.path, out var calculatedChecksum) || file.checksum != calculatedChecksum)
                 {
-                    LogWarning(isUpdate ? LogSource.Update : LogSource.Repair, isUpdate ? $"Updated file found: {file.path}" : $"Bad file found: {file.path}");
+                    LogSource logSource = isUpdate ? LogSource.Update : LogSource.Repair;
+                    string messageAction = isUpdate ? "Outdated" : "Mismatched";
+                    LogWarning(logSource, $"{messageAction} file found: {file.path}");
 
                     ManifestEntry ManifestEntry = new ManifestEntry
                     {
@@ -45,12 +47,12 @@ namespace launcher.GameManagement
                         parts = file.parts
                     };
 
-                    BadFiles.Add(ManifestEntry);
+                    MismatchedFiles.Add(ManifestEntry);
                 }
                 UpdateProgress();
             }
 
-            return BadFiles.Count;
+            return MismatchedFiles.Count;
         }
 
         public static async Task<List<Task<LocalFileChecksum>>> PrepareLangChecksumTasksAsync(string folder)
@@ -70,7 +72,7 @@ namespace launcher.GameManagement
             return PrepareChecksumTasksForFiles(filePaths, folder);
         }
 
-        public static List<Task<LocalFileChecksum>> PrepareChecksumTasks(string folder)
+        public static List<Task<LocalFileChecksum>> PrepareCoreFileChecksumTasks(string folder)
         {
             var excludedPaths = new[] { "platform\\cfg\\user", "platform\\screenshots", "platform\\logs" };
             var allFiles = Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
@@ -92,13 +94,12 @@ namespace launcher.GameManagement
         {
             var fileList = files.ToList();
             InitializeProgressBar(fileList.Count);
-            return fileList.Select(file => GenerateAndReturnFileChecksumAsync(file, folder)).ToList();
+
+            return fileList.Select(file => GenerateFileChecksumAsync(file, folder)).ToList();
         }
 
-        public static async Task<LocalFileChecksum> GenerateAndReturnFileChecksumAsync(string file, string folder)
+        public static async Task<LocalFileChecksum> GenerateFileChecksumAsync(string file, string folder)
         {
-            //await _downloadSemaphore.WaitAsync();
-
             var fileChecksum = new LocalFileChecksum();
             try
             {
@@ -113,10 +114,6 @@ namespace launcher.GameManagement
             {
                 LogException($"Failed Generating Checksum For {file}", LogSource.Checksums, ex);
                 return fileChecksum;
-            }
-            finally
-            {
-                //_downloadSemaphore.Release();
             }
         }
 

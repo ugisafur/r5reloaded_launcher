@@ -51,7 +51,7 @@ namespace launcher.GameManagement
 
             GameFileManager.UpdateStatusLabel(compareStatus, LogSource.Repair);
             var GameManifest = await fetchFileManifest();
-            int badFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, releaseChannelDirectory);
+            int badFileCount = await ChecksumManager.VerifyFileIntegrity(GameManifest, checksumTasks, releaseChannelDirectory);
 
             if (badFileCount > 0)
             {
@@ -107,7 +107,7 @@ namespace launcher.GameManagement
 
             var result = await RunRepairProcessAsync(
                 releaseChannelDirectory,
-                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareChecksumTasks(releaseChannelDirectory))),
+                () => Task.FromResult(Task.WhenAll(ChecksumManager.PrepareCoreFileChecksumTasks(releaseChannelDirectory))),
                 () => ApiService.GetGameManifestAsync(optional: false),
                 "Checking core files...",
                 "Comparing core files...",

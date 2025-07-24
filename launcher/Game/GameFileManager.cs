@@ -32,7 +32,7 @@ namespace launcher.GameManagement
 
         public static List<Task<string>> InitializeRepairTasks(string releaseChannelDirectory)
         {
-            return CreateDownloadTasks(ChecksumManager.BadFiles, releaseChannelDirectory, checkForExistingFiles: false);
+            return CreateDownloadTasks(ChecksumManager.MismatchedFiles, releaseChannelDirectory, checkForExistingFiles: false);
         }
 
         private static List<Task<string>> CreateDownloadTasks(IEnumerable<ManifestEntry> files, string releaseChannelDirectory, bool checkForExistingFiles)

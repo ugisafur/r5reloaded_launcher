@@ -56,7 +56,7 @@ namespace launcher.GameManagement
             switch (fileType)
             {
                 case UpdateFileType.Main:
-                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareChecksumTasks(releaseChannelDirectory));
+                    checksumTasks = Task.WhenAll(ChecksumManager.PrepareCoreFileChecksumTasks(releaseChannelDirectory));
                     break;
                 case UpdateFileType.Optional:
                     checksumTasks = Task.WhenAll(ChecksumManager.PrepareOptChecksumTasks(releaseChannelDirectory));
@@ -96,7 +96,7 @@ namespace launcher.GameManagement
             await Task.WhenAll(checksumTasks);
 
             GameFileManager.UpdateStatusLabel($"Finding updated {fileType} files", LogSource.Update);
-            int changedFileCount = await ChecksumManager.IdentifyBadFiles(GameManifest, checksumTasks, releaseChannelDirectory, true);
+            int changedFileCount = await ChecksumManager.VerifyFileIntegrity(GameManifest, checksumTasks, releaseChannelDirectory, true);
 
             if (changedFileCount > 0)
             {
