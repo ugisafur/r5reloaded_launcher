@@ -5,10 +5,10 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Core.Models;
 using launcher.Services;
-using launcher.GameManagement;
+using launcher.Game;
 using launcher.GameLifecycle.Models;
 
 namespace launcher

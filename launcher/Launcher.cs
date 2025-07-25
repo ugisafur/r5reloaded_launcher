@@ -18,7 +18,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.2.0";
+        public const string VERSION = "1.2.1";
 
         #region Settings
 

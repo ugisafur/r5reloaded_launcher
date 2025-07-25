@@ -5,9 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using static launcher.Services.LoggerService;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Services;
-using launcher.GameManagement;
+using launcher.Game;
 using launcher.Views.Popups.Models.EULA;
 
 namespace launcher

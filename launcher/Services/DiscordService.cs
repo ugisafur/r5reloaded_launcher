@@ -1,12 +1,58 @@
 ﻿using DiscordRPC;
+using DiscordRPC.Logging;
 using static launcher.Core.UiReferences;
+using static launcher.Services.LoggerService;
 
 namespace launcher.Services
 {
-    class DiscordService
+    public class DiscordService
     {
+        private static DiscordRpcClient RPC_client;
         private static RichPresence richPresence;
         private static Timestamps timestamps;
+
+        public static void InitDiscordRPC()
+        {
+            if (!appState.IsOnline)
+                return;
+
+            if (RPC_client != null && RPC_client.IsInitialized)
+                return;
+
+            RPC_client = new DiscordRpcClient(Launcher.DISCORDRPC_CLIENT_ID)
+            {
+                Logger = new ConsoleLogger() { Level = LogLevel.Warning }
+            };
+
+            RPC_client.OnReady += (sender, e) =>
+            {
+                LogInfo(LogSource.DiscordRPC, $"Discord RPC connected as {e.User.Username}");
+            };
+
+            //RPC_client.OnPresenceUpdate += (sender, e) =>
+            //{
+            //    //LogInfo(LogSource.DiscordRPC, $"Received Update! {e.Presence}");
+            //};
+
+            RPC_client.OnError += (sender, e) =>
+            {
+                LogError(LogSource.DiscordRPC, $"Discord RPC Error: {e.Message}");
+            };
+
+            RPC_client.OnConnectionFailed += (sender, e) =>
+            {
+                LogError(LogSource.DiscordRPC, $"Discord RPC Connection Failed");
+            };
+
+            RPC_client.OnConnectionEstablished += (sender, e) =>
+            {
+                LogInfo(LogSource.DiscordRPC, $"Discord RPC Connection Established");
+            };
+
+            RPC_client.Initialize();
+
+            SetRichPresence("", "Idle", "embedded_cover", "");
+        }
 
         public static void SetRichPresence(string details, string state)
         {

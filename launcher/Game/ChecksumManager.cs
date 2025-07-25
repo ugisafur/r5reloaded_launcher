@@ -13,7 +13,7 @@ using System.Windows;
 using static launcher.Core.UiReferences;
 using static launcher.Services.LoggerService;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public static class ChecksumManager
     {

@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Services.LoggerService;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.GameLifecycle.Models;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public static class GameRepairer
     {

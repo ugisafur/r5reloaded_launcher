@@ -15,11 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using static launcher.Services.LoggerService;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Controls.Models;
 using launcher.Services;
 using launcher.Services.Models;
-using launcher.GameManagement;
+using launcher.Game;
 using launcher.Core.Commands;
 
 namespace launcher

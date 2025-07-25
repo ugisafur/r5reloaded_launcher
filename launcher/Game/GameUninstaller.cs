@@ -8,11 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using static launcher.Core.UiReferences;
 using static launcher.Services.LoggerService;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public static class GameUninstaller
     {

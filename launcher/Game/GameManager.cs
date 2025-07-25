@@ -3,11 +3,12 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using static launcher.Services.LoggerService;
 using static launcher.Services.LaunchParameterService;
+using launcher.Core.Services;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     /// <summary>
     /// Represents the result of a game launch attempt.

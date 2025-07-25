@@ -15,7 +15,7 @@ using static launcher.Services.LoggerService;
 using launcher.Networking;
 using launcher.GameLifecycle.Models;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public static class GameFileManager
     {

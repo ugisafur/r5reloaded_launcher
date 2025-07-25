@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Services;
 
 namespace launcher

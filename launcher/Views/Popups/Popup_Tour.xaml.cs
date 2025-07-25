@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Numerics;
 using System.Windows.Media.Animation;
 using static launcher.Core.UiReferences;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Core.Models;
 using launcher.Services;
 

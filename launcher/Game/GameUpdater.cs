@@ -9,11 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Services.LoggerService;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using static launcher.Core.UiReferences;
 using launcher.GameLifecycle.Models;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public enum UpdateFileType { Main, Optional, Language }
 

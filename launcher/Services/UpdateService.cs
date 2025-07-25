@@ -8,7 +8,7 @@ using static launcher.Core.UiReferences;
 using launcher.Core.Models;
 using launcher.Services.Models;
 
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 
 namespace launcher.Services
 {

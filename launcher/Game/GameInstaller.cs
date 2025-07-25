@@ -1,5 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using launcher.GameManagement;
+using launcher.Game;
 using launcher.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,11 @@ using System.Windows.Controls;
 using System.Windows.Forms.VisualStyles;
 using static launcher.Core.UiReferences;
 using static launcher.Services.LoggerService;
-using static launcher.Core.AppControllerService;
+using static launcher.Core.AppController;
 using launcher.Networking;
 using launcher.GameLifecycle.Models;
 
-namespace launcher.GameManagement
+namespace launcher.Game
 {
     public static class GameInstaller
     {
