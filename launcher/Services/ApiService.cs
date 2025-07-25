@@ -1,9 +1,7 @@
 using launcher.Core.Models;
 using launcher.GameLifecycle.Models;
-using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 using static launcher.Services.LoggerService;
 
 namespace launcher.Services

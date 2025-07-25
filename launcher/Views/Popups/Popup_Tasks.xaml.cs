@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using launcher.GameLifecycle.Models;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher
 {

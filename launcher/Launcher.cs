@@ -1,17 +1,8 @@
-﻿using DiscordRPC;
-using launcher.Core.Models;
-using launcher.Services;
-using SoftCircuits.IniFileParser;
+﻿using launcher.Services;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Numerics;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Windows;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 
 namespace launcher

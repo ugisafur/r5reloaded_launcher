@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 using Application = System.Windows.Application;
 

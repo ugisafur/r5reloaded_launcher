@@ -1,5 +1,3 @@
-using System;
-
 namespace launcher.Networking.Models
 {
     public static class DownloadProgress

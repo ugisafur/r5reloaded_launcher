@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace launcher.GameLifecycle.Models
 {
     public class ManifestEntry

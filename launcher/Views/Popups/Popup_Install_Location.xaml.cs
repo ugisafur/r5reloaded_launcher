@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Core.AppController;
 using launcher.Game;
 using launcher.Services;

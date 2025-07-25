@@ -1,12 +1,11 @@
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace launcher.Services.Models
 {
     /// <summary>
     /// Represents the root of the playlist data structure.
     /// </summary>
-    public class PlaylistRoot
+    public class PlaylistFile
     {
         [JsonProperty("version")]
         public string Version { get; set; }

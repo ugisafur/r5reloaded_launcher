@@ -1,6 +1,6 @@
 ﻿using launcher.GameLifecycle.Models;
 using launcher.Services;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Networking.Models.DownloadProgress;
 
 namespace launcher.Networking

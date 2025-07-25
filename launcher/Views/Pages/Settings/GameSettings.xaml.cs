@@ -3,7 +3,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher
 {

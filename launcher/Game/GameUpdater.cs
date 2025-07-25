@@ -1,16 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using launcher.Networking;
 using launcher.Services;
-using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using static launcher.Services.LoggerService;
 using static launcher.Core.AppController;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using launcher.GameLifecycle.Models;
 
 namespace launcher.Game

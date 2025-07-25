@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Windows;
 using static launcher.Services.LoggerService;
 using System.IO;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using launcher.Core.Models;
 using launcher.Services.Models;
 

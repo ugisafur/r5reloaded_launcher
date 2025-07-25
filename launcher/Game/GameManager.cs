@@ -1,8 +1,6 @@
 ﻿using launcher.Services;
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using static launcher.Core.AppController;
 using static launcher.Services.LoggerService;
 using static launcher.Services.LaunchParameterService;

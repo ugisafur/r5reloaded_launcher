@@ -1,14 +1,8 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using launcher.Game;
 using launcher.Services;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 using static launcher.Core.AppController;
 using launcher.Networking;

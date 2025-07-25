@@ -1,7 +1,7 @@
 using launcher.Services;
 using System.Windows;
 using System.Windows.Media.Animation;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher.Core.Services
 {

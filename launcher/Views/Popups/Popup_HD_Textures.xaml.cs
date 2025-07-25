@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using launcher.GameLifecycle.Models;
 using launcher.Game;
 using launcher.Services;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Core.AppController;
 
 namespace launcher

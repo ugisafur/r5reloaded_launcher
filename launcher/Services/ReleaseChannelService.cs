@@ -1,9 +1,8 @@
 using System.Globalization;
 using System.IO;
-using System.Threading.Tasks;
 using launcher.Core.Models;
 using launcher.GameLifecycle.Models;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher.Services
 {

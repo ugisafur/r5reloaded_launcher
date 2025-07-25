@@ -1,5 +1,3 @@
-using System;
-
 namespace launcher.GameLifecycle.Models
 {
     public class DownloadProgress

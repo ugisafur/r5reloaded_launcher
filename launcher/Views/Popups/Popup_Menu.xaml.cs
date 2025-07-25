@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Core.AppController;
 
 namespace launcher

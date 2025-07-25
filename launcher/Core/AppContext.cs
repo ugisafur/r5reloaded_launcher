@@ -1,22 +1,16 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Media;
-using launcher.Game;
 using launcher.Services.Models;
 using launcher.Core.Models;
 
 namespace launcher.Core
 {
-    public static class UiReferences
+    public static class AppContext
     {
         #region Windows
 

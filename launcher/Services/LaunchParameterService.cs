@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher.Services
 {

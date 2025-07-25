@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using static launcher.Core.AppController;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher
 {

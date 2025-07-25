@@ -1,7 +1,6 @@
 using Hardcodet.Wpf.TaskbarNotification;
 using launcher.Services;
-using System;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 
 namespace launcher.Core.Services

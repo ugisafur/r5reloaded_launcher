@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using static launcher.Services.LoggerService;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using launcher.Services;
 
 namespace launcher

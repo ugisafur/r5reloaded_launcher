@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using ValveKeyValue;
 using static launcher.Services.LoggerService;
 using launcher.Services.Models;

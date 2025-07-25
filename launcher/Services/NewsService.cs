@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using static launcher.Services.LoggerService;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using launcher.Services.Models;
 
 namespace launcher.Services

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IO;
 using launcher.Services;
 using Microsoft.Win32;
 using static launcher.Services.LoggerService;

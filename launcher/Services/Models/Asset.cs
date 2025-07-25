@@ -1,5 +1,3 @@
-using System;
-
 namespace launcher.Services.Models
 {
     public class Asset

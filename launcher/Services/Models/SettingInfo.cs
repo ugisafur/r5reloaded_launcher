@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace launcher.Services.Models
+﻿namespace launcher.Services.Models
 {
     public class SettingInfo
     {

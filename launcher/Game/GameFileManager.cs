@@ -1,16 +1,12 @@
-﻿using DiscordRPC;
-using launcher.Services;
+﻿using launcher.Services;
 using Polly;
 using Polly.Retry;
 using System.IO;
-using System.IO.Pipes;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
-using System.Windows.Shell;
-using ZstdSharp;
 using static launcher.Networking.DownloadService;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 using launcher.Networking;
 using launcher.GameLifecycle.Models;

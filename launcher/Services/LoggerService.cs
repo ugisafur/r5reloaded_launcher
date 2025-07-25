@@ -1,8 +1,7 @@
-﻿using System.Globalization;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Text.Json;
-using static launcher.Core.UiReferences;
+using static launcher.Core.AppContext;
 
 namespace launcher.Services
 {
