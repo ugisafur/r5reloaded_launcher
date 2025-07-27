@@ -262,6 +262,14 @@ namespace launcher.Services
             return false;
         }
 
+        public static bool ShouldForceUpdateLauncher()
+        {
+            if (appState.RemoteConfig.forceUpdates && IsNewVersion(Launcher.VERSION, appState.RemoteConfig.launcherVersion))
+                return true;
+
+            return false;
+        }
+
         private static bool ShouldUpdateGame(RemoteConfig newRemoteConfig)
         {
             if (appState.LauncherConfig == null)
@@ -291,7 +299,7 @@ namespace launcher.Services
             return true;
         }
 
-        private static void HandleLauncherUpdate()
+        public static void HandleLauncherUpdate()
         {
             LogInfo(LogSource.UpdateChecker, "Updating launcher...");
             UpdateLauncher();
@@ -311,6 +319,27 @@ namespace launcher.Services
             {
                 FileName = "cmd.exe",
                 Arguments = $"/c start \"\" \"{Launcher.PATH}\\launcher_data\\updater.exe\"{extraArgs}"
+            };
+
+            Process.Start(startInfo);
+
+            Environment.Exit(0);
+        }
+
+        public async static Task ForceUpdateLauncher()
+        {
+            await Task.Delay(1000);
+
+            if (!File.Exists($"{Launcher.PATH}\\launcher_data\\updater.exe"))
+            {
+                LogError(LogSource.UpdateChecker, "Self updater not found");
+                return;
+            }
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c start \"\" \"{Launcher.PATH}\\launcher_data\\updater.exe\""
             };
 
             Process.Start(startInfo);

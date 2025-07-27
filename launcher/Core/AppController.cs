@@ -25,9 +25,6 @@ namespace launcher.Core
             if (appState.DebugArg)
                 EnableDebugConsole();
 
-            PreLoad_Window.SetLoadingText("Checking for EA Desktop App");
-            await Task.Run(() => _processService.FindAndStartEAApp());
-
             PreLoad_Window.SetLoadingText("Checking for internet connection");
             await Task.Run(() => CheckInternetConnection());
 
@@ -37,6 +34,13 @@ namespace launcher.Core
             PreLoad_Window.SetLoadingText("Setting up app");
             await Task.Run(() => Launcher.Init());
 
+            if (UpdateService.ShouldForceUpdateLauncher())
+            {
+                PreLoad_Window.SetLoadingText("Updating Launcher...");
+                await UpdateService.ForceUpdateLauncher();
+                return;
+            }
+
             if (!File.Exists(Path.Combine(Launcher.PATH, "force_update_launcher.bat")))
                 await File.WriteAllTextAsync(Path.Combine(Launcher.PATH, "force_update_launcher.bat"), "start ./launcher_data/updater.exe");
 
@@ -45,6 +49,9 @@ namespace launcher.Core
                 PreLoad_Window.SetLoadingText("Setting up Discord RPC");
                 await Task.Run(() => DiscordService.InitDiscordRPC());
             }
+
+            PreLoad_Window.SetLoadingText("Checking for EA Desktop App");
+            await Task.Run(() => _processService.FindAndStartEAApp());
 
             PreLoad_Window.SetLoadingText("Setting up menus");
             await Task.Run(() => SetupMenus());
