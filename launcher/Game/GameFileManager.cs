@@ -276,6 +276,10 @@ namespace launcher.Game
             var request = new HttpRequestMessage(HttpMethod.Get, fileUrl);
             request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
 
+            string key = ReleaseChannelService.GetKey();
+            if (key.Length > 0)
+                request.Headers.Add("channel-key", key);
+
             using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
@@ -287,6 +291,10 @@ namespace launcher.Game
         {
             var request = new HttpRequestMessage(HttpMethod.Get, file.downloadContext.fileUrl);
             request.Headers.UserAgent.ParseAdd($"R5Reloaded-Launcher/{Launcher.VERSION} (+https://r5reloaded.com)");
+
+            string key = ReleaseChannelService.GetKey();
+            if (key.Length > 0)
+                request.Headers.Add("channel-key", key);
 
             using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
