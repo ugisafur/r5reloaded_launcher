@@ -24,7 +24,7 @@ namespace launcher
             Notifications.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Enable_Notifications);
             KeepAllLogs.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Keep_All_Logs);
             StreamVideo.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Stream_Video);
-            NightlyBuilds.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds);
+            NightlyBuilds.IsChecked = false; // (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds);
             OpenEAApp.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Auto_Launch_EA_App);
             EnabledRichPresence.IsChecked = (bool)SettingsService.Get(SettingsService.Vars.Enable_Discord_Rich_Presence);
 
@@ -52,8 +52,8 @@ namespace launcher
 
         private void NightlyBuilds_Unchecked(object sender, RoutedEventArgs e)
         {
-            SettingsService.Set(SettingsService.Vars.Nightly_Builds, NightlyBuilds.IsChecked.Value);
-            UpdateService.checkForUpdatesOveride = true;
+            //SettingsService.Set(SettingsService.Vars.Nightly_Builds, NightlyBuilds.IsChecked.Value);
+            //UpdateService.checkForUpdatesOveride = true;
         }
 
         private void OpenEAApp_Unchecked(object sender, RoutedEventArgs e)

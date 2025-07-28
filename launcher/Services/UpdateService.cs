@@ -41,22 +41,22 @@ namespace launcher.Services
                 try
                 {
                     var newRemoteConfig = await GetRemoteConfigAsync();
-                    var newGithubConfig = await GetGithubConfigAsync();
+                    //var newGithubConfig = await GetGithubConfigAsync();
                     if (newRemoteConfig == null || newRemoteConfig.channels == null)
                     {
                         LogError(LogSource.UpdateChecker, "Failed to fetch new server config");
                         continue;
                     }
 
-                    if (!otherPopupsOpened && ShouldUpdateLauncher(newRemoteConfig, newGithubConfig) && newGithubConfig != null && newGithubConfig.Count > 0)
+                    if (!otherPopupsOpened && ShouldUpdateLauncherUI() /* && newGithubConfig != null && newGithubConfig.Count > 0*/ )
                     {
-                        HandleLauncherUpdate();
+                        await UpdateLauncher();
                     }
                     else
                     {
-                        string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : appState.RemoteConfig.launcherVersion;
+                        //string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : appState.RemoteConfig.launcherVersion;
                         string message = iqnoredLauncherUpdate ? "Update for launcher is available but user iqnored update" : "Update for launcher is not available";
-                        LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {version})");
+                        LogInfo(LogSource.UpdateChecker, $"{message} (latest version: {appState.RemoteConfig.launcherVersion})");
                     }
 
                     if (ShouldUpdateGame(newRemoteConfig) && newRemoteConfig.channels.Count > 0)
@@ -123,7 +123,7 @@ namespace launcher.Services
             }
         }
 
-        private static async Task<List<GithubItems>> GetGithubConfigAsync()
+        /*private static async Task<List<GithubItems>> GetGithubConfigAsync()
         {
             HttpResponseMessage response = null;
             try
@@ -146,38 +146,14 @@ namespace launcher.Services
             {
                 response?.Dispose();
             }
-        }
+        }*/
 
-        private static bool IsNewVersion(string version, string newVersion)
-        {
-            if (((string)SettingsService.Get(SettingsService.Vars.Launcher_Version)).Contains("nightly"))
-            {
-                return true;
-            }
-
-            var currentParts = version.Split('.').Select(int.Parse).ToArray();
-            var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
-
-            for (int i = 0; i < Math.Max(currentParts.Length, newParts.Length); i++)
-            {
-                int currentPart = i < currentParts.Length ? currentParts[i] : 0;
-                int newPart = i < newParts.Length ? newParts[i] : 0;
-
-                if (currentPart < newPart)
-                    return true;
-                if (currentPart > newPart)
-                    return false;
-            }
-
-            return false;
-        }
-
-        private static bool IsNewNightlyVersion(string version, List<GithubItems> newGithubConfig)
+        /*private static bool IsNewNightlyVersion(string version, List<GithubItems> newGithubConfig)
         {
             return GetLatestNightlyTag(newGithubConfig) != version;
-        }
+        }*/
 
-        private static string GetLatestNightlyTag(List<GithubItems> newGithubConfig)
+        /*private static string GetLatestNightlyTag(List<GithubItems> newGithubConfig)
         {
             if (newGithubConfig.Count > 0)
             {
@@ -185,11 +161,11 @@ namespace launcher.Services
             }
 
             return "";
-        }
+        }*/
 
-        private static bool ShouldUpdateLauncher(RemoteConfig newRemoteConfig, List<GithubItems> newGithubConfig)
+        private static bool ShouldUpdateLauncherUI()
         {
-            if ((bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds))
+            /*if ((bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds))
             {
                 newGithubConfig = newGithubConfig.Where(release => release.prerelease && release.tag_name.StartsWith("nightly")).ToList();
 
@@ -225,14 +201,14 @@ namespace launcher.Services
                 }
 
                 return false;
-            }
+            }*/
 
-            if (!iqnoredLauncherUpdate && !appState.IsInstalling && newRemoteConfig.allowUpdates && IsNewVersion(Launcher.VERSION, newRemoteConfig.launcherVersion))
+            if (!iqnoredLauncherUpdate && !appState.IsInstalling && appState.RemoteConfig.allowUpdates && IsNewVersion(Launcher.VERSION, appState.RemoteConfig.launcherVersion))
             {
                 appDispatcher.BeginInvoke(() =>
                 {
-                    string postUpdateMessage = newRemoteConfig.forceUpdates ? "This update is required." : "Would you like to update now?";
-                    LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {newRemoteConfig.launcherVersion}", newRemoteConfig);
+                    string postUpdateMessage = appState.RemoteConfig.forceUpdates ? "This update is required." : "Would you like to update now?";
+                    LauncherUpdate_Control.SetUpdateText($"A new version of the launcher is available. {postUpdateMessage}\n\nCurrent Version: {Launcher.VERSION}\nNew Version: {appState.RemoteConfig.launcherVersion}", appState.RemoteConfig);
                     ShowLauncherUpdatePopup();
                 });
 
@@ -254,18 +230,10 @@ namespace launcher.Services
 
                 if (wantsToUpdate == true)
                 {
-                    SettingsService.Set(SettingsService.Vars.Launcher_Version, newRemoteConfig.launcherVersion);
+                    SettingsService.Set(SettingsService.Vars.Launcher_Version, appState.RemoteConfig.launcherVersion);
                     return true;
                 }
             }
-
-            return false;
-        }
-
-        public static bool ShouldForceUpdateLauncher()
-        {
-            if (appState.RemoteConfig.forceUpdates && IsNewVersion(Launcher.VERSION, appState.RemoteConfig.launcherVersion))
-                return true;
 
             return false;
         }
@@ -299,35 +267,42 @@ namespace launcher.Services
             return true;
         }
 
-        public static void HandleLauncherUpdate()
+        public static bool ShouldUpdateLauncher()
         {
-            LogInfo(LogSource.UpdateChecker, "Updating launcher...");
-            UpdateLauncher();
+            if (appState.RemoteConfig.forceUpdates && IsNewVersion(Launcher.VERSION, appState.RemoteConfig.launcherVersion))
+                return true;
+
+            return false;
         }
 
-        private static void UpdateLauncher()
+        private static bool IsNewVersion(string version, string newVersion)
         {
-            if (!File.Exists($"{Launcher.PATH}\\launcher_data\\updater.exe"))
+            if (((string)SettingsService.Get(SettingsService.Vars.Launcher_Version)).Contains("nightly"))
             {
-                LogError(LogSource.UpdateChecker, "Self updater not found");
-                return;
+                return true;
             }
 
-            string extraArgs = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? " -nightly" : "";
+            var currentParts = version.Split('.').Select(int.Parse).ToArray();
+            var newParts = newVersion.Split('.').Select(int.Parse).ToArray();
 
-            var startInfo = new ProcessStartInfo
+            for (int i = 0; i < Math.Max(currentParts.Length, newParts.Length); i++)
             {
-                FileName = "cmd.exe",
-                Arguments = $"/c start \"\" \"{Launcher.PATH}\\launcher_data\\updater.exe\"{extraArgs}"
-            };
+                int currentPart = i < currentParts.Length ? currentParts[i] : 0;
+                int newPart = i < newParts.Length ? newParts[i] : 0;
 
-            Process.Start(startInfo);
+                if (currentPart < newPart)
+                    return true;
+                if (currentPart > newPart)
+                    return false;
+            }
 
-            Environment.Exit(0);
+            return false;
         }
 
-        public async static Task ForceUpdateLauncher()
+        public async static Task UpdateLauncher()
         {
+            LogInfo(LogSource.UpdateChecker, "Updating launcher...");
+
             await Task.Delay(1000);
 
             if (!File.Exists($"{Launcher.PATH}\\launcher_data\\updater.exe"))

@@ -34,10 +34,10 @@ namespace launcher.Core
             PreLoad_Window.SetLoadingText("Setting up app");
             await Task.Run(() => Launcher.Init());
 
-            if (UpdateService.ShouldForceUpdateLauncher())
+            if (UpdateService.ShouldUpdateLauncher())
             {
                 PreLoad_Window.SetLoadingText("Updating Launcher...");
-                await UpdateService.ForceUpdateLauncher();
+                await UpdateService.UpdateLauncher();
                 return;
             }
 

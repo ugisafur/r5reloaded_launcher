@@ -9,7 +9,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.3.0";
+        public const string VERSION = "1.3.1";
 
         #region Settings
 
@@ -36,10 +36,10 @@ namespace launcher
 
         public static void Init()
         {
-            string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : VERSION;
-            appDispatcher.Invoke(() => Version_Label.Text = version);
+            //string version = (bool)SettingsService.Get(SettingsService.Vars.Nightly_Builds) ? (string)SettingsService.Get(SettingsService.Vars.Launcher_Version) : VERSION;
+            appDispatcher.Invoke(() => Version_Label.Text = VERSION);
 
-            LogInfo(LogSource.Launcher, $"Launcher Version: {version}");
+            LogInfo(LogSource.Launcher, $"Launcher Version: {VERSION}");
 
             PATH = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
             LogInfo(LogSource.Launcher, $"Launcher path: {PATH}");
