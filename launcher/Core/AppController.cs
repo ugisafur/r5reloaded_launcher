@@ -36,6 +36,9 @@ namespace launcher.Core
             PreLoad_Window.SetLoadingText("Setting up app");
             await Task.Run(() => Launcher.Init());
 
+            if (!File.Exists(Path.Combine(Launcher.PATH, "force_update_launcher.bat")))
+                await File.WriteAllTextAsync(Path.Combine(Launcher.PATH, "force_update_launcher.bat"), "start ./launcher_data/updater.exe");
+
             if ((bool)SettingsService.Get(SettingsService.Vars.Enable_Discord_Rich_Presence))
             {
                 PreLoad_Window.SetLoadingText("Setting up Discord RPC");

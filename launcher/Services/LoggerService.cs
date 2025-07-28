@@ -59,7 +59,11 @@ namespace launcher.Services
         {
             var sb = new StringBuilder();
             sb.AppendLine("===========================================");
-            sb.AppendLine("=== CRASH LOG =============================");
+            sb.AppendLine($"=== Launcher Version: " + Launcher.VERSION);
+            sb.AppendLine("===========================================");
+            sb.AppendLine();
+            sb.AppendLine("===========================================");
+            sb.AppendLine("=== CRASH LOG");
             sb.AppendLine("===========================================");
             sb.AppendLine($"Date: {DateTime.Now}");
             sb.AppendLine($"Message: {ex.Message}");
