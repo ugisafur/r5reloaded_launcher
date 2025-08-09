@@ -63,14 +63,11 @@ namespace launcher.Game
 
         private static async Task<string> DownloadFileAsync(ManifestEntry file, bool checkForExistingFiles = false)
         {
-            // ✅ For multi-part files, we skip the semaphore here and let each part get one.
             if (file.parts.Count > 0)
             {
-                // This is now an orchestrator task.
                 return await DownloadFileInPartsAsync(file, checkForExistingFiles);
             }
 
-            // For single files, the logic remains the same: acquire a semaphore and download.
             await GetSemaphoreSlim().WaitAsync();
             try
             {
@@ -197,14 +194,12 @@ namespace launcher.Game
             await GetSemaphoreSlim().WaitAsync();
             try
             {
-                // Each part gets its own retry policy.
-                var retryPolicy = CreateRetryPolicy(parentFile, 15); // Pass parent file for logging context.
+                var retryPolicy = CreateRetryPolicy(parentFile, 15);
                 await retryPolicy.ExecuteAsync(() => DownloadMultiStreamAsync(partUrl, partPath, parentFile));
             }
             catch (Exception ex)
             {
                 LogException($"Failed to download part {part.path}: {ex.Message}", LogSource.Download, ex);
-                // Re-throw to fail the Task.WhenAll in the caller.
                 throw;
             }
             finally
@@ -218,7 +213,6 @@ namespace launcher.Game
             string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             string gameUrl = ReleaseChannelService.GetGameURL();
 
-            // ✅ Each part is now mapped to its own concurrent download task.
             var downloadTasks = file.parts.Select(async part =>
             {
                 string partPath = Path.Combine(releaseChannelDirectory, part.path);
@@ -310,13 +304,13 @@ namespace launcher.Game
             DateTime speedCheckStart = DateTime.Now;
             var metadata = file.downloadContext;
 
-            using var throttledStream = new ThrottledStream(responseStream);
+            //using var throttledStream = new StreamReader(responseStream);
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             byte[] buffer = new byte[8192]; // Using a slightly larger buffer (e.g., 8KB) can be more efficient.
             int bytesRead;
 
-            while ((bytesRead = await throttledStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
                 await fileStream.WriteAsync(buffer, 0, bytesRead);
 
