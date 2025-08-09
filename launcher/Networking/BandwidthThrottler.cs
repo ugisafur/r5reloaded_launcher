@@ -17,7 +17,7 @@
             _maxBytesPerSecond = initialMaxBytesPerSecond > 0 ? initialMaxBytesPerSecond : long.MaxValue;
             _availableBytes = _maxBytesPerSecond;
 
-            _timer = new Timer(ReplenishTokens, null, 1000, 1000);
+            _timer = new Timer(ReplenishTokens, null, 100, 100);
         }
 
         private void ReplenishTokens(object state)
@@ -27,7 +27,8 @@
             {
                 if (_maxBytesPerSecond > 0)
                 {
-                    _availableBytes = _maxBytesPerSecond;
+                    long newBytes = _availableBytes + (_maxBytesPerSecond / 10);
+                    _availableBytes = Math.Min(newBytes, _maxBytesPerSecond);
                 }
             }
             finally

@@ -17,7 +17,7 @@ namespace launcher.Game
     {
         private static readonly HttpClient httpClient = new HttpClient()
         {
-            Timeout = TimeSpan.FromSeconds(10)
+            Timeout = TimeSpan.FromMinutes(5)
         };
 
         public static List<Task<string>> InitializeDownloadTasks(GameManifest GameManifest, string releaseChannelDirectory)
