@@ -34,7 +34,7 @@ Welcome to the **R5Reloaded Launcher**, a powerful and efficient tool designed t
 ## Installation
 
 1. **Download the Launcher**:
-   - Download the latest release from [Here]([https://github.com/AyeZeeBB/r5reloaded_launcher/releases/latest](http://cdn.r5r.org/launcher/R5RLauncher-Setup.exe)).
+   - Download the latest release from [Here](http://cdn.r5r.org/launcher/R5RLauncher-Setup.exe).
 
 2. **Install the Launcher**:
    - Run the installer and follow the on-screen instructions.
