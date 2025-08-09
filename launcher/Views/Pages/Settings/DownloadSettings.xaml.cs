@@ -1,4 +1,5 @@
-﻿using launcher.Services;
+﻿using launcher.Networking;
+using launcher.Services;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,7 +50,10 @@ namespace launcher
             if (e.Key == Key.Enter)
             {
                 if (((int)SettingsService.Get(SettingsService.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
+                {
                     SettingsService.Set(SettingsService.Vars.Download_Speed_Limit, MaxSpeed.Text);
+                    DownloadService.ConfigureConcurrency();
+                }
             }
         }
 
@@ -73,13 +77,19 @@ namespace launcher
         private void MaxSpeed_LostFocus(object sender, RoutedEventArgs e)
         {
             if (((int)SettingsService.Get(SettingsService.Vars.Download_Speed_Limit)).ToString() != MaxSpeed.Text)
+            {
                 SettingsService.Set(SettingsService.Vars.Download_Speed_Limit, MaxSpeed.Text);
+                DownloadService.ConfigureConcurrency();
+            }
         }
 
         private void ConDownloads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if ((int)SettingsService.Get(SettingsService.Vars.Concurrent_Downloads) != DownloadSpeeds[ConDownloads.SelectedIndex])
+            {
                 SettingsService.Set(SettingsService.Vars.Concurrent_Downloads, DownloadSpeeds[ConDownloads.SelectedIndex]);
+                DownloadService.ConfigureConcurrency();
+            }
         }
     }
 }

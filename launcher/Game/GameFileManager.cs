@@ -15,10 +15,7 @@ namespace launcher.Game
 {
     public static class GameFileManager
     {
-        private static readonly HttpClient httpClient = new HttpClient()
-        {
-            Timeout = TimeSpan.FromMinutes(5)
-        };
+        private static readonly HttpClient httpClient = Networking.HttpClientFactory.CreateClient();
 
         public static List<Task<string>> InitializeDownloadTasks(GameManifest GameManifest, string releaseChannelDirectory)
         {
@@ -304,10 +301,10 @@ namespace launcher.Game
             DateTime speedCheckStart = DateTime.Now;
             var metadata = file.downloadContext;
 
-            //using var throttledStream = new StreamReader(responseStream);
+            //using var throttledStream = new ThrottledStream(responseStream, Throttler);
             using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
-            byte[] buffer = new byte[8192]; // Using a slightly larger buffer (e.g., 8KB) can be more efficient.
+            byte[] buffer = new byte[8192];
             int bytesRead;
 
             while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)

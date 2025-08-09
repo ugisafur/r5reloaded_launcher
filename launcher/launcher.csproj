@@ -18,6 +18,7 @@
     <None Remove="Assets\launcher_bg_kc.mp4" />
     <None Remove="Assets\launcher_bg_shadow.mp4" />
     <None Remove="Assets\launcher_bg_we.mp4" />
+    <None Remove="Assets\Loba_splash.png" />
     <None Remove="Assets\news_default_bg.jpg" />
     <None Remove="Assets\new_preload.png" />
     <None Remove="Assets\NunitoSans-VariableFont.ttf" />
@@ -35,6 +36,7 @@
     <PackageReference Include="Backtrace" Version="2.1.11" />
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PixiEditor.ColorPicker" Version="3.4.2" />
     <PackageReference Include="Polly" Version="8.5.2" />
@@ -89,6 +91,9 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <Page Include="App.xaml" />
     <Resource Include="Assets\launcher_bg.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Loba_splash.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\news_default_bg.jpg">

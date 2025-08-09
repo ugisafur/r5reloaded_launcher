@@ -12,14 +12,19 @@
             <Grid.Clip>
                 <RectangleGeometry x:Name="WindowClip" Rect="0,0,592,342" RadiusX="8" RadiusY="8" />
             </Grid.Clip>
-            <Image x:Name="PreloadBG" Source="/assets/new_preload.png" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
+            <Image x:Name="PreloadBG" Source="/Assets/Loba_splash.png" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill" />
             <Rectangle Fill="#33000000" Margin="0,0,0,0" />
-            <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="28,113,221,117">
+            <Image Source="{DynamicResource logo_main_whiteDrawingImage}" Margin="-11,-5,398,285" Opacity="0">
                 <Image.RenderTransform>
                     <TranslateTransform X="20" Y="15" />
                 </Image.RenderTransform>
             </Image>
-            <TextBlock x:Name="LoadingText" Text="Loading..." Foreground="{DynamicResource ThemePrimaryText}" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="20" TextAlignment="Right" Margin="0,0,5,5" />
+            <TextBlock x:Name="LoadingText1" Text="Loading..." Foreground="#FFFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="20" TextAlignment="Right" Margin="0,0,5,5" />
+            <TextBlock x:Name="LoadingText2" Text="Loading..." Foreground="#B2FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="18" TextAlignment="Right" Margin="0,0,5,30" />
+            <TextBlock x:Name="LoadingText3" Text="Loading..." Foreground="#99FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="16" TextAlignment="Right" Margin="0,0,5,50" />
+            <TextBlock x:Name="LoadingText4" Text="Loading..." Foreground="#7FFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="14" TextAlignment="Right" Margin="0,0,5,70" />
+            <TextBlock x:Name="LoadingText5" Text="Loading..." Foreground="#66FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="12" TextAlignment="Right" Margin="0,0,5,85" />
+            <TextBlock x:Name="LoadingText6" Text="Loading..." Foreground="#4CFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="10" TextAlignment="Right" Margin="0,0,5,100" />
         </Grid>
     </Border>
 </Window>
