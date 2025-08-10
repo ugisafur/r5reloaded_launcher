@@ -460,11 +460,6 @@ namespace launcher
             Menu_Popup.IsOpen = true;
         }
 
-        private void DownloadsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Downloads_Popup.IsOpen = true;
-        }
-
         private void StatusPopup_Unloaded(object sender, EventArgs e)
         {
             Status_Button.IsEnabled = true;
@@ -493,16 +488,6 @@ namespace launcher
         private void GameSettings_Popup_Closed(object sender, EventArgs e)
         {
             GameSettings_Button.IsEnabled = true;
-        }
-
-        private void DownloadsPopup_Unloaded(object sender, EventArgs e)
-        {
-            Downloads_Button.IsEnabled = true;
-        }
-
-        private void DownloadsPopup_Loaded(object sender, EventArgs e)
-        {
-            Downloads_Button.IsEnabled = false;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

@@ -1,15 +1,16 @@
-﻿using launcher.Services;
+﻿using launcher.Core;
+using launcher.GameLifecycle.Models;
+using launcher.Networking;
+using launcher.Services;
 using Polly;
 using Polly.Retry;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
-using static launcher.Networking.DownloadService;
 using static launcher.Core.AppContext;
+using static launcher.Networking.DownloadService;
 using static launcher.Services.LoggerService;
-using launcher.Networking;
-using launcher.GameLifecycle.Models;
 
 namespace launcher.Game
 {
@@ -68,7 +69,7 @@ namespace launcher.Game
             await GetSemaphoreSlim().WaitAsync();
             try
             {
-                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
+                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => AppController._uiService.AddDownloadItem(file));
 
                 bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.path, file.checksum);
                 if (isSkipped)
@@ -92,7 +93,7 @@ namespace launcher.Game
             {
                 GetSemaphoreSlim().Release();
                 if (file.downloadContext.downloadItem != null)
-                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadContext.downloadItem));
+                    await appDispatcher.InvokeAsync(() => AppController._uiService.RemoveDownloadItem(file.downloadContext.downloadItem));
             }
         }
 
@@ -164,7 +165,7 @@ namespace launcher.Game
         {
             try
             {
-                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => Downloads_Control.AddDownloadItem(file));
+                file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => AppController._uiService.AddDownloadItem(file));
                 file.downloadContext.downloadProgress.totalBytes = file.size;
 
                 await DownloadMissingPartsAsync(file, checkForExistingFiles);
@@ -182,7 +183,7 @@ namespace launcher.Game
             finally
             {
                 if (file.downloadContext.downloadItem != null)
-                    await appDispatcher.InvokeAsync(() => Downloads_Control.RemoveDownloadItem(file.downloadContext.downloadItem));
+                    await appDispatcher.InvokeAsync(() => AppController._uiService.RemoveDownloadItem(file.downloadContext.downloadItem));
             }
         }
 
@@ -384,6 +385,9 @@ namespace launcher.Game
                 GameSettings_Control.OpenDir_Button.IsEnabled = areGameOptionsEnabled;
                 GameSettings_Control.AdvancedMenu_Button.IsEnabled = areGameOptionsEnabled;
 
+                NewsContainer.Visibility = isInstalling ? Visibility.Hidden : Visibility.Visible;
+                DownloadsContainer.Visibility = isInstalling ? Visibility.Visible : Visibility.Hidden;
+
                 // --- Update Other Components ---
                 Settings_Control.gameInstalls.UpdateGameItems();
             });
@@ -419,11 +423,9 @@ namespace launcher.Game
             {
                 // --- Set Visibility ---
                 Speed_Label.Visibility = isMainSpeedVisible ? Visibility.Visible : Visibility.Hidden;
-                Downloads_Control.Speed_Label.Visibility = isDownloadSpeedVisible ? Visibility.Visible : Visibility.Hidden;
 
                 // --- Clear Text ---
                 Speed_Label.Text = "";
-                Downloads_Control.Speed_Label.Text = "";
                 Main_Window.TimeLeft_Label.Text = "";
             });
         }

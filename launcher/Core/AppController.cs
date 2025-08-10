@@ -16,7 +16,7 @@ namespace launcher.Core
     {
         private static ProcessService _processService = new ProcessService();
         private static FileSystemService _fileSystemService = new FileSystemService();
-        private static UIService _uiService = new UIService();
+        public static UIService _uiService = new UIService();
         private static NotificationService _notificationService = new NotificationService();
 
         #region Setup Functions

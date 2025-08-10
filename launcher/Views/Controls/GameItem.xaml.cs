@@ -287,7 +287,6 @@ namespace launcher
         {
             if (appState.IsInstalling) return;
             ReleaseChannel_Combobox.SelectedIndex = Index;
-            Downloads_Popup.IsOpen = true;
             Task.Run(action);
         }
 

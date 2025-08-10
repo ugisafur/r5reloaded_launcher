@@ -117,7 +117,7 @@
                                     <Button Style="{DynamicResource UpdateButtonStyle}" Visibility="Hidden" x:Name="Update_Button" Content="UPDATE AVAILABLE" FontSize="18" Background="{DynamicResource ThemeUpdateButtonBackground}" Foreground="{DynamicResource ThemePrimaryText}" BorderBrush="{DynamicResource ThemeUpdateButtonBackground}" Click="btnUpdate_Click" Margin="0,157,0,60" RenderTransformOrigin="0.044,0.488" FontFamily="{StaticResource SansationBold}" HorizontalAlignment="Left" Width="298" Cursor="Hand" />
                                 </Grid>
                             </Grid>
-                            <Grid Grid.Column="2" x:Name="NewsContainer">
+                            <Grid Grid.Column="2" x:Name="NewsContainer" Visibility="Visible">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="80" />
                                     <RowDefinition Height="1*" />
@@ -158,6 +158,24 @@
                                     </Rectangle>
                                 </Grid>
                             </Grid>
+
+                            <Grid Grid.Column="2" x:Name="DownloadsContainer" Visibility="Hidden">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="0,0,90,0">
+                                    <TextBlock FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationLight}" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" Text="  File Path" />
+                                    <TextBlock FontSize="12" Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationLight}" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" FontWeight="Medium" Text="Downloaded Size / Total Size " />
+                                    <Border BorderThickness="0" Grid.Row="0" Grid.ColumnSpan="2" CornerRadius="2,2,2,2" Margin="0,15,0,0" BorderBrush="{DynamicResource ThemeSeperator}" Background="{DynamicResource ThemeSeperator}"/>
+                                </Grid>
+                                <Grid Grid.Row="1" Margin="0,5,90,0">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{DynamicResource VertScrollViewerStyle}">
+                                        <StackPanel x:Name="DownloadsStackPanel" Orientation="Vertical">
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid Grid.Row="3" Margin="0,6,0,0">
                             <TextBlock x:Name="Version_Label" Text="" Foreground="{DynamicResource ThemeSecondaryText}" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16" Margin="8,0,0,0" />
@@ -190,12 +208,10 @@
                     <Rectangle Fill="{DynamicResource ThemePrimary}" MouseLeftButtonDown="DragBar_MouseLeftButtonDown" Height="58.6153846153845" />
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="101" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="197" />
-                            <ColumnDefinition Width="279" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="10*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" HorizontalAlignment="Left" Width="97">
+                        <Grid Grid.Column="0" HorizontalAlignment="Left">
                             <Button x:Name="Menu_Button" Style="{DynamicResource StatusBtnStyle}" Background="Transparent" Width="92" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Foreground="{DynamicResource ThemePrimaryText}" Click="SubMenuBtn_Click" Cursor="Hand" Margin="5,0,0,0">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent" Height="50">
                                     <Image Source="{DynamicResource logo}" VerticalAlignment="Center" Width="45" Height="45">
@@ -214,21 +230,12 @@
                                 <local:Popup_Menu x:Name="Menu_Control" />
                             </Popup>
                         </Grid>
-                        <Grid Grid.Column="1">
-                        </Grid>
-                        <Grid Grid.Column="2" HorizontalAlignment="Center" Width="194">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="     R5R STATUS" FontSize="18" Background="Transparent" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" BorderBrush="Transparent" Margin="32,10,18,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="StatusBtn_Click" Cursor="Hand" />
-                            <Path IsHitTestVisible="False" Data="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" Fill="{DynamicResource ThemeSecondaryAltText}" Margin="40,20,136,20" Stretch="Uniform" />
-                            <Rectangle Fill="{DynamicResource ThemeSeperator}" Width="2" HorizontalAlignment="Right"  IsHitTestVisible="False" Margin="0,10,7,10" />
+                        <Grid Grid.Column="1" HorizontalAlignment="Right">
+                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Status_Button" Content="     R5R STATUS" FontSize="18" Background="Transparent" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" BorderBrush="Transparent" Margin="-69,10,119,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="StatusBtn_Click" Cursor="Hand" />
+                            <Path IsHitTestVisible="False" Data="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" Fill="{DynamicResource ThemeSecondaryAltText}" Margin="-61,20,237,20" Stretch="Uniform" />
+                            <Rectangle Fill="{DynamicResource ThemeSeperator}" Width="2" HorizontalAlignment="Left"  IsHitTestVisible="False" Margin="132,10,0,10" />
                             <Popup x:Name="Status_Popup" PlacementTarget="{Binding ElementName=Status_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="155" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="StatusPopup_Loaded" Closed="StatusPopup_Unloaded">
                                 <local:Popup_Services x:Name="Status_Control" />
-                            </Popup>
-                        </Grid>
-                        <Grid Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Right" Width="238">
-                            <Button Style="{DynamicResource StatusBtnStyle}" x:Name="Downloads_Button" Content="     DOWNLOADS" FontSize="18" Background="Transparent" FontFamily="{StaticResource SansationBold}" FontWeight="Bold" BorderBrush="Transparent" Margin="-40,10,119,10" Foreground="{DynamicResource ThemeSecondaryAltText}" Click="DownloadsBtn_Click" Cursor="Hand" />
-                            <Path IsHitTestVisible="False" Data="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" Fill="{DynamicResource ThemeSecondaryAltText}" Margin="-35,21,251,21" Stretch="Uniform" />
-                            <Popup x:Name="Downloads_Popup" PlacementTarget="{Binding ElementName=Downloads_Button}" Placement="Left" VerticalOffset="55" HorizontalOffset="135" AllowsTransparency="True" PopupAnimation="Fade" StaysOpen="False" Opened="DownloadsPopup_Loaded" Closed="DownloadsPopup_Unloaded">
-                                <local:Popup_Tasks x:Name="Downloads_Control" />
                             </Popup>
                             <Button x:Name="Close_Button" Style="{DynamicResource StatusBtnStyle}" Content="X" FontFamily="{StaticResource SansationBold}" FontSize="18" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Click="btnClose_Click" Width="40" Height="40" Cursor="Hand" Margin="188,9,10,10" />
                             <Button x:Name="Minimize_Button" Style="{DynamicResource StatusBtnStyle}" Content="-" FontFamily="{StaticResource SansationBold}" FontSize="25" Background="Transparent" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="Transparent" Click="btnMinimize_Click" Width="40" Height="40" Cursor="Hand" Margin="142,9,56,10" />

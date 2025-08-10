@@ -1,3 +1,4 @@
+using launcher.GameLifecycle.Models;
 using launcher.Services;
 using System.Windows;
 using System.Windows.Media.Animation;
@@ -7,6 +8,8 @@ namespace launcher.Core.Services
 {
     public class UIService
     {
+        private List<DownloadItem> downloadItems = [];
+
         public void ToggleControlVisibility(FrameworkElement control, bool show, Action<bool> setMenuState)
         {
             setMenuState(show);
@@ -15,7 +18,6 @@ namespace launcher.Core.Services
             {
                 control.Visibility = show ? Visibility.Visible : Visibility.Hidden;
                 Menu_Control.Settings.IsEnabled = !show;
-                Downloads_Control.gotoDownloads.IsEnabled = !show;
                 DragBarDropShadow.Visibility = show ? Visibility.Visible : Visibility.Hidden;
                 return;
             }
@@ -46,7 +48,6 @@ namespace launcher.Core.Services
             };
             transitionInStoryboard.Begin();
             Menu_Control.Settings.IsEnabled = !show;
-            Downloads_Control.gotoDownloads.IsEnabled = !show;
         }
 
         public void ShowSettingsControl()
@@ -235,6 +236,29 @@ namespace launcher.Core.Services
             Main_Window.ResizeMode = ResizeMode.CanResize;
 
             OnBoard_Control.SetItem(0);
+        }
+
+        public DownloadItem AddDownloadItem(ManifestEntry file)
+        {
+            DownloadItem downloadItem = new();
+            downloadItem.downloadFileName.Text = file.path;
+            downloadItem.downloadFilePercent.Text = "waiting...";
+            downloadItem.downloadFileProgress.Value = 0;
+            downloadItems.Add(downloadItem);
+            DownloadsStackPanel.Children.Add(downloadItem);
+            return downloadItem;
+        }
+
+        public void RemoveDownloadItem(DownloadItem downloadItem)
+        {
+            downloadItems.Remove(downloadItem);
+            DownloadsStackPanel.Children.Remove(downloadItem);
+        }
+
+        public void RemoveAllDownloadItems()
+        {
+            downloadItems.Clear();
+            DownloadsStackPanel.Children.Clear();
         }
     }
 } 

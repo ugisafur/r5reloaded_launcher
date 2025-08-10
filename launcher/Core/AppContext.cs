@@ -54,7 +54,6 @@ namespace launcher.Core
         public static Button Play_Button = new();
         public static Button Update_Button = new();
         public static Button Status_Button = new();
-        public static Button Downloads_Button = new();
 
         #endregion Buttons
 
@@ -62,14 +61,12 @@ namespace launcher.Core
 
         public static Popup Menu_Popup = new();
         public static Popup GameSettings_Popup = new();
-        public static Popup Downloads_Popup = new();
 
         #endregion Popups
 
         #region Popup Controls
 
         public static Popup_Game_Menu GameSettings_Control = new();
-        public static Popup_Tasks Downloads_Control = new();
         public static Popup_Services Status_Control = new();
         public static Popup_Menu Menu_Control = new();
         public static Popup_EULA EULA_Control = new();
@@ -96,6 +93,9 @@ namespace launcher.Core
         public static RectangleGeometry OnBoardingClip = new();
         public static Rectangle DragBarDropShadow = new();
         public static ThemeEditor themeEditor = null;
+        public static StackPanel DownloadsStackPanel = new();
+        public static Grid DownloadsContainer = new();
+        public static Grid NewsContainer = new();
 
         public static PlaylistFile playlistRoot = new();
         public static List<string> gamemodes = [];
@@ -124,14 +124,11 @@ namespace launcher.Core
             Transition_Rect = mainWindow.Transition_Rect;
             Menu_Popup = mainWindow.Menu_Popup;
             GameSettings_Popup = mainWindow.GameSettings_Popup;
-            Downloads_Control = mainWindow.Downloads_Control;
             Status_Control = mainWindow.Status_Control;
             Update_Button = mainWindow.Update_Button;
             System_Tray = mainWindow.System_Tray;
             Status_Button = mainWindow.Status_Button;
-            Downloads_Button = mainWindow.Downloads_Button;
             GameSettings_Control = mainWindow.GameSettings_Control;
-            Downloads_Popup = mainWindow.Downloads_Popup;
             Background_Video = mainWindow.Background_Video;
             Background_Image = mainWindow.Background_Image;
             EULA_Control = mainWindow.EULA_Control;
@@ -148,6 +145,9 @@ namespace launcher.Core
             ReadMore_Label = mainWindow.ReadMore_Label;
             DragBarDropShadow = mainWindow.DragBarDropShadow;
             Percent_Label = mainWindow.Percent_Label;
+            DownloadsStackPanel = mainWindow.DownloadsStackPanel;
+            DownloadsContainer = mainWindow.DownloadsContainer;
+            NewsContainer = mainWindow.NewsContainer;
 
             SetInitialControlVisibility();
         }

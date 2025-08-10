@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:launcher"
              mc:Ignorable="d"
-             d:DesignHeight="40" d:DesignWidth="547">
+             d:DesignHeight="34" d:DesignWidth="547">
 
-    <Border Background="{DynamicResource ThemeSecondaryAlt}" BorderThickness="0" Height="40">
+    <Border Background="Transparent" BorderThickness="0" Height="34">
         <Grid>
-            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource SansationLight}" Margin="6,4,135,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
-            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationLight}" Margin="0,5,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" />
-            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Height="8" Margin="6,12,5,2" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemePrimary}" Background="{DynamicResource ThemePrimary}" HorizontalAlignment="Stretch" />
+            <ProgressBar x:Name="downloadFileProgress" Style="{StaticResource installProgress}" Value="50" Maximum="100" Foreground="{DynamicResource ThemeSecondaryAltText}" BorderBrush="{DynamicResource ThemePrimary}" Background="{DynamicResource ThemePrimary}" Margin="0,2,0,2" />
+            <TextBlock x:Name="downloadFileName" Text="File Name Here" Foreground="{DynamicResource ThemePrimaryText}" FontSize="14" FontFamily="{StaticResource SansationLight}" Margin="6,0,135,0" Height="16" VerticalAlignment="Center" />
+            <TextBlock x:Name="downloadFilePercent" Text="waiting..." Foreground="{DynamicResource ThemePrimaryText}" FontFamily="{StaticResource SansationLight}" Margin="412,0,5,0" Height="15" Width="130" TextAlignment="Right" VerticalAlignment="Center" HorizontalAlignment="Right" />
         </Grid>
     </Border>
 </UserControl>

@@ -98,7 +98,6 @@ namespace launcher.Networking
             appDispatcher.Invoke(() =>
             {
                 Speed_Label.Text = $"{speedText}";
-                Downloads_Control.Speed_Label.Text = $"{TimeLeftText}  |  {DownloadedText}/{TotalText}  |  {speedText}";
             });
         }
 
@@ -124,11 +123,8 @@ namespace launcher.Networking
 
             appDispatcher.Invoke(() =>
             {
-                if (Speed_Label != null && Downloads_Control != null)
-                {
+                if (Speed_Label != null)
                     Speed_Label.Text = "0.00 KB/s";
-                    Downloads_Control.Speed_Label.Text = "";
-                }
             });
         }
 

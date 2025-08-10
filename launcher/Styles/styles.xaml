@@ -284,6 +284,43 @@
         </Setter>
     </Style>
 
+    <Style x:Key="VertScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <ScrollContentPresenter Grid.Column="0" Grid.Row="0" CanContentScroll="True" CanHorizontallyScroll="False" CanVerticallyScroll="False"/>
+
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                               Grid.Column="1" Grid.Row="0"
+                               Value="{TemplateBinding VerticalOffset}"
+                               Maximum="{TemplateBinding ScrollableHeight}"
+                               ViewportSize="{TemplateBinding ViewportHeight}"
+                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                               Style="{StaticResource VerticalScrollBarStyle}"/>
+                        <ScrollBar x:Name="PART_HorizontalScrollBar"
+                               Grid.Column="0" Grid.Row="1"
+                               Orientation="Horizontal"
+                               Value="{TemplateBinding HorizontalOffset}"
+                               Maximum="{TemplateBinding ScrollableWidth}"
+                               ViewportSize="{TemplateBinding ViewportWidth}"
+                               Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                               Style="{StaticResource VerticalScrollBarStyle}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="HorizontalScrollBarStyle" TargetType="ScrollBar">
         <Setter Property="Orientation" Value="Horizontal" />
         <Setter Property="Height" Value="12" />
