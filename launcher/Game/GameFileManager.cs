@@ -131,7 +131,7 @@ namespace launcher.Game
                 .WaitAndRetryAsync(
                     retryCount: maxRetryAttempts,
                     sleepDurationProvider: retryAttempt =>
-                        TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(random.Next(0, 500)),
+                        TimeSpan.FromSeconds(3),
 
                     onRetryAsync: async (exception, calculatedDelay, retryNumber, context) =>
                     {
@@ -192,7 +192,7 @@ namespace launcher.Game
             await GetSemaphoreSlim().WaitAsync();
             try
             {
-                var retryPolicy = CreateRetryPolicy(parentFile, 15);
+                var retryPolicy = CreateRetryPolicy(parentFile, 50);
                 await retryPolicy.ExecuteAsync(() => DownloadMultiStreamAsync(partUrl, partPath, parentFile));
             }
             catch (Exception ex)
@@ -339,12 +339,20 @@ namespace launcher.Game
                     }
                 }
 
-                // --- Stall Detection (Checked every 5 seconds) ---
-                if ((DateTime.Now - speedCheckStart).TotalSeconds >= 5)
+                // --- Speed & Stall Detection (Checked every 5 seconds) ---
+
+                const long MinSpeedInBytesPerSecond = 500 * 1024;
+
+                if ((DateTime.Now - speedCheckStart).TotalSeconds >= 15)
                 {
-                    long delta = metadata.downloadProgress.downloadedBytes - bytesAtStart;
-                    if (delta == 0)
-                        throw new TimeoutException("Download stalled (no data received for 5s).");
+                    double elapsedSeconds = (DateTime.Now - speedCheckStart).TotalSeconds;
+                    long deltaBytes = metadata.downloadProgress.downloadedBytes - bytesAtStart;
+                    double speed = deltaBytes / elapsedSeconds;
+
+                    if (speed < MinSpeedInBytesPerSecond)
+                    {
+                        throw new TimeoutException($"Download speed is too slow ({speed / 1024:F0} KB/s).");
+                    }
 
                     bytesAtStart = metadata.downloadProgress.downloadedBytes;
                     speedCheckStart = DateTime.Now;
