@@ -206,7 +206,7 @@ namespace launcher.Game
             }
         }
 
-        private static Task DownloadMissingPartsAsync(ManifestEntry file, bool checkForExistingFiles)
+        private static async Task DownloadMissingPartsAsync(ManifestEntry file, bool checkForExistingFiles)
         {
             string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
             string gameUrl = ReleaseChannelService.GetGameURL();
@@ -225,42 +225,48 @@ namespace launcher.Game
                 }
             }).ToList();
 
-            return Task.WhenAll(downloadTasks);
+            await Task.WhenAll(downloadTasks);
         }
 
         private static async Task MergePartsAsync(ManifestEntry file)
         {
-            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
-            using var finalStream = new FileStream(file.downloadContext.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            for (int i = 0; i < file.parts.Count; i++)
+            await Task.Run(async () =>
             {
-                var part = file.parts[i];
-                int currentPartNumber = i + 1;
+                string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
+                using var finalStream = new FileStream(file.downloadContext.finalPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-                await appDispatcher.InvokeAsync(() =>
+                for (int i = 0; i < file.parts.Count; i++)
                 {
-                    file.downloadContext.downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPartNumber} / {file.parts.Count}";
-                    file.downloadContext.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
-                });
+                    var part = file.parts[i];
+                    int currentPartNumber = i + 1;
 
-                string partPath = Path.Combine(releaseChannelDirectory, part.path);
-                using var partStream = new FileStream(partPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                await partStream.CopyToAsync(finalStream);
-            }
+                    await appDispatcher.InvokeAsync(() =>
+                    {
+                        file.downloadContext.downloadItem.downloadFilePercent.Text = $"Merging Parts: {currentPartNumber} / {file.parts.Count}";
+                        file.downloadContext.downloadItem.downloadFileProgress.Value = (double)currentPartNumber / file.parts.Count * 100;
+                    });
+
+                    string partPath = Path.Combine(releaseChannelDirectory, part.path);
+                    using var partStream = new FileStream(partPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    await partStream.CopyToAsync(finalStream);
+                }
+            });
         }
 
         private static void CleanupPartFiles(ManifestEntry file)
         {
-            string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
-            foreach (var part in file.parts)
+            Task.Run(() =>
             {
-                string partPath = Path.Combine(releaseChannelDirectory, part.path);
-                if (File.Exists(partPath))
+                string releaseChannelDirectory = ReleaseChannelService.GetDirectory();
+                foreach (var part in file.parts)
                 {
-                    File.Delete(partPath);
+                    string partPath = Path.Combine(releaseChannelDirectory, part.path);
+                    if (File.Exists(partPath))
+                    {
+                        File.Delete(partPath);
+                    }
                 }
-            }
+            });
         }
 
         private static async Task DownloadMultiStreamAsync(string fileUrl, string destinationPath, ManifestEntry file)
