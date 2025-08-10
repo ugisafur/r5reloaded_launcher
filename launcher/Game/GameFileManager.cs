@@ -163,6 +163,7 @@ namespace launcher.Game
 
         private static async Task<string> DownloadFileInPartsAsync(ManifestEntry file, bool checkForExistingFiles)
         {
+            await GetSemaphoreSlim().WaitAsync();
             try
             {
                 file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => AppController._uiService.AddDownloadItem(file));
@@ -182,6 +183,7 @@ namespace launcher.Game
             }
             finally
             {
+                GetSemaphoreSlim().Release();
                 if (file.downloadContext.downloadItem != null)
                     await appDispatcher.InvokeAsync(() => AppController._uiService.RemoveDownloadItem(file.downloadContext.downloadItem));
             }
@@ -189,7 +191,6 @@ namespace launcher.Game
 
         private static async Task DownloadPartAsync(ManifestEntry parentFile, FileChunk part, string partUrl, string partPath)
         {
-            await GetSemaphoreSlim().WaitAsync();
             try
             {
                 var retryPolicy = CreateRetryPolicy(parentFile, 50);
@@ -199,10 +200,6 @@ namespace launcher.Game
             {
                 LogException($"Failed to download part {part.path}: {ex.Message}", LogSource.Download, ex);
                 throw;
-            }
-            finally
-            {
-                GetSemaphoreSlim().Release();
             }
         }
 
