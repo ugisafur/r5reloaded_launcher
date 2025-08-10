@@ -21,10 +21,10 @@
             </Image>
             <TextBlock x:Name="LoadingText1" Text="Loading..." Foreground="#FFFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="20" TextAlignment="Right" Margin="0,0,5,5" />
             <TextBlock x:Name="LoadingText2" Text="Loading..." Foreground="#B2FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="18" TextAlignment="Right" Margin="0,0,5,30" />
-            <TextBlock x:Name="LoadingText3" Text="Loading..." Foreground="#99FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="16" TextAlignment="Right" Margin="0,0,5,50" />
-            <TextBlock x:Name="LoadingText4" Text="Loading..." Foreground="#7FFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="14" TextAlignment="Right" Margin="0,0,5,70" />
-            <TextBlock x:Name="LoadingText5" Text="Loading..." Foreground="#66FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="12" TextAlignment="Right" Margin="0,0,5,85" />
-            <TextBlock x:Name="LoadingText6" Text="Loading..." Foreground="#4CFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="10" TextAlignment="Right" Margin="0,0,5,100" />
+            <TextBlock x:Name="LoadingText3" Text="Loading..." Foreground="#99FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="16" TextAlignment="Right" Margin="0,0,5,52" />
+            <TextBlock x:Name="LoadingText4" Text="Loading..." Foreground="#7FFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="14" TextAlignment="Right" Margin="0,0,5,72" />
+            <TextBlock x:Name="LoadingText5" Text="Loading..." Foreground="#66FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="12" TextAlignment="Right" Margin="0,0,5,89" />
+            <TextBlock x:Name="LoadingText6" Text="Loading..." Foreground="#4CFFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontFamily="{StaticResource SansationRegular}" FontWeight="Bold" FontSize="10" TextAlignment="Right" Margin="0,0,5,104" />
         </Grid>
     </Border>
 </Window>
