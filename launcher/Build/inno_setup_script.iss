@@ -1,6 +1,6 @@
 [Setup]
 AppName=R5Reloaded
-AppVersion=1.3.6
+AppVersion=1.5.0
 WizardStyle=modern
 DefaultDirName=C:\Program Files\R5Reloaded
 DefaultGroupName=R5Reloaded
@@ -18,7 +18,7 @@ UsePreviousGroup=no
 UsePreviousAppDir=no
 
 [Files]
-Source: "{tmp}\launcher.exe"; DestDir: "{app}\R5R Launcher\"; Flags: external
+Source: "..\bin\Publish\launcher.exe"; DestDir: "{app}\R5R Launcher\"
 
 [Icons]
 Name: "{group}\R5Reloaded"; Filename: "{app}\R5R Launcher\launcher.exe"
@@ -27,40 +27,3 @@ Name: "{group}\R5Reloaded"; Filename: "{app}\R5R Launcher\launcher.exe"
 Name: "{app}"; Permissions: users-full
 Name: "{app}\R5R Launcher"; Permissions: users-full
 Name: "{app}\R5R Library"; Permissions: users-full
-
-[Code]
-var
-  DownloadPage: TDownloadWizardPage;
-
-function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
-begin
-  if Progress = ProgressMax then
-    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
-  Result := True;
-end;
-
-procedure InitializeWizard;
-begin
-  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
-end;
-
-function NextButtonClick(CurPageID: Integer): Boolean;
-begin
-  if CurPageID = wpReady then begin
-    DownloadPage.Clear;
-    DownloadPage.Add('http://cdn.r5r.org/launcher/launcher.exe', 'launcher.exe', '');
-    DownloadPage.Show;
-    try
-      try
-        DownloadPage.Download;
-        Result := True;
-      except
-        SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
-        Result := False;
-      end;
-    finally
-      DownloadPage.Hide;
-    end;
-  end else
-    Result := True;
-end;
