@@ -21,7 +21,6 @@ using launcher.Services;
 using launcher.Services.Models;
 using launcher.Game;
 using launcher.Core.Commands;
-using System.Windows.Xps.Packaging;
 
 namespace launcher
 {
