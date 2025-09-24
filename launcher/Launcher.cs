@@ -9,7 +9,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.5.0";
+        public const string VERSION = "1.6.0";
 
         #region Settings
 
@@ -20,7 +20,7 @@ namespace launcher
 
         #region Public Keys
 
-        public const string NEWSKEY = "68767b4df970e8348b79ad74b1";
+        public const string NEWSKEY = "75d19830bc19c339c69eff0c51";
         public const string DISCORDRPC_CLIENT_ID = "1364049087434850444";
 
         #endregion Public Keys

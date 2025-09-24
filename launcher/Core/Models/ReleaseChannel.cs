@@ -4,6 +4,7 @@ namespace launcher.Core.Models
     {
         public string name { get; set; }
         public string game_url { get; set; }
+        public string backup_game_url { get; set; }
         public string dedi_url { get; set; }
         public bool enabled { get; set; }
         public bool requires_key { get; set; }

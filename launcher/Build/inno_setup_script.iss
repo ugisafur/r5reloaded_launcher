@@ -1,6 +1,6 @@
 [Setup]
 AppName=R5Reloaded
-AppVersion=1.5.0
+AppVersion=1.6.0
 WizardStyle=modern
 DefaultDirName=C:\Program Files\R5Reloaded
 DefaultGroupName=R5Reloaded

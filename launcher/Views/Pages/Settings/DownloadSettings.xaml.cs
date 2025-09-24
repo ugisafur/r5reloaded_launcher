@@ -91,5 +91,9 @@ namespace launcher
                 DownloadService.ConfigureConcurrency();
             }
         }
+        private void ShowDownloadURL(object sender, RoutedEventArgs e)
+        {
+            DownloadURL.Content = $"Download URL:   " + ReleaseChannelService.GetGameURL();
+        }
     }
 }

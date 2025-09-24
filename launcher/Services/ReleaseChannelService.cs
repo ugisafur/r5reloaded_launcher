@@ -32,6 +32,10 @@ namespace launcher.Services
         public static string GetName(bool uppercase = true, ReleaseChannel channel = null) { return channel != null ? (uppercase ? channel.name.ToUpper(new CultureInfo("en-US")) : channel.name) : (uppercase ? GetCurrentReleaseChannel().name.ToUpper(new CultureInfo("en-US")) : GetCurrentReleaseChannel().name); }
         public static string GetGameURL(ReleaseChannel channel = null) { return channel != null ? channel.game_url : GetCurrentReleaseChannel().game_url; }
 
+        public static void tryToSetURLToBackupOne() {
+            GetCurrentReleaseChannel().game_url = GetCurrentReleaseChannel().backup_game_url;
+        }
+
         public async static Task<string> GetBlogSlug(ReleaseChannel channel = null)
         {
             GameManifest GameManifest = await ApiService.GetGameManifestAsync(false);

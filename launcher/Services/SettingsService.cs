@@ -70,7 +70,7 @@ namespace launcher.Services
             { Vars.Disable_Background_Video, new("Settings", false) },
             { Vars.Disable_Animations, new("Settings", false) },
             { Vars.Disable_Transitions, new("Settings", false) },
-            { Vars.Concurrent_Downloads, new("Settings", 50) },
+            { Vars.Concurrent_Downloads, new("Settings", 5) },
             { Vars.Download_Speed_Limit, new("Settings", 0) },
             { Vars.Library_Location, new("Settings", "") },
             { Vars.Keep_All_Logs, new("Settings", false) },

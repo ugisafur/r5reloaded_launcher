@@ -12,8 +12,8 @@ namespace launcher.Services
     {
         public static RemoteConfig GetRemoteConfig()
         {
-            LogInfo(LogSource.API, $"request: https://cdn.r5r.org/launcher/config.json");
-            return NetworkHealthService.HttpClient.GetFromJsonAsync<RemoteConfig>("https://cdn.r5r.org/launcher/config.json").Result;
+            LogInfo(LogSource.API, $"request: " + Launcher.CONFIG_URL);
+            return NetworkHealthService.HttpClient.GetFromJsonAsync<RemoteConfig>(Launcher.CONFIG_URL).Result;
         }
 
         public static string GetGameVersion(ReleaseChannel channel)

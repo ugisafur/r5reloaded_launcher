@@ -21,6 +21,7 @@ using launcher.Services;
 using launcher.Services.Models;
 using launcher.Game;
 using launcher.Core.Commands;
+using System.Windows.Xps.Packaging;
 
 namespace launcher
 {
@@ -315,7 +316,7 @@ namespace launcher
             catch (Exception ex)
             {
                 LogError(LogSource.Launcher, $"An error occurred in btnStart_Click: {ex.Message}");
-                ShowError("An unexpected error occurred. Please check the logs.");
+                ShowError("An unexpected error occurred. Please verify game file integrity. Check the logs for more info.");
             }
             finally
             {
@@ -453,6 +454,12 @@ namespace launcher
         private void StatusBtn_Click(object sender, RoutedEventArgs e)
         {
             Status_Popup.IsOpen = true;
+        }
+        private void DownloaderBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ReleaseChannelService.tryToSetURLToBackupOne();
+            Downloader_Button.IsEnabled = false;
+            Downloader_Button.Content = "      ALT DOWNLOAD SOURCE ACTIVE";
         }
 
         private void SubMenuBtn_Click(object sender, RoutedEventArgs e)
@@ -896,5 +903,10 @@ namespace launcher
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion functions
+
+        public void disableAltWay()
+        {
+            Alt_Way_Grid.Height = 0;
+        }
     }
 }

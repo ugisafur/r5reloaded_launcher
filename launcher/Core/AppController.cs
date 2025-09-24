@@ -75,6 +75,11 @@ namespace launcher.Core
 
             PreLoad_Window.SetLoadingText("Checking for news");
 
+            if (ReleaseChannelService.GetCurrentReleaseChannel().backup_game_url == "")
+            {
+                mainWindow.disableAltWay();
+            }
+
             appState.newsOnline = await NetworkHealthService.IsNewsApiAvailableAsync();
 
             if (appState.IsOnline && appState.newsOnline)
