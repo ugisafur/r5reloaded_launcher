@@ -47,7 +47,7 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="1">
                     <Image x:Name="Background_Image" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,-1,0,0" Source="/assets/launcher_bg.jpg" Stretch="UniformToFill" />
-                    <MediaElement x:Name="Background_Video" Grid.Row="0" Source="assets/launcher_bg_autum.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" Stretch="UniformToFill" Margin="0,-1,0,0" />
+                    <MediaElement x:Name="Background_Video" Grid.Row="0" Source="" LoadedBehavior="Play" UnloadedBehavior="Manual" IsMuted="True" MediaEnded="mediaElement_MediaEnded" Volume="50" HorizontalAlignment="Center" Stretch="UniformToFill" Margin="0,-1,0,0" />
                     <Rectangle Grid.Row="0" Margin="0,0,0,0" Fill="{DynamicResource ThemeSecondary}">
                         <Rectangle.OpacityMask>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">

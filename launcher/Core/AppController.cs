@@ -75,7 +75,7 @@ namespace launcher.Core
 
             PreLoad_Window.SetLoadingText("Checking for news");
 
-            if (ReleaseChannelService.GetCurrentReleaseChannel().backup_game_url == "")
+            if (String.IsNullOrEmpty(ReleaseChannelService.GetCurrentReleaseChannel().backup_game_url))
             {
                 mainWindow.disableAltWay();
             }
