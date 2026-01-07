@@ -20,7 +20,8 @@ namespace launcher
             20,
             15,
             10,
-            5
+            5,
+            1
         ];
 
         public DownloadSettings()

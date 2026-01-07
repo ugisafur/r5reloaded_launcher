@@ -76,7 +76,7 @@ namespace launcher.Game
                 }
                 else
                 {
-                    var retryPolicy = CreateRetryPolicy(file, 15);
+                    var retryPolicy = CreateRetryPolicy(file, 5);
                     await retryPolicy.ExecuteAsync(() => DownloadSingleStreamAsync(file));
                 }
                 return file.downloadContext.finalPath;
@@ -190,7 +190,7 @@ namespace launcher.Game
         {
             try
             {
-                var retryPolicy = CreateRetryPolicy(parentFile, 50);
+                var retryPolicy = CreateRetryPolicy(parentFile, 5);
                 await retryPolicy.ExecuteAsync(() => DownloadMultiStreamAsync(partUrl, partPath, parentFile));
             }
             catch (Exception ex)

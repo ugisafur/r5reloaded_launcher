@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using static launcher.Services.LoggerService;
 
 namespace launcher.Services
 {
@@ -21,8 +22,9 @@ namespace launcher.Services
                 var response = await client.GetAsync(Launcher.CONFIG_URL);
                 return response.IsSuccessStatusCode; // Return true if the request was successful
             }
-            catch
+            catch (Exception ex)
             {
+                LogInfo(LogSource.Launcher, $"IsCdnAvailableAsync check failed: {ex.Message}");
                 return false; // Return false if there's an exception (e.g., timeout or network error)
             }
         }

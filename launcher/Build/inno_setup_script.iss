@@ -1,6 +1,6 @@
 [Setup]
 AppName=R5Reloaded
-AppVersion=1.6.0
+AppVersion=1.6.1
 WizardStyle=modern
 DefaultDirName=C:\Program Files\R5Reloaded
 DefaultGroupName=R5Reloaded
@@ -18,7 +18,7 @@ UsePreviousGroup=no
 UsePreviousAppDir=no
 
 [Files]
-Source: "..\bin\Publish\launcher.exe"; DestDir: "{app}\R5R Launcher\"
+Source: "..\bin\Publish\launcher.exe"; DestDir: "{app}\R5R Launcher\"; Flags: ignoreversion restartreplace
 
 [Icons]
 Name: "{group}\R5Reloaded"; Filename: "{app}\R5R Launcher\launcher.exe"

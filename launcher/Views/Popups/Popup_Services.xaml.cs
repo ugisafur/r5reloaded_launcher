@@ -129,7 +129,7 @@ namespace launcher
             int total_players = 0;
 
             foreach (var server in game_server_list.servers)
-                total_players += int.Parse(server.playerCount);
+                total_players += int.Parse(server.numPlayers);
 
             await Dispatcher.InvokeAsync(() =>
             {
