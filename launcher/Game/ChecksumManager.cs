@@ -3,7 +3,6 @@ using launcher.Services;
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
-
 using static launcher.Core.AppContext;
 using static launcher.Services.LoggerService;
 

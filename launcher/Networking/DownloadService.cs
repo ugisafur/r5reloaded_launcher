@@ -15,7 +15,7 @@ namespace launcher.Networking
         public static SemaphoreSlim _downloadSemaphore;
         public static double currentDownloadSpeed = 0;
 
-        public static DateTime speedCheckStart = DateTime.Now;
+        // public static DateTime speedCheckStart = DateTime.Now;
 
         private static readonly TimeSpan _monitorInterval = TimeSpan.FromSeconds(1);
         private static long _previousTotalBytes = 0;

@@ -6,7 +6,6 @@ using static launcher.Services.LoggerService;
 using System.IO;
 using static launcher.Core.AppContext;
 using launcher.Core.Models;
-using launcher.Services.Models;
 
 using static launcher.Core.AppController;
 

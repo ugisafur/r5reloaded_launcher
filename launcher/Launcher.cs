@@ -9,7 +9,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.6.1";
+        public const string VERSION = "1.6.2";
 
         #region Settings
 
@@ -28,8 +28,12 @@ namespace launcher
         #region Public URLs
 
         public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
-        public const string GITHUB_API_URL = "https://api.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases";
-        public const string BACKGROUND_VIDEO_URL = "https://cdn.r5r.org/launcher/video_backgrounds/";
+        public const string MS_URL = "https://r5r.org";
+        public const string WEBSITE_URL = "https://r5reloaded.com";
+        public const string LAUNCHER_THEME_URL = "https://cdn.r5r.org/launcher/theme.xaml";
+        public const string CDN_URL = "https://cdn.r5r.org/launcher/config.json"; // only used for displaying the CDN UP or DOWN status in the status window, can be sorta useful if in the future I get somesort of url switching for when the CDN fails for whatever reason
+        // public const string GITHUB_API_URL = "https://api.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases";
+        public const string BACKGROUND_VIDEO_URL = "https://cdn.r5r.org/launcher/video_backgrounds/"; // some of default videos available here https://github.com/AyeZeeBB/r5reloaded_launcher/tree/main/launcher/assets
         public const string NEWSURL = "https://admin.r5reloaded.com/ghost/api/content";
 
         #endregion Public URLs

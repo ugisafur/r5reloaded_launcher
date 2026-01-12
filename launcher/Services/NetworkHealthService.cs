@@ -52,7 +52,7 @@ namespace launcher.Services
                 using var client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(5); // Set a timeout (e.g., 5 seconds)
 
-                var response = await client.GetAsync($"https://r5r.org");
+                var response = await client.GetAsync(Launcher.MS_URL);
                 return response.IsSuccessStatusCode; // Return true if the request was successful
             }
             catch

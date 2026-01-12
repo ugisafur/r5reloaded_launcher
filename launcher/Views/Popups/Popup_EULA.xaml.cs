@@ -43,7 +43,7 @@ namespace launcher
             }
 
             var content = new StringContent("{}", Encoding.UTF8, "application/json");
-            HttpResponseMessage response = NetworkHealthService.HttpClient.PostAsync("https://r5r.org/eula", content).Result;
+            HttpResponseMessage response = NetworkHealthService.HttpClient.PostAsync(Launcher.MS_URL + "/eula", content).Result;
 
             if (response.IsSuccessStatusCode)
             {

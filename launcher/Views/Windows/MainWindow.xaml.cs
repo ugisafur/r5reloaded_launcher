@@ -108,7 +108,7 @@ namespace launcher
             {
                 if (await NetworkHealthService.IsCdnAvailableAsync())
                 {
-                    app.ChangeTheme(new Uri("https://cdn.r5r.org/launcher/theme.xaml"));
+                    app.ChangeTheme(new Uri(Launcher.LAUNCHER_THEME_URL));
                 }
             }
 
@@ -374,6 +374,7 @@ namespace launcher
             appState.isLocal = false;
             SettingsService.Set(SettingsService.Vars.SelectedReleaseChannel, ReleaseChannelService.GetName(false));
 
+            // TODO: need some check to check if blog.r5reloaded.com is returning successfully, else don't run this command
             Task.Run(() => SetTextBlockContent(ReleaseChannelService.GetServerComboVersion(ReleaseChannelService.GetCurrentReleaseChannel())));
 
             if (ReleaseChannelService.IsInstalled())
@@ -437,7 +438,7 @@ namespace launcher
 
         private void VisitWebsite_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start https://r5reloaded.com") { CreateNoWindow = true });
+            Process.Start(new ProcessStartInfo("cmd", $"/c start" + Launcher.WEBSITE_URL) { CreateNoWindow = true });
         }
 
         private void JoinDiscord_Click(object sender, RoutedEventArgs e)

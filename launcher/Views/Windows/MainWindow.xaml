@@ -25,7 +25,7 @@
         <RectangleGeometry x:Name="WindowClip" Rect="0,0,1341,769" RadiusX="10" RadiusY="10" />
     </Window.Clip>
 
-    <Window.Resources>
+    <Window.Resources> <!-- Just in case anyone wonders where this even is.. its the right click menu of the program in the tasktray-->
         <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource HorizontalScrollBarStyle}" />
 
         <ContextMenu x:Key="tbiContextMenu" Style="{StaticResource CustomContextMenuStyle}">

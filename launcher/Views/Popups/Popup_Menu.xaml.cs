@@ -31,7 +31,7 @@ namespace launcher
 
         private void Website_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("cmd", $"/c start https://r5reloaded.com") { CreateNoWindow = true });
+            Process.Start(new ProcessStartInfo("cmd", $"/c start" + Launcher.WEBSITE_URL) { CreateNoWindow = true });
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)

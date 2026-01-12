@@ -1,6 +1,5 @@
 ﻿using launcher.Core;
 using launcher.GameLifecycle.Models;
-using launcher.Networking;
 using launcher.Services;
 using Polly;
 using Polly.Retry;
@@ -24,6 +23,7 @@ namespace launcher.Game
 
         public static List<Task<string>> InitializeRepairTasks(string releaseChannelDirectory)
         {
+            LogInfo(LogSource.Repair, $"Creating download tasks for mismatched files.");
             return CreateDownloadTasks(ChecksumManager.MismatchedFiles, releaseChannelDirectory, checkForExistingFiles: false);
         }
 
@@ -39,6 +39,7 @@ namespace launcher.Game
                     file.downloadContext.finalPath = Path.Combine(releaseChannelDirectory, file.path);
                     EnsureDirectoryExists(file);
 
+                    LogInfo(LogSource.Repair, $"Sending info over to the download function to download " + file.path);
                     return DownloadFileAsync(file, checkForExistingFiles);
                 })
                 .ToList();
@@ -67,6 +68,7 @@ namespace launcher.Game
             await GetSemaphoreSlim().WaitAsync();
             try
             {
+                LogInfo(LogSource.Download, $"Downloading file: " + file.path);
                 file.downloadContext.downloadItem = await appDispatcher.InvokeAsync(() => AppController._uiService.AddDownloadItem(file));
 
                 bool isSkipped = checkForExistingFiles && await ShouldSkipDownloadAsync(file.path, file.checksum);
@@ -295,8 +297,8 @@ namespace launcher.Game
 
         private static async Task ProcessDownloadStreamAsync(ManifestEntry file, Stream responseStream, string destinationPath, long totalBytes)
         {
-            long bytesAtStart = 0;
-            DateTime speedCheckStart = DateTime.Now;
+            // long bytesAtStart = 0;
+            // DateTime speedCheckStart = DateTime.Now;
             var metadata = file.downloadContext;
 
             //using var throttledStream = new ThrottledStream(responseStream, Throttler);
@@ -332,6 +334,7 @@ namespace launcher.Game
 
                 // --- Speed & Stall Detection (Checked every 5 seconds) ---
 
+                /*
                 const long MinSpeedInBytesPerSecond = 500 * 1024;
 
                 if ((DateTime.Now - speedCheckStart).TotalSeconds >= 15)
@@ -348,6 +351,7 @@ namespace launcher.Game
                     bytesAtStart = metadata.downloadProgress.downloadedBytes;
                     speedCheckStart = DateTime.Now;
                 }
+                */
             }
 
             await fileStream.FlushAsync();

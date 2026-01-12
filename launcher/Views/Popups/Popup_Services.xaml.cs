@@ -18,10 +18,7 @@ namespace launcher
     /// </summary>
     public partial class Popup_Services : UserControl
     {
-        private const int refresh_interval = 30;
-        private const string website_url = "https://r5reloaded.com/";
-        private const string ms_url = "https://r5r.org/";
-        private const string cdn_url = "https://cdn.r5r.org/launcher/config.json";
+        private const int refresh_interval = 60;
 
         public Popup_Services()
         {
@@ -76,7 +73,7 @@ namespace launcher
 
         private async Task GetMasterServerStatusInfo()
         {
-            bool isMSUP = await IsUrlUp(ms_url);
+            bool isMSUP = await IsUrlUp(Launcher.MS_URL);
 
             await Dispatcher.InvokeAsync(() =>
             {
@@ -100,7 +97,7 @@ namespace launcher
                 return;
             }
 
-            string serverlist = await SendPostRequestAsync($"{ms_url}servers", "{}");
+            string serverlist = await SendPostRequestAsync($"{Launcher.MS_URL}/servers", "{}");
 
             if (string.IsNullOrEmpty(serverlist))
             {
@@ -140,7 +137,7 @@ namespace launcher
 
         private async Task GetWebsiteStatusInfo()
         {
-            bool isWebsiteUP = await IsUrlUp(website_url);
+            bool isWebsiteUP = await IsUrlUp(Launcher.WEBSITE_URL);
 
             await Dispatcher.InvokeAsync(() =>
             {
@@ -155,7 +152,7 @@ namespace launcher
 
         private async Task GetCDNStatusInfo()
         {
-            bool isCDNUP = await IsUrlUp(cdn_url);
+            bool isCDNUP = await IsUrlUp(Launcher.CDN_URL);
 
             await Dispatcher.InvokeAsync(() =>
             {
