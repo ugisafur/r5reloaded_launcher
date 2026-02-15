@@ -130,6 +130,9 @@ namespace launcher.Services
             var playlistFile = (string)SettingsService.Get(SettingsService.Vars.Playlists_File);
             if (!string.IsNullOrEmpty(playlistFile))
                 svParameters.Append($"-playlistfile \"{playlistFile}\" ");
+            if (Launcher.isAltCDN) {
+                svParameters.Append("+pylon_matchmaking_hostname r5r-sl.ugniushosting.com "); // shhhhhhhhhhh, ik this is bad
+            }
         }
 
         private static void AppendGameSettingsParameters(StringBuilder svParameters)

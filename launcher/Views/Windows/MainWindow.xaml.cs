@@ -106,7 +106,7 @@ namespace launcher
             }
             else
             {
-                if (await NetworkHealthService.IsCdnAvailableAsync())
+                if (appState.IsOnline)
                 {
                     app.ChangeTheme(new Uri(Launcher.LAUNCHER_THEME_URL));
                 }

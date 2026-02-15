@@ -9,7 +9,7 @@ namespace launcher
 {
     public static class Launcher
     {
-        public const string VERSION = "1.6.2";
+        public const string VERSION = "1.6.3";
 
         #region Settings
 
@@ -27,14 +27,16 @@ namespace launcher
 
         #region Public URLs
 
-        public const string CONFIG_URL = "https://cdn.r5r.org/launcher/config.json";
+        public static string CONFIG_URL;
         public const string MS_URL = "https://r5r.org";
         public const string WEBSITE_URL = "https://r5reloaded.com";
-        public const string LAUNCHER_THEME_URL = "https://cdn.r5r.org/launcher/theme.xaml";
+        public static string LAUNCHER_THEME_URL;
         public const string CDN_URL = "https://cdn.r5r.org/launcher/config.json"; // only used for displaying the CDN UP or DOWN status in the status window, can be sorta useful if in the future I get somesort of url switching for when the CDN fails for whatever reason
         // public const string GITHUB_API_URL = "https://api.github.com/repos/AyeZeeBB/r5reloaded_launcher/releases";
-        public const string BACKGROUND_VIDEO_URL = "https://cdn.r5r.org/launcher/video_backgrounds/"; // some of default videos available here https://github.com/AyeZeeBB/r5reloaded_launcher/tree/main/launcher/assets
-        public const string NEWSURL = "https://admin.r5reloaded.com/ghost/api/content";
+        public static string BACKGROUND_VIDEO_URL; // some of default videos available here https://github.com/AyeZeeBB/r5reloaded_launcher/tree/main/launcher/assets
+        public static string NEWSURL;
+
+        public static bool isAltCDN; // a not so good way to store a bool which will get check at game launch to change the ms url or not
 
         #endregion Public URLs
 

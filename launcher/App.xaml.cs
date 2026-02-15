@@ -1,11 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Media;
 
 namespace launcher
 {

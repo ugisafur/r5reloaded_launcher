@@ -171,6 +171,7 @@ namespace launcher
             {
                 using var client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(5);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd($"R5R-Launcher/{Launcher.VERSION} Status Checker");
                 using var stream = await client.GetStreamAsync(url);
                 return true;
             }
@@ -185,7 +186,7 @@ namespace launcher
             using (HttpClient client = new HttpClient())
             {
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
+                client.DefaultRequestHeaders.UserAgent.ParseAdd($"R5R-Launcher/{Launcher.VERSION} Status Checker");
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
                 response.EnsureSuccessStatusCode();
